@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         printf("User '%s' not found.\n", username);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 

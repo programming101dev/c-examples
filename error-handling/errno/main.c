@@ -7,6 +7,7 @@ int main(void)
 {
     errno_t *data;
 
+    errno = 0;
     data = malloc(SIZE_MAX);
 
     if(data)

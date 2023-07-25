@@ -5,8 +5,11 @@
 
 int main(void)
 {
-    int x = 10;
-    int y = 20;
+    int x;
+    int y;
+
+    x = 10;
+    y = 20;
 
     // If the condition is false, the program will terminate with an error message.
     // If the condition is true, the program continues normally.

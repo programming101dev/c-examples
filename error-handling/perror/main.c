@@ -8,6 +8,7 @@ int main(void)
 {
     void *data;
 
+    errno = 0;
     data = malloc(SIZE_MAX);
 
     if(data)

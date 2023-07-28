@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    errno = 0;
+    errno    = 0;
     uid_long = strtol(argv[1], &endptr, 10);
 
     if(errno != 0 || *endptr != '\0')

@@ -3,7 +3,8 @@
 #include <string.h>
 
 
-int main() {
+int main(void)
+{
     char str[] = "This,is,a,test,string";
     char *delimiter = ",";
     char *token;

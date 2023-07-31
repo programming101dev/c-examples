@@ -5,10 +5,10 @@
 
 int main(void)
 {
-    uid_t uid;
+    gid_t egid;
 
-    uid = getuid();
-    printf("Real UID: %d\n", uid);
+    egid = getegid();
+    printf("Effective GID: %d\n", egid);
 
     return EXIT_SUCCESS;
 }

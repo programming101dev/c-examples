@@ -5,8 +5,10 @@
 
 int main(void)
 {
-    gid_t gid = getgid();
-    printf("Real Group ID: %d\n", gid);
+    gid_t gid;
+
+    gid = getgid();
+    printf("Real GID: %d\n", gid);
 
     return EXIT_SUCCESS;
 }

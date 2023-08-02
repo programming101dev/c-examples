@@ -9,7 +9,7 @@ int main(void)
 {
     FILE *file;
 
-    file = fopen("../example.txt", "r");
+    file = fopen("../../example.txt", "r");
 
     if (file == NULL)
     {

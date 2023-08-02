@@ -6,7 +6,7 @@ int main(void)
     FILE *file;
     const char buffer[] = "This is an attempt to write.";
 
-    file = fopen("../example.txt", "r");
+    file = fopen("../../example.txt", "r");
 
     if(file == NULL)
     {

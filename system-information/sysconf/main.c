@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-long get_sysconf_value(int name, const char *name_str);
+static long get_sysconf_value(int name, const char *name_str);
 
 struct sc_value_name_pair
 {
@@ -164,7 +164,7 @@ int main(void)
 }
 
 
-long get_sysconf_value(int name, const char *name_str)
+static long get_sysconf_value(int name, const char *name_str)
 {
     long value;
 

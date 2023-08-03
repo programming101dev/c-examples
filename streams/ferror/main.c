@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 int main(void)
 {
-    FILE *file;
     const char buffer[] = "This is an attempt to write.";
+    FILE *file;
 
     file = fopen("../../example.txt", "r");
 

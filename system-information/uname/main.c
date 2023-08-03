@@ -7,7 +7,7 @@ int main(void)
 {
     struct utsname system_info;
 
-    if (uname(&system_info) != 0)
+    if(uname(&system_info) != 0)
     {
         perror("uname");
         return EXIT_FAILURE;

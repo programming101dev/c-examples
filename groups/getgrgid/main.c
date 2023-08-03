@@ -3,7 +3,9 @@
 #include <grp.h>
 #include <errno.h>
 
+
 static void print_entry(const struct group *entry);
+
 
 int main(int argc, char *argv[])
 {
@@ -12,7 +14,7 @@ int main(int argc, char *argv[])
     gid_t gid;
     struct group *group_info;
 
-    if (argc != 2)
+    if(argc != 2)
     {
         printf("Usage: %s <gid>\n", argv[0]);
         return EXIT_FAILURE;
@@ -21,7 +23,7 @@ int main(int argc, char *argv[])
     errno = 0;
     gid_long = strtol(argv[1], &endptr, 10);
 
-    if (errno != 0 || *endptr != '\0')
+    if(errno != 0 || *endptr != '\0')
     {
         printf("Invalid GID: %s\n", argv[1]);
         return EXIT_FAILURE;
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
     gid = (gid_t)gid_long;
     group_info = getgrgid(gid);
 
-    if (group_info != NULL)
+    if(group_info != NULL)
     {
         print_entry(group_info);
     }

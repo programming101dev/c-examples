@@ -9,23 +9,20 @@ int main(void)
     struct tm *timeinfo;
     char buffer[80];
 
-    // Get the current time
-    if (time(&rawtime) == -1)
+    if(time(&rawtime) == -1)
     {
         perror("Error getting current time");
         return EXIT_FAILURE;
     }
 
-    // Convert the time to a local time representation
     timeinfo = localtime(&rawtime);
 
-    if (timeinfo == NULL)
+    if(timeinfo == NULL)
     {
         perror("Error converting to local time");
         return EXIT_FAILURE;
     }
 
-    // Format the time
     if(strftime(buffer, sizeof(buffer), "Formatted date: %Y-%m-%d %H:%M:%S\n", timeinfo) == 0)
     {
         perror("Error formatting time");

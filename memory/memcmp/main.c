@@ -14,7 +14,7 @@ int main(void)
     // Compare data1 and data2
     result1 = memcmp(data1, data2, sizeof(data1));
 
-    if (result1 == 0)
+    if(result1 == 0)
     {
         printf("data1 and data2 are identical.\n");
     }

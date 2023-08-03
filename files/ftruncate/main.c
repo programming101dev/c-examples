@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 
 static void check_file_size(const char *filename, const char *message);
@@ -9,29 +9,36 @@ static void check_file_size(const char *filename, const char *message);
 
 int main(void)
 {
-    const char *filename = "example.txt";
+    const char *content = "This is a sample file.\n";
+    char filename[] = "example_XXXXXX";
+    int fd;
     off_t new_size;
-    FILE *file;
 
-    file = fopen(filename, "w");
+    fd = mkstemp(filename);
 
-    if(file != NULL)
+    if(fd == -1)
     {
-        fprintf(file, "This is a sample file.\n");
-        fclose(file);
-    }
-
-    check_file_size(filename, "Truncated file size");
-    new_size = 9;
-    printf("Truncating file %s to %lld bytes\n", filename, (long long)new_size);
-
-    if(truncate(filename, new_size) == -1)
-    {
-        perror("Error truncating file");
+        perror("Error creating temporary file");
         return EXIT_FAILURE;
     }
 
-    check_file_size(filename, "Truncated file size");
+    dprintf(fd, "%s\n", content);
+    check_file_size(filename, "Initial file size");
+    new_size = 9;
+    printf("Truncating file %s to %lld bytes\n", filename, (long long)new_size);
+
+    if(ftruncate(fd, new_size) == -1)
+    {
+        perror("Error truncating file");
+        close(fd);
+        return EXIT_FAILURE;
+    }
+
+    if(close(fd) == -1)
+    {
+        perror("Error closing file");
+        return EXIT_FAILURE;
+    }
 
     if(unlink(filename) == -1)
     {
@@ -42,13 +49,12 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void check_file_size(const char *filename, const char *message)
 {
     struct stat st;
     if(stat(filename, &st) == 0)
     {
-        printf("\t%s of '%s' is %lld bytes.\n", message, filename, (long long)st.st_size);
+        printf("%s of '%s' is %lld bytes.\n", message, filename, (long long)st.st_size);
     }
     else
     {

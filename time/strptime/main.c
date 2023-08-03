@@ -10,7 +10,7 @@ int main(void)
     struct tm timeinfo;
     time_t result_time;
 
-    if (strptime(time_str, format, &timeinfo) == NULL)
+    if(strptime(time_str, format, &timeinfo) == NULL)
     {
         fprintf(stderr, "Error parsing time\n");
         return EXIT_FAILURE;

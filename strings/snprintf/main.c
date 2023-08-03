@@ -567,7 +567,8 @@ static void convertOff(off_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "off_t: %" PRId64, (int64_t)value);
 
-    if(result >= 0 && (size_t)result < bufferSize) {
+    if(result >= 0 && (size_t)result < bufferSize)
+    {
         buffer[result] = '\0';
     }
     else

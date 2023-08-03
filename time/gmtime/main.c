@@ -10,7 +10,7 @@ int main(void)
     char buffer[80];
 
     // Get the current time
-    if (time(&rawtime) == -1)
+    if(time(&rawtime) == -1)
     {
         perror("Error getting current time");
         return EXIT_FAILURE;
@@ -19,7 +19,7 @@ int main(void)
     // Convert the time to a local time representation
     timeinfo = gmtime(&rawtime);
 
-    if (timeinfo == NULL)
+    if(timeinfo == NULL)
     {
         perror("Error converting to GMT/UTC time");
         return EXIT_FAILURE;

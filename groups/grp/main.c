@@ -19,7 +19,7 @@ int main(void)
     setgrent();
     entry = getgrent();
 
-    if (entry != NULL)
+    if(entry != NULL)
     {
         print_entry(entry);
     }

@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-int main()
+int main(void)
 {
     const char *source = "Hello, World!";
     size_t destination_size;
@@ -12,7 +12,7 @@ int main()
     destination_size = strlen(source) + 1;
     destination = malloc(destination_size);
 
-    if (destination == NULL)
+    if(destination == NULL)
     {
         perror("Memory allocation failed\n");
 

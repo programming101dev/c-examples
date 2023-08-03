@@ -20,7 +20,7 @@ static void print_array(const char *message, const int *array, int num_elements)
 {
     printf("%s", message);
 
-    for (int i = 0; i < num_elements; i++)
+    for(int i = 0; i < num_elements; i++)
     {
         printf("%d ", array[i]);
     }
@@ -45,7 +45,8 @@ static int *resize_array(int *array, int old_num_elements, int new_num_elements)
     return resized_array;
 }
 
-int main() {
+int main(void)
+{
     int *dynamic_array;
     int num_elements;
 

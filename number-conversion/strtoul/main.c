@@ -5,7 +5,7 @@
 #include <string.h>
 
 
-void convert(const char *str);
+static void convert(const char *str);
 
 
 int main(void)
@@ -21,7 +21,8 @@ int main(void)
     return 0;
 }
 
-void convert(const char *str)
+
+static void convert(const char *str)
 {
     unsigned long result;
     char *endptr;

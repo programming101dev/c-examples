@@ -4,9 +4,10 @@
 #include <unistd.h>
 
 
-void create_file(const char *filename, const char *content);
-void print_file_permissions(const char *filename);
-void delete_file(const char *filename);
+static void create_file(const char *filename, const char *content);
+static void print_file_permissions(const char *filename);
+static void delete_file(const char *filename);
+
 
 int main(void)
 {
@@ -33,7 +34,7 @@ int main(void)
 }
 
 
-void create_file(const char *filename, const char *content)
+static void create_file(const char *filename, const char *content)
 {
     FILE *file;
 
@@ -56,7 +57,7 @@ void create_file(const char *filename, const char *content)
 }
 
 
-void print_file_permissions(const char *filename)
+static void print_file_permissions(const char *filename)
 {
     struct stat fileStat;
 
@@ -71,7 +72,7 @@ void print_file_permissions(const char *filename)
 }
 
 
-void delete_file(const char *filename)
+static void delete_file(const char *filename)
 {
     if(unlink(filename) == -1)
     {

@@ -11,7 +11,7 @@ int main(void)
     double diff_time;
 
     // Get the start time
-    if (time(&start_time) == -1)
+    if(time(&start_time) == -1)
     {
         perror("Error getting start time");
         return EXIT_FAILURE;
@@ -21,14 +21,14 @@ int main(void)
     sleep(5); // Sleep for 5 seconds
 
     // Get the end time
-    if (time(&end_time) == -1)
+    if(time(&end_time) == -1)
     {
         perror("Error getting end time");
         return EXIT_FAILURE;
     }
 
     // Calculate the time difference
-    if (end_time == (time_t)-1 || start_time == (time_t)-1)
+    if(end_time == (time_t)-1 || start_time == (time_t)-1)
     {
         perror("Invalid time values");
         return EXIT_FAILURE;

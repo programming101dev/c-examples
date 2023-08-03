@@ -51,7 +51,7 @@ int main(void)
 
 static void check_file_existence(const char *filename, const char *message)
 {
-    if (access(filename, F_OK) == 0)
+    if(access(filename, F_OK) == 0)
     {
         printf("\t%s '%s' exists.\n", message, filename);
     }

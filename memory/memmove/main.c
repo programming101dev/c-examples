@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 int main(void)
 {
     // Source data
@@ -13,7 +14,7 @@ int main(void)
     memmove(destination_buffer, source_data, num_elements * sizeof(source_data[0]));
     printf("Copied elements: ");
 
-    for (int i = 0; i < num_elements; i++)
+    for(int i = 0; i < num_elements; i++)
     {
         printf("%d ", destination_buffer[i]);
     }

@@ -7,7 +7,7 @@ int main(void)
 {
     char tempdir_template[] = "exampleXXXXXX";
 
-    if (mkdtemp(tempdir_template) == NULL)
+    if(mkdtemp(tempdir_template) == NULL)
     {
         perror("Error creating temporary directory");
         return EXIT_FAILURE;

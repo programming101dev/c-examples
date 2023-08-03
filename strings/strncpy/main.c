@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-int main()
+int main(void)
 {
     const char *source = "Hello, World!";
     size_t to_copy;

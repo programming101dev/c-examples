@@ -11,7 +11,7 @@ int main(void)
 
     max_login_length = sysconf(_SC_LOGIN_NAME_MAX);
 
-    if (max_login_length <= 0)
+    if(max_login_length <= 0) // TODO: can I handle this differently, like with getcwd?
     {
         perror("sysconf");
 

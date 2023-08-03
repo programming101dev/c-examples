@@ -8,7 +8,7 @@ int main(void)
     const char *filename = "../../example.txt";
     struct stat file_stat;
 
-    if (stat(filename, &file_stat) == -1)
+    if(stat(filename, &file_stat) == -1)
     {
         perror("Error getting file information");
         return EXIT_FAILURE;

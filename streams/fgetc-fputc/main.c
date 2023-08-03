@@ -8,7 +8,6 @@ int main(void)
 
     printf("Please input some text, end with Ctrl-D:\n");
 
-    // Read and print characters until EOF
     while((c = fgetc(stdin)) != EOF)
     {
         putchar(c);

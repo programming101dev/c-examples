@@ -11,7 +11,7 @@ int main(void)
     struct stat link_stat;
     struct stat target_stat;
 
-    if (symlink("../../example.txt", symlink_name) == -1)
+    if(symlink("../../example.txt", symlink_name) == -1)
     {
         perror("Error creating symbolic link");
         return EXIT_FAILURE;
@@ -38,7 +38,7 @@ int main(void)
     printf("Target permissions: %o\n", target_stat.st_mode & 0777);
 
     // Remove the symbolic link
-    if (unlink(symlink_name) == -1)
+    if(unlink(symlink_name) == -1)
     {
         perror("Error unlinking symbolic link");
         return EXIT_FAILURE;

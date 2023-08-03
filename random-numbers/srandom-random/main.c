@@ -6,7 +6,7 @@
 static void print_random_numbers(size_t count);
 
 
-int main(void)
+static int main(void)
 {
     unsigned int seed;
     char state[256];

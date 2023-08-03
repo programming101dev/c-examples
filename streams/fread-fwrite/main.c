@@ -2,11 +2,9 @@
 #include <stdlib.h>
 
 
-const size_t BUFFER_SIZE = 256;
-
-
 int main(void)
 {
+    const size_t BUFFER_SIZE = 256;
     char buffer[BUFFER_SIZE];
     size_t bytesRead;
 

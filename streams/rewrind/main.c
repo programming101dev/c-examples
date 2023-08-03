@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-void display_file(FILE* file, const char *message);
+static void display_file(FILE* file, const char *message);
 
 
 int main(void)
@@ -11,7 +11,7 @@ int main(void)
 
     file = fopen("../../example.txt", "r");
 
-    if (file == NULL)
+    if(file == NULL)
     {
         perror("Error opening the file");
         return EXIT_FAILURE;
@@ -26,7 +26,7 @@ int main(void)
 }
 
 
-void display_file(FILE* file, const char *message)
+static void display_file(FILE* file, const char *message)
 {
     char ch;
 

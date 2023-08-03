@@ -27,7 +27,7 @@ int main(void)
 
     result = gethostname(hostname, max_hostname_length);
 
-    if (result == 0)
+    if(result == 0)
     {
         printf("Hostname: %s\n", hostname);
     }

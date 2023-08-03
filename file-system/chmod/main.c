@@ -7,7 +7,8 @@
 void print_permissions(const char *filename);
 
 
-int main(void) {
+int main(void)
+{
     const char *filename = "file.txt";
     mode_t new_permissions;
     FILE *file;
@@ -37,7 +38,7 @@ int main(void) {
     printf("\nAfter chmod:\n");
     print_permissions(filename);
 
-    if (unlink(filename) == -1)
+    if(unlink(filename) == -1)
     {
         perror("Error removing file");
         return EXIT_FAILURE;

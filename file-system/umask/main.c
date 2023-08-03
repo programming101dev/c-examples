@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 
-void createFile(const char *filename, const char *content);
-void printFilePermissions(const char *filename);
-
+void create_file(const char *filename, const char *content);
+void print_file_permissions(const char *filename);
+void delete_file(const char *filename);
 
 int main(void)
 {
@@ -13,24 +14,26 @@ int main(void)
     const char *filename2 = "file2.txt";
     const char *content = "This is a sample file.\n";
     mode_t old_mask;
-    mode_t new_mask;
 
     old_mask = umask(0);
-    createFile(filename1, content);
+    create_file(filename1, content);
     printf("File created with umask 000:\n");
-    printFilePermissions(filename1);
+    print_file_permissions(filename1);
 
-    new_mask = umask(0222);
-    createFile(filename2, content);
+    umask(0222);
+    create_file(filename2, content);
     printf("\nFile created with umask 222:\n");
-    printFilePermissions(filename2);
+    print_file_permissions(filename2);
     umask(old_mask);
+
+    delete_file(filename1);
+    delete_file(filename2);
 
     return EXIT_SUCCESS;
 }
 
 
-void createFile(const char *filename, const char *content)
+void create_file(const char *filename, const char *content)
 {
     FILE *file;
 
@@ -53,7 +56,7 @@ void createFile(const char *filename, const char *content)
 }
 
 
-void printFilePermissions(const char *filename)
+void print_file_permissions(const char *filename)
 {
     struct stat fileStat;
 
@@ -67,3 +70,12 @@ void printFilePermissions(const char *filename)
     printf("Permissions: %o\n", fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 }
 
+
+void delete_file(const char *filename)
+{
+    if(unlink(filename) == -1)
+    {
+        perror("Error deleting file");
+        exit(EXIT_FAILURE);
+    }
+}

@@ -157,7 +157,7 @@ void parent_process(int pipefd[2])
         }
 
         read_bytes = read(pipefd[0], word, length);
-        
+
         if (read_bytes < 0)
         {
             error_exit("Error reading word from pipe");

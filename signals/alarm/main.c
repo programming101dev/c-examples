@@ -1,0 +1,42 @@
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdbool.h>
+
+
+volatile sig_atomic_t alarm_received = false;
+
+
+void alarm_handler(int signal_number)
+{
+    const char* message = "Alarm received!\n";
+    write(STDERR_FILENO, message, strlen(message));
+    alarm_received = true;
+}
+
+int main(void)
+{
+    struct sigaction sa;
+
+    // Set up signal handler for SIGALRM
+    sa.sa_handler = alarm_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGALRM, &sa, NULL);
+
+    // Set the alarm to trigger after 2 seconds
+    alarm(2);
+
+    printf("Waiting for the alarm...\n");
+
+    // Wait until the alarm is received
+    while (!alarm_received)
+    {
+        // Put any other processing you want here.
+    }
+
+    printf("Exiting.\n");
+
+    return 0;
+}

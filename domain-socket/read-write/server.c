@@ -77,8 +77,8 @@ int main() {
         }
 
         // Read and print words from the client
-        while (recv(client_sockfd, &size, sizeof(uint8_t), 0) > 0) {
-            recv(client_sockfd, word, size, 0);
+        while (read(client_sockfd, &size, sizeof(uint8_t)) > 0) {
+            read(client_sockfd, word, size);
             word[size] = '\0'; // Null-terminate the string
             printf("Word Size: %u, Word: %s\n", size, word);
         }

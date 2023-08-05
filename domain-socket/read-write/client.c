@@ -58,7 +58,7 @@ int main() {
             send(sockfd, &size, sizeof(uint8_t), 0);
 
             // Write the word
-            send(sockfd, word, word_len, 0);
+            write(sockfd, word, word_len);
 
             word = strtok(NULL, " \t\n");
         }

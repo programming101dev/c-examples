@@ -20,7 +20,7 @@ int main(void)
     printf("Closing %s\n", sem_name);
 
     // Close the semaphore after use
-    if (sem_close(semaphore) == -1)
+    if(sem_close(semaphore) == -1)
     {
         perror("sem_close failed");
         exit(EXIT_FAILURE);
@@ -29,7 +29,7 @@ int main(void)
     printf("Unlinking %s\n", sem_name);
 
     // Unlink the semaphore after use
-    if (sem_unlink(sem_name) == -1)
+    if(sem_unlink(sem_name) == -1)
     {
         perror("sem_unlink failed");
         exit(EXIT_FAILURE);

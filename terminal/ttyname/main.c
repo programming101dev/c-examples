@@ -1,14 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-int main() {
+
+int main(void) {
     char *tty = ttyname(STDIN_FILENO);
 
-    if (tty != NULL) {
+    if(tty != NULL) {
         printf("The terminal associated with stdin is: %s\n", tty);
     } else {
         printf("stdin is not associated with a terminal.\n");
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

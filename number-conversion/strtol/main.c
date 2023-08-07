@@ -18,7 +18,7 @@ int main(void)
     convert(leftoverNumber);
     convert(badNumber);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 

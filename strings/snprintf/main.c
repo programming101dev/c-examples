@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <sys/types.h>
 
 
 // Character Types
@@ -149,7 +150,7 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
-    convertULongLong(20000000000000000000ULL, bad_buffer, sizeof(bad_buffer));
+    convertULongLong(18446744073709551615ULL, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 

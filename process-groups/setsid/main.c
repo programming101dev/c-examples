@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main() {
+int main(void) {
     pid_t pid = getpid(); // Get the PID of the current process
     pid_t pgid = getpgid(pid);
 
@@ -12,10 +12,10 @@ int main() {
     // Fork a new child process
     pid_t child_pid = fork();
 
-    if (child_pid < 0) {
+    if(child_pid < 0) {
         perror("Error forking a new process");
         return 1;
-    } else if (child_pid == 0) {
+    } else if(child_pid == 0) {
         // Child process
         pid_t child_pid = getpid();
         pid_t child_pgid = getpgid(child_pid);
@@ -25,7 +25,7 @@ int main() {
 
         // Create a new session for the child process
         pid_t sid = setsid();
-        if (sid == -1) {
+        if(sid == -1) {
             perror("Error creating a new session for the child process");
             return 1;
         }
@@ -35,7 +35,7 @@ int main() {
         pid_t new_pgid = getpgid(child_pid);
         printf("Child Process New Process Group ID (PGID): %d\n", new_pgid);
 
-        return 0;
+        return EXIT_SUCCESS;
     } else {
         // Parent process
         // Wait for the child process to finish
@@ -43,6 +43,6 @@ int main() {
 
         printf("Parent Process ID (PID) after child process execution: %d\n", getpid());
 
-        return 0;
+        return EXIT_SUCCESS;
     }
 }

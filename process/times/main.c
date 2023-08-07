@@ -68,7 +68,7 @@ long long performCalculation(size_t size, size_t iterations)
 
     for(int i = 0; i < iterations; i++)
     {
-        for (int j = 0; j < size; j++)
+        for(int j = 0; j < size; j++)
         {
             sum += numbers[j];
         }

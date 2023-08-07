@@ -25,7 +25,7 @@ int main(void)
         print_env_variable(env_variables[i]);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 static void print_env_variable(const char* variable)

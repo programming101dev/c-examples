@@ -81,5 +81,5 @@ int main(int argc, char *argv[])
     printf("Last modification time: %ld\n", fileStat.st_mtime);
     printf("Last status change time: %ld\n", fileStat.st_ctime);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

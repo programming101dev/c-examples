@@ -19,19 +19,19 @@ int main(void)
     int pipefd[2];
     pid_t pid;
 
-    if (pipe(pipefd) == -1)
+    if(pipe(pipefd) == -1)
     {
         error_exit("Error creating pipe");
     }
 
     pid = fork();
 
-    if (pid == -1)
+    if(pid == -1)
     {
         error_exit("Error creating child process");
     }
 
-    if (pid == 0)
+    if(pid == 0)
     {
         child_process(pipefd);
     }
@@ -51,16 +51,16 @@ void send_word(int pipefd, const char *word, uint8_t length)
     printf("Child: sending word of length %u: %s\n", length, word);
     written_bytes = write(pipefd, &length, sizeof(length));
 
-    if (written_bytes < 0)
+    if(written_bytes < 0)
     {
         error_exit("Error writing word length to pipe");
     }
 
-    if (length > 0)
+    if(length > 0)
     {
         written_bytes = write(pipefd, word, length);
 
-        if (written_bytes < 0)
+        if(written_bytes < 0)
         {
             error_exit("Error writing word to pipe");
         }
@@ -85,16 +85,16 @@ void child_process(int pipefd[2])
     close(pipefd[0]);
 
     file = fopen("../../example.txt", "r");
-    if (file == NULL)
+    if(file == NULL)
     {
         error_exit("Error opening file");
     }
 
-    while ((ch = fgetc(file)) != EOF)
+    while((ch = fgetc(file)) != EOF)
     {
-        if (ch == ' ' || ch == '\n' || ch == '\t')
+        if(ch == ' ' || ch == '\n' || ch == '\t')
         {
-            if (length > 0)
+            if(length > 0)
             {
                 word[length] = '\0';
                 send_word(pipefd[1], word, length);
@@ -103,7 +103,7 @@ void child_process(int pipefd[2])
         }
         else
         {
-            if (length >= MAX_WORD_LENGTH)
+            if(length >= MAX_WORD_LENGTH)
             {
                 error_exit("Encountered a word longer than the maximum allowed length");
             }
@@ -112,7 +112,7 @@ void child_process(int pipefd[2])
         }
     }
 
-    if (length > 0)
+    if(length > 0)
     {
         word[length] = '\0';
         send_word(pipefd[1], word, length);
@@ -120,12 +120,12 @@ void child_process(int pipefd[2])
 
     send_word(pipefd[1], NULL, 0);
 
-    if (fclose(file) != 0)
+    if(fclose(file) != 0)
     {
         error_exit("Error closing file");
     }
 
-    if (close(pipefd[1]) != 0)
+    if(close(pipefd[1]) != 0)
     {
         error_exit("Error closing pipe");
     }
@@ -142,23 +142,23 @@ void parent_process(int pipefd[2])
 
     close(pipefd[1]);
 
-    while (1)
+    while(1)
     {
         read_bytes = read(pipefd[0], &length, sizeof(length));
 
-        if (read_bytes < 0)
+        if(read_bytes < 0)
         {
             error_exit("Error reading word length from pipe");
         }
 
-        if (length == 0)
+        if(length == 0)
         {
             break;
         }
 
         read_bytes = read(pipefd[0], word, length);
 
-        if (read_bytes < 0)
+        if(read_bytes < 0)
         {
             error_exit("Error reading word from pipe");
         }
@@ -167,7 +167,7 @@ void parent_process(int pipefd[2])
         printf("Parent: received word of length %u: %s\n", length, word);
     }
 
-    if (close(pipefd[0]) != 0)
+    if(close(pipefd[0]) != 0)
     {
         error_exit("Error closing pipe");
     }

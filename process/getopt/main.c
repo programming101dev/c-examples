@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
                 break;
             case 'h':
                 print_help();
-                return 0;
+                return EXIT_SUCCESS;
             case '?':
-                if (optopt == 'c')
+                if(optopt == 'c')
                 {
                     fprintf(stderr, "Option 'c' requires an argument.\n");
                 }

@@ -28,7 +28,7 @@ int main(void)
     kill(pid, SIGUSR1);
 
     // Loop forever, waiting for signals.
-    while (1)
+    while(1)
     {
     }
 

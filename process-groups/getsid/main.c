@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main() {
+int main(void) {
     pid_t pid = getpid(); // Get the PID of the current process
 
     pid_t sid = getsid(pid);
-    if (sid == -1) {
+    if(sid == -1) {
         perror("Error getting SID");
         return 1;
     }
@@ -14,5 +14,5 @@ int main() {
     printf("Process ID (PID): %d\n", pid);
     printf("Session ID (SID) of the process with PID %d: %d\n", pid, sid);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

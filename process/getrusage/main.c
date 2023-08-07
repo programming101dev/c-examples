@@ -15,12 +15,12 @@ int main(void)
 
     pid_t pid = fork();
 
-    if (pid < 0)
+    if(pid < 0)
     {
         fprintf(stderr, "Fork failed\n");
         return EXIT_FAILURE;
     }
-    else if (pid == 0)
+    else if(pid == 0)
     {
         long long sum;
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
@@ -52,16 +52,16 @@ long long performCalculation(size_t size, size_t iterations)
 
     srand(time(NULL) ^ getpid());
 
-    for (int i = 0; i < size; i++)
+    for(int i = 0; i < size; i++)
     {
         numbers[i] = rand() % 100;
     }
 
     sum = 0;
 
-    for (int i = 0; i < iterations; i++)
+    for(int i = 0; i < iterations; i++)
     {
-        for (int j = 0; j < size; j++)
+        for(int j = 0; j < size; j++)
         {
             sum += numbers[j];
         }

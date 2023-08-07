@@ -14,7 +14,7 @@ int main(void)
 
     fd = open("../../example.txt", O_RDONLY);
 
-    if (fd == -1)
+    if(fd == -1)
     {
         perror("Error opening the file");
         return EXIT_FAILURE;
@@ -37,7 +37,7 @@ void display_file(int fd, const char* message)
 
     write(STDOUT_FILENO, message, strlen(message));
 
-    while (read(fd, &ch, 1) > 0)
+    while(read(fd, &ch, 1) > 0)
     {
         write(STDOUT_FILENO, &ch, 1);
     }

@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
-int main() {
+
+int main(void)
+{
     struct termios options;
     tcgetattr(STDOUT_FILENO, &options);
     cfsetispeed(&options, B9600);
@@ -22,11 +25,11 @@ int main() {
     fflush(stdout);
 
     // Wait until all data is transmitted
-    if (tcdrain(STDOUT_FILENO) != 0)
+    if(tcdrain(STDOUT_FILENO) != 0)
     {
         perror("Error waiting for data to be transmitted");
         return 1;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

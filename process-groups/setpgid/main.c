@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main() {
+int main(void) {
     pid_t pid = getpid(); // Get the PID of the current process
     pid_t pgid = getpgid(pid);
 
@@ -12,12 +12,12 @@ int main() {
     // Fork a new child process
     pid_t child_pid = fork();
 
-    if (child_pid < 0)
+    if(child_pid < 0)
     {
         perror("Error forking a new process");
         return 1;
     }
-    else if (child_pid == 0)
+    else if(child_pid == 0)
     {
         // Child process
         pid_t child_pid = getpid();
@@ -27,7 +27,7 @@ int main() {
         printf("Child Process Group ID (PGID): %d\n", child_pgid);
 
         // Change the PGID of the child process
-        if (setpgid(child_pid, child_pid) == -1) {
+        if(setpgid(child_pid, child_pid) == -1) {
             perror("Error setting PGID for the child process");
             return 1;
         }
@@ -35,7 +35,7 @@ int main() {
         child_pgid = getpgid(child_pid);
         printf("Child Process Group ID (PGID) after change: %d\n", child_pgid);
 
-        return 0;
+        return EXIT_SUCCESS;
     }
     else
     {
@@ -43,6 +43,6 @@ int main() {
         // Wait for the child process to finish
         wait(NULL);
 
-        return 0;
+        return EXIT_SUCCESS;
     }
 }

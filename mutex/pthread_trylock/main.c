@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h> // For sleep function
 
@@ -11,12 +12,15 @@ struct thread_data
     pthread_mutex_t* mutex;
 };
 
+static void *threadFunction(void* arg);
+
 // Function that multiple threads will execute
-void* threadFunction(void* arg) {
+static void *threadFunction(void* arg)
+{
     struct thread_data* data = (struct thread_data*)arg;
 
     // Attempt to lock the mutex before accessing the shared variable
-    if (pthread_mutex_trylock(data->mutex) != 0)
+    if(pthread_mutex_trylock(data->mutex) != 0)
     {
         // If the lock cannot be obtained, skip the critical section
         pthread_exit(NULL);
@@ -33,10 +37,10 @@ void* threadFunction(void* arg) {
     pthread_exit(NULL);
 }
 
-int main() {
+int main(void) {
     // Initialize the mutex
     pthread_mutex_t mutex;
-    if (pthread_mutex_init(&mutex, NULL) != 0) {
+    if(pthread_mutex_init(&mutex, NULL) != 0) {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
         return 1;
     }
@@ -51,9 +55,9 @@ int main() {
     data.sharedVariable = &sharedVariable;
     data.mutex = &mutex;
 
-    for (i = 0; i < NUM_THREADS; i++)
+    for(i = 0; i < NUM_THREADS; i++)
     {
-        if (pthread_create(&threads[i], NULL, threadFunction, (void*)&data) != 0)
+        if(pthread_create(&threads[i], NULL, threadFunction, (void*)&data) != 0)
         {
             fprintf(stderr, "Error: Thread creation failed.\n");
             return 1;
@@ -61,7 +65,7 @@ int main() {
     }
 
     // Wait for all threads to finish
-    for (i = 0; i < NUM_THREADS; i++)
+    for(i = 0; i < NUM_THREADS; i++)
     {
         pthread_join(threads[i], NULL);
     }
@@ -69,5 +73,5 @@ int main() {
     // Destroy the mutex after all threads are done using it
     pthread_mutex_destroy(&mutex);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

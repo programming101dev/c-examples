@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -12,7 +13,7 @@ int main(void)
     struct termios term_attr;
 
     // Get the current terminal attributes
-    if (tcgetattr(fd, &term_attr) == -1) {
+    if(tcgetattr(fd, &term_attr) == -1) {
         perror("tcgetattr");
         return 1;
     }
@@ -93,7 +94,7 @@ int main(void)
     printf("VSUSP:   %d\n", term_attr.c_cc[VSUSP]);
     printf("VTIME:   %d\n", term_attr.c_cc[VTIME]);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 

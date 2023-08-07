@@ -1,11 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
 
 
-void* print_numbers(void* arg)
+void *print_numbers(void *arg);
+
+void *print_numbers(void *arg)
 {
-    for (int i = 1; i <= 5; ++i)
+    for(int i = 1; i <= 5; ++i)
     {
         printf("Thread: %d\n", i);
         sleep(1);
@@ -15,13 +18,14 @@ void* print_numbers(void* arg)
     return NULL;
 }
 
-int main() {
+int main(void)
+{
     pthread_t thread_id;
     int result;
 
     // Create the thread
     result = pthread_create(&thread_id, NULL, print_numbers, NULL);
-    if (result != 0) {
+    if(result != 0) {
         perror("Thread creation failed");
         return 1;
     }
@@ -36,5 +40,5 @@ int main() {
     pthread_join(thread_id, NULL);
 
     printf("Thread execution completed.\n");
-    return 0;
+    return EXIT_SUCCESS;
 }

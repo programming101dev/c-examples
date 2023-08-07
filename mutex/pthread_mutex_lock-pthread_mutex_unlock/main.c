@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <pthread.h>
-#include <unistd.h> // For sleep function
 #include <stdlib.h> // For atoi
 #include <getopt.h> // For getopt
 
@@ -14,11 +13,15 @@ struct thread_data
     int useMutex;
 };
 
+void *threadFunction(void* arg);
+void printHelp(void);
+
 // Function that multiple threads will execute
-void* threadFunction(void* arg) {
+void *threadFunction(void* arg)
+{
     struct thread_data* data = (struct thread_data*)arg;
 
-    if (data->useMutex) {
+    if(data->useMutex) {
         // Lock the mutex before accessing the shared variable
         pthread_mutex_lock(data->mutex);
     }
@@ -28,7 +31,7 @@ void* threadFunction(void* arg) {
     printf("Thread %ld: Shared variable value: %d\n", (long)pthread_self(), *(data->sharedVariable));
     // sleep(1); // Introduce a 1-second delay
 
-    if (data->useMutex) {
+    if(data->useMutex) {
         // Unlock the mutex after finishing the critical section
         pthread_mutex_unlock(data->mutex);
     }
@@ -37,7 +40,8 @@ void* threadFunction(void* arg) {
     pthread_exit(NULL);
 }
 
-void printHelp() {
+void printHelp(void)
+{
     printf("Usage: ./program_name [-h] [-m]\n");
     printf("Options:\n");
     printf("  -h        Display this help message.\n");
@@ -49,11 +53,11 @@ int main(int argc, char* argv[]) {
     int useMutex = 0; // Default is no mutex
 
     // Process command-line options
-    while ((opt = getopt(argc, argv, "hm")) != -1) {
+    while((opt = getopt(argc, argv, "hm")) != -1) {
         switch (opt) {
             case 'h':
                 printHelp();
-                return 0;
+                return EXIT_SUCCESS;
             case 'm':
                 useMutex = 1;
                 break;
@@ -65,7 +69,7 @@ int main(int argc, char* argv[]) {
 
     // Initialize the mutex if needed
     pthread_mutex_t mutex;
-    if (useMutex && pthread_mutex_init(&mutex, NULL) != 0) {
+    if(useMutex && pthread_mutex_init(&mutex, NULL) != 0) {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
         return 1;
     }
@@ -81,9 +85,9 @@ int main(int argc, char* argv[]) {
     data.mutex = &mutex;
     data.useMutex = useMutex;
 
-    for (i = 0; i < NUM_THREADS; i++)
+    for(i = 0; i < NUM_THREADS; i++)
     {
-        if (pthread_create(&threads[i], NULL, threadFunction, (void*)&data) != 0)
+        if(pthread_create(&threads[i], NULL, threadFunction, (void*)&data) != 0)
         {
             fprintf(stderr, "Error: Thread creation failed.\n");
             return 1;
@@ -91,15 +95,15 @@ int main(int argc, char* argv[]) {
     }
 
     // Wait for all threads to finish
-    for (i = 0; i < NUM_THREADS; i++)
+    for(i = 0; i < NUM_THREADS; i++)
     {
         pthread_join(threads[i], NULL);
     }
 
     // Destroy the mutex if needed
-    if (useMutex) {
+    if(useMutex) {
         pthread_mutex_destroy(&mutex);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

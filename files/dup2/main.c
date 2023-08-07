@@ -13,14 +13,14 @@ int main(void)
     // Create a temporary file and obtain a unique filename
     original_fd = mkstemp(template);
 
-    if (original_fd == -1)
+    if(original_fd == -1)
     {
         perror("Error creating temporary file");
         return EXIT_FAILURE;
     }
 
     // Get the size of the temporary file before writing
-    if (stat(template, &file_stat) == -1)
+    if(stat(template, &file_stat) == -1)
     {
         perror("Error getting file stats");
         close(original_fd); // Close the file descriptor before exiting
@@ -30,7 +30,7 @@ int main(void)
     fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long)file_stat.st_size);
 
     // Redirect stdout (file descriptor 1) to the temporary file
-    if (dup2(original_fd, STDOUT_FILENO) == -1)
+    if(dup2(original_fd, STDOUT_FILENO) == -1)
     {
         perror("Error redirecting stdout");
         close(original_fd); // Close the file descriptor before exiting
@@ -38,7 +38,7 @@ int main(void)
     }
 
     // Now, printf will write to the temporary file
-    if (printf("This will be written to the temporary file using printf.\n") < 0)
+    if(printf("This will be written to the temporary file using printf.\n") < 0)
     {
         perror("Error writing to temporary file");
         close(original_fd); // Close the file descriptor before exiting
@@ -46,7 +46,7 @@ int main(void)
     }
 
     // Flush the output buffer to ensure data is written to the file
-    if (fflush(stdout) != 0)
+    if(fflush(stdout) != 0)
     {
         perror("Error flushing stdout");
         close(original_fd); // Close the file descriptor before exiting
@@ -54,14 +54,14 @@ int main(void)
     }
 
     // Close the temporary file descriptor
-    if (close(original_fd) == -1)
+    if(close(original_fd) == -1)
     {
         perror("Error closing temporary file descriptor");
         return EXIT_FAILURE;
     }
 
     // Get the size of the temporary file after writing
-    if (stat(template, &file_stat) == -1)
+    if(stat(template, &file_stat) == -1)
     {
         perror("Error getting file stats");
         return EXIT_FAILURE;
@@ -70,7 +70,7 @@ int main(void)
     fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long)file_stat.st_size);
 
     // Cleanup: remove the temporary file
-    if (unlink(template) == -1)
+    if(unlink(template) == -1)
     {
         perror("Error removing temporary file");
         return EXIT_FAILURE;

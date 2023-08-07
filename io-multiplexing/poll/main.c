@@ -12,6 +12,13 @@
 
 volatile int running = 1;
 
+void signal_handler(int signum);
+int create_server_socket(void);
+void handle_new_client(int server_socket, int **client_sockets, int *max_clients);
+void handle_client_data(int sd, int **client_sockets, int *max_clients);
+void setup_signal_handler(void);
+
+
 void signal_handler(int signum)
 {
     if(signum == SIGINT)
@@ -21,11 +28,11 @@ void signal_handler(int signum)
     }
 }
 
-int create_server_socket() {
+int create_server_socket(void) {
     int server_socket;
 
     // Create server socket
-    if ((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         perror("Socket creation error");
         exit(EXIT_FAILURE);
     }
@@ -38,19 +45,19 @@ int create_server_socket() {
 
     // Enable address reuse
     int opt = 1;
-    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+    if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
         perror("Setsockopt error");
         exit(EXIT_FAILURE);
     }
 
     // Bind the socket to the address
-    if (bind(server_socket, (struct sockaddr *)&address, sizeof(address)) == -1) {
+    if(bind(server_socket, (struct sockaddr *)&address, sizeof(address)) == -1) {
         perror("Bind error");
         exit(EXIT_FAILURE);
     }
 
     // Listen for incoming connections
-    if (listen(server_socket, SOMAXCONN) == -1) {
+    if(listen(server_socket, SOMAXCONN) == -1) {
         perror("Listen error");
         exit(EXIT_FAILURE);
     }
@@ -66,7 +73,7 @@ void handle_new_client(int server_socket, int **client_sockets, int *max_clients
     socklen_t client_len = sizeof(address);
 
     int new_socket = accept(server_socket, (struct sockaddr *)&address, &client_len);
-    if (new_socket == -1) {
+    if(new_socket == -1) {
         perror("Accept error");
         exit(EXIT_FAILURE);
     }
@@ -79,21 +86,22 @@ void handle_new_client(int server_socket, int **client_sockets, int *max_clients
     (*client_sockets)[(*max_clients) - 1] = new_socket;
 }
 
-void handle_client_data(int sd, int **client_sockets, int *max_clients) {
+void handle_client_data(int sd, int **client_sockets, int *max_clients)
+{
     char word_length;
     char word[256];
 
     // Receive the word length (uint8_t)
     int valread = read(sd, &word_length, sizeof(word_length));
-    if (valread <= 0) {
+    if(valread <= 0) {
         // Connection closed or error
         printf("Client %d disconnected\n", sd);
         close(sd);
 
         // Mark the disconnected client socket as 0
         int i;
-        for (i = 0; i < *max_clients; i++) {
-            if ((*client_sockets)[i] == sd) {
+        for(i = 0; i < *max_clients; i++) {
+            if((*client_sockets)[i] == sd) {
                 (*client_sockets)[i] = 0;
                 break;
             }
@@ -101,15 +109,15 @@ void handle_client_data(int sd, int **client_sockets, int *max_clients) {
     } else {
         // Receive the word based on the length received
         valread = read(sd, word, (size_t)word_length);
-        if (valread <= 0) {
+        if(valread <= 0) {
             // Connection closed or error
             printf("Client %d disconnected\n", sd);
             close(sd);
 
             // Mark the disconnected client socket as 0
             int i;
-            for (i = 0; i < *max_clients; i++) {
-                if ((*client_sockets)[i] == sd) {
+            for(i = 0; i < *max_clients; i++) {
+                if((*client_sockets)[i] == sd) {
                     (*client_sockets)[i] = 0;
                     break;
                 }
@@ -122,7 +130,7 @@ void handle_client_data(int sd, int **client_sockets, int *max_clients) {
     }
 }
 
-void setup_signal_handler()
+void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
@@ -160,7 +168,7 @@ int main(void)
         // Use poll to monitor all sockets for activity
         num_ready = poll(fds, max_clients + 1, -1);
 
-        if (num_ready < 0)
+        if(num_ready < 0)
         {
             if(errno == EINTR)
             {
@@ -176,7 +184,7 @@ int main(void)
         }
 
         // Handle new client connections
-        if (fds[0].revents & POLLIN)
+        if(fds[0].revents & POLLIN)
         {
             handle_new_client(server_socket, &client_sockets, &max_clients);
 
@@ -185,11 +193,11 @@ int main(void)
         }
 
         // Handle incoming data from existing clients
-        for (i = 0; i < max_clients; i++)
+        for(i = 0; i < max_clients; i++)
         {
             int sd = client_sockets[i];
 
-            if (fds[i + 1].revents & POLLIN)
+            if(fds[i + 1].revents & POLLIN)
             {
                 handle_client_data(sd, &client_sockets, &max_clients);
             }
@@ -199,7 +207,7 @@ int main(void)
     printf("Cleaning up\n");
 
     // Cleanup and close all client sockets
-    for (i = 0; i < max_clients; i++)
+    for(i = 0; i < max_clients; i++)
     {
         int sd = client_sockets[i];
 
@@ -222,5 +230,5 @@ int main(void)
     unlink(SOCKET_PATH);
 
     printf("Server exited successfully.\n");
-    return 0;
+    return EXIT_SUCCESS;
 }

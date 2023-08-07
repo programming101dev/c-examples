@@ -2,7 +2,12 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-void* thread_function(void* arg) {
+
+void *thread_function(void *arg);
+
+
+void *thread_function(void *arg)
+{
     int thread_id = *(int*)arg;
     printf("Thread %d is executing.\n", thread_id);
 
@@ -16,17 +21,17 @@ void* thread_function(void* arg) {
     pthread_exit(result);
 }
 
-int main() {
+int main(void) {
     pthread_t threads[3];
     int thread_args[3] = {1, 2, 3};
 
-    for (int i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         pthread_create(&threads[i], NULL, thread_function, &thread_args[i]);
     }
 
     // Wait for all threads to finish and retrieve their exit values
-    for (int i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         int* result;
         pthread_join(threads[i], (void**)&result);

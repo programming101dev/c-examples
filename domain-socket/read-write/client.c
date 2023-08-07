@@ -8,13 +8,13 @@
 
 #define SOCKET_PATH "/tmp/example_socket"
 
-int main() {
+int main(void) {
     int sockfd;
     struct sockaddr_un server_addr;
 
     // Create a socket
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (sockfd == -1) {
+    if(sockfd == -1) {
         perror("socket");
         exit(EXIT_FAILURE);
     }
@@ -25,7 +25,7 @@ int main() {
     strcpy(server_addr.sun_path, SOCKET_PATH);
 
     // Connect to the server
-    if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_un)) == -1) {
+    if(connect(sockfd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_un)) == -1) {
         perror("connect");
         close(sockfd);
         exit(EXIT_FAILURE);
@@ -33,7 +33,7 @@ int main() {
 
     // Open the file to read
     FILE *file = fopen("../example.txt", "r");
-    if (file == NULL) {
+    if(file == NULL) {
         perror("fopen");
         close(sockfd);
         exit(EXIT_FAILURE);
@@ -41,12 +41,12 @@ int main() {
 
     // Read and parse words from the file
     char line[1024]; // Adjust the buffer size as needed
-    while (fgets(line, sizeof(line), file) != NULL) {
+    while(fgets(line, sizeof(line), file) != NULL) {
         char *word;
         word = strtok(line, " \t\n");
-        while (word != NULL) {
+        while(word != NULL) {
             size_t word_len = strlen(word);
-            if (word_len > UINT8_MAX) {
+            if(word_len > UINT8_MAX) {
                 fprintf(stderr, "Word exceeds maximum length\n");
                 fclose(file);
                 close(sockfd);
@@ -66,5 +66,5 @@ int main() {
 
     fclose(file);
     close(sockfd);
-    return 0;
+    return EXIT_SUCCESS;
 }

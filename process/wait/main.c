@@ -16,12 +16,12 @@ int main(void)
 
     pid1 = fork();
 
-    if (pid1 == -1)
+    if(pid1 == -1)
     {
         perror("Error creating child process 1");
         return EXIT_FAILURE;
     }
-    else if (pid1 == 0)
+    else if(pid1 == 0)
     {
         // This is the first child process
         child_process("Child 1");
@@ -30,12 +30,12 @@ int main(void)
 
     pid2 = fork();
 
-    if (pid2 == -1)
+    if(pid2 == -1)
     {
         perror("Error creating child process 2");
         return EXIT_FAILURE;
     }
-    else if (pid2 == 0)
+    else if(pid2 == 0)
     {
         // This is the second child process
         child_process("Child 2");
@@ -47,22 +47,22 @@ int main(void)
 
     // Wait for the child processes to finish
     int status1, status2;
-    if (waitpid(pid1, &status1, 0) == -1)
+    if(waitpid(pid1, &status1, 0) == -1)
     {
         perror("Error waiting for child process 1");
         return EXIT_FAILURE;
     }
 
-    if (waitpid(pid2, &status2, 0) == -1)
+    if(waitpid(pid2, &status2, 0) == -1)
     {
         perror("Error waiting for child process 2");
         return EXIT_FAILURE;
     }
 
     // Print exit status of child processes
-    if (WIFEXITED(status1))
+    if(WIFEXITED(status1))
         printf("Child 1 exited with status: %d\n", WEXITSTATUS(status1));
-    if (WIFEXITED(status2))
+    if(WIFEXITED(status2))
         printf("Child 2 exited with status: %d\n", WEXITSTATUS(status2));
 
     return EXIT_SUCCESS;

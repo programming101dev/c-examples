@@ -8,9 +8,9 @@ void signal_handler(int signal_number);
 
 
 struct signal_info
-        {
+{
     int signal_number;
-    char* signal_name;
+    const char *signal_name;
 };
 
 
@@ -60,7 +60,7 @@ int main(void)
             {
                 printf("Signal %s (%d) is currently being ignored\n", signals[i].signal_name, signals[i].signal_number);
             }
-            else if (sa.sa_handler == SIG_DFL)
+            else if(sa.sa_handler == SIG_DFL)
             {
                 printf("Signal %s (%d) is set to default action\n", signals[i].signal_name, signals[i].signal_number);
             }

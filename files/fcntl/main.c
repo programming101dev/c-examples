@@ -14,7 +14,7 @@ int main(void)
     // Open the file in read-only mode
     fd = open("../../example.txt", O_RDONLY);
 
-    if (fd == -1)
+    if(fd == -1)
     {
         perror("Error opening the file");
         return EXIT_FAILURE;
@@ -22,14 +22,14 @@ int main(void)
 
     // Set the file descriptor to non-blocking mode
     int flags = fcntl(fd, F_GETFL);
-    if (flags == -1)
+    if(flags == -1)
     {
         perror("Error getting file descriptor flags");
         close(fd);
         return EXIT_FAILURE;
     }
 
-    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    if(fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
         perror("Error setting file descriptor to non-blocking mode");
         close(fd);
@@ -39,9 +39,9 @@ int main(void)
     // Read from the file (will not block due to O_NONBLOCK)
     bytesRead = read(fd, buffer, sizeof(buffer));
 
-    if (bytesRead == -1)
+    if(bytesRead == -1)
     {
-        if (errno == EAGAIN)
+        if(errno == EAGAIN)
         {
             printf("No data available (EAGAIN)\n");
         }
@@ -58,7 +58,7 @@ int main(void)
         printf("Read %zd bytes:\n%s\n", bytesRead, buffer);
     }
 
-    if (close(fd) == -1)
+    if(close(fd) == -1)
     {
         perror("Error closing the file");
         return EXIT_FAILURE;

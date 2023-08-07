@@ -24,15 +24,15 @@ void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, 
     printf("Child: sending word of length %u: %s\n", length, word);
 
     written_bytes = write(pipefd, &length, sizeof(length));
-    if (written_bytes < 0)
+    if(written_bytes < 0)
     {
         error_exit("Error writing word length to pipe");
     }
 
-    if (length > 0)
+    if(length > 0)
     {
         written_bytes = write(pipefd, word, length);
-        if (written_bytes < 0)
+        if(written_bytes < 0)
         {
             error_exit("Error writing word to pipe");
         }
@@ -67,16 +67,16 @@ void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
     close(pipefd[0]);
 
     file = fopen("../../example.txt", "r");
-    if (file == NULL)
+    if(file == NULL)
     {
         error_exit("Error opening file");
     }
 
-    while ((ch = fgetc(file)) != EOF)
+    while((ch = fgetc(file)) != EOF)
     {
-        if (ch == ' ' || ch == '\n' || ch == '\t')
+        if(ch == ' ' || ch == '\n' || ch == '\t')
         {
-            if (length > 0)
+            if(length > 0)
             {
                 word[length] = '\0';
                 send_word(pipefd[1], word, length, sem_parent, sem_child);
@@ -85,7 +85,7 @@ void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
         }
         else
         {
-            if (length >= MAX_WORD_LENGTH)
+            if(length >= MAX_WORD_LENGTH)
             {
                 error_exit("Encountered a word longer than the maximum allowed length");
             }
@@ -93,7 +93,7 @@ void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
         }
     }
 
-    if (length > 0)
+    if(length > 0)
     {
         word[length] = '\0';
         send_word(pipefd[1], word, length, sem_parent, sem_child);
@@ -101,12 +101,12 @@ void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 
     send_word(pipefd[1], NULL, 0, sem_parent, sem_child);
 
-    if (fclose(file) != 0)
+    if(fclose(file) != 0)
     {
         error_exit("Error closing file");
     }
 
-    if (close(pipefd[1]) != 0)
+    if(close(pipefd[1]) != 0)
     {
         error_exit("Error closing pipe");
     }
@@ -122,7 +122,7 @@ void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 
     close(pipefd[1]);
 
-    while (1)
+    while(1)
     {
         // Wait for child to write
         if(sem_wait(sem_parent) == -1)
@@ -131,18 +131,18 @@ void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
         }
 
         read_bytes = read(pipefd[0], &length, sizeof(length));
-        if (read_bytes < 0)
+        if(read_bytes < 0)
         {
             error_exit("Error reading word length from pipe");
         }
 
-        if (length == 0)
+        if(length == 0)
         {
             break;
         }
 
         read_bytes = read(pipefd[0], word, length);
-        if (read_bytes < 0)
+        if(read_bytes < 0)
         {
             error_exit("Error reading word from pipe");
         }
@@ -157,7 +157,7 @@ void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
         }
     }
 
-    if (close(pipefd[0]) != 0)
+    if(close(pipefd[0]) != 0)
     {
         error_exit("Error closing pipe");
     }
@@ -171,30 +171,30 @@ int main(void)
     pid_t pid;
     sem_t *sem_parent, *sem_child;
 
-    if (pipe(pipefd) == -1)
+    if(pipe(pipefd) == -1)
     {
         error_exit("Error creating pipe");
     }
 
     sem_parent = sem_open(SEM_PARENT, O_CREAT, 0644, 0);
-    if (sem_parent == SEM_FAILED)
+    if(sem_parent == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_PARENT semaphore");
     }
 
     sem_child = sem_open(SEM_CHILD, O_CREAT, 0644, 1);
-    if (sem_child == SEM_FAILED)
+    if(sem_child == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_CHILD semaphore");
     }
 
     pid = fork();
-    if (pid == -1)
+    if(pid == -1)
     {
         error_exit("Error creating child process");
     }
 
-    if (pid == 0)
+    if(pid == 0)
     {
         child_process(pipefd, sem_parent, sem_child);
     }

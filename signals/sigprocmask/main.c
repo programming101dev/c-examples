@@ -12,7 +12,7 @@ int main(void) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
-    if (sigaction(SIGUSR1, &sa, NULL) < 0) {
+    if(sigaction(SIGUSR1, &sa, NULL) < 0) {
         perror("Failed to set signal handler");
         return EXIT_FAILURE;
     }
@@ -22,7 +22,7 @@ int main(void) {
     sigemptyset(&new_mask);
     sigaddset(&new_mask, SIGUSR1);
 
-    if (sigprocmask(SIG_BLOCK, &new_mask, &old_mask) < 0) {
+    if(sigprocmask(SIG_BLOCK, &new_mask, &old_mask) < 0) {
         perror("Failed to block SIGUSR1 signal");
         return EXIT_FAILURE;
     }
@@ -34,7 +34,7 @@ int main(void) {
     sleep(3);
 
     // Unblock SIGUSR1 signal
-    if (sigprocmask(SIG_SETMASK, &old_mask, NULL) < 0) {
+    if(sigprocmask(SIG_SETMASK, &old_mask, NULL) < 0) {
         perror("Failed to unblock SIGUSR1 signal");
         return EXIT_FAILURE;
     }

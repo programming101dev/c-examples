@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -6,6 +7,9 @@
 
 
 volatile sig_atomic_t alarm_received = false;
+
+
+void alarm_handler(int signal_number);
 
 
 void alarm_handler(int signal_number)
@@ -31,12 +35,12 @@ int main(void)
     printf("Waiting for the alarm...\n");
 
     // Wait until the alarm is received
-    while (!alarm_received)
+    while(!alarm_received)
     {
         // Put any other processing you want here.
     }
 
     printf("Exiting.\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }

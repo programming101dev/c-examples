@@ -12,7 +12,7 @@ int main(void) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
-    if (sigaction(SIGUSR1, &sa, NULL) < 0) {
+    if(sigaction(SIGUSR1, &sa, NULL) < 0) {
         perror("Failed to set signal handler");
         return EXIT_FAILURE;
     }
@@ -21,7 +21,7 @@ int main(void) {
     raise(SIGUSR1);
 
     // Loop forever, waiting for signals.
-    while (1) {
+    while(1) {
     }
 
     return EXIT_SUCCESS;

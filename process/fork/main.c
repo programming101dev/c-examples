@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     sleep_option = false;
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "sh")) != -1)
+    while((opt = getopt(argc, argv, "sh")) != -1)
     {
         switch (opt)
         {
@@ -38,12 +38,12 @@ int main(int argc, char *argv[])
 
     pid_t pid = fork();
 
-    if (pid == -1)
+    if(pid == -1)
     {
         perror("Error creating child process");
         return EXIT_FAILURE;
     }
-    else if (pid == 0)
+    else if(pid == 0)
     {
         // This is the child process
         print_process_info("Child");

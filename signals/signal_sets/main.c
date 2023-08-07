@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 
 
@@ -44,7 +45,7 @@ int main(void)
     print_signal_set(&signal_set);
 
     // Check if the added signal is now in the set
-    if (sigismember(&signal_set, signal_to_add))
+    if(sigismember(&signal_set, signal_to_add))
     {
         printf("Signal %d is now in the set.\n", signal_to_add);
     }
@@ -56,7 +57,7 @@ int main(void)
     // Remove a signal from the set
     int signal_to_remove = SIGINT;
 
-    if (sigdelset(&signal_set, signal_to_remove) != 0)
+    if(sigdelset(&signal_set, signal_to_remove) != 0)
     {
         perror("Failed to remove signal from the set");
         return 1;
@@ -66,7 +67,7 @@ int main(void)
     print_signal_set(&signal_set);
 
     // Check if the removed signal is still in the set
-    if (sigismember(&signal_set, signal_to_remove))
+    if(sigismember(&signal_set, signal_to_remove))
     {
         printf("Signal %d is still in the set.\n", signal_to_remove);
     }
@@ -86,7 +87,7 @@ int main(void)
     printf("Full signal set:\n");
     print_signal_set(&signal_set);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 static void print_signal_set(const sigset_t *signal_set)

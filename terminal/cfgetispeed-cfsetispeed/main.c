@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -7,7 +8,7 @@ int main(void) {
     speed_t input_baud_rate;
 
     // Get current terminal settings
-    if (tcgetattr(STDIN_FILENO, &term) != 0) {
+    if(tcgetattr(STDIN_FILENO, &term) != 0) {
         perror("tcgetattr failed");
         return 1;
     }
@@ -17,13 +18,13 @@ int main(void) {
     printf("Current input baud rate: %d\n", (int)input_baud_rate);
 
     // Set input baud rate to 9600
-    if (cfsetispeed(&term, B9600) != 0) {
+    if(cfsetispeed(&term, B9600) != 0) {
         perror("cfsetispeed failed");
         return 1;
     }
 
     // Update terminal settings
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0) {
+    if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0) {
         perror("tcsetattr failed");
         return 1;
     }
@@ -32,5 +33,5 @@ int main(void) {
     input_baud_rate = cfgetispeed(&term);
     printf("Updated input baud rate: %d\n", (int)input_baud_rate);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

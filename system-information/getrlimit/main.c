@@ -32,7 +32,7 @@ static void show_limit(int resource, const char* name)
         printf("%s:\n", name);
         printf("\tCurrent soft limit: ");
 
-        if (rlim.rlim_cur == RLIM_INFINITY)
+        if(rlim.rlim_cur == RLIM_INFINITY)
         {
             printf("unlimited\n");
         }

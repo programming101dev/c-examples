@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     set_core_limit = false;
 
     // Parse command-line options
-    while ((opt = getopt(argc, argv, "lh")) != -1)
+    while((opt = getopt(argc, argv, "lh")) != -1)
     {
         switch (opt)
         {

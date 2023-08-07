@@ -18,7 +18,7 @@ int main(void)
     convert(leftoverNumber);
     convert(badNumber);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 
@@ -49,5 +49,5 @@ static void convert(const char *str)
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
 
-    printf("Result: %Lu\n", result);
+    printf("Result: %ll\n", result);
 }

@@ -8,7 +8,7 @@ static long get_sysconf_value(int name, const char *name_str);
 struct sc_value_name_pair
 {
     int value;
-    char *name;
+    const char *name;
 };
 
 int main(void)

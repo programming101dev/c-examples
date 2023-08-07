@@ -32,7 +32,7 @@ int main(void) {
     }
 
     // Open the file to read
-    FILE *file = fopen("../example.txt", "r");
+    FILE *file = fopen("../../example.txt", "r");
     if(file == NULL) {
         perror("fopen");
         close(sockfd);

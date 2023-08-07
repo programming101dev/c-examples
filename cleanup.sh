@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Find and delete all files with the .out extension
-find . -name "*.out" -type f | while read -r file; do
+# Find and delete all files with the .out, .so, or .dylib extension
+find . -name "*.out" -o -name "*.so" -o -name "*.dylib" -type f | while read -r file; do
   echo "Deleting $file"
   rm "$file"
   if [ $? -ne 0 ]; then

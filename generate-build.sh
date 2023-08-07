@@ -124,7 +124,16 @@ SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS"
 find . -name "*.c" -exec dirname {} \; | sort -u | while read -r dir; do
   echo "Compiling in directory: \$dir"
   find "\$dir" -maxdepth 1 -name "*.c" -type f | sort | while read -r file; do
-    gcc \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.out"
+    if [[ "\$file" == *"testlib-1.c" || "\$file" == *"testlib-2.c" ]]; then
+      if [[ "\$(uname)" == "Darwin" ]]; then
+        gcc -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.dylib"
+      else
+        gcc -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.so"
+      fi
+    else
+      gcc \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.out"
+    fi
+
     if [ \$? -ne 0 ]; then
       echo "Compilation failed for \$file. Exiting."
       exit 1

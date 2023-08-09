@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    new_gid = (gid_t)strtol(argv[1], &endptr, 10);
+    new_gid = (gid_t) strtol(argv[1], &endptr, 10);
 
     if(*endptr != '\0')
     {

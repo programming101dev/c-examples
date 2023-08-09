@@ -30,11 +30,11 @@ int main(void)
     }
 
     printf("Symbolic link information for: %s\n", symlink_name);
-    printf("Link size: %lld bytes\n", (long long)link_stat.st_size);
+    printf("Link size: %lld bytes\n", (long long) link_stat.st_size);
     printf("Link permissions: %o\n", link_stat.st_mode & 0777);
 
     printf("\nTarget file information (follows the symbolic link):\n");
-    printf("Target size: %lld bytes\n", (long long)target_stat.st_size);
+    printf("Target size: %lld bytes\n", (long long) target_stat.st_size);
     printf("Target permissions: %o\n", target_stat.st_mode & 0777);
 
     // Remove the symbolic link

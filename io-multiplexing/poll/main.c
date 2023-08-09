@@ -28,11 +28,13 @@ void signal_handler(int signum)
     }
 }
 
-int create_server_socket(void) {
+int create_server_socket(void)
+{
     int server_socket;
 
     // Create server socket
-    if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+    {
         perror("Socket creation error");
         exit(EXIT_FAILURE);
     }
@@ -45,19 +47,22 @@ int create_server_socket(void) {
 
     // Enable address reuse
     int opt = 1;
-    if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+    if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+    {
         perror("Setsockopt error");
         exit(EXIT_FAILURE);
     }
 
     // Bind the socket to the address
-    if(bind(server_socket, (struct sockaddr *)&address, sizeof(address)) == -1) {
+    if(bind(server_socket, (struct sockaddr *) &address, sizeof(address)) == -1)
+    {
         perror("Bind error");
         exit(EXIT_FAILURE);
     }
 
     // Listen for incoming connections
-    if(listen(server_socket, SOMAXCONN) == -1) {
+    if(listen(server_socket, SOMAXCONN) == -1)
+    {
         perror("Listen error");
         exit(EXIT_FAILURE);
     }
@@ -67,13 +72,15 @@ int create_server_socket(void) {
     return server_socket;
 }
 
-void handle_new_client(int server_socket, int **client_sockets, int *max_clients) {
+void handle_new_client(int server_socket, int **client_sockets, int *max_clients)
+{
     // Initialize the client address length
     struct sockaddr_un address;
     socklen_t client_len = sizeof(address);
 
-    int new_socket = accept(server_socket, (struct sockaddr *)&address, &client_len);
-    if(new_socket == -1) {
+    int new_socket = accept(server_socket, (struct sockaddr *) &address, &client_len);
+    if(new_socket == -1)
+    {
         perror("Accept error");
         exit(EXIT_FAILURE);
     }
@@ -93,36 +100,46 @@ void handle_client_data(int sd, int **client_sockets, int *max_clients)
 
     // Receive the word length (uint8_t)
     int valread = read(sd, &word_length, sizeof(word_length));
-    if(valread <= 0) {
+    if(valread <= 0)
+    {
         // Connection closed or error
         printf("Client %d disconnected\n", sd);
         close(sd);
 
         // Mark the disconnected client socket as 0
         int i;
-        for(i = 0; i < *max_clients; i++) {
-            if((*client_sockets)[i] == sd) {
+        for(i = 0; i < *max_clients; i++)
+        {
+            if((*client_sockets)[i] == sd)
+            {
                 (*client_sockets)[i] = 0;
                 break;
             }
         }
-    } else {
+    }
+    else
+    {
         // Receive the word based on the length received
-        valread = read(sd, word, (size_t)word_length);
-        if(valread <= 0) {
+        valread = read(sd, word, (size_t) word_length);
+        if(valread <= 0)
+        {
             // Connection closed or error
             printf("Client %d disconnected\n", sd);
             close(sd);
 
             // Mark the disconnected client socket as 0
             int i;
-            for(i = 0; i < *max_clients; i++) {
-                if((*client_sockets)[i] == sd) {
+            for(i = 0; i < *max_clients; i++)
+            {
+                if((*client_sockets)[i] == sd)
+                {
                     (*client_sockets)[i] = 0;
                     break;
                 }
             }
-        } else {
+        }
+        else
+        {
             // Null-terminate the word and print it
             word[valread] = '\0';
             printf("Received word from client %d: %s\n", sd, word);
@@ -149,7 +166,7 @@ int main(void)
     server_socket = create_server_socket();
 
     // Allocate memory for the fds array
-    fds = (struct pollfd *)malloc(sizeof(struct pollfd));
+    fds = (struct pollfd *) malloc(sizeof(struct pollfd));
 
     while(running)
     {
@@ -189,7 +206,7 @@ int main(void)
             handle_new_client(server_socket, &client_sockets, &max_clients);
 
             // Increase the size of the fds array
-            fds = (struct pollfd *)realloc(fds, sizeof(struct pollfd) * (max_clients + 1));
+            fds = (struct pollfd *) realloc(fds, sizeof(struct pollfd) * (max_clients + 1));
         }
 
         // Handle incoming data from existing clients

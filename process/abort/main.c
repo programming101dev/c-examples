@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     // Parse command-line options
     while((opt = getopt(argc, argv, "lh")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'l':
                 set_core_limit = true;

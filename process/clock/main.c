@@ -4,8 +4,7 @@
 #include <unistd.h>
 
 
-long long performCalculation(size_t size, size_t iterations);
-void printTimes(clock_t start_time, clock_t end_time);
+static long long performCalculation(size_t size, size_t iterations);
 
 
 int main(void)
@@ -40,7 +39,7 @@ int main(void)
         end_time = clock();
         printf("Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
         printf("Real Time: %jd clock ticks\n", (intmax_t)(end_time - start_time));
-        cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+        cpu_time_used = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
         printf("CPU time used: %f seconds\n", cpu_time_used);
     }
 
@@ -48,7 +47,7 @@ int main(void)
 }
 
 
-long long performCalculation(size_t size, size_t iterations)
+static long long performCalculation(size_t size, size_t iterations)
 {
     int *numbers;
     long long sum;

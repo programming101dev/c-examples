@@ -39,7 +39,7 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
     }
     else
     {
-        printf("  Soft limit set to: %lld\n", (long long)rlim.rlim_cur);
-        printf("  Hard limit set to: %lld\n", (long long)rlim.rlim_max);
+        printf("  Soft limit set to: %lld\n", (long long) rlim.rlim_cur);
+        printf("  Hard limit set to: %lld\n", (long long) rlim.rlim_max);
     }
 }

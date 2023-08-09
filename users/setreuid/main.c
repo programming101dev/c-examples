@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    new_uid = (uid_t)strtol(argv[1], &endptr, 10);
+    new_uid = (uid_t) strtol(argv[1], &endptr, 10);
 
     if(*endptr != '\0')
     {
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    new_euid = (uid_t)strtol(argv[2], &endptr, 10);
+    new_euid = (uid_t) strtol(argv[2], &endptr, 10);
 
     if(*endptr != '\0')
     {

@@ -7,9 +7,12 @@ int main(void)
 {
     char *tty = ttyname(STDIN_FILENO);
 
-    if(tty != NULL) {
+    if(tty != NULL)
+    {
         printf("The terminal associated with stdin is: %s\n", tty);
-    } else {
+    }
+    else
+    {
         printf("stdin is not associated with a terminal.\n");
     }
 

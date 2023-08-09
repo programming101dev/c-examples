@@ -24,7 +24,7 @@ int main(void)
 
     for(t = 0; t < NUM_THREADS; t++)
     {
-        rc = pthread_create(&threads[t], NULL, thread_function, (void *)t);
+        rc = pthread_create(&threads[t], NULL, thread_function, (void *) t);
 
         if(rc)
         {
@@ -44,7 +44,8 @@ int main(void)
     }
 
     // Wait for all threads to finish
-    for(t = 0; t < NUM_THREADS; t++) {
+    for(t = 0; t < NUM_THREADS; t++)
+    {
         pthread_join(threads[t], NULL);
     }
 
@@ -56,7 +57,7 @@ int main(void)
 
 static void *thread_function(void *thread_id)
 {
-    long tid = (long)thread_id;
+    long tid = (long) thread_id;
 
     pthread_mutex_lock(&mutex);
 

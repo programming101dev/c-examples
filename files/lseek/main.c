@@ -5,7 +5,7 @@
 #include <fcntl.h>
 
 
-void display_file(int fd, const char* message);
+void display_file(int fd, const char *message);
 
 
 int main(void)
@@ -31,7 +31,7 @@ int main(void)
 }
 
 
-void display_file(int fd, const char* message)
+void display_file(int fd, const char *message)
 {
     char ch;
 

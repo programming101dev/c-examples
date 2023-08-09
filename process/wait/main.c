@@ -61,9 +61,13 @@ int main(void)
 
     // Print exit status of child processes
     if(WIFEXITED(status1))
+    {
         printf("Child 1 exited with status: %d\n", WEXITSTATUS(status1));
+    }
     if(WIFEXITED(status2))
+    {
         printf("Child 2 exited with status: %d\n", WEXITSTATUS(status2));
+    }
 
     return EXIT_SUCCESS;
 }

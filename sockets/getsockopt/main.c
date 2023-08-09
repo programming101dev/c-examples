@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
 
     while((opt = getopt(argc, argv, "hp:")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
                 print_help();
                 return EXIT_SUCCESS;
             case 'p':
                 // Convert the port argument to an integer using strtol
-                port = (int)strtol(optarg, NULL, 10);
+                port = (int) strtol(optarg, NULL, 10);
 
                 if(port == 0)
                 {
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
 
-    if(bind(listen_sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    if(bind(listen_sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
     {
         perror("bind");
         close(listen_sockfd);

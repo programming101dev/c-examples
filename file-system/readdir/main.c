@@ -4,7 +4,8 @@
 int main(void)
 {
     DIR *dir = opendir(".");
-    if(dir == NULL) {
+    if(dir == NULL)
+    {
         perror("opendir");
         return 1;
     }

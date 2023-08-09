@@ -7,14 +7,14 @@
 static void display_help(const char *program_name);
 
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     int opt;
-    char* library_name = NULL;
+    char *library_name = NULL;
 
     while((opt = getopt(argc, argv, "h:")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
                 display_help(argv[0]);
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     library_name = argv[optind];
 
     // Load the shared library dynamically
-    void* handle = dlopen(library_name, RTLD_LAZY);
+    void *handle = dlopen(library_name, RTLD_LAZY);
 
     if(!handle)
     {

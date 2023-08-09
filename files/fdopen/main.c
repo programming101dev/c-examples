@@ -7,7 +7,7 @@
 int main(void)
 {
     int fd;
-    FILE* file;
+    FILE *file;
     char buffer[256];
 
     fd = open("../../example.txt", O_RDONLY);

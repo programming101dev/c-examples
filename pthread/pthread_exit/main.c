@@ -20,8 +20,8 @@ int main(void)
     for(int i = 0; i < 3; i++)
     {
         int *result;
-        pthread_join(threads[i], (void**)&result);
-        printf("Thread %d returned: %d\n", i+1, *result);
+        pthread_join(threads[i], (void **) &result);
+        printf("Thread %d returned: %d\n", i + 1, *result);
         free(result); // Don't forget to free the memory returned by the thread
     }
 
@@ -35,7 +35,7 @@ static void *thread_function(void *arg)
 {
     int thread_id;
 
-    thread_id = *(int*)arg;
+    thread_id = *(int *) arg;
 
     printf("Thread %d is executing.\n", thread_id);
 

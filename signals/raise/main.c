@@ -62,6 +62,7 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-void signal_handler(int signal_number) {
+void signal_handler(int signal_number)
+{
     printf("Received signal: %d\n", signal_number);
 }

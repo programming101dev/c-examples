@@ -28,14 +28,14 @@ static void convert(const char *str)
     char *endptr;
 
     result = 0;
-    errno  = 0;
+    errno = 0;
     result = strtold(str, &endptr);
 
     // Define your desired tolerance
     long double tolerance = 1e-6L;
 
     // Check for conversion errors
-    if ((errno == ERANGE && (fabsl(result - HUGE_VALL) < tolerance)) || (errno != 0 && fabsl(result) < tolerance))
+    if((errno == ERANGE && (fabsl(result - HUGE_VALL) < tolerance)) || (errno != 0 && fabsl(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }

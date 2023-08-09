@@ -11,7 +11,7 @@ int main(void)
     unsigned char ipv6_bytes[16] = {32, 1, 13, 184, 133, 163, 0, 0, 0, 0, 138, 46, 3, 112, 115, 52};
 
     // Convert IPv4 address from binary format to presentation format (string)
-    ipv4_addr.s_addr = *((unsigned int*)ipv4_bytes);
+    ipv4_addr.s_addr = *((unsigned int *) ipv4_bytes);
     char ipv4_str[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &ipv4_addr, ipv4_str, sizeof(ipv4_str));
     printf("IPv4 Address: %s\n", ipv4_str);

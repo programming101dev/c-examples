@@ -8,7 +8,8 @@ int main(void)
     int terminal_fd = STDIN_FILENO; // Use standard input (stdin) as the terminal
 
     pid_t sid = tcgetsid(terminal_fd);
-    if(sid == -1) {
+    if(sid == -1)
+    {
         perror("Error getting SID");
         return 1;
     }

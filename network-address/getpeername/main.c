@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     while((opt = getopt(argc, argv, "hp:")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
             {
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     }
 
     // Get the peer address and port number associated with the socket
-    struct sockaddr_in *peer_addr = (struct sockaddr_in *)rp->ai_addr;
+    struct sockaddr_in *peer_addr = (struct sockaddr_in *) rp->ai_addr;
     char ipstr[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(peer_addr->sin_addr), ipstr, INET_ADDRSTRLEN);
     printf("Connected to: %s:%s\n", ipstr, port);

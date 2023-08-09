@@ -12,7 +12,8 @@
 int main(void)
 {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sockfd == -1) {
+    if(sockfd == -1)
+    {
         perror("socket");
         return 1;
     }
@@ -23,8 +24,9 @@ int main(void)
     inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
 
     char message[] = "Hello, server!";
-    int bytes_sent = sendto(sockfd, message, strlen(message), 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-    if(bytes_sent == -1) {
+    int bytes_sent = sendto(sockfd, message, strlen(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr));
+    if(bytes_sent == -1)
+    {
         perror("sendto");
         close(sockfd);
         return 1;
@@ -33,8 +35,10 @@ int main(void)
     char buffer[1024];
     socklen_t server_addr_len = sizeof(server_addr);
 
-    int bytes_received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&server_addr, &server_addr_len);
-    if(bytes_received == -1) {
+    int bytes_received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *) &server_addr,
+                                  &server_addr_len);
+    if(bytes_received == -1)
+    {
         perror("recvfrom");
         close(sockfd);
         return 1;

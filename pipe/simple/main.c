@@ -8,10 +8,10 @@
 #define MAX_WORD_LENGTH 255
 
 
-void child_process(int pipefd[2]);
-void parent_process(int pipefd[2]);
-void send_word(int pipefd, const char *word, uint8_t length);
-void error_exit(const char *msg);
+static void child_process(int pipefd[2]);
+static void parent_process(int pipefd[2]);
+static void send_word(int pipefd, const char *word, uint8_t length);
+static void error_exit(const char *msg);
 
 
 int main(void)
@@ -44,7 +44,7 @@ int main(void)
 }
 
 
-void send_word(int pipefd, const char *word, uint8_t length)
+static void send_word(int pipefd, const char *word, uint8_t length)
 {
     ssize_t written_bytes;
 
@@ -68,14 +68,14 @@ void send_word(int pipefd, const char *word, uint8_t length)
 }
 
 
-void error_exit(const char *msg)
+static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
 
-void child_process(int pipefd[2])
+static void child_process(int pipefd[2])
 {
     FILE *file;
     char ch;
@@ -134,7 +134,7 @@ void child_process(int pipefd[2])
 }
 
 
-void parent_process(int pipefd[2])
+static void parent_process(int pipefd[2])
 {
     uint8_t length;
     char word[MAX_WORD_LENGTH];

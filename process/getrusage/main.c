@@ -5,8 +5,8 @@
 #include <unistd.h>
 
 
-long long performCalculation(size_t size, size_t iterations);
-void printUsage(struct rusage ru);
+static long long performCalculation(size_t size, size_t iterations);
+static void printUsage(struct rusage ru);
 
 
 int main(void)
@@ -47,13 +47,14 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-long long performCalculation(size_t size, size_t iterations)
+
+static long long performCalculation(size_t size, size_t iterations)
 {
     int *numbers;
 
     numbers = malloc(size * sizeof(int));
 
-    if (numbers == NULL)
+    if(numbers == NULL)
     {
         perror("Failed to allocate memory");
         exit(EXIT_FAILURE);
@@ -81,10 +82,11 @@ long long performCalculation(size_t size, size_t iterations)
     return sum;
 }
 
-void printUsage(struct rusage ru)
+
+static void printUsage(struct rusage ru)
 {
-    printf("User time: %jd.%06ld seconds\n", (intmax_t)ru.ru_utime.tv_sec, (long)ru.ru_utime.tv_usec);
-    printf("System time: %jd.%06ld seconds\n", (intmax_t)ru.ru_stime.tv_sec, (long)ru.ru_stime.tv_usec);
+    printf("User time: %jd.%06ld seconds\n", (intmax_t) ru.ru_utime.tv_sec, (long) ru.ru_utime.tv_usec);
+    printf("System time: %jd.%06ld seconds\n", (intmax_t) ru.ru_stime.tv_sec, (long) ru.ru_stime.tv_usec);
     printf("Maximum resident set size (RSS): %ld kilobytes\n", ru.ru_maxrss);
     printf("Integral shared memory size: %ld kilobytes\n", ru.ru_ixrss);
     printf("Integral unshared data size: %ld kilobytes\n", ru.ru_idrss);

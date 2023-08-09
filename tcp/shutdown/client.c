@@ -8,7 +8,8 @@
 int main(void)
 {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd == -1) {
+    if(sockfd == -1)
+    {
         perror("socket");
         return 1;
     }
@@ -18,7 +19,8 @@ int main(void)
     addr.sin_port = htons(8080);
     inet_pton(AF_INET, "127.0.0.1", &(addr.sin_addr));
 
-    if(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
+    if(connect(sockfd, (struct sockaddr *) &addr, sizeof(addr)) == -1)
+    {
         perror("connect");
         close(sockfd);
         return 1;
@@ -34,13 +36,18 @@ int main(void)
     // Receive data from the server
     char buffer[1024];
     int bytes_received = recv(sockfd, buffer, sizeof(buffer), 0);
-    if(bytes_received == -1) {
+    if(bytes_received == -1)
+    {
         perror("recv");
         close(sockfd);
         return 1;
-    } else if(bytes_received == 0) {
+    }
+    else if(bytes_received == 0)
+    {
         printf("Server closed the connection.\n");
-    } else {
+    }
+    else
+    {
         buffer[bytes_received] = '\0';
         printf("Received from server: %s\n", buffer);
     }

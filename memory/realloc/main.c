@@ -24,7 +24,7 @@ int main(void)
     initialize_array(dynamic_array, num_elements);
     print_array("Initial elements of the array: ", dynamic_array, num_elements);
 
-    num_elements  = 10;
+    num_elements = 10;
     dynamic_array = resize_array(dynamic_array, num_elements);
     initialize_array(&dynamic_array[5], num_elements - 5);
     print_array("Resized elements of the array: ", dynamic_array, num_elements);

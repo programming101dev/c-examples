@@ -35,7 +35,7 @@ int main(void)
            timeinfo.tm_hour,
            timeinfo.tm_min,
            timeinfo.tm_sec);
-    printf("Time in seconds since epoch: %lld\n", (long long)result_time);
+    printf("Time in seconds since epoch: %lld\n", (long long) result_time);
 
     return EXIT_SUCCESS;
 }

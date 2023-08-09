@@ -10,14 +10,17 @@
 
 static void display_help(const char *program_name);
 
+
 int main(int argc, char *argv[])
 {
     int opt;
     char *port = NULL;
     char *hostname = NULL;
 
-    while((opt = getopt(argc, argv, "hp:")) != -1) {
-        switch (opt) {
+    while((opt = getopt(argc, argv, "hp:")) != -1)
+    {
+        switch(opt)
+        {
             case 'h':
                 display_help(argv[0]);
                 return 0;
@@ -30,7 +33,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(port == NULL || optind >= argc) {
+    if(port == NULL || optind >= argc)
+    {
         display_help(argv[0]);
         return 1;
     }
@@ -38,7 +42,8 @@ int main(int argc, char *argv[])
     hostname = argv[optind];
 
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sockfd == -1) {
+    if(sockfd == -1)
+    {
         perror("socket");
         return 1;
     }
@@ -49,20 +54,24 @@ int main(int argc, char *argv[])
     hints.ai_socktype = SOCK_STREAM;  // TCP
 
     int status = getaddrinfo(hostname, port, &hints, &result);
-    if(status != 0) {
+    if(status != 0)
+    {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         close(sockfd);
         return 1;
     }
 
     // Attempt to connect to the server using the available address info
-    for(rp = result; rp != NULL; rp = rp->ai_next) {
-        if(connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0) {
+    for(rp = result; rp != NULL; rp = rp->ai_next)
+    {
+        if(connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0)
+        {
             break; // Connected successfully
         }
     }
 
-    if(rp == NULL) {
+    if(rp == NULL)
+    {
         perror("connect");
         close(sockfd);
         freeaddrinfo(result);
@@ -72,7 +81,8 @@ int main(int argc, char *argv[])
     // Get the local address and port number associated with the socket
     struct sockaddr_in local_addr;
     socklen_t addrlen = sizeof(local_addr);
-    if(getsockname(sockfd, (struct sockaddr *)&local_addr, &addrlen) == -1) {
+    if(getsockname(sockfd, (struct sockaddr *) &local_addr, &addrlen) == -1)
+    {
         perror("getsockname");
         close(sockfd);
         freeaddrinfo(result);

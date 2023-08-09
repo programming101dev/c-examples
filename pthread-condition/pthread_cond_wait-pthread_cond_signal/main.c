@@ -86,6 +86,7 @@ static void send_word(const char *word)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *child_process(void *arg)
 #pragma GCC diagnostic pop
 {
@@ -126,6 +127,7 @@ static void *child_process(void *arg)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *parent_process(void *arg)
 #pragma GCC diagnostic pop
 {

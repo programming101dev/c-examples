@@ -28,7 +28,7 @@ static void convert(const char *str)
     char *endptr;
 
     result = 0;
-    errno  = 0;
+    errno = 0;
     result = strtoll(str, &endptr, 10);
 
     // Check for conversion errors

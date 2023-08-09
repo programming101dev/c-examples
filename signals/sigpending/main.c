@@ -5,8 +5,8 @@
 
 static void signal_handler(int signal_number);
 static int check_pending_signal(void);
-static int block_signal(int signal_num, sigset_t* block_set);
-static int unblock_signal(sigset_t* block_set);
+static int block_signal(int signal_num, sigset_t *block_set);
+static int unblock_signal(sigset_t *block_set);
 
 
 int main(void)
@@ -19,7 +19,8 @@ int main(void)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
-    if(sigaction(SIGINT, &sa, NULL) < 0) {
+    if(sigaction(SIGINT, &sa, NULL) < 0)
+    {
         perror("Failed to set signal handler for SIGINT");
         return 1;
     }
@@ -28,7 +29,8 @@ int main(void)
     printf("SIGINT is %s before blocking.\n", check_pending_signal() ? "pending" : "not pending");
 
     // Block SIGINT temporarily
-    if(block_signal(SIGINT, &block_set) != 0) {
+    if(block_signal(SIGINT, &block_set) != 0)
+    {
         return 1;
     }
 
@@ -41,7 +43,8 @@ int main(void)
     printf("Unblocking SIGINT\n");
 
     // Unblock SIGINT
-    if(unblock_signal(&block_set) != 0) {
+    if(unblock_signal(&block_set) != 0)
+    {
         return 1;
     }
 
@@ -51,14 +54,16 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-static void signal_handler(int signal_number) {
+static void signal_handler(int signal_number)
+{
     printf("Received signal: %d\n", signal_number);
 }
 
 static int check_pending_signal(void)
 {
     sigset_t pending_set;
-    if(sigpending(&pending_set) != 0) {
+    if(sigpending(&pending_set) != 0)
+    {
         perror("Failed to get pending signals");
         return 1;
     }
@@ -66,11 +71,13 @@ static int check_pending_signal(void)
     return sigismember(&pending_set, SIGINT);
 }
 
-static int block_signal(int signal_num, sigset_t* block_set) {
+static int block_signal(int signal_num, sigset_t *block_set)
+{
     sigemptyset(block_set);
     sigaddset(block_set, signal_num);
 
-    if(sigprocmask(SIG_BLOCK, block_set, NULL) < 0) {
+    if(sigprocmask(SIG_BLOCK, block_set, NULL) < 0)
+    {
         perror("Failed to block signal");
         return 1;
     }
@@ -78,9 +85,10 @@ static int block_signal(int signal_num, sigset_t* block_set) {
     return EXIT_SUCCESS;
 }
 
-static int unblock_signal(sigset_t* block_set)
+static int unblock_signal(sigset_t *block_set)
 {
-    if(sigprocmask(SIG_UNBLOCK, block_set, NULL) < 0) {
+    if(sigprocmask(SIG_UNBLOCK, block_set, NULL) < 0)
+    {
         perror("Failed to unblock signal");
         return 1;
     }

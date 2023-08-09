@@ -7,7 +7,7 @@
     show_limit(resource, #resource)
 
 
-static void show_limit(int resource, const char* name);
+static void show_limit(int resource, const char *name);
 
 
 int main(void)
@@ -23,7 +23,7 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-static void show_limit(int resource, const char* name)
+static void show_limit(int resource, const char *name)
 {
     struct rlimit rlim;
 
@@ -38,7 +38,7 @@ static void show_limit(int resource, const char* name)
         }
         else
         {
-            printf("%lld bytes\n", (long long)rlim.rlim_cur);
+            printf("%lld bytes\n", (long long) rlim.rlim_cur);
         }
 
         printf("\tCurrent hard limit: ");
@@ -49,7 +49,7 @@ static void show_limit(int resource, const char* name)
         }
         else
         {
-            printf("%lld bytes\n", (long long)rlim.rlim_max);
+            printf("%lld bytes\n", (long long) rlim.rlim_max);
         }
     }
     else

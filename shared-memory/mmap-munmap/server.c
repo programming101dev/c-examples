@@ -24,43 +24,49 @@ int main(void)
     size_t shm_size = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
 
     // Open the shared memory
-    const char* shm_name = "/my_shared_memory";
+    const char *shm_name = "/my_shared_memory";
 
     // Open the shared memory
     shm_fd = shm_open(shm_name, O_RDWR, S_IRUSR | S_IWUSR);
-    if(shm_fd == -1) {
+    if(shm_fd == -1)
+    {
         perror("shm_open");
         exit(EXIT_FAILURE);
     }
 
     // Map the shared memory into the process address space
-    shm_ptr = (char*)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if(shm_ptr == MAP_FAILED) {
+    shm_ptr = (char *) mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    if(shm_ptr == MAP_FAILED)
+    {
         perror("mmap");
         exit(EXIT_FAILURE);
     }
 
     // Open the client semaphore
     client_sem = sem_open(CLIENT_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if(client_sem == SEM_FAILED) {
+    if(client_sem == SEM_FAILED)
+    {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
     // Open the server semaphore
     server_sem = sem_open(SERVER_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if(server_sem == SEM_FAILED) {
+    if(server_sem == SEM_FAILED)
+    {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
-    while(1) {
+    while(1)
+    {
         // Wait for the client to signal a word
         printf("Waiting for client_sem\n");
         sem_wait(client_sem);
 
         // Check if the process is done
-        if(strcmp(shm_ptr, "") == 0) {
+        if(strcmp(shm_ptr, "") == 0)
+        {
             // Signal the client that the server has finished processing
             sem_post(server_sem);
             break;
@@ -96,5 +102,5 @@ static size_t get_page_size(void)
         exit(EXIT_FAILURE);
     }
 
-    return (size_t)page_size;
+    return (size_t) page_size;
 }

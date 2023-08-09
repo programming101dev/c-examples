@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 
-static void print_flags(const char* flag_name, tcflag_t flags, tcflag_t flag_to_check);
+static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_check);
 
 
 int main(void)
@@ -13,7 +13,8 @@ int main(void)
     struct termios term_attr;
 
     // Get the current terminal attributes
-    if(tcgetattr(fd, &term_attr) == -1) {
+    if(tcgetattr(fd, &term_attr) == -1)
+    {
         perror("tcgetattr");
         return 1;
     }
@@ -98,7 +99,7 @@ int main(void)
 }
 
 
-static void print_flags(const char* flag_name, tcflag_t flags, tcflag_t flag_to_check)
+static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_check)
 {
     if(flags & flag_to_check)
     {

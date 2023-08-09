@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    groupname  = argv[1];
+    groupname = argv[1];
     group_info = getgrnam(groupname);
 
     if(group_info != NULL)

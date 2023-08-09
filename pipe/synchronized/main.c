@@ -10,14 +10,59 @@
 #define SEM_PARENT "/sem_parent"
 #define SEM_CHILD "/sem_child"
 
-// Function Prototypes
-int main(void);
-void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
-void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
-void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
-void error_exit(const char *msg);
 
-void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child)
+static void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
+static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
+static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
+static void error_exit(const char *msg);
+
+
+int main(void)
+{
+    int pipefd[2];
+    pid_t pid;
+    sem_t *sem_parent, *sem_child;
+
+    if(pipe(pipefd) == -1)
+    {
+        error_exit("Error creating pipe");
+    }
+
+    sem_parent = sem_open(SEM_PARENT, O_CREAT, 0644, 0);
+    if(sem_parent == SEM_FAILED)
+    {
+        error_exit("Error creating/opening SEM_PARENT semaphore");
+    }
+
+    sem_child = sem_open(SEM_CHILD, O_CREAT, 0644, 1);
+    if(sem_child == SEM_FAILED)
+    {
+        error_exit("Error creating/opening SEM_CHILD semaphore");
+    }
+
+    pid = fork();
+    if(pid == -1)
+    {
+        error_exit("Error creating child process");
+    }
+
+    if(pid == 0)
+    {
+        child_process(pipefd, sem_parent, sem_child);
+    }
+    else
+    {
+        parent_process(pipefd, sem_parent, sem_child);
+    }
+
+    sem_unlink(SEM_PARENT);
+    sem_unlink(SEM_CHILD);
+
+    return EXIT_SUCCESS;  // This line will not be executed, but it's here to keep the compiler happy.
+}
+
+
+static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child)
 {
     ssize_t written_bytes;
 
@@ -51,13 +96,15 @@ void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, 
     }
 }
 
-void error_exit(const char *msg)
+
+static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
-void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
+
+static void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 {
     FILE *file;
     char ch;
@@ -114,7 +161,8 @@ void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
     exit(EXIT_SUCCESS);
 }
 
-void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
+
+static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 {
     uint8_t length;
     char word[MAX_WORD_LENGTH];
@@ -163,48 +211,4 @@ void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
     }
 
     exit(EXIT_SUCCESS);
-}
-
-int main(void)
-{
-    int pipefd[2];
-    pid_t pid;
-    sem_t *sem_parent, *sem_child;
-
-    if(pipe(pipefd) == -1)
-    {
-        error_exit("Error creating pipe");
-    }
-
-    sem_parent = sem_open(SEM_PARENT, O_CREAT, 0644, 0);
-    if(sem_parent == SEM_FAILED)
-    {
-        error_exit("Error creating/opening SEM_PARENT semaphore");
-    }
-
-    sem_child = sem_open(SEM_CHILD, O_CREAT, 0644, 1);
-    if(sem_child == SEM_FAILED)
-    {
-        error_exit("Error creating/opening SEM_CHILD semaphore");
-    }
-
-    pid = fork();
-    if(pid == -1)
-    {
-        error_exit("Error creating child process");
-    }
-
-    if(pid == 0)
-    {
-        child_process(pipefd, sem_parent, sem_child);
-    }
-    else
-    {
-        parent_process(pipefd, sem_parent, sem_child);
-    }
-
-    sem_unlink(SEM_PARENT);
-    sem_unlink(SEM_CHILD);
-
-    return EXIT_SUCCESS;  // This line will not be executed, but it's here to keep the compiler happy.
 }

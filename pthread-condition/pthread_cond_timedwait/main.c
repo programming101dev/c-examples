@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 
-
 static void *thread_function(void *arg);
 
 
@@ -58,11 +57,12 @@ int main(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *thread_function(void *arg)
 #pragma GCC diagnostic pop
 {
     // Generate a random sleep time between 4 and 6 seconds
-    srand((unsigned int)time(NULL));
+    srand((unsigned int) time(NULL));
     int sleep_time = 4 + rand() % 3; // Random value in [4, 6]
 
     printf("Thread will sleep for %d seconds.\n", sleep_time);

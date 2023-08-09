@@ -27,7 +27,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long)file_stat.st_size);
+    fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long) file_stat.st_size);
 
     // Redirect stdout (file descriptor 1) to the temporary file
     if(dup2(original_fd, STDOUT_FILENO) == -1)
@@ -67,7 +67,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long)file_stat.st_size);
+    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
 
     // Cleanup: remove the temporary file
     if(unlink(template) == -1)

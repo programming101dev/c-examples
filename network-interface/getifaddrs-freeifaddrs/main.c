@@ -32,12 +32,12 @@ int main(void)
         // Get the IP address as a string
         if(ifaddr->ifa_addr->sa_family == AF_INET)
         {
-            struct sockaddr_in *s4 = (struct sockaddr_in *)ifaddr->ifa_addr;
+            struct sockaddr_in *s4 = (struct sockaddr_in *) ifaddr->ifa_addr;
             inet_ntop(AF_INET, &s4->sin_addr, host, NI_MAXHOST);
         }
         else if(ifaddr->ifa_addr->sa_family == AF_INET6)
         {
-            struct sockaddr_in6 *s6 = (struct sockaddr_in6 *)ifaddr->ifa_addr;
+            struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) ifaddr->ifa_addr;
             inet_ntop(AF_INET6, &s6->sin6_addr, host, NI_MAXHOST);
         }
         else

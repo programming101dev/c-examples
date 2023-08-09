@@ -12,7 +12,7 @@ int main(void)
     pid_t pgid;
     pid_t child_pid;
 
-    pid  = getpid();
+    pid = getpid();
     pgid = getpgid(pid);
     printf("Original Process ID (PID): %d\n", pid);
     printf("Original Process Group ID (PGID): %d\n", pgid);

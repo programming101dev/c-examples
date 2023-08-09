@@ -25,7 +25,7 @@ int main(void)
     dprintf(fd, "%s\n", content);
     check_file_size(filename, "Initial file size");
     new_size = 9;
-    printf("Truncating file %s to %lld bytes\n", filename, (long long)new_size);
+    printf("Truncating file %s to %lld bytes\n", filename, (long long) new_size);
 
     if(ftruncate(fd, new_size) == -1)
     {
@@ -54,7 +54,7 @@ static void check_file_size(const char *filename, const char *message)
     struct stat st;
     if(stat(filename, &st) == 0)
     {
-        printf("%s of '%s' is %lld bytes.\n", message, filename, (long long)st.st_size);
+        printf("%s of '%s' is %lld bytes.\n", message, filename, (long long) st.st_size);
     }
     else
     {

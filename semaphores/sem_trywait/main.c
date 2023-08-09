@@ -15,7 +15,8 @@ int main(void)
     // Create a named semaphore with initial value 1 (available)
     semaphore = sem_open(sem_name, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1);
 
-    if(semaphore == SEM_FAILED) {
+    if(semaphore == SEM_FAILED)
+    {
         perror("Semaphore creation failed");
         exit(EXIT_FAILURE);
     }
@@ -23,12 +24,15 @@ int main(void)
     // Fork a child process
     pid = fork();
 
-    if(pid < 0) {
+    if(pid < 0)
+    {
         perror("Fork failed");
         sem_close(semaphore);
         sem_unlink(sem_name);
         exit(EXIT_FAILURE);
-    } else if(pid == 0) {
+    }
+    else if(pid == 0)
+    {
         // Child process (producer)
         printf("Child process (PID %d): Simulating some work...\n", getpid());
 
@@ -47,14 +51,17 @@ int main(void)
         printf("Child process (PID %d): Done work.\n", getpid());
         sem_post(semaphore);
         sem_close(semaphore);
-    } else {
+    }
+    else
+    {
         sleep(1);
         // Parent process (consumer)
         printf("Parent process (PID %d): Waiting for the child to complete...\n", getpid());
 
         // Wait for the semaphore signal from the child with timeout
         int try_count = 5;
-        while(try_count > 0) {
+        while(try_count > 0)
+        {
             int ret = sem_trywait(semaphore);
 
             if(ret == 0)
@@ -66,13 +73,18 @@ int main(void)
 
                 printf("Parent process (PID %d): Child signaled. Continue processing...\n", getpid());
                 break;
-            } else if(ret == -1) {
-                if(try_count == 1) {
+            }
+            else if(ret == -1)
+            {
+                if(try_count == 1)
+                {
                     perror("sem_trywait failed");
                     sem_close(semaphore);
                     sem_unlink(sem_name);
                     exit(EXIT_FAILURE);
-                } else {
+                }
+                else
+                {
                     printf("Parent process (PID %d): Child not ready. Retrying...\n", getpid());
                     try_count--;
                     sleep(1);
@@ -82,7 +94,8 @@ int main(void)
         sem_close(semaphore);
 
         // Wait for the child process to finish
-        if(wait(NULL) == -1) {
+        if(wait(NULL) == -1)
+        {
             perror("wait failed");
             sem_unlink(sem_name);
             exit(EXIT_FAILURE);
@@ -91,7 +104,8 @@ int main(void)
         printf("Parent process (PID %d): Child completed.\n", getpid());
 
         // Unlink the semaphore after use
-        if(sem_unlink(sem_name) == -1) {
+        if(sem_unlink(sem_name) == -1)
+        {
             perror("sem_unlink failed");
             exit(EXIT_FAILURE);
         }

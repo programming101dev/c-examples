@@ -12,14 +12,9 @@
 
 volatile int running = 1;
 
+
 static void signal_handler(int signum);
 
-static void signal_handler(int signum)
-{
-    if(signum == SIGINT) {
-        running = 0;
-    }
-}
 
 int main(void)
 {
@@ -31,7 +26,8 @@ int main(void)
     fd_set readfds;
 
     // Create server socket
-    if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+    {
         perror("Socket creation error");
         exit(EXIT_FAILURE);
     }
@@ -43,19 +39,22 @@ int main(void)
 
     // Enable address reuse
     int opt = 1;
-    if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+    if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+    {
         perror("Setsockopt error");
         exit(EXIT_FAILURE);
     }
 
     // Bind the socket to the address
-    if(bind(server_socket, (struct sockaddr *)&address, sizeof(address)) == -1) {
+    if(bind(server_socket, (struct sockaddr *) &address, sizeof(address)) == -1)
+    {
         perror("Bind error");
         exit(EXIT_FAILURE);
     }
 
     // Listen for incoming connections
-    if(listen(server_socket, SOMAXCONN) == -1) {
+    if(listen(server_socket, SOMAXCONN) == -1)
+    {
         perror("Listen error");
         exit(EXIT_FAILURE);
     }
@@ -65,7 +64,8 @@ int main(void)
     // Set up the signal handler for SIGINT (Ctrl+C)
     signal(SIGINT, signal_handler);
 
-    while(running) {
+    while(running)
+    {
         // Clear the socket set
         FD_ZERO(&readfds);
 
@@ -74,14 +74,17 @@ int main(void)
         max_fd = server_socket;
 
         // Add the client sockets to the set
-        for(i = 0; i < max_clients; i++) {
+        for(i = 0; i < max_clients; i++)
+        {
             sd = client_sockets[i];
 
-            if(sd > 0) {
+            if(sd > 0)
+            {
                 FD_SET(sd, &readfds);
             }
 
-            if(sd > max_fd) {
+            if(sd > max_fd)
+            {
                 max_fd = sd;
             }
         }
@@ -89,14 +92,17 @@ int main(void)
         // Use select to monitor sockets for read readiness
         activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
 
-        if(activity < 0) {
+        if(activity < 0)
+        {
             perror("Select error");
             exit(EXIT_FAILURE);
         }
 
         // Handle new client connections
-        if(FD_ISSET(server_socket, &readfds)) {
-            if((new_socket = accept(server_socket, (struct sockaddr *)&address, (socklen_t *)&addrlen)) == -1) {
+        if(FD_ISSET(server_socket, &readfds))
+        {
+            if((new_socket = accept(server_socket, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
+            {
                 perror("Accept error");
                 exit(EXIT_FAILURE);
             }
@@ -110,31 +116,39 @@ int main(void)
         }
 
         // Handle incoming data from existing clients
-        for(i = 0; i < max_clients; i++) {
+        for(i = 0; i < max_clients; i++)
+        {
             sd = client_sockets[i];
 
-            if(FD_ISSET(sd, &readfds)) {
+            if(FD_ISSET(sd, &readfds))
+            {
                 char word_length;
                 char word[256];
 
                 // Receive the word length (uint8_t)
                 valread = read(sd, &word_length, sizeof(word_length));
-                if(valread <= 0) {
+                if(valread <= 0)
+                {
                     // Connection closed or error
                     printf("Client %d disconnected\n", sd);
                     close(sd);
                     FD_CLR(sd, &readfds); // Remove the closed socket from the set
                     client_sockets[i] = 0;
-                } else {
+                }
+                else
+                {
                     // Receive the word based on the length received
-                    valread = read(sd, word, (size_t)word_length);
-                    if(valread <= 0) {
+                    valread = read(sd, word, (size_t) word_length);
+                    if(valread <= 0)
+                    {
                         // Connection closed or error
                         printf("Client %d disconnected\n", sd);
                         close(sd);
                         FD_CLR(sd, &readfds); // Remove the closed socket from the set
                         client_sockets[i] = 0;
-                    } else {
+                    }
+                    else
+                    {
                         // Null-terminate the word and print it
                         word[valread] = '\0';
                         printf("Received word from client %d: %s\n", sd, word);
@@ -145,9 +159,11 @@ int main(void)
     } // End of the main loop
 
     // Cleanup and close all client sockets
-    for(i = 0; i < max_clients; i++) {
+    for(i = 0; i < max_clients; i++)
+    {
         sd = client_sockets[i];
-        if(sd > 0) {
+        if(sd > 0)
+        {
             close(sd);
         }
     }
@@ -163,4 +179,13 @@ int main(void)
 
     printf("Server exited successfully.\n");
     return EXIT_SUCCESS;
+}
+
+
+static void signal_handler(int signum)
+{
+    if(signum == SIGINT)
+    {
+        running = 0;
+    }
 }

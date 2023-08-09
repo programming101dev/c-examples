@@ -15,10 +15,10 @@ int main(void)
     if(inet_pton(AF_INET, ipv4_address_str, &ipv4_addr) == 1)
     {
         printf("IPv4 Address: %u.%u.%u.%u\n",
-               (unsigned char)ipv4_addr.s_addr,
-               (unsigned char)(ipv4_addr.s_addr >> 8),
-               (unsigned char)(ipv4_addr.s_addr >> 16),
-               (unsigned char)(ipv4_addr.s_addr >> 24));
+               (unsigned char) ipv4_addr.s_addr,
+               (unsigned char) (ipv4_addr.s_addr >> 8),
+               (unsigned char) (ipv4_addr.s_addr >> 16),
+               (unsigned char) (ipv4_addr.s_addr >> 24));
     }
     else
     {
@@ -29,7 +29,7 @@ int main(void)
     if(inet_pton(AF_INET6, ipv6_address_str, &ipv6_addr) == 1)
     {
         // Print the IPv6 address as an array of unsigned bytes
-        unsigned char* bytes = (unsigned char*)&ipv6_addr;
+        unsigned char *bytes = (unsigned char *) &ipv6_addr;
         printf("IPv6 Address: ");
 
         for(size_t i = 0; i < sizeof(ipv6_addr); i++)

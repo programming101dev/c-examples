@@ -13,7 +13,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    printf("Seconds: %lld\nMicroseconds: %lld\n", (long long)tv.tv_sec, (long long)tv.tv_usec);
+    printf("Seconds: %lld\nMicroseconds: %lld\n", (long long) tv.tv_sec, (long long) tv.tv_usec);
 
     return EXIT_SUCCESS;
 }

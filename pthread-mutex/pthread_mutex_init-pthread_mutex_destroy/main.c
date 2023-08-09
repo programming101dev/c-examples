@@ -8,7 +8,8 @@ int main(void)
     pthread_mutex_t mutex;
 
     // Initialize the mutex
-    if(pthread_mutex_init(&mutex, NULL) != 0) {
+    if(pthread_mutex_init(&mutex, NULL) != 0)
+    {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
         return 1;
     }

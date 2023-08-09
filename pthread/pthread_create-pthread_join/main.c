@@ -14,7 +14,8 @@ int main(void)
 
     // Create the thread
     result = pthread_create(&thread_id, NULL, print_numbers, NULL);
-    if(result != 0) {
+    if(result != 0)
+    {
         perror("Thread creation failed");
         return 1;
     }
@@ -36,6 +37,7 @@ int main(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *print_numbers(void *arg)
 #pragma GCC diagnostic pop
 {

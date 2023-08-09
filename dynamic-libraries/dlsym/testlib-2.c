@@ -8,6 +8,7 @@
 void display(const char *msg)
 {
     char *uppercase_msg = strdup(msg);
+
     if(uppercase_msg == NULL)
     {
         fprintf(stderr, "Error: Memory allocation failed.\n");

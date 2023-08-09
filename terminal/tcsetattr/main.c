@@ -9,7 +9,8 @@ int main(void)
     struct termios original_term;
 
     // Get the current terminal settings
-    if(tcgetattr(STDIN_FILENO, &term) != 0) {
+    if(tcgetattr(STDIN_FILENO, &term) != 0)
+    {
         perror("tcgetattr");
         return 1;
     }
@@ -25,7 +26,8 @@ int main(void)
     term.c_cc[VTIME] = 0;
 
     // Apply the new terminal settings
-    if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0) {
+    if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0)
+    {
         perror("tcsetattr");
         return 1;
     }
@@ -34,22 +36,27 @@ int main(void)
 
     // Read the first character without echoing
     printf("Type the first character: ");
-    if(read(STDIN_FILENO, &ch, 1) == 1) {
+    if(read(STDIN_FILENO, &ch, 1) == 1)
+    {
         printf("%c\n", ch);
     }
 
     // Restore the original terminal settings with ECHO turned on and canonical mode
     term = original_term;
-    if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0) {
+    if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0)
+    {
         perror("tcsetattr");
         return 1;
     }
 
     // Read the rest of the characters with echoing
     printf("Type the rest of the characters: ");
-    while(1) {
-        if(read(STDIN_FILENO, &ch, 1) == 1) {
-            if(ch == '\n') {
+    while(1)
+    {
+        if(read(STDIN_FILENO, &ch, 1) == 1)
+        {
+            if(ch == '\n')
+            {
                 break;
             }
             printf("%c", ch);

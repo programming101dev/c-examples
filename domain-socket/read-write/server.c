@@ -40,7 +40,8 @@ int main(void)
 
     // Create a socket
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if(sockfd == -1) {
+    if(sockfd == -1)
+    {
         perror("socket");
         exit(EXIT_FAILURE);
     }
@@ -52,14 +53,16 @@ int main(void)
 
     // Bind the socket to a path
     unlink(SOCKET_PATH); // Remove the existing socket file if it exists
-    if(bind(sockfd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_un)) == -1) {
+    if(bind(sockfd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr_un)) == -1)
+    {
         perror("bind");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
 
     // Listen for incoming connections
-    if(listen(sockfd, 5) == -1) {
+    if(listen(sockfd, 5) == -1)
+    {
         perror("listen");
         close(sockfd);
         exit(EXIT_FAILURE);
@@ -67,12 +70,15 @@ int main(void)
 
     printf("Server listening...\n");
 
-    while(!exit_flag) {
+    while(!exit_flag)
+    {
         // Accept a client connection
         client_addr_len = sizeof(struct sockaddr_un);
-        client_sockfd = accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len);
-        if(client_sockfd == -1) {
-            if(exit_flag) {
+        client_sockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_addr_len);
+        if(client_sockfd == -1)
+        {
+            if(exit_flag)
+            {
                 // Ignore errors when the server is shutting down
                 break;
             }
@@ -81,7 +87,8 @@ int main(void)
         }
 
         // Read and print words from the client
-        while(read(client_sockfd, &size, sizeof(uint8_t)) > 0) {
+        while(read(client_sockfd, &size, sizeof(uint8_t)) > 0)
+        {
             read(client_sockfd, word, size);
             word[size] = '\0'; // Null-terminate the string
             printf("Word Size: %u, Word: %s\n", size, word);
@@ -101,8 +108,10 @@ int main(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
+
 #pragma GCC diagnostic pop

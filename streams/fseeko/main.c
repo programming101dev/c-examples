@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-static void display_file(FILE* file, const char* message);
+static void display_file(FILE *file, const char *message);
 
 
 int main(void)
@@ -27,7 +27,7 @@ int main(void)
 }
 
 
-static void display_file(FILE* file, const char* message)
+static void display_file(FILE *file, const char *message)
 {
     char ch;
 

@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
+
 static void signal_handler(int signal_number);
+
 
 int main(void)
 {
@@ -17,7 +18,8 @@ int main(void)
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
-    if(sigaction(SIGINT, &sa, NULL) < 0) {
+    if(sigaction(SIGINT, &sa, NULL) < 0)
+    {
         perror("Failed to set signal handler for SIGINT");
         return 1;
     }
@@ -25,7 +27,8 @@ int main(void)
     // Block SIGINT temporarily
     sigemptyset(&block_set);
     sigaddset(&block_set, SIGINT);
-    if(sigprocmask(SIG_BLOCK, &block_set, NULL) < 0) {
+    if(sigprocmask(SIG_BLOCK, &block_set, NULL) < 0)
+    {
         perror("Failed to block SIGINT");
         return 1;
     }
@@ -69,6 +72,7 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-static void signal_handler(int signal_number) {
+static void signal_handler(int signal_number)
+{
     printf("Received signal: %d\n", signal_number);
 }

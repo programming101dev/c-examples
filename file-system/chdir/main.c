@@ -20,7 +20,7 @@ int main(void)
     }
 
     buffer = NULL;
-    size   = path_max;
+    size = path_max;
 
     if(chdir("/") == -1)
     {

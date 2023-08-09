@@ -9,9 +9,9 @@ static void print_entry(const struct passwd *entry);
 
 int main(int argc, char *argv[])
 {
-    char          *endptr;
-    long int       uid_long;
-    uid_t          uid;
+    char *endptr;
+    long int uid_long;
+    uid_t uid;
     struct passwd *user_info;
 
     if(argc != 2)
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    errno    = 0;
+    errno = 0;
     uid_long = strtol(argv[1], &endptr, 10);
 
     if(errno != 0 || *endptr != '\0')
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    uid       = (uid_t)uid_long;
+    uid = (uid_t) uid_long;
     user_info = getpwuid(uid);
 
     if(user_info != NULL)

@@ -15,7 +15,7 @@ int main(void)
     }
 
     printf("File information for: %s\n", filename);
-    printf("File size: %lld bytes\n", (long long)file_stat.st_size);
+    printf("File size: %lld bytes\n", (long long) file_stat.st_size);
     printf("File permissions: %o\n", file_stat.st_mode & 0777);
 
     return EXIT_SUCCESS;

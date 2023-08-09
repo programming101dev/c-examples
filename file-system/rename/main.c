@@ -46,7 +46,8 @@ int main(void)
     check_file_existence(old_filename, "Original file");
     check_file_existence(new_filename, "Renamed file");
 
-    return EXIT_SUCCESS;}
+    return EXIT_SUCCESS;
+}
 
 
 static void check_file_existence(const char *filename, const char *message)

@@ -6,8 +6,8 @@
 #include <inttypes.h>
 
 
-long long performCalculation(size_t size, size_t iterations);
-void printTimes(struct tms tms_data);
+static long long performCalculation(size_t size, size_t iterations);
+static void printTimes(struct tms tms_data);
 
 
 int main(void)
@@ -50,13 +50,13 @@ int main(void)
 }
 
 
-long long performCalculation(size_t size, size_t iterations)
+static long long performCalculation(size_t size, size_t iterations)
 {
     int *numbers;
 
     numbers = malloc(size * sizeof(int));
 
-    if (numbers == NULL)
+    if(numbers == NULL)
     {
         perror("Failed to allocate memory");
         exit(EXIT_FAILURE);
@@ -84,11 +84,11 @@ long long performCalculation(size_t size, size_t iterations)
     return sum;
 }
 
-void printTimes(struct tms tms_data)
+static void printTimes(struct tms tms_data)
 {
-    printf("User time: %jd clock ticks\n", (intmax_t)tms_data.tms_utime);
-    printf("System time: %jd clock ticks\n", (intmax_t)tms_data.tms_stime);
-    printf("Children's user time: %jd clock ticks\n", (intmax_t)tms_data.tms_cutime);
-    printf("Children's system time: %jd clock ticks\n", (intmax_t)tms_data.tms_cstime);
+    printf("User time: %jd clock ticks\n", (intmax_t) tms_data.tms_utime);
+    printf("System time: %jd clock ticks\n", (intmax_t) tms_data.tms_stime);
+    printf("Children's user time: %jd clock ticks\n", (intmax_t) tms_data.tms_cutime);
+    printf("Children's system time: %jd clock ticks\n", (intmax_t) tms_data.tms_cstime);
 }
 

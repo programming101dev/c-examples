@@ -7,7 +7,9 @@ int main(void)
     pid_t pid = getpid(); // Get the PID of the current process
 
     pid_t sid = getsid(pid);
-    if(sid == -1) {
+
+    if(sid == -1)
+    {
         perror("Error getting SID");
         return 1;
     }

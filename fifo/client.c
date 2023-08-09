@@ -16,26 +16,31 @@ int main(void)
 
     // Open the FIFO for writing
     fd = open(FIFO_FILE, O_WRONLY);
-    if(fd == -1) {
+    if(fd == -1)
+    {
         perror("open");
         exit(EXIT_FAILURE);
     }
 
     // Open the file to read
     FILE *file = fopen("../example.txt", "r");
-    if(file == NULL) {
+    if(file == NULL)
+    {
         perror("fopen");
         close(fd);
         exit(EXIT_FAILURE);
     }
 
     // Read and parse words from the file
-    while(fgets(line, sizeof(line), file) != NULL) {
+    while(fgets(line, sizeof(line), file) != NULL)
+    {
         char *word;
         word = strtok(line, " \t\n");
-        while(word != NULL) {
+        while(word != NULL)
+        {
             size_t word_len = strlen(word);
-            if(word_len > UINT8_MAX) {
+            if(word_len > UINT8_MAX)
+            {
                 fprintf(stderr, "Word exceeds maximum length\n");
                 fclose(file);
                 close(fd);
@@ -43,7 +48,7 @@ int main(void)
             }
 
             // Write the size of the word as uint8_t
-            uint8_t size = (uint8_t)word_len;
+            uint8_t size = (uint8_t) word_len;
             write(fd, &size, sizeof(uint8_t));
 
             // Write the word

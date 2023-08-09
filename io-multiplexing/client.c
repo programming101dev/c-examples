@@ -22,7 +22,8 @@ int main(void)
 
     // Create a socket
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if(sockfd == -1) {
+    if(sockfd == -1)
+    {
         perror("socket");
         exit(EXIT_FAILURE);
     }
@@ -33,7 +34,8 @@ int main(void)
     strcpy(server_addr.sun_path, SOCKET_PATH);
 
     // Connect to the server
-    if(connect(sockfd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_un)) == -1) {
+    if(connect(sockfd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr_un)) == -1)
+    {
         perror("connect");
         close(sockfd);
         exit(EXIT_FAILURE);
@@ -41,7 +43,8 @@ int main(void)
 
     // Open the file to read
     FILE *file = fopen("../example.txt", "r");
-    if(file == NULL) {
+    if(file == NULL)
+    {
         perror("fopen");
         close(sockfd);
         exit(EXIT_FAILURE);
@@ -49,12 +52,15 @@ int main(void)
 
     // Read and parse words from the file
     char line[1024]; // Adjust the buffer size as needed
-    while(fgets(line, sizeof(line), file) != NULL) {
+    while(fgets(line, sizeof(line), file) != NULL)
+    {
         char *word;
         word = strtok(line, " \t\n");
-        while(word != NULL) {
+        while(word != NULL)
+        {
             size_t word_len = strlen(word);
-            if(word_len > UINT8_MAX) {
+            if(word_len > UINT8_MAX)
+            {
                 fprintf(stderr, "Word exceeds maximum length\n");
                 fclose(file);
                 close(sockfd);
@@ -62,7 +68,7 @@ int main(void)
             }
 
             // Write the size of the word as uint8_t
-            uint8_t size = (uint8_t)word_len;
+            uint8_t size = (uint8_t) word_len;
             send_word(sockfd, word, size);
 
             word = strtok(NULL, " \t\n");
@@ -74,20 +80,24 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-void send_word(int sockfd, const char *word, uint8_t length) {
+void send_word(int sockfd, const char *word, uint8_t length)
+{
     ssize_t written_bytes;
 
     printf("Client: sending word of length %u: %s\n", length, word);
     written_bytes = send(sockfd, &length, sizeof(uint8_t), 0);
 
-    if(written_bytes < 0) {
+    if(written_bytes < 0)
+    {
         error_exit("Error writing word length to socket");
     }
 
-    if(length > 0) {
+    if(length > 0)
+    {
         written_bytes = send(sockfd, word, length, 0);
 
-        if(written_bytes < 0) {
+        if(written_bytes < 0)
+        {
             error_exit("Error writing word to socket");
         }
     }
@@ -99,7 +109,8 @@ void send_word(int sockfd, const char *word, uint8_t length) {
     nanosleep(&delay, NULL);
 }
 
-void error_exit(const char *msg) {
+void error_exit(const char *msg)
+{
     perror(msg);
     exit(EXIT_FAILURE);
 }

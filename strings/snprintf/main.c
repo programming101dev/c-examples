@@ -20,6 +20,7 @@ static void convertUInt32(uint32_t num, char *buffer, size_t bufferSize);
 static void convertInt(int num, char *buffer, size_t bufferSize);
 static void convertUInt(unsigned int num, char *buffer, size_t bufferSize);
 static void convertLong(long num, char *buffer, size_t bufferSize);
+
 static void convertULong(unsigned long num, char *buffer, size_t bufferSize);
 static void convertLongLong(long long num, char *buffer, size_t bufferSize);
 static void convertULongLong(unsigned long long num, char *buffer, size_t bufferSize);
@@ -297,7 +298,7 @@ static void convertChar(char value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "char: %c", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -310,9 +311,10 @@ static void convertChar(char value, char *buffer, size_t bufferSize)
 
 static void convertInt8(int8_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "int8_t: %" PRId8, value);
+    int result = snprintf(buffer, bufferSize, "int8_t: %"
+    PRId8, value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -325,9 +327,10 @@ static void convertInt8(int8_t value, char *buffer, size_t bufferSize)
 
 static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uint8_t: %" PRIu8, value);
+    int result = snprintf(buffer, bufferSize, "uint8_t: %"
+    PRIu8, value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -340,9 +343,10 @@ static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 
 static void convertInt16(int16_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "int16_t: %" PRId16, value);
+    int result = snprintf(buffer, bufferSize, "int16_t: %"
+    PRId16, value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -355,9 +359,10 @@ static void convertInt16(int16_t value, char *buffer, size_t bufferSize)
 
 static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uint16_t: %" PRIu16, value);
+    int result = snprintf(buffer, bufferSize, "uint16_t: %"
+    PRIu16, value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -370,9 +375,10 @@ static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 
 static void convertInt32(int32_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "int32_t: %" PRId32, value);
+    int result = snprintf(buffer, bufferSize, "int32_t: %"
+    PRId32, value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -385,9 +391,10 @@ static void convertInt32(int32_t value, char *buffer, size_t bufferSize)
 
 static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uint32_t: %" PRIu32, value);
+    int result = snprintf(buffer, bufferSize, "uint32_t: %"
+    PRIu32, value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -402,7 +409,7 @@ static void convertInt(int value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "int: %d", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -417,7 +424,7 @@ static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "uint: %u", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -432,7 +439,7 @@ static void convertLong(long value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "long: %ld", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -447,7 +454,7 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "ulong: %lu", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -460,9 +467,9 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 
 static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "long long: %lld" , value);
+    int result = snprintf(buffer, bufferSize, "long long: %lld", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -477,7 +484,7 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 {
     int result = snprintf(buffer, bufferSize, "ulonglong: %llu", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -490,9 +497,9 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 
 static void convertFloat(float value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "float: %.5f", (double)value);
+    int result = snprintf(buffer, bufferSize, "float: %.5f", (double) value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -507,7 +514,7 @@ static void convertDouble(double value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "double: %.10lf", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -522,7 +529,7 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 {
     int result = snprintf(buffer, bufferSize, "long double: %.15Lf", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -537,7 +544,7 @@ static void convertBool(bool value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "bool: %s", value ? "true" : "false");
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -552,7 +559,7 @@ static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "pointer: %p", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -567,7 +574,7 @@ static void convertSize(size_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "size_t: %zu", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -582,7 +589,7 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "ssize_t: %zd", value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -595,9 +602,10 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 
 static void convertOff(off_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "off_t: %" PRId64, (int64_t)value);
+    int result = snprintf(buffer, bufferSize, "off_t: %"
+    PRId64, (int64_t) value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -610,9 +618,10 @@ static void convertOff(off_t value, char *buffer, size_t bufferSize)
 
 static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "pid_t: %" PRIdMAX, (intmax_t)value);
+    int result = snprintf(buffer, bufferSize, "pid_t: %"
+    PRIdMAX, (intmax_t) value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -625,9 +634,10 @@ static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 
 static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uid_t: %" PRIdMAX, (intmax_t)value);
+    int result = snprintf(buffer, bufferSize, "uid_t: %"
+    PRIdMAX, (intmax_t) value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -640,9 +650,10 @@ static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 
 static void convertGid(gid_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "gid_t: %" PRIdMAX, (intmax_t)value);
+    int result = snprintf(buffer, bufferSize, "gid_t: %"
+    PRIdMAX, (intmax_t) value);
 
-    if(result >= 0 && (size_t)result < bufferSize)
+    if(result >= 0 && (size_t) result < bufferSize)
     {
         buffer[result] = '\0';
     }

@@ -16,7 +16,8 @@ int main(void)
     addr.sin_port = htons(8080); // Port number 8080
 
     // Get the hostname and port number associated with the address
-    int result = getnameinfo((struct sockaddr *)&addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
+    int result = getnameinfo((struct sockaddr *) &addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV,
+                             NI_NUMERICSERV);
 
     if(result == 0)
     {

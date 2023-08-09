@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    gid = (gid_t)gid_long;
+    gid = (gid_t) gid_long;
     group_info = getgrgid(gid);
 
     if(group_info != NULL)

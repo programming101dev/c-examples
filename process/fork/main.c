@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     // Parse command-line options
     while((opt = getopt(argc, argv, "sh")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 's':
                 sleep_option = true;

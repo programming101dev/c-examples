@@ -70,11 +70,11 @@ int main(int argc, char *argv[])
     }
 
     printf("\n");
-    printf("File Size: %lld bytes\n", (long long)fileStat.st_size);
+    printf("File Size: %lld bytes\n", (long long) fileStat.st_size);
     printf("File Permissions: %o\n", fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
-    printf("File inode: %lld\n", (long long)fileStat.st_ino);
-    printf("Device ID: %lld\n", (long long)fileStat.st_dev);
-    printf("Number of hard links: %lld\n", (long long)fileStat.st_nlink);
+    printf("File inode: %lld\n", (long long) fileStat.st_ino);
+    printf("Device ID: %lld\n", (long long) fileStat.st_dev);
+    printf("Number of hard links: %lld\n", (long long) fileStat.st_nlink);
     printf("File Owner UID: %d\n", fileStat.st_uid);
     printf("File Group GID: %d\n", fileStat.st_gid);
     printf("Last access time: %ld\n", fileStat.st_atime);

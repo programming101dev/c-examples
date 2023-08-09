@@ -2,7 +2,8 @@
 
 # Flags to test and use
 WARNING_FLAGS=(
-"-Wall"
+        "-Werror"
+        "-Wall"
         "-Wextra"
         "-Wpedantic"
         "-Wshadow"

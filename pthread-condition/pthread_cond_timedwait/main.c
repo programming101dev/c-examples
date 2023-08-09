@@ -1,31 +1,18 @@
-#include <stdio.h>
+#include <errno.h>
 #include <pthread.h>
-#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 
-// Condition variable and mutex
+
+
+static void *thread_function(void *arg);
+
+
 pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-// Function executed by the thread
-void *thread_function(void *arg)
-{
-    // Generate a random sleep time between 4 and 6 seconds
-    srand((unsigned int)time(NULL));
-    int sleep_time = 4 + rand() % 3; // Random value in [4, 6]
-
-    printf("Thread will sleep for %d seconds.\n", sleep_time);
-    sleep(sleep_time);
-
-    // Signal the condition variable
-    pthread_mutex_lock(&mutex);
-    pthread_cond_signal(&cond_var);
-    pthread_mutex_unlock(&mutex);
-
-    return NULL;
-}
 
 int main(void)
 {
@@ -45,11 +32,16 @@ int main(void)
     result = pthread_cond_timedwait(&cond_var, &mutex, &abs_timeout);
     pthread_mutex_unlock(&mutex);
 
-    if(result == 0) {
+    if(result == 0)
+    {
         printf("Condition variable signaled before timeout.\n");
-    } else if(result == ETIMEDOUT) {
+    }
+    else if(result == ETIMEDOUT)
+    {
         printf("Timeout occurred. Condition variable was not signaled.\n");
-    } else {
+    }
+    else
+    {
         printf("Error while waiting for the condition variable.\n");
     }
 
@@ -60,5 +52,27 @@ int main(void)
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond_var);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void *thread_function(void *arg)
+#pragma GCC diagnostic pop
+{
+    // Generate a random sleep time between 4 and 6 seconds
+    srand((unsigned int)time(NULL));
+    int sleep_time = 4 + rand() % 3; // Random value in [4, 6]
+
+    printf("Thread will sleep for %d seconds.\n", sleep_time);
+    sleep(sleep_time);
+
+    // Signal the condition variable
+    pthread_mutex_lock(&mutex);
+    pthread_cond_signal(&cond_var);
+    pthread_mutex_unlock(&mutex);
+
+    return NULL;
+}
+

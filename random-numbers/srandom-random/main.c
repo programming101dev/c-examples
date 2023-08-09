@@ -9,7 +9,6 @@ static void print_random_numbers(size_t count);
 int main(void)
 {
     unsigned int seed;
-    char state[256];
 
     // Set a seed value for random number generation based on the current time.
     seed = time(NULL);

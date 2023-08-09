@@ -4,19 +4,8 @@
 #include <unistd.h>
 
 
-void *print_numbers(void *arg);
+static void *print_numbers(void *arg);
 
-void *print_numbers(void *arg)
-{
-    for(int i = 1; i <= 5; ++i)
-    {
-        printf("Thread: %d\n", i);
-        sleep(1);
-    }
-
-    // The thread returns NULL upon completion
-    return NULL;
-}
 
 int main(void)
 {
@@ -40,5 +29,22 @@ int main(void)
     pthread_join(thread_id, NULL);
 
     printf("Thread execution completed.\n");
+
     return EXIT_SUCCESS;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void *print_numbers(void *arg)
+#pragma GCC diagnostic pop
+{
+    for(int i = 1; i <= 5; ++i)
+    {
+        printf("Thread: %d\n", i);
+        sleep(1);
+    }
+
+    // The thread returns NULL upon completion
+    return NULL;
 }

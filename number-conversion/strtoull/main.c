@@ -49,5 +49,5 @@ static void convert(const char *str)
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
 
-    printf("Result: %ll\n", result);
+    printf("Result: %llu\n", result);
 }

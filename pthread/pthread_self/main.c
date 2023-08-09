@@ -3,18 +3,8 @@
 #include <pthread.h>
 
 
-void *thread_function(void *arg);
+static void *thread_function(void *arg);
 
-
-void *thread_function(void *arg)
-{
-    pthread_t thread_id = pthread_self();
-    printf("Thread ID: %lu\n", (unsigned long)thread_id);
-
-    // Perform some work in the thread...
-
-    return NULL;
-}
 
 int main(void)
 {
@@ -30,4 +20,18 @@ int main(void)
 
     printf("Main thread is done.\n");
     return EXIT_SUCCESS;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void *thread_function(void *arg)
+#pragma GCC diagnostic pop
+{
+    pthread_t thread_id = pthread_self();
+    printf("Thread ID: %lu\n", (unsigned long)thread_id);
+
+    // Perform some work in the thread...
+
+    return NULL;
 }

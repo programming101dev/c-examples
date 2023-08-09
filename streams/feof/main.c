@@ -2,9 +2,11 @@
 #include <stdlib.h>
 
 
+#define BUFFER_SIZE 256
+
+
 int main(void)
 {
-    const int BUFFER_SIZE = 256;
     char buffer[BUFFER_SIZE];
 
     printf("Enter some text (press Ctrl+D to stop):\n");

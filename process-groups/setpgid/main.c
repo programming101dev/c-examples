@@ -2,16 +2,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+static void handle_child(void);
+
+
 int main(void)
 {
-    pid_t pid = getpid(); // Get the PID of the current process
-    pid_t pgid = getpgid(pid);
+    pid_t pid;
+    pid_t pgid;
+    pid_t child_pid;
 
+    pid  = getpid();
+    pgid = getpgid(pid);
     printf("Original Process ID (PID): %d\n", pid);
     printf("Original Process Group ID (PGID): %d\n", pgid);
 
     // Fork a new child process
-    pid_t child_pid = fork();
+    child_pid = fork();
 
     if(child_pid < 0)
     {
@@ -20,22 +27,7 @@ int main(void)
     }
     else if(child_pid == 0)
     {
-        // Child process
-        pid_t child_pid = getpid();
-        pid_t child_pgid = getpgid(child_pid);
-
-        printf("Child Process ID (PID): %d\n", child_pid);
-        printf("Child Process Group ID (PGID): %d\n", child_pgid);
-
-        // Change the PGID of the child process
-        if(setpgid(child_pid, child_pid) == -1) {
-            perror("Error setting PGID for the child process");
-            return 1;
-        }
-
-        child_pgid = getpgid(child_pid);
-        printf("Child Process Group ID (PGID) after change: %d\n", child_pgid);
-
+        handle_child();
         return EXIT_SUCCESS;
     }
     else
@@ -46,4 +38,27 @@ int main(void)
 
         return EXIT_SUCCESS;
     }
+}
+
+
+static void handle_child(void)
+{
+    // Child process
+    pid_t child_pid;
+    pid_t child_pgid;
+
+    child_pid = getpid();
+    child_pgid = getpgid(child_pid);
+    printf("Child Process ID (PID): %d\n", child_pid);
+    printf("Child Process Group ID (PGID): %d\n", child_pgid);
+
+    // Change the PGID of the child process
+    if(setpgid(child_pid, child_pid) == -1)
+    {
+        perror("Error setting PGID for the child process");
+        exit(EXIT_FAILURE);
+    }
+
+    child_pgid = getpgid(child_pid);
+    printf("Child Process Group ID (PGID) after change: %d\n", child_pgid);
 }

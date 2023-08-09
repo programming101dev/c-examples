@@ -4,44 +4,90 @@
 #include <string.h>
 #include <pthread.h>
 
+
+static void *child_process(void *arg);
+static void *parent_process(void *arg);
+static void send_word(const char *word);
+
+
 #define MAX_WORD_LENGTH 255
+
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 int word_ready = 0;
 char *shared_word = NULL;
 
-// Function Prototypes
-void *child_process(void *arg);
-void *parent_process(void *arg);
-void send_word(const char *word);
 
-void send_word(const char *word)
+int main(void)
+{
+    pthread_t child_thread, parent_thread;
+
+    if(pthread_create(&child_thread, NULL, child_process, NULL) != 0)
+    {
+        perror("Error creating child thread");
+        exit(EXIT_FAILURE);
+    }
+
+    if(pthread_create(&parent_thread, NULL, parent_process, NULL) != 0)
+    {
+        perror("Error creating parent thread");
+        exit(EXIT_FAILURE);
+    }
+
+    if(pthread_join(child_thread, NULL) != 0)
+    {
+        perror("Error joining child thread");
+        exit(EXIT_FAILURE);
+    }
+
+    if(pthread_join(parent_thread, NULL) != 0)
+    {
+        perror("Error joining parent thread");
+        exit(EXIT_FAILURE);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void send_word(const char *word)
 {
     pthread_mutex_lock(&mutex);
-    while(word_ready) {
-        if(pthread_cond_wait(&cond, &mutex) != 0) {
+
+    while(word_ready)
+    {
+        if(pthread_cond_wait(&cond, &mutex) != 0)
+        {
             perror("Error waiting for condition variable");
             exit(EXIT_FAILURE);
         }
     }
 
     shared_word = strdup(word);
-    if(shared_word == NULL) {
+
+    if(shared_word == NULL)
+    {
         perror("Error duplicating word");
         exit(EXIT_FAILURE);
     }
 
     word_ready = 1;
 
-    if(pthread_cond_signal(&cond) != 0) {
+    if(pthread_cond_signal(&cond) != 0)
+    {
         perror("Error signaling condition variable");
         exit(EXIT_FAILURE);
     }
+
     pthread_mutex_unlock(&mutex);
 }
 
-void *child_process(void *arg)
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void *child_process(void *arg)
+#pragma GCC diagnostic pop
 {
     FILE *file;
     char *token, *saveptr;
@@ -77,29 +123,39 @@ void *child_process(void *arg)
     pthread_exit(NULL);
 }
 
-void *parent_process(void *arg)
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void *parent_process(void *arg)
+#pragma GCC diagnostic pop
 {
     char *word;
 
     while(1)
     {
         pthread_mutex_lock(&mutex);
+
         while(!word_ready)
         {
-            if(pthread_cond_wait(&cond, &mutex) != 0) {
+            if(pthread_cond_wait(&cond, &mutex) != 0)
+            {
                 perror("Error waiting for condition variable");
                 exit(EXIT_FAILURE);
             }
         }
 
         word_ready = 0;
-        if(pthread_cond_signal(&cond) != 0) {
+
+        if(pthread_cond_signal(&cond) != 0)
+        {
             perror("Error signaling condition variable");
             exit(EXIT_FAILURE);
         }
+
         pthread_mutex_unlock(&mutex);
 
         word = shared_word;
+
         if(word == NULL)
         {
             break;
@@ -110,35 +166,4 @@ void *parent_process(void *arg)
     }
 
     pthread_exit(NULL);
-}
-
-int main(void)
-{
-    pthread_t child_thread, parent_thread;
-
-    if(pthread_create(&child_thread, NULL, child_process, NULL) != 0)
-    {
-        perror("Error creating child thread");
-        exit(EXIT_FAILURE);
-    }
-
-    if(pthread_create(&parent_thread, NULL, parent_process, NULL) != 0)
-    {
-        perror("Error creating parent thread");
-        exit(EXIT_FAILURE);
-    }
-
-    if(pthread_join(child_thread, NULL) != 0)
-    {
-        perror("Error joining child thread");
-        exit(EXIT_FAILURE);
-    }
-
-    if(pthread_join(parent_thread, NULL) != 0)
-    {
-        perror("Error joining parent thread");
-        exit(EXIT_FAILURE);
-    }
-
-    return EXIT_SUCCESS;
 }

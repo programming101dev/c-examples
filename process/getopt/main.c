@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    printf("Is option 'a' set?: %d\n", option_a_set);
+    printf("Is option 'b' set?: %d\n", option_b_set);
     printf("Value of option 'c': %s\n", option_c_value);
 
     // Print remaining non-option arguments

@@ -6,18 +6,11 @@
 #include <stdbool.h>
 
 
+static void alarm_handler(int signal_number);
+
+
 volatile sig_atomic_t alarm_received = false;
 
-
-void alarm_handler(int signal_number);
-
-
-void alarm_handler(int signal_number)
-{
-    const char* message = "Alarm received!\n";
-    write(STDERR_FILENO, message, strlen(message));
-    alarm_received = true;
-}
 
 int main(void)
 {
@@ -35,7 +28,7 @@ int main(void)
     printf("Waiting for the alarm...\n");
 
     // Wait until the alarm is received
-    while(!alarm_received)
+    while(!(alarm_received))
     {
         // Put any other processing you want here.
     }
@@ -43,4 +36,15 @@ int main(void)
     printf("Exiting.\n");
 
     return EXIT_SUCCESS;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void alarm_handler(int signal_number)
+#pragma GCC diagnostic pop
+{
+    const char *message = "Alarm received!\n";
+    write(STDERR_FILENO, message, strlen(message));
+    alarm_received = true;
 }

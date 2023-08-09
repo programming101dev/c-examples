@@ -31,7 +31,6 @@ static void convertLongDouble(long double num, char *buffer, size_t bufferSize);
 
 // Pointer Types
 static void convertPointer(const void *ptr, char *buffer, size_t bufferSize);
-static void convertIntPtr(intptr_t num, char *buffer, size_t bufferSize);
 
 // Size and Offset Types
 static void convertSize(size_t num, char *buffer, size_t bufferSize);
@@ -69,7 +68,10 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconstant-conversion"
     convertInt8(128, bad_buffer, sizeof(bad_buffer));
+#pragma GCC diagnostic pop
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -78,7 +80,10 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconstant-conversion"
     convertUInt8(300, bad_buffer, sizeof(bad_buffer));
+#pragma GCC diagnostic pop
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -96,7 +101,10 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconstant-conversion"
     convertUInt16(70000, bad_buffer, sizeof(bad_buffer));
+#pragma GCC diagnostic pop
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -114,7 +122,10 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconstant-conversion"
     convertUInt32(5000000000U, bad_buffer, sizeof(bad_buffer));
+#pragma GCC diagnostic pop
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -124,6 +135,24 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
     convertInt(2147483647, bad_buffer, sizeof(bad_buffer));
+    printf("\tBad Buffer: %s\n", bad_buffer);
+    memset(bad_buffer, 0, sizeof(bad_buffer));
+
+    printf("unsigned int\n");
+    convertUInt(12345, good_buffer, sizeof(good_buffer)); // Using the function
+    printf("\tGood Buffer: %s\n", good_buffer);
+    memset(good_buffer, 0, sizeof(good_buffer));
+
+    convertUInt(2147483647, bad_buffer, sizeof(bad_buffer));
+    printf("\tBad Buffer: %s\n", bad_buffer);
+    memset(bad_buffer, 0, sizeof(bad_buffer));
+
+    printf("long\n");
+    convertLong(4294967295L, good_buffer, sizeof(good_buffer));
+    printf("\tGood Buffer: %s\n", good_buffer);
+    memset(good_buffer, 0, sizeof(good_buffer));
+
+    convertLong(5000000000L, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -461,7 +490,7 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 
 static void convertFloat(float value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "float: %.5f", value);
+    int result = snprintf(buffer, bufferSize, "float: %.5f", (double)value);
 
     if(result >= 0 && (size_t)result < bufferSize)
     {

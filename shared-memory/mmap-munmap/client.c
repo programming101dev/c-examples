@@ -7,23 +7,13 @@
 #include <unistd.h>
 
 
+static size_t get_page_size(void);
+
+
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"
 #define SERVER_SEM_NAME "/server_semaphore"
 
-
-size_t get_page_size(void)
-{
-    long page_size = sysconf(_SC_PAGESIZE);
-
-    if(page_size == -1)
-    {
-        perror("sysconf");
-        exit(EXIT_FAILURE);
-    }
-
-    return (size_t)page_size;
-}
 
 int main(void)
 {
@@ -107,5 +97,19 @@ int main(void)
     munmap(shm_ptr, shm_size);
     close(shm_fd);
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+
+static size_t get_page_size(void)
+{
+    long page_size = sysconf(_SC_PAGESIZE);
+
+    if(page_size == -1)
+    {
+        perror("sysconf");
+        exit(EXIT_FAILURE);
+    }
+
+    return (size_t)page_size;
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <inttypes.h>
+
 
 long long performCalculation(size_t size, size_t iterations);
 void printTimes(clock_t start_time, clock_t end_time);
@@ -50,25 +50,34 @@ int main(void)
 
 long long performCalculation(size_t size, size_t iterations)
 {
-    int numbers[size];
+    int *numbers;
     long long sum;
 
+    numbers = malloc(size * sizeof(int));
+
+    if(numbers == NULL)
+    {
+        perror("Failed to allocate memory");
+        exit(EXIT_FAILURE);
+    }
+
+    sum = 0;
     srand(time(NULL) ^ getpid());
 
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         numbers[i] = rand() % 100;
     }
 
-    sum = 0;
-
-    for(int i = 0; i < iterations; i++)
+    for(size_t i = 0; i < iterations; i++)
     {
-        for(int j = 0; j < size; j++)
+        for(size_t j = 0; j < size; j++)
         {
             sum += numbers[j];
         }
     }
+
+    free(numbers);
 
     return sum;
 }

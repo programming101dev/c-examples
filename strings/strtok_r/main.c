@@ -6,7 +6,7 @@
 int main(void)
 {
     char str[] = "This,is,a,test,string";
-    char *delimiter = ",";
+    const char *delimiter = ",";
     char *token;
     char *saveptr; // Used to save the context between calls to strtok_r
 

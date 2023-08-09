@@ -4,8 +4,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-// Signal handler function (empty, not used in this example)
-void signal_handler(int signal_number) {}
+
+static void signal_handler(int signal_number);
+
 
 int main(void)
 {
@@ -24,27 +25,35 @@ int main(void)
     sigaddset(&mask, SIGINT);
 
     // Block SIGINT in the main thread
-    if(sigprocmask(SIG_BLOCK, &mask, NULL) < 0) {
+    if(sigprocmask(SIG_BLOCK, &mask, NULL) < 0)
+    {
         perror("Failed to block SIGINT");
         return 1;
     }
 
     // Fork the process
     pid_t pid = fork();
-    if(pid < 0) {
+
+    if(pid < 0)
+    {
         perror("Fork failed");
         return 1;
-    } else if(pid == 0) {
+    }
+    else if(pid == 0)
+    {
         // Child process
         sleep(3); // Sleep for 3 seconds
         kill(getppid(), SIGINT); // Send SIGINT to the parent
         exit(0);
-    } else {
+    }
+    else
+    {
         // Parent process
         printf("Blocked SIGINT. Waiting for SIGINT using sigwait...\n");
 
         // Wait for SIGINT using sigwait
-        if(sigwait(&mask, &sig) != 0) {
+        if(sigwait(&mask, &sig) != 0)
+        {
             perror("Failed to wait for signal");
             return 1;
         }
@@ -57,4 +66,12 @@ int main(void)
     }
 
     return EXIT_SUCCESS;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void signal_handler(int signal_number)
+#pragma GCC diagnostic pop
+{
 }

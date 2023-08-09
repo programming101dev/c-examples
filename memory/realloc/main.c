@@ -4,7 +4,7 @@
 
 static void initialize_array(int *array, int num_elements);
 static void print_array(const char *message, const int *array, int num_elements);
-static int *resize_array(int *array, int old_num_elements, int new_num_elements);
+static int *resize_array(int *array, int new_num_elements);
 
 
 int main(void)
@@ -25,7 +25,7 @@ int main(void)
     print_array("Initial elements of the array: ", dynamic_array, num_elements);
 
     num_elements  = 10;
-    dynamic_array = resize_array(dynamic_array, 5, num_elements);
+    dynamic_array = resize_array(dynamic_array, num_elements);
     initialize_array(&dynamic_array[5], num_elements - 5);
     print_array("Resized elements of the array: ", dynamic_array, num_elements);
 
@@ -57,9 +57,7 @@ static void print_array(const char *message, const int *array, int num_elements)
 }
 
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-static int *resize_array(int *array, int old_num_elements, int new_num_elements)
+static int *resize_array(int *array, int new_num_elements)
 {
     int *resized_array;
 
@@ -74,4 +72,3 @@ static int *resize_array(int *array, int old_num_elements, int new_num_elements)
 
     return resized_array;
 }
-#pragma GCC diagnostic pop

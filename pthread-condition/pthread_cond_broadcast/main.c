@@ -2,28 +2,16 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+static void *thread_function(void *thread_id);
+
+
 #define NUM_THREADS 3
+
 
 pthread_mutex_t mutex;
 pthread_cond_t cond_var;
 int shared_data = 0;
 
-void *thread_function(void *thread_id)
-{
-    long tid = (long)thread_id;
-
-    pthread_mutex_lock(&mutex);
-
-    while(shared_data < 10)
-    {
-        printf("Thread %ld is waiting...\n", tid);
-        pthread_cond_wait(&cond_var, &mutex);
-        printf("Thread %ld is awake and running. Shared data: %d\n", tid, shared_data);
-    }
-
-    pthread_mutex_unlock(&mutex);
-    pthread_exit(NULL);
-}
 
 int main(void)
 {
@@ -62,5 +50,23 @@ int main(void)
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond_var);
+    pthread_exit(NULL);
+}
+
+
+static void *thread_function(void *thread_id)
+{
+    long tid = (long)thread_id;
+
+    pthread_mutex_lock(&mutex);
+
+    while(shared_data < 10)
+    {
+        printf("Thread %ld is waiting...\n", tid);
+        pthread_cond_wait(&cond_var, &mutex);
+        printf("Thread %ld is awake and running. Shared data: %d\n", tid, shared_data);
+    }
+
+    pthread_mutex_unlock(&mutex);
     pthread_exit(NULL);
 }

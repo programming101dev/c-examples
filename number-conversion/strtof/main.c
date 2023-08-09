@@ -32,7 +32,8 @@ static void convert(const char *str)
     result = strtof(str, &endptr);
 
     // Check for conversion errors
-    if((errno == ERANGE && (result == HUGE_VALF || result == -HUGE_VALF)) || (errno != 0 && result == 0))
+    float tolerance = 1e-6f; // Define your desired tolerance for float
+    if ((errno == ERANGE && (fabsf(result - HUGE_VALF) < tolerance || fabsf(result + HUGE_VALF) < tolerance)) || (errno != 0 && fabsf(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }
@@ -49,5 +50,5 @@ static void convert(const char *str)
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
 
-    printf("Result: %f\n", result);
+    printf("Result: %f\n", (double)result);
 }

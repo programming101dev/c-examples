@@ -17,7 +17,7 @@ int main(void)
     // Get the current output baud rate
     speed_t output_baud = cfgetospeed(&term);
 
-    if(output_baud == -1)
+    if(output_baud == (speed_t)-1)
     {
         perror("cfgetospeed");
         return 1;

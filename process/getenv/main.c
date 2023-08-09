@@ -20,7 +20,7 @@ int main(void)
         "PRINTER", "HISTSIZE", "MAILCHECK", "PROCLANG", "HOME", "MAILER", "PROJECTDIR"
     };
 
-    for(int i = 0; i < sizeof(env_variables) / sizeof(env_variables[0]); i++)
+    for(size_t i = 0; i < sizeof(env_variables) / sizeof(env_variables[0]); i++)
     {
         print_env_variable(env_variables[i]);
     }

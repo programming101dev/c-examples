@@ -2,9 +2,11 @@
 #include <stdlib.h>
 
 
+#define BUFFER_SIZE 256
+
+
 int main(void)
 {
-    const size_t BUFFER_SIZE = 256;
     char buffer[BUFFER_SIZE];
 
     fputs("Please input some lines, end with Ctrl-D:\n", stdout);

@@ -31,12 +31,14 @@ static void convert(const char *str)
     errno  = 0;
     result = strtold(str, &endptr);
 
+    // Define your desired tolerance
+    long double tolerance = 1e-6L;
+
     // Check for conversion errors
-    if((errno == ERANGE && (result == HUGE_VALL || result == -HUGE_VALL)) || (errno != 0 && result == 0))
+    if ((errno == ERANGE && (fabsl(result - HUGE_VALL) < tolerance)) || (errno != 0 && fabsl(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }
-
     // Check if the entire string was converted
     if(endptr == str)
     {

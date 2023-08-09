@@ -43,7 +43,6 @@ int main(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
 static void *thread_function(void *arg)
 {
     return NULL;

@@ -73,6 +73,6 @@ int main(void)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void signal_handler(int signal_number)
-#pragma GCC diagnostic pop
 {
 }
+#pragma GCC diagnostic pop

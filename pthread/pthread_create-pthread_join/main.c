@@ -39,7 +39,6 @@ int main(void)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void *print_numbers(void *arg)
-#pragma GCC diagnostic pop
 {
     for(int i = 1; i <= 5; ++i)
     {
@@ -50,3 +49,4 @@ static void *print_numbers(void *arg)
     // The thread returns NULL upon completion
     return NULL;
 }
+#pragma GCC diagnostic pop

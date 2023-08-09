@@ -9,7 +9,7 @@ int main(void)
     void *data;
 
     errno = 0;
-    data = malloc(SIZE_MAX);
+    data = malloc(PTRDIFF_MAX);
 
     if(data)
     {

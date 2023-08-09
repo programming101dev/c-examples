@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <dirent.h>
 
+
 int main(void)
 {
     DIR *dir = opendir(".");
@@ -14,7 +15,11 @@ int main(void)
     while((entry = readdir(dir)) != NULL)
     {
         printf("Name: %s\n", entry->d_name);
+#if defined(__APPLE__)
         printf("Inode number: %lld\n", entry->d_ino);
+#else
+        printf("Inode number: %ld\n", entry->d_ino);
+#endif
         printf("\n");
     }
 

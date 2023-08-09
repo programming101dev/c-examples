@@ -29,7 +29,6 @@ int main(void)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 static void *thread_function(void *arg)
-#pragma GCC diagnostic pop
 {
     pthread_t thread_id = pthread_self();
     printf("Thread ID: %lu\n", (unsigned long) thread_id);
@@ -38,3 +37,4 @@ static void *thread_function(void *arg)
 
     return NULL;
 }
+#pragma GCC diagnostic pop

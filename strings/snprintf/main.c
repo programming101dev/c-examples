@@ -69,7 +69,11 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
+#ifdef __APPLE__
 #pragma GCC diagnostic ignored "-Wconstant-conversion"
+#elif __linux__
+#pragma GCC diagnostic ignored "-Woverflow"
+#endif
     convertInt8(128, bad_buffer, sizeof(bad_buffer));
 #pragma GCC diagnostic pop
     printf("\tBad Buffer: %s\n", bad_buffer);
@@ -81,9 +85,11 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-    convertUInt8(300, bad_buffer, sizeof(bad_buffer));
-#pragma GCC diagnostic pop
+#ifdef __APPLE__
+    #pragma GCC diagnostic ignored "-Wconstant-conversion"
+#elif __linux__
+#pragma GCC diagnostic ignored "-Woverflow"
+#endif
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -102,9 +108,11 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-    convertUInt16(70000, bad_buffer, sizeof(bad_buffer));
-#pragma GCC diagnostic pop
+#ifdef __APPLE__
+    #pragma GCC diagnostic ignored "-Wconstant-conversion"
+#elif __linux__
+#pragma GCC diagnostic ignored "-Woverflow"
+#endif
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
@@ -123,9 +131,11 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-    convertUInt32(5000000000U, bad_buffer, sizeof(bad_buffer));
-#pragma GCC diagnostic pop
+#ifdef __APPLE__
+    #pragma GCC diagnostic ignored "-Wconstant-conversion"
+#elif __linux__
+#pragma GCC diagnostic ignored "-Woverflow"
+#endif
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 

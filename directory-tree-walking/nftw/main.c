@@ -49,7 +49,6 @@ static void display_help(const char* program_name)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 static int print_file(const char* fpath, const struct stat* sb, int tflag, struct FTW* ftwbuf)
-#pragma GCC diagnostic pop
 {
     if(tflag == FTW_F)
         printf("File: %s\n", fpath);
@@ -60,5 +59,4 @@ static int print_file(const char* fpath, const struct stat* sb, int tflag, struc
 
     return 0; // Continue traversing the directory tree
 }
-
-
+#pragma GCC diagnostic pop

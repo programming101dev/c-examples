@@ -1,9 +1,10 @@
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <sys/times.h>
+#include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
-#include <inttypes.h>
 
 
 long long performCalculation(size_t size, size_t iterations);

@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+
 int main(void)
 {
     struct termios term;
@@ -23,7 +24,7 @@ int main(void)
         return 1;
     }
 
-    printf("Current output baud rate: %lu\n", output_baud);
+    printf("Current output baud rate: %u\n", output_baud);
 
     // Set a new output baud rate
     speed_t new_output_baud = B9600; // 9600 baud
@@ -34,7 +35,7 @@ int main(void)
         return 1;
     }
 
-    printf("New output baud rate: %lu\n", new_output_baud);
+    printf("New output baud rate: %u\n", new_output_baud);
 
     // Apply the updated terminal attributes
     if(tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)

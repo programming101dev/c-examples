@@ -21,7 +21,7 @@ int main(void)
     printf("Terminal attributes:\n");
 
     // Input flags
-    printf("Input flags:  %lX\n", term_attr.c_iflag);
+    printf("Input flags:  %X\n", term_attr.c_iflag);
     print_flags("BRKINT", term_attr.c_iflag, BRKINT);
     print_flags("ICRNL", term_attr.c_iflag, ICRNL);
     print_flags("IGNBRK", term_attr.c_iflag, IGNBRK);
@@ -37,7 +37,7 @@ int main(void)
     printf("\n");
 
     // Output flags
-    printf("Output flags: %lX\n", term_attr.c_oflag);
+    printf("Output flags: %X\n", term_attr.c_oflag);
     print_flags("OPOST", term_attr.c_oflag, OPOST);
     print_flags("ONLCR", term_attr.c_oflag, ONLCR);
     print_flags("OCRNL", term_attr.c_oflag, OCRNL);
@@ -54,7 +54,7 @@ int main(void)
     printf("\n");
 
     // Control flags
-    printf("Control flags: %lX\n", term_attr.c_cflag);
+    printf("Control flags: %X\n", term_attr.c_cflag);
     print_flags("CSIZE CS5", term_attr.c_cflag, CS5);
     print_flags("CSIZE CS6", term_attr.c_cflag, CS6);
     print_flags("CSIZE CS7", term_attr.c_cflag, CS7);
@@ -68,7 +68,7 @@ int main(void)
     printf("\n");
 
     // Local flags
-    printf("Local flags: %lX\n", term_attr.c_lflag);
+    printf("Local flags: %X\n", term_attr.c_lflag);
     print_flags("ECHO", term_attr.c_lflag, ECHO);
     print_flags("ECHOE", term_attr.c_lflag, ECHOE);
     print_flags("ECHOK", term_attr.c_lflag, ECHOK);

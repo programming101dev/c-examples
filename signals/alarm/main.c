@@ -42,9 +42,9 @@ int main(void)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 static void alarm_handler(int signal_number)
-#pragma GCC diagnostic pop
 {
     const char *message = "Alarm received!\n";
     write(STDERR_FILENO, message, strlen(message));
     alarm_received = true;
 }
+#pragma GCC diagnostic pop

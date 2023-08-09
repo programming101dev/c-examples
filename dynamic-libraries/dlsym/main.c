@@ -54,9 +54,11 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     // Get the symbol from the shared library
     func = (void (*)(const char*))dlsym(handle, function_name);
-
+#pragma GCC diagnostic pop
     if(!func)
     {
         fprintf(stderr, "Error getting the symbol '%s': %s\n", function_name, dlerror());

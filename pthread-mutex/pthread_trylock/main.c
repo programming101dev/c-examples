@@ -37,7 +37,8 @@ static void *threadFunction(void* arg)
     pthread_exit(NULL);
 }
 
-int main(void) {
+int main(void)
+{
     // Initialize the mutex
     pthread_mutex_t mutex;
     if(pthread_mutex_init(&mutex, NULL) != 0) {

@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 
-int main(void) {
+
+int main(void)
+{
     struct in_addr ipv4_addr;
-    struct in6_addr ipv6_addr;
 
     // Hard-coded binary representations of an IPv4 address and an IPv6 address
     unsigned char ipv4_bytes[4] = {192, 168, 0, 1};

@@ -5,7 +5,8 @@
 
 void signal_handler(int signal_number);
 
-int main(void) {
+int main(void)
+{
     // Set up the signal handler
     struct sigaction sa;
     sa.sa_handler = signal_handler;

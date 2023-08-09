@@ -11,7 +11,7 @@ int main(void)
     struct stat link_stat;
     struct stat target_stat;
 
-    if(symlink("../../example.txt", symlink_name) == -1)
+    if(symlink(filename, symlink_name) == -1)
     {
         perror("Error creating symbolic link");
         return EXIT_FAILURE;

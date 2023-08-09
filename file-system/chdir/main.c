@@ -9,7 +9,7 @@ int main(void)
     const char *path = ".";
     long path_max;
     char *buffer = NULL;
-    size_t size = path_max;
+    size_t size;
 
     path_max = pathconf(path, _PC_PATH_MAX);
 

@@ -3,10 +3,9 @@
 #include <unistd.h>
 #include <dlfcn.h>
 
-void display_help(const char* program_name
-) {
-    printf("Usage: %s -h <library_name>\n", program_name);
-}
+
+static void display_help(const char *program_name);
+
 
 int main(int argc, char* argv[])
 {
@@ -26,7 +25,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    if (optind >= argc)
+    if(optind >= argc)
     {
         display_help(argv[0]);
         return 1;
@@ -50,5 +49,11 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+
+static void display_help(const char *program_name)
+{
+    printf("Usage: %s -h <library_name>\n", program_name);
 }

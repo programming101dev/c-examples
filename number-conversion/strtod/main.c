@@ -28,25 +28,31 @@ static void convert(const char *str)
     char *endptr;
 
     result = 0;
-    errno  = 0;
+    errno = 0;
     result = strtod(str, &endptr);
 
-    // Check for conversion errors
-    if((errno == ERANGE && (result == HUGE_VAL || result == -HUGE_VAL)) || (errno != 0 && result == 0))
+// Check for conversion errors
+    double tolerance = 1e-6; // Define your desired tolerance
+    if ((errno == ERANGE && (fabs(result - HUGE_VAL) < tolerance || fabs(result + HUGE_VAL) < tolerance)) || (errno != 0 && fabs(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }
-
     // Check if the entire string was converted
-    if(endptr == str)
+    if (endptr == str)
     {
         fprintf(stderr, "No digits were found in the input.\n");
     }
 
     // Check for leftover characters in the string
-    if(*endptr != '\0')
+    if (*endptr != '\0')
     {
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
+    }
+
+    // Compare result with HUGE_VAL and -HUGE_VAL using a tolerance
+    if (fabs(result - HUGE_VAL) < tolerance || fabs(result + HUGE_VAL) < tolerance)
+    {
+        fprintf(stderr, "Result is HUGE_VAL or -HUGE_VAL\n");
     }
 
     printf("Result: %f\n", result);

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(void) {
+int main(void)
+{
     pid_t pid = getpid(); // Get the PID of the current process
 
     pid_t sid = getsid(pid);

@@ -7,44 +7,6 @@ static void print_array(const char *message, const int *array, int num_elements)
 static int *resize_array(int *array, int old_num_elements, int new_num_elements);
 
 
-static void initialize_array(int *array, int num_elements)
-{
-    for(int i = 0; i < num_elements; i++)
-    {
-        array[i] = i + 1;
-    }
-}
-
-
-static void print_array(const char *message, const int *array, int num_elements)
-{
-    printf("%s", message);
-
-    for(int i = 0; i < num_elements; i++)
-    {
-        printf("%d ", array[i]);
-    }
-
-    printf("\n");
-}
-
-
-static int *resize_array(int *array, int old_num_elements, int new_num_elements)
-{
-    int *resized_array;
-
-    resized_array = realloc(array, new_num_elements * sizeof(int));
-
-    if(resized_array == NULL)
-    {
-        perror("Memory reallocation failed\n");
-        free(array);
-        exit(EXIT_FAILURE);
-    }
-
-    return resized_array;
-}
-
 int main(void)
 {
     int *dynamic_array;
@@ -71,3 +33,45 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
+
+
+static void initialize_array(int *array, int num_elements)
+{
+    for(int i = 0; i < num_elements; i++)
+    {
+        array[i] = i + 1;
+    }
+}
+
+
+static void print_array(const char *message, const int *array, int num_elements)
+{
+    printf("%s", message);
+
+    for(int i = 0; i < num_elements; i++)
+    {
+        printf("%d ", array[i]);
+    }
+
+    printf("\n");
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static int *resize_array(int *array, int old_num_elements, int new_num_elements)
+{
+    int *resized_array;
+
+    resized_array = realloc(array, new_num_elements * sizeof(int));
+
+    if(resized_array == NULL)
+    {
+        perror("Memory reallocation failed\n");
+        free(array);
+        exit(EXIT_FAILURE);
+    }
+
+    return resized_array;
+}
+#pragma GCC diagnostic pop

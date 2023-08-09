@@ -10,7 +10,7 @@ int main(void)
     // Initialize the condition variable
     int init_result = pthread_cond_init(&condition, NULL);
 
-    if (init_result != 0)
+    if(init_result != 0)
     {
         fprintf(stderr, "Error initializing condition variable. Error code: %d\n", init_result);
         return EXIT_FAILURE;

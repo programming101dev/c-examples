@@ -15,7 +15,7 @@ void print_socket_opt(int sockfd, int option_level, int option_name, const char 
     int optval;
     socklen_t optlen = sizeof(optval);
     int ret = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
-    if (ret == 0) {
+    if(ret == 0) {
         printf("%s: %s\n", option_name_str, optval ? "Enabled" : "Disabled");
     } else {
         perror("getsockopt");
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     int port = 0;
     int opt;
 
-    while ((opt = getopt(argc, argv, "hp:")) != -1) {
+    while((opt = getopt(argc, argv, "hp:")) != -1) {
         switch (opt) {
             case 'h':
                 print_help();
@@ -34,13 +34,13 @@ int main(int argc, char *argv[]) {
             case 'p':
                 // Convert the port argument to an integer using strtol
                 port = (int)strtol(optarg, NULL, 10);
-                if (port == 0) {
+                if(port == 0) {
                     fprintf(stderr, "Invalid port number\n");
                     return 1;
                 }
                 break;
             case '?':
-                if (optopt == 'p') {
+                if(optopt == 'p') {
                     fprintf(stderr, "Option -p requires an argument.\n");
                 } else {
                     fprintf(stderr, "Unknown option: -%c.\n", optopt);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (port == 0) {
+    if(port == 0) {
         fprintf(stderr, "Port number not specified. Use -p <port> to set the port.\n");
         return 1;
     }
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
     // Create a listening socket
     int listen_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (listen_sockfd == -1) {
+    if(listen_sockfd == -1) {
         perror("socket");
         return 1;
     }
@@ -72,14 +72,14 @@ int main(int argc, char *argv[]) {
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
 
-    if (bind(listen_sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+    if(bind(listen_sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("bind");
         close(listen_sockfd);
         return 1;
     }
 
     // Start listening for incoming connections
-    if (listen(listen_sockfd, 1) == -1) {
+    if(listen(listen_sockfd, 1) == -1) {
         perror("listen");
         close(listen_sockfd);
         return 1;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     // Determine if the socket is accepting connections
     int optval;
     socklen_t optlen = sizeof(optval);
-    if (getsockopt(listen_sockfd, IPPROTO_TCP, SO_ACCEPTCONN, &optval, &optlen) == 0) {
+    if(getsockopt(listen_sockfd, IPPROTO_TCP, SO_ACCEPTCONN, &optval, &optlen) == 0) {
         printf("SO_ACCEPTCONN: %s\n", optval ? "Supported (Socket is accepting connections)" : "Not supported");
     } else {
         perror("getsockopt");

@@ -3,7 +3,8 @@
 #include <termios.h>
 #include <unistd.h>
 
-int main(void) {
+int main(void)
+{
     struct termios term;
 
     // Get the terminal attributes

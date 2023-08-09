@@ -8,7 +8,8 @@
 
 #define SOCKET_PATH "/tmp/example_socket"
 
-int main(void) {
+int main(void)
+{
     int sockfd;
     struct sockaddr_un server_addr;
 

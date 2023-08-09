@@ -21,7 +21,8 @@ void *thread_function(void *arg)
     pthread_exit(result);
 }
 
-int main(void) {
+int main(void)
+{
     pthread_t threads[3];
     int thread_args[3] = {1, 2, 3};
 

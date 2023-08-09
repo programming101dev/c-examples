@@ -5,12 +5,45 @@
 #include <netdb.h>
 #include <unistd.h>
 
-void print_help(const char* program_name) {
+
+static void print_help(const char *program_name);
+static int resolve_hostname_to_ip(const char *hostname);
+
+
+int main(int argc, char* argv[])
+{
+    int option;
+    while((option = getopt(argc, argv, "h")) != -1) {
+        switch (option) {
+            case 'h':
+                print_help(argv[0]);
+                return EXIT_SUCCESS;
+            default:
+                print_help(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
+
+    if(argc != optind + 1) {
+        print_help(argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    char* hostname = argv[optind];
+    int result = resolve_hostname_to_ip(hostname);
+    return result;
+}
+
+
+static void print_help(const char *program_name)
+{
     printf("Usage: %s [-h] hostname\n", program_name);
     printf("Resolve the IP addresses associated with the given hostname.\n");
 }
 
-int resolve_hostname_to_ip(const char* hostname) {
+
+static int resolve_hostname_to_ip(const char *hostname)
+{
     struct addrinfo hints, *result, *res;
     int error;
     char ipstr[INET6_ADDRSTRLEN];
@@ -20,18 +53,18 @@ int resolve_hostname_to_ip(const char* hostname) {
     hints.ai_socktype = SOCK_STREAM; // Use TCP socket type
 
     error = getaddrinfo(hostname, NULL, &hints, &result);
-    if (error != 0) {
+    if(error != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
         return EXIT_FAILURE;
     }
 
     // Print all IP addresses associated with the hostname
-    for (res = result; res != NULL; res = res->ai_next)
+    for(res = result; res != NULL; res = res->ai_next)
     {
         void* addr;
-        char* ipver;
+        const char* ipver;
 
-        if (res->ai_family == AF_INET)
+        if(res->ai_family == AF_INET)
         {
             // IPv4
             struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
@@ -52,27 +85,4 @@ int resolve_hostname_to_ip(const char* hostname) {
 
     freeaddrinfo(result);
     return EXIT_SUCCESS;
-}
-
-int main(int argc, char* argv[]) {
-    int option;
-    while ((option = getopt(argc, argv, "h")) != -1) {
-        switch (option) {
-            case 'h':
-                print_help(argv[0]);
-                return EXIT_SUCCESS;
-            default:
-                print_help(argv[0]);
-                return EXIT_FAILURE;
-        }
-    }
-
-    if (argc != optind + 1) {
-        print_help(argv[0]);
-        return EXIT_FAILURE;
-    }
-
-    char* hostname = argv[optind];
-    int result = resolve_hostname_to_ip(hostname);
-    return result;
 }

@@ -9,7 +9,7 @@ int main(void)
     printf("Char | Binary  | Oct | Dec | Hex | alnum | alpha | blank | cntrl | digit | graph | lower | print | punct | space | upper | xdigit | lower | upper |\n");
     printf("---------------------------------------------------------------------------------------------------------------------------------------------------\n");
 
-    for (int ch = 0; ch <= 127; ch++)
+    for(int ch = 0; ch <= 127; ch++)
     {
         printf("%c    | ", isprint(ch) ? ch : ' ');
         print_binary(ch);
@@ -39,7 +39,7 @@ int main(void)
 
 static void print_binary(int ch)
 {
-    for (int i = 6; i >= 0; i--)
+    for(int i = 6; i >= 0; i--)
     {
         printf("%d", (ch >> i) & 1);
     }

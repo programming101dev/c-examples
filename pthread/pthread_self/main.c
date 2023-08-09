@@ -16,7 +16,8 @@ void *thread_function(void *arg)
     return NULL;
 }
 
-int main(void) {
+int main(void)
+{
     pthread_t threads[3];
 
     for(int i = 0; i < 3; i++) {

@@ -7,7 +7,8 @@
 // Signal handler function (empty, not used in this example)
 void signal_handler(int signal_number) {}
 
-int main(void) {
+int main(void)
+{
     sigset_t mask;
     int sig;
     struct sigaction sa;

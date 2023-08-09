@@ -4,9 +4,6 @@
 #include <string.h>
 #include <semaphore.h>
 #include <sys/mman.h>
-#include <sys/stat.h>
-//#include <sys/sysctl.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 
@@ -15,24 +12,21 @@
 #define SERVER_SEM_NAME "/server_semaphore"
 
 
-size_t get_page_size() {
-#ifdef __linux__
-    return getpagesize();
-#elif __APPLE__
-    return getpagesize();
-#elif __FreeBSD__
-    int pagesize = 0;
-    size_t len = sizeof(pagesize);
-    if (sysctlbyname("hw.pagesize", &pagesize, &len, NULL, 0) == -1) {
-        perror("sysctl");
+size_t get_page_size(void)
+{
+    long page_size = sysconf(_SC_PAGESIZE);
+
+    if(page_size == -1)
+    {
+        perror("sysconf");
         exit(EXIT_FAILURE);
     }
-    return pagesize;
-#else
-#error "Unsupported platform"
-#endif
+
+    return (size_t)page_size;
 }
-int main() {
+
+int main(void)
+{
     int shm_fd;
     char *shm_ptr;
     sem_t *client_sem, *server_sem;
@@ -44,45 +38,45 @@ int main() {
 
     // Open the shared memory
     shm_fd = shm_open(shm_name, O_RDWR, S_IRUSR | S_IWUSR);
-    if (shm_fd == -1) {
+    if(shm_fd == -1) {
         perror("shm_open");
         exit(EXIT_FAILURE);
     }
 
     // Map the shared memory into the process address space
     shm_ptr = (char*)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if (shm_ptr == MAP_FAILED) {
+    if(shm_ptr == MAP_FAILED) {
         perror("mmap");
         exit(EXIT_FAILURE);
     }
 
     // Open the client semaphore
     client_sem = sem_open(CLIENT_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if (client_sem == SEM_FAILED) {
+    if(client_sem == SEM_FAILED) {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
     // Open the server semaphore
     server_sem = sem_open(SERVER_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if (server_sem == SEM_FAILED) {
+    if(server_sem == SEM_FAILED) {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
     // Open and read the file
     FILE *file = fopen("../../example.txt", "r");
-    if (!file) {
+    if(!file) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
 
     char buffer[100];
-    while (fgets(buffer, sizeof(buffer), file)) {
+    while(fgets(buffer, sizeof(buffer), file)) {
         char *word;
         char *saveptr;
         word = strtok_r(buffer, " \t\n", &saveptr);
-        while (word != NULL) {
+        while(word != NULL) {
             // Copy the word into shared memory
             strcpy(shm_ptr, word);
 

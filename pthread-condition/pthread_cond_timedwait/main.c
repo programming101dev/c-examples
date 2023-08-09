@@ -45,9 +45,9 @@ int main(void)
     result = pthread_cond_timedwait(&cond_var, &mutex, &abs_timeout);
     pthread_mutex_unlock(&mutex);
 
-    if (result == 0) {
+    if(result == 0) {
         printf("Condition variable signaled before timeout.\n");
-    } else if (result == ETIMEDOUT) {
+    } else if(result == ETIMEDOUT) {
         printf("Timeout occurred. Condition variable was not signaled.\n");
     } else {
         printf("Error while waiting for the condition variable.\n");

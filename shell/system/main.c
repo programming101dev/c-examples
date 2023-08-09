@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void) {
+int main(void)
+{
     // Execute "ls -l" command using system
     int status = system("ls -l");
 

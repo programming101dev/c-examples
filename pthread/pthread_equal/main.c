@@ -8,7 +8,8 @@ void* thread_function(void* arg)
     return NULL;
 }
 
-int main(void) {
+int main(void)
+{
     pthread_t thread1, thread2;
     pthread_create(&thread1, NULL, thread_function, NULL);
     pthread_create(&thread2, NULL, thread_function, NULL);

@@ -1,13 +1,16 @@
-#include <stdio.h>
 #include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-int main() {
+
+int main(void)
+{
     DIR *dir = opendir(".");
 
-    if (dir == NULL)
+    if(dir == NULL)
     {
         perror("opendir");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Do something with the directory...
@@ -15,8 +18,8 @@ int main() {
     if(closedir(dir) == -1)
     {
         perror("closedir");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

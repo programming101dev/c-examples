@@ -3,7 +3,8 @@
 #include <termios.h>
 #include <unistd.h>
 
-int main(void) {
+int main(void)
+{
     struct termios term;
     speed_t input_baud_rate;
 

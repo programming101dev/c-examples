@@ -18,7 +18,7 @@ int is_little_endian(void)
 
 int main(void)
 {
-    if (is_little_endian())
+    if(is_little_endian())
     {
         printf("Machine is little-endian.\n");
     }

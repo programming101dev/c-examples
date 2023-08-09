@@ -7,7 +7,8 @@
 
 static void signal_handler(int signal_number);
 
-int main(void) {
+int main(void)
+{
     sigset_t block_set;
     struct sigaction sa;
 

@@ -3,7 +3,8 @@
 #include <unistd.h>
 
 
-int main(void) {
+int main(void)
+{
     char *tty = ttyname(STDIN_FILENO);
 
     if(tty != NULL) {

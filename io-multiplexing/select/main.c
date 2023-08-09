@@ -21,7 +21,8 @@ static void signal_handler(int signum)
     }
 }
 
-int main(void) {
+int main(void)
+{
     int server_socket, *client_sockets = NULL;
     int max_clients = 0;
     int max_fd, activity, i, valread, new_socket, sd;

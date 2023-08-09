@@ -9,7 +9,8 @@
 
 #define FIFO_FILE "../fifo_example"
 
-int main(void) {
+int main(void)
+{
     int fd;
     char line[1024]; // Adjust the buffer size as needed
 

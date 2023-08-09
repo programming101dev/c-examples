@@ -34,7 +34,7 @@ int main(void)
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond_var, NULL);
 
-    for (t = 0; t < NUM_THREADS; t++)
+    for(t = 0; t < NUM_THREADS; t++)
     {
         rc = pthread_create(&threads[t], NULL, thread_function, (void *)t);
 
@@ -56,7 +56,7 @@ int main(void)
     }
 
     // Wait for all threads to finish
-    for (t = 0; t < NUM_THREADS; t++) {
+    for(t = 0; t < NUM_THREADS; t++) {
         pthread_join(threads[t], NULL);
     }
 

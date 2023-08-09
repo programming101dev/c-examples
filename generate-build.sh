@@ -63,47 +63,47 @@ SANITIZER_FLAGS=(
         "-fno-omit-frame-pointer"
 )
 
-# Variables to accumulate supported flags
+# Check if the provided flag is supported
+function is_flag_supported() {
+    local flag="$1"
+    echo "int main(void) { return 0; }" > test.c
+    clang -Werror=unknown-warning-option $flag test.c -o test.out 2>/dev/null
+    local result=$?
+    rm test.c test.out 2>/dev/null
+    return $result
+}
+
+# Detect platform
+PLATFORM=$(uname)
+
+# Filter out unsupported flags
 SUPPORTED_WARNING_FLAGS=""
-SUPPORTED_SANITIZER_FLAGS=""
-
-# Minimal C program to test compile
-echo "int main() { return 0; }" > test.c
-
-# Test each warning flag
 for FLAG in "${WARNING_FLAGS[@]}"; do
-  clang -Werror=unknown-warning-option $FLAG test.c -o test.out 2>/dev/null
-  if [ $? -eq 0 ]; then
-    SUPPORTED_WARNING_FLAGS="$SUPPORTED_WARNING_FLAGS $FLAG"
-  fi
+    if is_flag_supported "$FLAG"; then
+        SUPPORTED_WARNING_FLAGS="$SUPPORTED_WARNING_FLAGS $FLAG"
+    fi
 done
 
-# Test each sanitizer flag, taking dependencies into account
+SUPPORTED_SANITIZER_FLAGS=""
 ADDRESS_SUPPORTED=false
 for FLAG in "${SANITIZER_FLAGS[@]}"; do
-  if [ "$FLAG" == "-fsanitize=address" ]; then
-    clang -Werror=unknown-warning-option $FLAG test.c -o test.out 2>/dev/null
-    if [ $? -eq 0 ]; then
-      ADDRESS_SUPPORTED=true
-      SUPPORTED_SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS $FLAG"
+    if [ "$FLAG" == "-fsanitize=address" ]; then
+        if is_flag_supported "$FLAG"; then
+            ADDRESS_SUPPORTED=true
+            SUPPORTED_SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS $FLAG"
+        fi
+    elif [ "$FLAG" == "-fsanitize=pointer-subtract" ]; then
+        if $ADDRESS_SUPPORTED && is_flag_supported "-fsanitize=address $FLAG"; then
+            SUPPORTED_SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS $FLAG"
+        fi
+    else
+        if is_flag_supported "$FLAG"; then
+            if [ "$FLAG" != "-fstack-clash-protection" ] || [ "$PLATFORM" != "Darwin" ]; then
+                SUPPORTED_SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS $FLAG"
+            fi
+        fi
     fi
-  elif [ "$FLAG" == "-fsanitize=pointer-subtract" ]; then
-    if $ADDRESS_SUPPORTED; then
-      clang -Werror=unknown-warning-option "-fsanitize=address" $FLAG test.c -o test.out 2>/dev/null
-      if [ $? -eq 0 ]; then
-        SUPPORTED_SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS $FLAG"
-      fi
-    fi
-  else
-    clang -Werror=unknown-warning-option $FLAG test.c -o test.out 2>/dev/null
-    if [ $? -eq 0 ]; then
-      SUPPORTED_SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS $FLAG"
-    fi
-  fi
 done
-
-# Clean up the test files
-rm test.c test.out 2>/dev/null
 
 # Generate the final script
 cat <<EOL > build.sh

@@ -7,9 +7,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-int main() {
+int main(void)
+{
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
+    if(sockfd == -1) {
         perror("socket");
         return 1;
     }
@@ -21,7 +22,7 @@ int main() {
     inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
 
     // Connect to the server
-    if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
+    if(connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
         perror("connect");
         close(sockfd);
         return 1;

@@ -3,9 +3,11 @@
 #include <unistd.h>
 
 
+#define BUFFER_SIZE 4096
+
+
 int main(void)
 {
-    const unsigned int BUFFER_SIZE = 4096;
     char buffer[BUFFER_SIZE];
     ssize_t bytesRead;
 

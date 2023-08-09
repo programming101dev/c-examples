@@ -7,7 +7,8 @@
 
 #define FIFO_FILE "../fifo_example"
 
-int main(void) {
+int main(void)
+{
     int fd;
     uint8_t size;
     char word[UINT8_MAX + 1];

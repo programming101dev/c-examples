@@ -12,14 +12,12 @@
 // Global flag to indicate if Ctrl+C signal is received
 volatile sig_atomic_t exit_flag = 0;
 
+
 static void sigint_handler(int signum);
 
-// Signal handler function for SIGINT (Ctrl+C)
-static void sigint_handler(int signum) {
-    exit_flag = 1;
-}
 
-int main(void) {
+int main(void)
+{
     int sockfd, client_sockfd;
     struct sockaddr_un server_addr, client_addr;
     socklen_t client_addr_len;
@@ -95,3 +93,12 @@ int main(void) {
 
     return EXIT_SUCCESS;
 }
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void sigint_handler(int signum)
+{
+    exit_flag = 1;
+}
+#pragma GCC diagnostic pop

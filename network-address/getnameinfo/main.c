@@ -18,7 +18,7 @@ int main(void)
     // Get the hostname and port number associated with the address
     int result = getnameinfo((struct sockaddr *)&addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
 
-    if (result == 0)
+    if(result == 0)
     {
         printf("Address: %s:%s\n", hostname, port);
     }

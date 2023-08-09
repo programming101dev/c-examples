@@ -4,7 +4,8 @@
 #include <fcntl.h>
 #include <termios.h>
 
-int main(void) {
+int main(void)
+{
     int terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
 
     if(terminal_fd == -1) {

@@ -7,11 +7,11 @@
 static void display_help(const char *program_name);
 
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     int opt;
-    char* library_name = NULL;
-    char* function_name = NULL;
+    char *library_name = NULL;
+    char *function_name = NULL;
     void *handle;
     void (*func)(const char *);
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
     // Get the symbol from the shared library
-    func = (void (*)(const char*))dlsym(handle, function_name);
+    func = (void (*)(const char *)) dlsym(handle, function_name);
 #pragma GCC diagnostic pop
     if(!func)
     {

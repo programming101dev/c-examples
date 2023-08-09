@@ -1,28 +1,37 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
+#include <semaphore.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <semaphore.h>
-#include <unistd.h>
+//#include <sys/sysctl.h>
 #include <sys/types.h>
-#include <sys/sysctl.h>
+#include <unistd.h>
+
 
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"
 #define SERVER_SEM_NAME "/server_semaphore"
 
-size_t get_page_size() {
-    int mib[2];
-    size_t page_size;
-    mib[0] = CTL_HW;
-    mib[1] = HW_PAGESIZE;
-    size_t len = sizeof(page_size);
-    sysctl(mib, 2, &page_size, &len, NULL, 0);
-    return page_size;
-}
 
+size_t get_page_size() {
+#ifdef __linux__
+    return getpagesize();
+#elif __APPLE__
+    return getpagesize();
+#elif __FreeBSD__
+    int pagesize = 0;
+    size_t len = sizeof(pagesize);
+    if (sysctlbyname("hw.pagesize", &pagesize, &len, NULL, 0) == -1) {
+        perror("sysctl");
+        exit(EXIT_FAILURE);
+    }
+    return pagesize;
+#else
+#error "Unsupported platform"
+#endif
+}
 int main() {
     int shm_fd;
     char *shm_ptr;

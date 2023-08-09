@@ -1,10 +1,13 @@
+#include <fcntl.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <semaphore.h>
-#include <unistd.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
-int main(void) {
+
+int main(void)
+{
     const char *sem_name = "/example_semaphore";
     sem_t *semaphore;
     pid_t pid;

@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -5,9 +6,10 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <signal.h>
+
 
 #define SOCKET_PATH "/tmp/example_socket"
+
 
 // Global flag to indicate if Ctrl+C signal is received
 volatile sig_atomic_t exit_flag = 0;
@@ -15,7 +17,8 @@ volatile sig_atomic_t exit_flag = 0;
 // Signal handler function for SIGINT (Ctrl+C)
 static void sigint_handler(int signum);
 
-static void sigint_handler(int signum) {
+static void sigint_handler(int signum)
+{
     exit_flag = 1;
 }
 
@@ -31,7 +34,9 @@ int main(void) {
     sa.sa_handler = sigint_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-    if(sigaction(SIGINT, &sa, NULL) == -1) {
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
+    {
         perror("sigaction");
         exit(EXIT_FAILURE);
     }

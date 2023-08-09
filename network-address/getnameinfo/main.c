@@ -3,7 +3,9 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-int main(void) {
+
+int main(void)
+{
     struct sockaddr_in addr;
     socklen_t addrlen = sizeof(addr);
     char hostname[NI_MAXHOST], port[NI_MAXSERV];

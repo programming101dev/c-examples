@@ -1,13 +1,16 @@
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <signal.h>
+
 
 void signal_handler(int signal_number);
+
 
 int main(void)
 {
     // Set up the signal handler
+    pid_t pid;
     struct sigaction sa;
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
@@ -19,6 +22,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
+    pid = getpid();
     printf("Sending SIGUSR1 signal to my own process...\n");
     raise(SIGUSR1);
     printf("To send a signal:\n");

@@ -1,6 +1,8 @@
+#include <fcntl.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <semaphore.h>
+
 
 int main(void)
 {

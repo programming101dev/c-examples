@@ -1,11 +1,12 @@
 #include <errno.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 
 int main(void)
 {
-    errno_t *data;
+    void *data;
 
     errno = 0;
     data = malloc(SIZE_MAX);

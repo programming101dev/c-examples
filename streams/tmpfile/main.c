@@ -18,7 +18,12 @@ int main(void)
 
     // The temporary file will be automatically deleted when the program terminates
     // or when you explicitly close the file using fclose:
-    fclose(tempFile); // TODO: error handling
+    if(fclose(tempFile) == EOF)
+    {
+        perror("Error closing temporary file");
+        return EXIT_FAILURE;
+    }
+
     printf("Temp file closed\n");
 
     return EXIT_SUCCESS;

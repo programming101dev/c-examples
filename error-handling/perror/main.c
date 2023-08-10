@@ -6,18 +6,18 @@
 
 int main(void)
 {
-    void *data;
-
     errno = 0;
-    data = malloc(PTRDIFF_MAX);
+    fgetc(stdout);
 
-    if(data)
+    if(errno != 0)
     {
-        free(data);
-    }
-    else
-    {
-        perror("error with malloc");
+        clearerr(stderr);
+        perror("error with fgetc");
+
+        if(ferror(stderr) != 0)
+        {
+            perror("error with perror");
+        }
     }
 
     return EXIT_SUCCESS;

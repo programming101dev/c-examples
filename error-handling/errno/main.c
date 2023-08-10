@@ -1,23 +1,24 @@
 #include <errno.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 
 
 int main(void)
 {
-    void *data;
-
     errno = 0;
-    data = malloc(PTRDIFF_MAX);
+    fgetc(stdout);
 
-    if(data)
+    if(errno != 0)
     {
-        free(data);
-    }
-    else
-    {
-        fprintf(stderr, "errno: %d\n", errno);
+        int current_errno;
+
+        current_errno = errno;
+        errno = 0;
+
+        if(fprintf(stderr, "errno: %d\n", current_errno) < 0)
+        {
+            printf("could not fprintf: %d\n", errno);
+        }
     }
 
     return EXIT_SUCCESS;

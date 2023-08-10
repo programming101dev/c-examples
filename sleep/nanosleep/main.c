@@ -6,13 +6,13 @@
 
 int main(void)
 {
-    struct timespec tim, rem;
+    struct timespec tim;
+    struct timespec rem;
 
-    tim.tv_sec = 3; // seconds
-    tim.tv_nsec = 0; // nanoseconds
-
+    tim.tv_sec  = 1; // seconds
+    tim.tv_nsec = 500000000; // 0.5 seconds in nanoseconds
     printf("Starting program...\n");
-    printf("Sleeping for 3 seconds...\n");
+    printf("Sleeping for 1.5 seconds...\n");
 
     while(nanosleep(&tim, &rem) == -1)
     {
@@ -24,7 +24,7 @@ int main(void)
         else
         {
             perror("Unexpected error from nanosleep");
-            return -1;
+            return EXIT_FAILURE;
         }
     }
 

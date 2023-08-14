@@ -1,3 +1,20 @@
+/*
+ * This code is licensed under the Attribution-NonCommercial-NoDerivatives 4.0 International license.
+ *
+ * Author: D'Arcy Smith (ds@programming101.dev)
+ *
+ * You are free to:
+ *   - Share: Copy and redistribute the material in any medium or format.
+ *   - Under the following terms:
+ *       - Attribution: You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+ *       - NonCommercial: You may not use the material for commercial purposes.
+ *       - NoDerivatives: If you remix, transform, or build upon the material, you may not distribute the modified material.
+ *
+ * For more details, please refer to the full license text at:
+ * https://creativecommons.org/licenses/by-nc-nd/4.0/
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -11,8 +28,8 @@
 #define SOCKET_PATH "/tmp/example_socket"
 
 
-void send_word(int sockfd, const char *word, uint8_t length);
-void error_exit(const char *msg);
+static void send_word(int sockfd, const char *word, uint8_t length);
+static void error_exit(const char *msg);
 
 
 int main(void)
@@ -80,7 +97,8 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-void send_word(int sockfd, const char *word, uint8_t length)
+
+static void send_word(int sockfd, const char *word, uint8_t length)
 {
     ssize_t written_bytes;
 
@@ -109,7 +127,8 @@ void send_word(int sockfd, const char *word, uint8_t length)
     nanosleep(&delay, NULL);
 }
 
-void error_exit(const char *msg)
+
+static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);

@@ -66,5 +66,5 @@ int main(void)
 
 static int intcmp(const void *a, const void *b)
 {
-    return (*(int *)a - *(int *)b);
+    return (*(const int *)a - *(const int *)b);
 }

@@ -19,28 +19,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-int main(void)
+int main(int argc, char *argv[])
 {
-    char str[] = "This,is,a,test,string";
-    const char *delimiter = ",";
-    char *token;
-    char *saveptr; // Used to save the context between calls to strtok_r
+    const char *default_command = "ls -l ~/*.txt";
 
-    // First call to strtok_r with the input string and delimiter
-    token = strtok_r(str, delimiter, &saveptr);
+    const char *command;
+    char *saveptr;
+    char *token;
+    char *token_copy;
+    char delimiter[] = " ";
+
+    if(argc < 2)
+    {
+        command = default_command;
+    }
+    else
+    {
+        command = argv[1];
+    }
+
+    token_copy = strdup(command);
+    if (token_copy == NULL) {
+        printf("Memory allocation failed\n");
+        return EXIT_FAILURE;
+    }
+
+    token = strtok_r(token_copy, delimiter, &saveptr);
+
+    printf("Tokenized words:\n");
 
     while(token != NULL)
     {
         printf("Token: %s\n", token);
-
-        // Subsequent calls to strtok_r with NULL as the first argument
-        // to continue tokenizing the same string
         token = strtok_r(NULL, delimiter, &saveptr);
     }
 
-    // NOTE that strtok_r is destructive to the original string
-    printf("\nOriginal string \"%s\"\n", str);
+    free(token_copy);
 
     return EXIT_SUCCESS;
 }

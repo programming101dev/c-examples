@@ -15,10 +15,11 @@
  */
 
 
-#include <stdbool.h>
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 
 static void print_help(void);
@@ -27,34 +28,37 @@ static void print_help(void);
 int main(int argc, char *argv[])
 {
     int opt;
-    bool option_a_set;
-    bool option_b_set;
-    bool option_c_set;
-    char *option_c_value;
-
-    option_a_set = false;
-    option_b_set = false;
-    option_c_set = false;
-    option_c_value = NULL;
+    bool option_alpha_set = false;
+    bool option_beta_set = false;
+    bool option_charlie_set = false;
+    char *option_charlie_value = NULL;
+    struct option long_options[] =
+    {
+            {"alpha", no_argument, NULL, 'a'},
+            {"beta", no_argument, NULL, 'b'},
+            {"charlie", required_argument, NULL, 'c'},
+            {"help", no_argument, NULL, 'h'},
+            {NULL, 0, NULL, 0}
+    };
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "abc:h")) != -1)
+    while ((opt = getopt_long(argc, argv, "abc:h", long_options, NULL)) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'a':
-                printf("Option 'a' is set\n");
-                option_a_set = true;
+                printf("Option 'alpha' is set\n");
+                option_alpha_set = true;
                 break;
             case 'b':
-                printf("Option 'b' is set\n");
-                option_b_set = true;
+                printf("Option 'beta' is set\n");
+                option_beta_set = true;
                 break;
             case 'c':
-                printf("Option 'c' is set with value '%s'\n", optarg);
-                option_c_set = true;
-                option_c_value = optarg;
+                printf("Option 'charlie' is set with value '%s'\n", optarg);
+                option_charlie_set = true;
+                option_charlie_value = optarg;
                 break;
             case 'h':
                 print_help();
@@ -62,7 +66,7 @@ int main(int argc, char *argv[])
             case '?':
                 if(optopt == 'c')
                 {
-                    fprintf(stderr, "Option 'c' requires an argument.\n");
+                    fprintf(stderr, "Option 'charlie' requires an argument.\n");
                 }
                 else
                 {
@@ -76,20 +80,20 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Check if option 'c' is set
-    if(!(option_c_set))
+    // Check if option 'charlie' is set
+    if(!(option_charlie_set))
     {
-        fprintf(stderr, "Error: Option 'c' is required.\n");
+        fprintf(stderr, "Error: Option 'charlie' is required.\n");
         print_help();
         return EXIT_FAILURE;
     }
 
-    printf("Is option 'a' set?: %d\n", option_a_set);
-    printf("Is option 'b' set?: %d\n", option_b_set);
-    printf("Value of option 'c': %s\n", option_c_value);
+    printf("Is option 'alpha' set?: %d\n", option_alpha_set);
+    printf("Is option 'beta' set?: %d\n", option_beta_set);
+    printf("Value of option 'charlie': %s\n", option_charlie_value);
 
     // Print remaining non-option arguments
-    for(int i = optind; i < argc; i++)
+    for (int i = optind; i < argc; i++)
     {
         printf("Non-option argument: '%s'\n", argv[i]);
     }
@@ -100,10 +104,10 @@ int main(int argc, char *argv[])
 
 static void print_help(void)
 {
-    printf("Usage: example [-a] [-b] -c value [arg1 arg2 ...]\n");
+    printf("Usage: example [OPTIONS] [arg1 arg2 ...]\n");
     printf("Options:\n");
-    printf("  -a             Option 'a'\n");
-    printf("  -b             Option 'b'\n");
-    printf("  -c value       Option 'c' (required) with value\n");
-    printf("  -h             Display this help message\n");
+    printf("  -a, --alpha            Option 'alpha'\n");
+    printf("  -b, --beta             Option 'beta'\n");
+    printf("  -c, --charlie value    Option 'charlie' (required) with value\n");
+    printf("  -h, --help             Display this help message\n");
 }

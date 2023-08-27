@@ -17,23 +17,47 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <fnmatch.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+
+static int create_socket(void);
 
 
 int main(void)
 {
-    const char *pattern = "*.txt";
-    const char *filename = "document.txt";
+    int sock_fd;
 
-    if(fnmatch(pattern, filename, 0) != 0)
+    sock_fd = create_socket();
+
+    if(sock_fd == -1)
     {
-        fprintf(stderr, "Filename doesn't match the pattern.\n");
-
         return EXIT_FAILURE;
     }
 
-    printf("Filename matches the pattern.\n");
+    // Perform other operations on the socket, if needed
+
+    if(close(sock_fd) < 0)
+    {
+        perror("Failed to close socket");
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
 
+
+static int create_socket(void)
+{
+    int fd;
+
+    fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (fd == -1)
+    {
+        perror("Socket creation failed");
+        return -1;
+    }
+
+    return fd;
+}

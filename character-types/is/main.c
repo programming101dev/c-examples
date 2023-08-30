@@ -73,8 +73,8 @@ int main(void)
         }
 
         printf("%c     | %c     |\n",
-               islower(ch) ? tolower(ch) : ' ',
-               isupper(ch) ? toupper(ch) : ' ');
+               isprint(ch) ? tolower(ch) : ' ',
+               isprint(ch) ? toupper(ch) : ' ');
     }
 
     return EXIT_SUCCESS;

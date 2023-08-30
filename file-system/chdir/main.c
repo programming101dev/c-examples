@@ -21,46 +21,56 @@
 #include <errno.h>
 
 
+static char* getCurrentWorkingDirectory(long path_max);
+static void printCurrentWorkingDirectory(long path_max);
+
+
 int main(void)
 {
-    const char *path = ".";
     long path_max;
-    char *buffer = NULL;
-    size_t size;
+    const char *path = ".";
 
+    // Get the maximum path length
     path_max = pathconf(path, _PC_PATH_MAX);
 
     if(path_max == -1)
     {
-        // Error occurred
         path_max = 4096; // A common default value for the maximum path length
     }
 
-    buffer = NULL;
-    size = path_max;
+    printCurrentWorkingDirectory(path_max);
 
-    if(chdir("/") == -1)
+    if (chdir("/") == -1)
     {
         perror("chdir");
-        return 1;
+        exit(EXIT_FAILURE);
     }
 
-    while(1)
+    printCurrentWorkingDirectory(path_max);
+
+    return EXIT_SUCCESS;
+}
+
+char* getCurrentWorkingDirectory(long path_max)
+{
+    char *buffer = NULL;
+    size_t size = (size_t)path_max;
+
+    buffer = NULL;
+
+    while (1)
     {
-        // Allocate memory for the buffer (or resize the existing buffer)
         buffer = realloc(buffer, size);
 
         if(buffer == NULL)
         {
             perror("Error allocating/reallocating memory for buffer");
-            return EXIT_FAILURE;
+            return NULL;
         }
 
         if(getcwd(buffer, size) != NULL)
         {
-            printf("Current working directory: %s\n", buffer);
-            free(buffer);
-            return EXIT_SUCCESS;
+            return buffer; // Return the current working directory
         }
         else
         {
@@ -74,10 +84,26 @@ int main(void)
             {
                 perror("Error getting current working directory");
                 free(buffer);
-                return EXIT_FAILURE;
+
+                return NULL;
             }
         }
     }
+}
 
-    return EXIT_SUCCESS;
+void printCurrentWorkingDirectory(long path_max)
+{
+    char *cwd;
+
+    cwd = getCurrentWorkingDirectory(path_max);
+
+    if(cwd == NULL)
+    {
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("Current working directory: %s\n", cwd);
+        free(cwd);
+    }
 }

@@ -23,7 +23,7 @@
 
 int main(void)
 {
-    const char *filename = "example.txt";
+    const char *filename = "../../example.txt";
     const char *symlink_name = "symlink_example.txt";
     struct stat link_stat;
     struct stat target_stat;

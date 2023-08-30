@@ -20,37 +20,61 @@
 #include <stdlib.h>
 
 
+struct func_info
+{
+    int (*func)(int ch);
+    const char *name;
+    const char *message;
+};
+
+
 static void print_binary(int ch);
+static void print_info(const struct func_info *info, int ch);
 
 
 int main(void)
 {
-    printf("Char | Binary  | Oct | Dec | Hex | alnum | alpha | blank | cntrl | digit | graph | lower | print | punct | space | upper | xdigit | lower | upper |\n");
-    printf("---------------------------------------------------------------------------------------------------------------------------------------------------\n");
+    static struct func_info info[] =
+    {
+        { isalnum, "alnum", "Alphanumeric" },
+        { isalpha, "alpha", "Alphabetic" },
+        { isblank, "blank", "Blank" },
+        { iscntrl, "cntrl", "Control" },
+        { isdigit, "digit", "Digit" },
+        { isgraph, "graph", "Graph" },
+        { islower, "lower", "Lowercase" },
+        { isprint, "print", "Printable" },
+        { ispunct, "punct", "Punctuation" },
+        { isspace, "space", "Whitespace" },
+        { isupper, "upper", "Uppercase" },
+        { isxdigit, "xdigit", "Hex Digit" }
+    };
+
+
+    printf("Char | Binary  | Oct | Dec | Hex | ");
+
+    for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
+    {
+        printf("%-6s | ", info[i].name);
+    }
+
+    printf("Lower | Upper |\n");
+    printf("-----------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
 
     for(int ch = 0; ch <= 127; ch++)
     {
         printf("%c    | ", isprint(ch) ? ch : ' ');
         print_binary(ch);
-        printf(" | %3o | %3d | %3X |   %d   |   %d   |   %d   |   %d   |   %d   |   %d   |   %d   |   %d   |   %d   |   %d   |   %d   |   %d    |   %c   |   %c   |\n",
-               ch,
-               ch,
-               ch,
-               isalnum(ch),
-               isalpha(ch),
-               isblank(ch),
-               iscntrl(ch),
-               isdigit(ch),
-               isgraph(ch),
-               islower(ch),
-               isprint(ch),
-               ispunct(ch),
-               isspace(ch),
-               isupper(ch),
-               isxdigit(ch),
-               islower(ch) ? tolower(ch) : ' ',   // Print lowercase character for tolower, otherwise print space.
-               isupper(ch) ? toupper(ch) : ' '    // Print uppercase character for toupper, otherwise print space.
-        );
+        printf(" | %3o | %3d | %3X | ", ch, ch, ch);
+
+        for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
+        {
+            print_info(&info[i], ch);
+        }
+
+        printf("%c     | %c     |\n",
+               islower(ch) ? tolower(ch) : ' ',
+               isupper(ch) ? toupper(ch) : ' ');
     }
 
     return EXIT_SUCCESS;
@@ -62,4 +86,13 @@ static void print_binary(int ch)
     {
         printf("%d", (ch >> i) & 1);
     }
+}
+
+
+static void print_info(const struct func_info *info, int ch)
+{
+    int value;
+
+    value = info->func(ch);
+    printf("   %d   | ", value == 0 ? 0 : 1);
 }

@@ -21,12 +21,20 @@
 #include <unistd.h>
 
 
+void logMessages(void);
+
+
 int main(void)
 {
+    int mask;
+
     openlog("log-demo", LOG_PID, LOG_USER);
 
-    // Set log mask to display messages up to LOG_DEBUG level
-    if(setlogmask(LOG_MASK(LOG_DEBUG)) == -1)
+    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) |
+               LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) |
+               LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
+
+    if(setlogmask(mask) == -1)
     {
         syslog(LOG_ERR, "Failed to set log mask");
         closelog();
@@ -34,6 +42,26 @@ int main(void)
     }
 
     printf("Logging PID %d\n", getpid());
+
+    logMessages();
+
+    mask = LOG_MASK(LOG_EMERG);
+
+    if(setlogmask(mask) == -1)
+    {
+        syslog(LOG_ERR, "Failed to set log mask");
+        closelog();
+        return EXIT_FAILURE;
+    }
+
+    logMessages();
+    closelog();
+    return EXIT_SUCCESS;
+}
+
+
+void logMessages(void)
+{
     syslog(LOG_EMERG, "This is an emergency message.");
     syslog(LOG_ALERT, "This is an alert message.");
     syslog(LOG_CRIT, "This is a critical message.");
@@ -42,7 +70,4 @@ int main(void)
     syslog(LOG_NOTICE, "This is a notice message.");
     syslog(LOG_INFO, "This is an informational message.");
     syslog(LOG_DEBUG, "This is a debug message.");
-    closelog();
-    
-    return EXIT_SUCCESS;
 }

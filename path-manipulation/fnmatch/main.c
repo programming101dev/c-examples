@@ -20,19 +20,29 @@
 #include <fnmatch.h>
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    const char *pattern = "*.txt";
-    const char *filename = "document.txt";
-
-    if(fnmatch(pattern, filename, 0) != 0)
+    if(argc < 3)
     {
-        fprintf(stderr, "Filename doesn't match the pattern.\n");
-
+        fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    printf("Filename matches the pattern.\n");
+    const char *pattern = argv[1];
+
+    for(int i = 2; i < argc; i++)
+    {
+        const char *filename = argv[i];
+
+        if(fnmatch(pattern, filename, 0) != 0)
+        {
+            printf("Filename '%s' doesn't match the pattern.\n", filename);
+        }
+        else
+        {
+            printf("Filename '%s' matches the pattern.\n", filename);
+        }
+    }
 
     return EXIT_SUCCESS;
 }

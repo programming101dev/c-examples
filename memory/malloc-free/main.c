@@ -19,6 +19,9 @@
 #include <stdlib.h>
 
 
+static void print_array(const int *arr, int size);
+
+
 int main(void)
 {
     const int num_elements = 5;
@@ -32,12 +35,19 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    for(int i = 0; i < num_elements; i++)
-    {
-        dynamic_array[i] = 0;
-    }
-
+    print_array(dynamic_array, num_elements);
     free(dynamic_array);
 
     return EXIT_SUCCESS;
+}
+
+
+static void print_array(const int *arr, int size)
+{
+    for(int i = 0; i < size; i++)
+    {
+        printf("%d ", arr[i]);
+    }
+
+    printf("\n");
 }

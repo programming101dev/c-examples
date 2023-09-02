@@ -1,65 +1,88 @@
-/*
- * This code is licensed under the Attribution-NonCommercial-NoDerivatives 4.0 International license.
- *
- * Author: D'Arcy Smith (ds@programming101.dev)
- *
- * You are free to:
- *   - Share: Copy and redistribute the material in any medium or format.
- *   - Under the following terms:
- *       - Attribution: You must give appropriate credit, provide a link to the license, and indicate if changes were made.
- *       - NonCommercial: You may not use the material for commercial purposes.
- *       - NoDerivatives: If you remix, transform, or build upon the material, you may not distribute the modified material.
- *
- * For more details, please refer to the full license text at:
- * https://creativecommons.org/licenses/by-nc-nd/4.0/
- */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
 {
-    const char *file_path;
-    char *endptr;
-    uid_t user_id;
-    gid_t group_id;
+    const char *file_path = NULL;
+    uid_t user_id = 0;
+    gid_t group_id = 0;
+    int opt;
 
-    if(argc != 4)
+    while((opt = getopt(argc, argv, "hf:u:g:")) != -1)
     {
-        fprintf(stderr, "Usage: %s <file_path> <user_id> <group_id>\n", argv[0]);
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0]);
+            }
+            case 'f':
+            {
+                file_path = optarg;
+                break;
+            }
+            case 'u':
+            {
+                errno = 0;
+                user_id = strtol(optarg, NULL, 10);
 
-        return EXIT_FAILURE;
+                if(errno != 0)
+                {
+                    perror("Invalid user ID");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            }
+            case 'g':
+            {
+                errno = 0;
+                group_id = strtol(optarg, NULL, 10);
+
+                if(errno != 0)
+                {
+                    perror("Invalid group ID");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            }
+            default:
+            {
+                usage(argv[0]);
+            }
+        }
     }
 
-    file_path = argv[1];
-    user_id = strtol(argv[2], &endptr, 10);
-
-    if(*endptr != '\0')
+    if(file_path == NULL || user_id == 0 || group_id == 0)
     {
-        fprintf(stderr, "Invalid user_id format: %s\n", argv[2]);
-        return EXIT_FAILURE;
-    }
-
-    group_id = strtol(argv[3], &endptr, 10);
-
-    if(*endptr != '\0')
-    {
-        fprintf(stderr, "Invalid group_id format: %s\n", argv[3]);
-
-        return EXIT_FAILURE;
+        fprintf(stderr, "Usage: %s -f <file_path> -u <user_id> -g <group_id>\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
 
     if(chown(file_path, user_id, group_id) == -1)
     {
         perror("chown");
-
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 
     printf("File ownership changed successfully.\n");
 
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
+}
+
+static void usage(const char *program_name)
+{
+    printf("Usage: %s -f <file_path> -u <user_id> -g <group_id>\n", program_name);
+    printf("Options:\n");
+    printf("  -h : Display this help message\n");
+    printf("  -f : File path\n");
+    printf("  -u : User ID\n");
+    printf("  -g : Group ID\n");
+    exit(EXIT_FAILURE);
 }

@@ -19,34 +19,53 @@
 #include <stdlib.h>
 #include <grp.h>
 #include <errno.h>
+#include <getopt.h>
 
 
+static void usage(const char *program_name);
 static void print_entry(const struct group *entry);
 
 
 int main(int argc, char *argv[])
 {
+    int opt;
     char *endptr;
     long int gid_long;
     gid_t gid;
     struct group *group_info;
 
-    if(argc != 2)
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
-        printf("Usage: %s <gid>\n", argv[0]);
-        return EXIT_FAILURE;
+        switch(opt)
+        {
+            case 'h':
+            {
+                printf("Usage: %s <gid>\n", argv[0]);
+                return EXIT_SUCCESS;
+            }
+            default:
+            {
+                fprintf(stderr, "Usage: %s <gid> [-h]\n", argv[0]);
+                return EXIT_FAILURE;
+            }
+        }
+    }
+
+    if(optind != argc - 1)
+    {
+        usage(argv[0]);
     }
 
     errno = 0;
-    gid_long = strtol(argv[1], &endptr, 10);
+    gid_long = strtol(argv[optind], &endptr, 10);
 
     if(errno != 0 || *endptr != '\0')
     {
-        printf("Invalid GID: %s\n", argv[1]);
+        printf("Invalid GID: %s\n", argv[optind]);
         return EXIT_FAILURE;
     }
 
-    gid = (gid_t) gid_long;
+    gid = (gid_t)gid_long;
     group_info = getgrgid(gid);
 
     if(group_info != NULL)
@@ -60,6 +79,16 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
+
+
+static void usage(const char *program_name)
+{
+    printf("Usage: %s <gid>\n", program_name);
+    printf("Options:\n");
+    printf("  -h : Display this help message\n");
+    exit(EXIT_FAILURE);
+}
+
 
 static void print_entry(const struct group *entry)
 {

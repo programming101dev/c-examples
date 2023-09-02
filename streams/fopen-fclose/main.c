@@ -19,6 +19,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -26,13 +30,30 @@ int main(int argc, char *argv[])
     const char *filename;
     FILE *file;
 
-    if(argc != 2)
+    int opt;
+    while ((opt = getopt(argc, argv, "h")) != -1)
     {
-        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-        return EXIT_FAILURE;
+        switch (opt)
+        {
+            case 'h':
+            {
+                fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+                return EXIT_SUCCESS;
+            }
+            default:
+            {
+                fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+                return EXIT_FAILURE;
+            }
+        }
     }
 
-    filename = argv[1];
+    if(argc != optind + 1)
+    {
+        usage(argv[0]);
+    }
+
+    filename = argv[optind];
     file = fopen(filename, "rb");
 
     if(file == NULL)
@@ -50,4 +71,11 @@ int main(int argc, char *argv[])
     }
 
     return EXIT_SUCCESS;
+}
+
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s <filename>\n", program_name);
+    exit(EXIT_FAILURE);
 }

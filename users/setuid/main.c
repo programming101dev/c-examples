@@ -34,8 +34,6 @@ int main(int argc, char *argv[])
     {
         switch (opt)
         {
-            case 'h':
-                usage(argv[0], EXIT_SUCCESS, NULL);
             case 'u':
                 new_uid = (uid_t)strtol(optarg, &endptr, 10);
 
@@ -44,6 +42,9 @@ int main(int argc, char *argv[])
                     fprintf(stderr, "Invalid UID format: %s\n", optarg);
                     return EXIT_FAILURE;
                 }
+                break;
+            case 'h':
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
             default:
                 usage(argv[0], EXIT_FAILURE, NULL);

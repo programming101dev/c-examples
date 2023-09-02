@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
                 break;
             case 'h':
                 usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
             default:
                 usage(argv[0], EXIT_FAILURE, NULL);
         }

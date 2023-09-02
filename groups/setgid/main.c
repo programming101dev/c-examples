@@ -34,9 +34,6 @@ int main(int argc, char *argv[])
     {
         switch (opt)
         {
-            case 'h':
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                return EXIT_SUCCESS;
             case 'g':
                 new_gid = (gid_t) strtol(optarg, &endptr, 10);
 
@@ -45,6 +42,9 @@ int main(int argc, char *argv[])
                     fprintf(stderr, "Invalid GID format: %s\n", optarg);
                     return EXIT_FAILURE;
                 }
+                break;
+            case 'h':
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
             default:
                 usage(argv[0], EXIT_FAILURE, NULL);

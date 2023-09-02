@@ -19,10 +19,6 @@ int main(int argc, char *argv[])
     {
         switch(opt)
         {
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-            }
             case 'f':
             {
                 file_path = optarg;
@@ -50,6 +46,11 @@ int main(int argc, char *argv[])
                     perror("Invalid group ID");
                     exit(EXIT_FAILURE);
                 }
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
             }
             default:
@@ -83,7 +84,7 @@ static void usage(const char *program_name, int exit_code, const char *message)
     }
 
     fprintf(stderr, "Usage: %s -f <file_path> -u <user_id> -g <group_id>\n", program_name);
-    printf("Options:\n", stderr);
+    fputs("Options:\n", stderr);
     fputs("  -h : Display this help message\n", stderr);
     fputs("  -f : File path\n", stderr);
     fputs("  -u : User ID\n", stderr);

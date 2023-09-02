@@ -40,13 +40,14 @@ int main(int argc, char *argv[])
     {
         switch (opt)
         {
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-            }
             case 'f':
             {
                 filename = optarg;
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
             }
             default:

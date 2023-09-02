@@ -144,8 +144,14 @@ static void *threadFunction(void *arg)
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
-    fprintf(stderr, "Usage: ./program_name [-h] [-m]\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] [-m]\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h        Display this help message.\n", stderr);
     fputs("  -m        Use mutex for threadFunction (default is no mutex).\n", stderr);
+    exit(exit_code);
 }

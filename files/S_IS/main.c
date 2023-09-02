@@ -16,20 +16,51 @@
 
 
 #include <fcntl.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
 
+static void usage(const char *program_name);
+static void print_file_info(const struct stat *fileStat);
+static void print_special_type(const struct stat *fileStat);
+static void print_extended_type(const struct stat *fileStat);
+static void print_permissions(mode_t mode);
+static void print_time(const char *label, time_t timeValue);
+
+
 int main(int argc, char *argv[])
 {
-    const char *filename = argv[1];
+    const char *filename = NULL;
     struct stat fileStat;
+    int opt;
 
-    if(argc != 2)
+    while ((opt = getopt(argc, argv, "hf:")) != -1)
     {
-        printf("Usage: %s <filename>\n", argv[0]);
-        return EXIT_FAILURE;
+        switch (opt)
+        {
+            case 'h':
+            {
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            }
+            case 'f':
+            {
+                filename = optarg;
+                break;
+            }
+            default:
+            {
+                usage(argv[0]);
+            }
+        }
+    }
+
+    if(filename == NULL)
+    {
+        fprintf(stderr, "Error: You must provide a filename using -f option.\n");
+        usage(argv[0]);
     }
 
     if(stat(filename, &fileStat) == -1)
@@ -39,32 +70,63 @@ int main(int argc, char *argv[])
     }
 
     printf("File Information for '%s':\n\n", filename);
+    print_file_info(&fileStat);
 
-    if(S_ISBLK(fileStat.st_mode))
+    return EXIT_SUCCESS;
+}
+
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s <filename>\n", program_name);
+    exit(EXIT_FAILURE);
+}
+
+
+static void print_file_info(const struct stat *fileStat)
+{
+    print_special_type(fileStat);
+    print_extended_type(fileStat);
+    printf("File Size: %lld bytes\n", (long long)fileStat->st_size);
+    print_permissions(fileStat->st_mode);
+    printf("File inode: %lld\n", (long long)fileStat->st_ino);
+    printf("Device ID: %lld\n", (long long)fileStat->st_dev);
+    printf("Number of hard links: %lld\n", (long long)fileStat->st_nlink);
+    printf("File Owner UID: %d\n", fileStat->st_uid);
+    printf("File Group GID: %d\n", fileStat->st_gid);
+    print_time("Last access time", fileStat->st_atime);
+    print_time("Last modification time", fileStat->st_mtime);
+    print_time("Last status change time", fileStat->st_ctime);
+}
+
+
+static void print_special_type(const struct stat *fileStat)
+{
+    if (S_ISBLK(fileStat->st_mode))
     {
         printf("Type: Block special file\n");
     }
-    else if(S_ISCHR(fileStat.st_mode))
+    else if (S_ISCHR(fileStat->st_mode))
     {
         printf("Type: Character special file\n");
     }
-    else if(S_ISDIR(fileStat.st_mode))
+    else if (S_ISDIR(fileStat->st_mode))
     {
         printf("Type: Directory\n");
     }
-    else if(S_ISFIFO(fileStat.st_mode))
+    else if (S_ISFIFO(fileStat->st_mode))
     {
         printf("Type: FIFO/Named Pipe\n");
     }
-    else if(S_ISREG(fileStat.st_mode))
+    else if (S_ISREG(fileStat->st_mode))
     {
         printf("Type: Regular file\n");
     }
-    else if(S_ISLNK(fileStat.st_mode))
+    else if (S_ISLNK(fileStat->st_mode))
     {
         printf("Type: Symbolic link\n");
     }
-    else if(S_ISSOCK(fileStat.st_mode))
+    else if (S_ISSOCK(fileStat->st_mode))
     {
         printf("Type: Socket\n");
     }
@@ -72,31 +134,38 @@ int main(int argc, char *argv[])
     {
         printf("Type: Unknown file type\n");
     }
+}
 
-    if(S_TYPEISMQ(&fileStat))
+
+static void print_extended_type(const struct stat *fileStat)
+{
+    // compiler trick - on macOS these all return 0 so fileStat is unused
+    (void)fileStat;
+
+    if(S_TYPEISMQ(fileStat))
     {
         printf("Type: Message Queue\n");
     }
-    else if(S_TYPEISSEM(&fileStat))
+    else if(S_TYPEISSEM(fileStat))
     {
         printf("Type: Semaphore\n");
     }
-    else if(S_TYPEISSHM(&fileStat))
+    else if(S_TYPEISSHM(fileStat))
     {
         printf("Type: Shared Memory\n");
     }
-
-    printf("\n");
-    printf("File Size: %lld bytes\n", (long long) fileStat.st_size);
-    printf("File Permissions: %o\n", fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
-    printf("File inode: %lld\n", (long long) fileStat.st_ino);
-    printf("Device ID: %lld\n", (long long) fileStat.st_dev);
-    printf("Number of hard links: %lld\n", (long long) fileStat.st_nlink);
-    printf("File Owner UID: %d\n", fileStat.st_uid);
-    printf("File Group GID: %d\n", fileStat.st_gid);
-    printf("Last access time: %ld\n", fileStat.st_atime);
-    printf("Last modification time: %ld\n", fileStat.st_mtime);
-    printf("Last status change time: %ld\n", fileStat.st_ctime);
-
-    return EXIT_SUCCESS;
 }
+
+
+static void print_permissions(mode_t mode)
+{
+    printf("File Permissions: %o\n", mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+}
+
+
+static void print_time(const char *label, time_t timeValue)
+{
+    printf("%s: %ld\n", label, timeValue);
+}
+
+

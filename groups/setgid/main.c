@@ -18,28 +18,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
 
+static void usage(const char *program_name);
 
 int main(int argc, char *argv[])
 {
     char *endptr;
-    gid_t new_gid;
+    gid_t new_gid = (gid_t)-1;
 
-    if(argc != 2)
+    int opt;
+    while ((opt = getopt(argc, argv, "hg:")) != -1)
     {
-        fprintf(stderr, "Usage: %s <new_gid>\n", argv[0]);
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'g':
+                new_gid = (gid_t) strtol(optarg, &endptr, 10);
+                if (*endptr != '\0')
+                {
+                    fprintf(stderr, "Invalid GID format: %s\n", optarg);
+                    return EXIT_FAILURE;
+                }
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
+
+    if (optind < argc)
+    {
+        fprintf(stderr, "Unexpected extra arguments\n");
+        usage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    new_gid = (gid_t) strtol(argv[1], &endptr, 10);
-
-    if(*endptr != '\0')
+    if (new_gid == (gid_t)-1)
     {
-        fprintf(stderr, "Invalid GID format: %s\n", argv[1]);
-        return EXIT_FAILURE;
+        usage(argv[0]);
     }
 
-    if(setgid(new_gid) == -1)
+    if (setgid(new_gid) == -1)
     {
         perror("setgid");
         return EXIT_FAILURE;
@@ -49,4 +71,13 @@ int main(int argc, char *argv[])
     printf("Effective GID: %d\n", getegid());
 
     return EXIT_SUCCESS;
+}
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -g <new_gid>\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -g <new_gid> : Specify the new GID\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }

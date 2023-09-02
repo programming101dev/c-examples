@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
+#include <getopt.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -25,20 +29,28 @@ int main(int argc, char *argv[])
     regex_t regex;
     int ret;
     char error_buffer[100];
-    const char *pattern;
+    const char *pattern = "invalid[";
 
-    if(argc > 1)
+    int opt;
+    while ((opt = getopt(argc, argv, "hp:")) != -1)
     {
-        pattern = argv[1];
-    }
-    else
-    {
-        pattern = "invalid[";
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'p':
+                pattern = optarg;
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
     }
 
     ret = regcomp(&regex, pattern, 0);
 
-    if(ret != 0)
+    if (ret != 0)
     {
         regerror(ret, &regex, error_buffer, sizeof(error_buffer));
         printf("Error compiling regex: %s\n", error_buffer);
@@ -51,4 +63,13 @@ int main(int argc, char *argv[])
     regfree(&regex);
 
     return EXIT_SUCCESS;
+}
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s [-p pattern]\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -p <pattern> : Specify the regular expression pattern (default: 'invalid[')\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }

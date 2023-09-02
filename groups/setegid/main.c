@@ -18,25 +18,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
+#include <stdbool.h>
 
+static void usage(const char *program_name);
 
 int main(int argc, char *argv[])
 {
     char *endptr;
-    gid_t new_gid;
+    gid_t new_gid = (gid_t)-1;
+    bool new_gid_set = false;
 
-    if(argc != 2)
+    int opt;
+    while((opt = getopt(argc, argv, "hu:")) != -1)
     {
-        fprintf(stderr, "Usage: %s <new_gid>\n", argv[0]);
-        return EXIT_FAILURE;
+        switch(opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                break;
+            case 'u':
+                new_gid = (gid_t) strtol(optarg, &endptr, 10);
+                new_gid_set = true;
+                break;
+            default:
+                usage(argv[0]);
+        }
     }
 
-    new_gid = (gid_t) strtol(argv[1], &endptr, 10);
-
-    if(*endptr != '\0')
+    if (!new_gid_set)
     {
-        fprintf(stderr, "Invalid GID format: %s\n", argv[1]);
-        return EXIT_FAILURE;
+        usage(argv[0]);
     }
 
     if(setegid(new_gid) == -1)
@@ -49,4 +61,10 @@ int main(int argc, char *argv[])
     printf("Effective GID: %d\n", getegid());
 
     return EXIT_SUCCESS;
+}
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -u <new_gid>\n", program_name);
+    exit(EXIT_FAILURE);
 }

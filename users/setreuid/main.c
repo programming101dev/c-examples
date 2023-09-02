@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -26,29 +30,45 @@ int main(int argc, char *argv[])
     uid_t new_uid;
     uid_t new_euid;
 
-    if(argc != 3)
+    int opt;
+    while ((opt = getopt(argc, argv, "hu:e:")) != -1)
     {
-        fprintf(stderr, "Usage: %s <new_gid> <new_egid>\n", argv[0]);
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'u':
+                new_uid = (uid_t)strtol(optarg, &endptr, 10);
+
+                if (*endptr != '\0')
+                {
+                    fprintf(stderr, "Invalid UID format: %s\n", optarg);
+                    return EXIT_FAILURE;
+                }
+                break;
+            case 'e':
+                new_euid = (uid_t)strtol(optarg, &endptr, 10);
+
+                if (*endptr != '\0')
+                {
+                    fprintf(stderr, "Invalid Effective UID format: %s\n", optarg);
+                    return EXIT_FAILURE;
+                }
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
+
+    if (optind < argc) {
+        fprintf(stderr, "Unexpected extra arguments\n");
+        usage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    new_uid = (uid_t) strtol(argv[1], &endptr, 10);
-
-    if(*endptr != '\0')
-    {
-        fprintf(stderr, "Invalid UID format: %s\n", argv[1]);
-        return EXIT_FAILURE;
-    }
-
-    new_euid = (uid_t) strtol(argv[2], &endptr, 10);
-
-    if(*endptr != '\0')
-    {
-        fprintf(stderr, "Invalid Effective UID format: %s\n", argv[2]);
-        return EXIT_FAILURE;
-    }
-
-    if(setreuid(new_uid, new_euid) == -1)
+    if (setreuid(new_uid, new_euid) == -1)
     {
         perror("setreuid");
         return EXIT_FAILURE;
@@ -58,4 +78,15 @@ int main(int argc, char *argv[])
     printf("Effective UID: %d\n", geteuid());
 
     return EXIT_SUCCESS;
+}
+
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -u <new_uid> -e <new_euid>\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -u <new_uid> : Specify the new UID\n");
+    fprintf(stderr, "  -e <new_euid> : Specify the new effective UID\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }

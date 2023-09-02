@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -26,29 +30,40 @@ int main(int argc, char *argv[])
     gid_t new_gid;
     gid_t new_egid;
 
-    if(argc != 3)
+    int opt;
+    while ((opt = getopt(argc, argv, "h")) != -1)
     {
-        fprintf(stderr, "Usage: %s <new_gid> <new_egid>\n", argv[0]);
-        return EXIT_FAILURE;
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+            default:
+                usage(argv[0]);
+        }
     }
 
-    new_gid = (gid_t) strtol(argv[1], &endptr, 10);
+    if(argc != optind + 2)
+    {
+        usage(argv[0]);
+    }
+
+    new_gid = (gid_t)strtol(argv[optind], &endptr, 10);
 
     if(*endptr != '\0')
     {
-        fprintf(stderr, "Invalid GID format: %s\n", argv[1]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Invalid GID format: %s\n", argv[optind]);
+        usage(argv[0]);
     }
 
-    new_egid = (gid_t) strtol(argv[2], &endptr, 10);
+    new_egid = (gid_t)strtol(argv[optind + 1], &endptr, 10);
 
-    if(*endptr != '\0')
+    if (*endptr != '\0')
     {
-        fprintf(stderr, "Invalid Effective GID format: %s\n", argv[2]);
+        fprintf(stderr, "Invalid Effective GID format: %s\n", argv[optind + 1]);
         return EXIT_FAILURE;
     }
 
-    if(setregid(new_gid, new_egid) == -1)
+    if (setregid(new_gid, new_egid) == -1)
     {
         perror("setregid");
         return EXIT_FAILURE;
@@ -58,4 +73,10 @@ int main(int argc, char *argv[])
     printf("Effective GID: %d\n", getegid());
 
     return EXIT_SUCCESS;
+}
+
+void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s <new_gid> <new_egid>\n", program_name);
+    exit(EXIT_FAILURE);
 }

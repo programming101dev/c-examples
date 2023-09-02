@@ -18,35 +18,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <regex.h>
+#include <getopt.h>
+
+
+static void usage(const char *program_name);
+
 
 int main(int argc, char *argv[])
 {
     regex_t regex;
     int ret;
     char error_buffer[100];
-    const char *test_string;
-    const char *pattern;
+    const char *test_string = NULL;
+    const char *pattern = "invalid["; // Default pattern
+    int opt;
 
-    if(argc < 2)
+    while ((opt = getopt(argc, argv, "ht:p:")) != -1)
     {
-        printf("Usage: %s <test_string> [pattern]\n", argv[0]);
-        return 1;
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 't':
+                test_string = optarg;
+                break;
+            case 'p':
+                pattern = optarg;
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
     }
 
-    test_string = argv[1];
-
-    if(argc > 2)
+    if (test_string == NULL)
     {
-        pattern = argv[2];
-    }
-    else
-    {
-        pattern = "invalid[";
+        fprintf(stderr, "Error: You must provide a test string using -t option.\n");
+        usage(argv[0]);
+        return EXIT_FAILURE;
     }
 
     ret = regcomp(&regex, pattern, 0);
 
-    if(ret != 0)
+    if (ret != 0)
     {
         regerror(ret, &regex, error_buffer, sizeof(error_buffer));
         printf("Error compiling regex: %s\n", error_buffer);
@@ -59,11 +74,11 @@ int main(int argc, char *argv[])
     // Check if the test string matches the pattern
     ret = regexec(&regex, test_string, 0, NULL, 0);
 
-    if(ret == 0)
+    if (ret == 0)
     {
         printf("Pattern matched the test string\n");
     }
-    else if(ret == REG_NOMATCH)
+    else if (ret == REG_NOMATCH)
     {
         printf("Pattern did not match the test string\n");
     }
@@ -75,5 +90,16 @@ int main(int argc, char *argv[])
 
     regfree(&regex);
 
-    return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -t <test_string> [-p pattern]\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -t <test_string> : Specify the test string\n");
+    fprintf(stderr, "  -p <pattern> : Specify the regular expression pattern (default: 'invalid[')\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
+}
+

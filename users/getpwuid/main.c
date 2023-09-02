@@ -19,8 +19,10 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <errno.h>
+#include <getopt.h>
 
 
+static void usage(const char *program_name);
 static void print_entry(const struct passwd *entry);
 
 
@@ -31,36 +33,54 @@ int main(int argc, char *argv[])
     uid_t uid;
     struct passwd *user_info;
 
-    if(argc != 2)
+    int opt;
+    while ((opt = getopt(argc, argv, "hu:")) != -1)
     {
-        printf("Usage: %s <uid>\n", argv[0]);
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'u':
+                uid_long = strtol(optarg, &endptr, 10);
 
-        return EXIT_FAILURE;
+                if (errno != 0 || *endptr != '\0')
+                {
+                    fprintf(stderr, "Invalid UID: %s\n", optarg);
+                    return EXIT_FAILURE;
+                }
+
+                uid = (uid_t)uid_long;
+                user_info = getpwuid(uid);
+
+                if (user_info != NULL)
+                {
+                    print_entry(user_info);
+                }
+                else
+                {
+                    printf("User with UID %d not found.\n", uid);
+                }
+
+                return EXIT_SUCCESS;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
     }
 
-    errno = 0;
-    uid_long = strtol(argv[1], &endptr, 10);
+    usage(argv[0]);
+    return EXIT_FAILURE;
+}
 
-    if(errno != 0 || *endptr != '\0')
-    {
-        printf("Invalid UID: %s\n", argv[1]);
 
-        return EXIT_FAILURE;
-    }
-
-    uid = (uid_t) uid_long;
-    user_info = getpwuid(uid);
-
-    if(user_info != NULL)
-    {
-        print_entry(user_info);
-    }
-    else
-    {
-        printf("User with UID %d not found.\n", uid);
-    }
-
-    return EXIT_SUCCESS;
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -u <uid>\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -u <uid> : Specify the user's UID\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }
 
 

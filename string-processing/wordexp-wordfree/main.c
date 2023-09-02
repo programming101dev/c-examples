@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wordexp.h>
+#include <getopt.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -28,18 +32,30 @@ int main(int argc, char *argv[])
     wordexp_t result;
     int ret;
 
-    if(argc < 2)
+    int opt;
+    while ((opt = getopt(argc, argv, "hc:")) != -1)
     {
-        command = default_command;
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'c':
+                command = optarg;
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
     }
-    else
-    {
-        command = argv[1];
+
+    if (optind >= argc) {
+        command = default_command;
     }
 
     ret = wordexp(command, &result, 0);
 
-    if(ret != 0)
+    if (ret != 0)
     {
         printf("Error expanding command: %d\n", ret);
         return EXIT_FAILURE;
@@ -55,4 +71,14 @@ int main(int argc, char *argv[])
     wordfree(&result);
 
     return EXIT_SUCCESS;
+}
+
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s [-c command]\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -c <command> : Specify the command (default: 'ls -l ~/*.txt')\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }

@@ -18,8 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <grp.h>
+#include <getopt.h>
 
 
+static void usage(const char *program_name);
 static void print_entry(const struct group *entry);
 
 
@@ -28,16 +30,33 @@ int main(int argc, char *argv[])
     const char *groupname;
     struct group *group_info;
 
-    if(argc != 2)
+    int opt;
+    while ((opt = getopt(argc, argv, "hg:")) != -1)
     {
-        printf("Usage: %s <groupname>\n", argv[0]);
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'g':
+                groupname = optarg;
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
+
+    if (optind < argc)
+    {
+        fprintf(stderr, "Unexpected extra arguments\n");
+        usage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    groupname = argv[1];
     group_info = getgrnam(groupname);
 
-    if(group_info != NULL)
+    if (group_info != NULL)
     {
         print_entry(group_info);
     }
@@ -50,6 +69,16 @@ int main(int argc, char *argv[])
 }
 
 
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -g <groupname>\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -g <groupname> : Specify the groupname\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
+}
+
+
 static void print_entry(const struct group *entry)
 {
     char **members;
@@ -59,7 +88,7 @@ static void print_entry(const struct group *entry)
     printf("Group Members:\n");
     members = entry->gr_mem;
 
-    while(*members != NULL)
+    while (*members != NULL)
     {
         printf(" - %s\n", *members);
         members++;

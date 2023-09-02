@@ -18,6 +18,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
+
+static void usage(const char *program_name);
 
 int main(int argc, char *argv[])
 {
@@ -28,24 +31,38 @@ int main(int argc, char *argv[])
     char *token;
     char *token_copy;
     char delimiter[] = " ";
+    int opt;
 
-    if(argc < 2)
+    while ((opt = getopt(argc, argv, "hc:")) != -1)
+    {
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'c':
+                command = optarg;
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
+
+    if (optind >= argc)
     {
         command = default_command;
     }
-    else
-    {
-        command = argv[1];
-    }
 
     token_copy = strdup(command);
-    if (token_copy == NULL) {
+
+    if(token_copy == NULL)
+    {
         printf("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
 
     token = strtok_r(token_copy, delimiter, &saveptr);
-
     printf("Tokenized words:\n");
 
     while(token != NULL)
@@ -57,4 +74,14 @@ int main(int argc, char *argv[])
     free(token_copy);
 
     return EXIT_SUCCESS;
+}
+
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s [-c command]\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -c <command> : Specify the command (default: 'ls -l ~/*.txt')\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }

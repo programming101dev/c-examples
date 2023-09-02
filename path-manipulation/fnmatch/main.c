@@ -18,23 +18,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fnmatch.h>
+#include <getopt.h>
 
+static void usage(const char *program_name);
 
 int main(int argc, char *argv[])
 {
-    if(argc < 3)
+    const char *pattern = NULL;
+    int opt;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
-        fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", argv[0]);
-        return EXIT_FAILURE;
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                break;
+            default:
+                usage(argv[0]);
+        }
     }
 
-    const char *pattern = argv[1];
+    if(argc - optind < 2)
+    {
+        fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", argv[0]);
+        usage(argv[0]);
+    }
 
-    for(int i = 2; i < argc; i++)
+    pattern = argv[optind];
+
+    for (int i = optind + 1; i < argc; i++)
     {
         const char *filename = argv[i];
 
-        if(fnmatch(pattern, filename, 0) != 0)
+        if (fnmatch(pattern, filename, 0) != 0)
         {
             printf("Filename '%s' doesn't match the pattern.\n", filename);
         }
@@ -47,3 +64,8 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", program_name);
+    exit(EXIT_FAILURE);
+}

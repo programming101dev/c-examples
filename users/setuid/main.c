@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
+
+
+static void usage(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -25,21 +29,36 @@ int main(int argc, char *argv[])
     char *endptr;
     uid_t new_uid;
 
-    if(argc != 2)
+    int opt;
+    while ((opt = getopt(argc, argv, "hu:")) != -1)
     {
-        fprintf(stderr, "Usage: %s <new_uid>\n", argv[0]);
+        switch (opt)
+        {
+            case 'h':
+                usage(argv[0]);
+                return EXIT_SUCCESS;
+            case 'u':
+                new_uid = (uid_t)strtol(optarg, &endptr, 10);
+
+                if (*endptr != '\0')
+                {
+                    fprintf(stderr, "Invalid UID format: %s\n", optarg);
+                    return EXIT_FAILURE;
+                }
+                break;
+            default:
+                usage(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
+
+    if (optind < argc) {
+        fprintf(stderr, "Unexpected extra arguments\n");
+        usage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    new_uid = (uid_t) strtol(argv[1], &endptr, 10);
-
-    if(*endptr != '\0')
-    {
-        fprintf(stderr, "Invalid UID format: %s\n", argv[1]);
-        return EXIT_FAILURE;
-    }
-
-    if(setuid(new_uid) == -1)
+    if (setuid(new_uid) == -1)
     {
         perror("setuid");
         return EXIT_FAILURE;
@@ -49,4 +68,13 @@ int main(int argc, char *argv[])
     printf("Effective UID: %d\n", geteuid());
 
     return EXIT_SUCCESS;
+}
+
+static void usage(const char *program_name)
+{
+    fprintf(stderr, "Usage: %s -u <new_uid>\n", program_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -u <new_uid> : Specify the new UID\n");
+    fprintf(stderr, "  -h : Show help message\n");
+    exit(EXIT_FAILURE);
 }

@@ -36,18 +36,32 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'u':
+            {
                 uid_long = strtol(optarg, &endptr, 10);
-                if (errno != 0 || *endptr != '\0')
+                if(errno != 0 || *endptr != '\0')
                 {
                     fprintf(stderr, "Invalid UID: %s\n", optarg);
                     usage(argv[0], EXIT_FAILURE, NULL);
                 }
                 break;
+            }
             case 'h':
+            {
                 usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
+            {
                 usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 

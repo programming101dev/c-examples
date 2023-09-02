@@ -45,26 +45,44 @@ int main(int argc, char *argv[])
 
     while ((opt = getopt_long(argc, argv, "abc:h", long_options, NULL)) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'a':
+            {
                 printf("Option 'alpha' is set\n");
                 option_alpha_set = true;
                 break;
+            }
             case 'b':
+            {
                 printf("Option 'beta' is set\n");
                 option_beta_set = true;
                 break;
+            }
             case 'c':
+            {
                 printf("Option 'charlie' is set with value '%s'\n", optarg);
                 option_charlie_set = true;
                 option_charlie_value = optarg;
                 break;
+            }
             case 'h':
+            {
                 usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
+            {
                 usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 

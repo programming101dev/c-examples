@@ -32,8 +32,8 @@ struct thread_data
 };
 
 
+static void usage(const char *program_name, int exit_code, const char *message);
 static void *threadFunction(void *arg);
-static void printHelp(void);
 
 
 int main(int argc, char *argv[])
@@ -47,19 +47,33 @@ int main(int argc, char *argv[])
         switch(opt)
         {
             case 'h':
-                printHelp();
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 return EXIT_SUCCESS;
+            }
             case 'm':
+            {
                 useMutex = 1;
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
-                fprintf(stderr, "Error: Unknown option.\n");
-                return 1;
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 
     // Initialize the mutex if needed
     pthread_mutex_t mutex;
+
     if(useMutex && pthread_mutex_init(&mutex, NULL) != 0)
     {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
@@ -128,7 +142,7 @@ static void *threadFunction(void *arg)
 }
 
 
-static void printHelp(void)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
     fprintf(stderr, "Usage: ./program_name [-h] [-m]\n");
     fputs("Options:\n", stderr);

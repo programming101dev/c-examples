@@ -29,15 +29,23 @@ int main(int argc, char *argv[])
 {
     const char *filename;
     FILE *file;
-
     int opt;
-    while ((opt = getopt(argc, argv, "h")) != -1)
+
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch (opt)
         {
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
                 break;
             }
             default:

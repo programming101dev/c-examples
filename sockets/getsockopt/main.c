@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         switch(opt)
         {
             case 'p':
-                // Convert the port argument to an integer using strtol
+            {
                 port = (int) strtol(optarg, NULL, 10);
 
                 if(port == 0)
@@ -47,11 +47,24 @@ int main(int argc, char *argv[])
                     return 1;
                 }
                 break;
+            }
             case 'h':
+            {
                 usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
+            {
                 usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 

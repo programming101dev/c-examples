@@ -44,23 +44,41 @@ int main(int argc, char *argv[])
         switch(opt)
         {
             case 'a':
+            {
                 printf("Option 'a' is set\n");
                 option_a_set = true;
                 break;
+            }
             case 'b':
+            {
                 printf("Option 'b' is set\n");
                 option_b_set = true;
                 break;
+            }
             case 'c':
+            {
                 printf("Option 'c' is set with value '%s'\n", optarg);
                 option_c_set = true;
                 option_c_value = optarg;
                 break;
+            }
             case 'h':
+            {
                 usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
+            {
                 usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 

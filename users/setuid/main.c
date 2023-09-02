@@ -35,19 +35,33 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'u':
-                new_uid = (uid_t)strtol(optarg, &endptr, 10);
+            {
+                new_uid = (uid_t) strtol(optarg, &endptr, 10);
 
-                if (*endptr != '\0')
+                if(*endptr != '\0')
                 {
                     fprintf(stderr, "Invalid UID format: %s\n", optarg);
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             case 'h':
+            {
                 usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
+            {
                 usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 

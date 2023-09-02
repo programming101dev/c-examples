@@ -35,14 +35,28 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'u':
-                new_uid = (uid_t)strtol(optarg, NULL, 10);
+            {
+                new_uid = (uid_t) strtol(optarg, NULL, 10);
                 has_new_uid_option = 1;
                 break;
+            }
             case 'h':
+            {
                 usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
             default:
+            {
                 usage(argv[0], EXIT_FAILURE, NULL);
+            }
         }
     }
 

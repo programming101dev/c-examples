@@ -22,7 +22,7 @@
 #include <unistd.h>
 
 
-static void usage(const char *program_name);
+static void usage(const char *program_name, int exit_code);
 
 
 int main(int argc, char *argv[])
@@ -37,20 +37,18 @@ int main(int argc, char *argv[])
         {
             case 'h':
             {
-                fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-                return EXIT_SUCCESS;
+                usage(argv[0], EXIT_SUCCESS);
             }
             default:
             {
-                fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_FAILURE);
             }
         }
     }
 
     if(argc != optind + 1)
     {
-        usage(argv[0]);
+        usage(argv[0], EXIT_FAILURE);
     }
 
     filename = argv[optind];
@@ -74,8 +72,8 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name)
+static void usage(const char *program_name, int exit_code)
 {
     fprintf(stderr, "Usage: %s <filename>\n", program_name);
-    exit(EXIT_FAILURE);
+    exit(exit_code);
 }

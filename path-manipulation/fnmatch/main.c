@@ -20,7 +20,9 @@
 #include <fnmatch.h>
 #include <getopt.h>
 
-static void usage(const char *program_name);
+
+static void usage(const char *program_name, int exit_code);
+
 
 int main(int argc, char *argv[])
 {
@@ -32,17 +34,17 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                usage(argv[0]);
+                usage(argv[0], EXIT_SUCCESS);
                 break;
             default:
-                usage(argv[0]);
+                usage(argv[0], EXIT_FAILURE);
         }
     }
 
     if(argc - optind < 2)
     {
         fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", argv[0]);
-        usage(argv[0]);
+        usage(argv[0], EXIT_FAILURE);
     }
 
     pattern = argv[optind];
@@ -64,8 +66,8 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void usage(const char *program_name)
+static void usage(const char *program_name, int exit_code)
 {
     fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", program_name);
-    exit(EXIT_FAILURE);
+    exit(exit_code);
 }

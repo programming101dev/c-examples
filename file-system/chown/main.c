@@ -5,7 +5,7 @@
 #include <errno.h>
 
 
-static void usage(const char *program_name);
+static void usage(const char *program_name, int exit_code);
 
 
 int main(int argc, char *argv[])
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         {
             case 'h':
             {
-                usage(argv[0]);
+                usage(argv[0], EXIT_SUCCESS);
             }
             case 'f':
             {
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
             }
             default:
             {
-                usage(argv[0]);
+                usage(argv[0], EXIT_FAILURE);
             }
         }
     }
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
 }
 
-static void usage(const char *program_name)
+static void usage(const char *program_name, int exit_code)
 {
     printf("Usage: %s -f <file_path> -u <user_id> -g <group_id>\n", program_name);
     printf("Options:\n");
@@ -84,5 +84,5 @@ static void usage(const char *program_name)
     printf("  -f : File path\n");
     printf("  -u : User ID\n");
     printf("  -g : Group ID\n");
-    exit(EXIT_FAILURE);
+    exit(exit_code);
 }

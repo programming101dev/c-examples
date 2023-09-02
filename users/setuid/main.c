@@ -21,7 +21,7 @@
 #include <getopt.h>
 
 
-static void usage(const char *program_name);
+static void usage(const char *program_name, int exit_code);
 
 
 int main(int argc, char *argv[])
@@ -35,8 +35,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                usage(argv[0]);
-                return EXIT_SUCCESS;
+                usage(argv[0], EXIT_SUCCESS);
             case 'u':
                 new_uid = (uid_t)strtol(optarg, &endptr, 10);
 
@@ -47,15 +46,13 @@ int main(int argc, char *argv[])
                 }
                 break;
             default:
-                usage(argv[0]);
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_FAILURE);
         }
     }
 
     if (optind < argc) {
         fprintf(stderr, "Unexpected extra arguments\n");
-        usage(argv[0]);
-        return EXIT_FAILURE;
+        usage(argv[0], EXIT_FAILURE);
     }
 
     if (setuid(new_uid) == -1)
@@ -70,11 +67,11 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void usage(const char *program_name)
+static void usage(const char *program_name, int exit_code)
 {
     fprintf(stderr, "Usage: %s -u <new_uid>\n", program_name);
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -u <new_uid> : Specify the new UID\n");
     fprintf(stderr, "  -h : Show help message\n");
-    exit(EXIT_FAILURE);
+    exit(exit_code);
 }

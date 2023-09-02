@@ -24,7 +24,7 @@
 #include <unistd.h>
 
 
-static void print_help(void);
+static void usage(const char *program_name, int exit_code, const char *message);
 static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str);
 
 
@@ -37,9 +37,6 @@ int main(int argc, char *argv[])
     {
         switch(opt)
         {
-            case 'h':
-                print_help();
-                return EXIT_SUCCESS;
             case 'p':
                 // Convert the port argument to an integer using strtol
                 port = (int) strtol(optarg, NULL, 10);
@@ -50,19 +47,10 @@ int main(int argc, char *argv[])
                     return 1;
                 }
                 break;
-            case '?':
-                if(optopt == 'p')
-                {
-                    fprintf(stderr, "Option -p requires an argument.\n");
-                }
-                else
-                {
-                    fprintf(stderr, "Unknown option: -%c.\n", optopt);
-                }
-
-                return EXIT_FAILURE;
+            case 'h':
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
@@ -130,9 +118,15 @@ int main(int argc, char *argv[])
 }
 
 
-static void print_help(void)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: ./program -p <port>\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s -p <port>\n", program_name);
+    exit(exit_code);
 }
 
 

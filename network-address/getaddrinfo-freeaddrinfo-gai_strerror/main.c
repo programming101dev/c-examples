@@ -23,30 +23,28 @@
 #include <unistd.h>
 
 
-static void print_help(const char *program_name);
+static void usage(const char *program_name, int exit_code, const char *message);
 static int resolve_hostname_to_ip(const char *hostname);
 
 
 int main(int argc, char *argv[])
 {
     int option;
+
     while((option = getopt(argc, argv, "h")) != -1)
     {
         switch(option)
         {
             case 'h':
-                print_help(argv[0]);
-                return EXIT_SUCCESS;
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                print_help(argv[0]);
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
     if(argc != optind + 1)
     {
-        print_help(argv[0]);
-        return EXIT_FAILURE;
+        usage(argv[0], EXIT_FAILURE, "");
     }
 
     char *hostname = argv[optind];
@@ -55,10 +53,15 @@ int main(int argc, char *argv[])
 }
 
 
-static void print_help(const char *program_name)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s [-h] hostname\n", program_name);
-    printf("Resolve the IP addresses associated with the given hostname.\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] hostname\n", program_name);
+    exit(exit_code);
 }
 
 

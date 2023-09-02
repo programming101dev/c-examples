@@ -22,8 +22,8 @@
 #include <getopt.h>
 
 
+static void usage(const char *program_name, int exit_code, const char *message);
 static void print_process_info(const char *name);
-static void print_help(const char *program_name);
 
 
 int main(int argc, char *argv[])
@@ -42,14 +42,9 @@ int main(int argc, char *argv[])
                 sleep_option = true;
                 break;
             case 'h':
-                print_help(argv[0]);
-                return EXIT_SUCCESS;
-            case '?':
-                fprintf(stderr, "Unknown option: '%c'\n", optopt);
-                print_help(argv[0]);
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                break;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
@@ -87,10 +82,16 @@ static void print_process_info(const char *name)
     printf("Name: %s, Process: PID=%d, Parent PID=%d\n", name, getpid(), getppid());
 }
 
-static void print_help(const char *program_name)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s [-s] [-h]\n", program_name);
-    printf("Options:\n");
-    printf("  -s  Sleep for 2 seconds (only applicable for the parent process)\n");
-    printf("  -h  Display this help message\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s [-s] [-h]\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -s  Sleep for 2 seconds (only applicable for the parent process)\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }

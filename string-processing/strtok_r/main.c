@@ -21,7 +21,7 @@
 #include <getopt.h>
 
 
-static void usage(const char *program_name, int exit_code);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -40,12 +40,12 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
             case 'c':
                 command = optarg;
                 break;
             default:
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
@@ -77,11 +77,16 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
     fprintf(stderr, "Usage: %s [-c command]\n", program_name);
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -c <command> : Specify the command (default: 'ls -l ~/*.txt')\n");
-    fprintf(stderr, "  -h : Show help message\n");
+    fputs("Options:\n", stderr);
+    fputs("  -c <command> : Specify the command (default: 'ls -l ~/*.txt')\n", stderr);
+    fputs("  -h : Show help message\n", stderr);
     exit(exit_code);
 }

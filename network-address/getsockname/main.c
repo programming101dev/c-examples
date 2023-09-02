@@ -25,7 +25,7 @@
 #include <netdb.h>
 
 
-static void display_help(const char *program_name);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -38,31 +38,29 @@ int main(int argc, char *argv[])
     {
         switch(opt)
         {
-            case 'h':
-                display_help(argv[0]);
-                return 0;
             case 'p':
                 port = optarg;
                 break;
+            case 'h':
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                display_help(argv[0]);
-                return 1;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
     if(port == NULL || optind >= argc)
     {
-        display_help(argv[0]);
-        return 1;
+        usage(argv[0], EXIT_FAILURE, "");
     }
 
     hostname = argv[optind];
 
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
     if(sockfd == -1)
     {
         perror("socket");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     struct addrinfo hints, *result, *rp;
@@ -75,7 +73,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Attempt to connect to the server using the available address info
@@ -92,7 +90,7 @@ int main(int argc, char *argv[])
         perror("connect");
         close(sockfd);
         freeaddrinfo(result);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Get the local address and port number associated with the socket
@@ -103,7 +101,7 @@ int main(int argc, char *argv[])
         perror("getsockname");
         close(sockfd);
         freeaddrinfo(result);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     char ipstr[INET_ADDRSTRLEN];
@@ -112,11 +110,17 @@ int main(int argc, char *argv[])
 
     freeaddrinfo(result);
     close(sockfd);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 
-static void display_help(const char *program_name)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s -p <port> <hostname>\n", program_name);
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s -p <port> <hostname>\n", program_name);
+    exit(exit_code);
 }

@@ -21,17 +21,14 @@
 #include <errno.h>
 #include <getopt.h>
 
-
-static void usage(const char *program_name, int exit_code);
+static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct passwd *entry);
-
 
 int main(int argc, char *argv[])
 {
     char *endptr;
-    long int uid_long;
+    long int uid_long = -1;
     uid_t uid;
-    struct passwd *user_info;
     int opt;
 
     while ((opt = getopt(argc, argv, "hu:")) != -1)
@@ -39,48 +36,53 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
             case 'u':
                 uid_long = strtol(optarg, &endptr, 10);
-
                 if (errno != 0 || *endptr != '\0')
                 {
                     fprintf(stderr, "Invalid UID: %s\n", optarg);
-                    return EXIT_FAILURE;
+                    usage(argv[0], EXIT_FAILURE, NULL);
                 }
-
-                uid = (uid_t)uid_long;
-                user_info = getpwuid(uid);
-
-                if (user_info != NULL)
-                {
-                    print_entry(user_info);
-                }
-                else
-                {
-                    printf("User with UID %d not found.\n", uid);
-                }
-
-                return EXIT_SUCCESS;
+                break;
             default:
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
-    usage(argv[0], EXIT_FAILURE);
-    return EXIT_FAILURE;
+    if (uid_long == -1)
+    {
+        usage(argv[0], EXIT_FAILURE, NULL);
+    }
+
+    uid = (uid_t)uid_long;
+    struct passwd *user_info = getpwuid(uid);
+
+    if (user_info != NULL)
+    {
+        print_entry(user_info);
+    }
+    else
+    {
+        printf("User with UID %d not found.\n", uid);
+    }
+
+    return EXIT_SUCCESS;
 }
 
-
-static void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
     fprintf(stderr, "Usage: %s -u <uid>\n", program_name);
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -u <uid> : Specify the user's UID\n");
-    fprintf(stderr, "  -h : Show help message\n");
+    fputs("Options:\n", stderr);
+    fputs("  -u <uid> : Specify the user's UID\n", stderr);
+    fputs("  -h : Show help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void print_entry(const struct passwd *entry)
 {
@@ -91,3 +93,4 @@ static void print_entry(const struct passwd *entry)
     printf("Login shell: %s\n", entry->pw_shell);
     printf("-------------------------\n");
 }
+

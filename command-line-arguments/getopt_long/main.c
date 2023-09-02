@@ -22,7 +22,7 @@
 #include <unistd.h>
 
 
-static void print_help(void);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -61,30 +61,16 @@ int main(int argc, char *argv[])
                 option_charlie_value = optarg;
                 break;
             case 'h':
-                print_help();
-                return EXIT_SUCCESS;
-            case '?':
-                if(optopt == 'c')
-                {
-                    fprintf(stderr, "Option 'charlie' requires an argument.\n");
-                }
-                else
-                {
-                    fprintf(stderr, "Unknown option: '%c'\n", optopt);
-                }
-
-                print_help();
-                return 1;
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                break;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
     // Check if option 'charlie' is set
     if(!(option_charlie_set))
     {
-        fprintf(stderr, "Error: Option 'charlie' is required.\n");
-        print_help();
+        usage(argv[0], EXIT_FAILURE, "");
         return EXIT_FAILURE;
     }
 
@@ -102,12 +88,18 @@ int main(int argc, char *argv[])
 }
 
 
-static void print_help(void)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: example [OPTIONS] [arg1 arg2 ...]\n");
-    printf("Options:\n");
-    printf("  -a, --alpha            Option 'alpha'\n");
-    printf("  -b, --beta             Option 'beta'\n");
-    printf("  -c, --charlie value    Option 'charlie' (required) with value\n");
-    printf("  -h, --help             Display this help message\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s [OPTIONS] [arg1 arg2 ...]\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -a, --alpha            Option 'alpha'\n", stderr);
+    fputs("  -b, --beta             Option 'beta'\n", stderr);
+    fputs("  -c, --charlie value    Option 'charlie' (required) with value\n", stderr);
+    fputs("  -h, --help             Display this help message\n", stderr);
+    exit(exit_code);
 }

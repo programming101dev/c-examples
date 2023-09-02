@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 
 
-static void usage(const char *program_name, int exit_code);
+static void usage(const char *program_name, int exit_code, const char *message);
 static void print_file_info(const struct stat *fileStat);
 static void print_special_type(const struct stat *fileStat);
 static void print_extended_type(const struct stat *fileStat);
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
         {
             case 'h':
             {
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
             }
             case 'f':
             {
@@ -51,15 +51,14 @@ int main(int argc, char *argv[])
             }
             default:
             {
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
             }
         }
     }
 
     if(filename == NULL)
     {
-        fprintf(stderr, "Error: You must provide a filename using -f option.\n");
-        usage(argv[0], EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE, "Error: You must provide a filename using -f option.\n");
     }
 
     if(stat(filename, &fileStat) == -1)
@@ -75,8 +74,13 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
     fprintf(stderr, "Usage: %s <filename>\n", program_name);
     exit(exit_code);
 }

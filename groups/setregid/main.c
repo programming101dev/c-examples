@@ -21,7 +21,7 @@
 #include <getopt.h>
 
 
-static void usage(const char *program_name, int exit_code);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -36,23 +36,22 @@ int main(int argc, char *argv[])
         switch (opt)
         {
             case 'h':
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
     if(argc != optind + 2)
     {
-        usage(argv[0], EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
     }
 
     new_gid = (gid_t)strtol(argv[optind], &endptr, 10);
 
     if(*endptr != '\0')
     {
-        fprintf(stderr, "Invalid GID format: %s\n", argv[optind]);
-        usage(argv[0], EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE, "Invalid GID format");
     }
 
     new_egid = (gid_t)strtol(argv[optind + 1], &endptr, 10);
@@ -75,8 +74,13 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
     fprintf(stderr, "Usage: %s <new_gid> <new_egid>\n", program_name);
     exit(exit_code);
 }

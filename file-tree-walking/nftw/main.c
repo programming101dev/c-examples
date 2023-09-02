@@ -21,29 +21,30 @@
 #include <ftw.h>
 
 
-static void display_help(const char *program_name);
+static void usage(const char *program_name, int exit_code, const char *message);
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
 
 
 int main(int argc, char *argv[])
 {
     int opt;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
         {
             case 'h':
-                display_help(argv[0]);
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 return 0;
             default:
-                display_help(argv[0]);
+                usage(argv[0], EXIT_FAILURE, NULL);
                 return 1;
         }
     }
 
     if(optind != argc - 1)
     {
-        display_help(argv[0]);
+        usage(argv[0], EXIT_FAILURE, "");
         return 1;
     }
 
@@ -58,9 +59,15 @@ int main(int argc, char *argv[])
 }
 
 
-static void display_help(const char *program_name)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s <directory>\n", program_name);
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s <directory>\n", program_name);
+    exit(exit_code);
 }
 
 

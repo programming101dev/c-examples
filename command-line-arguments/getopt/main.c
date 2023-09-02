@@ -21,7 +21,7 @@
 #include <stdlib.h>
 
 
-static void print_help(void);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -57,30 +57,16 @@ int main(int argc, char *argv[])
                 option_c_value = optarg;
                 break;
             case 'h':
-                print_help();
-                return EXIT_SUCCESS;
-            case '?':
-                if(optopt == 'c')
-                {
-                    fprintf(stderr, "Option 'c' requires an argument.\n");
-                }
-                else
-                {
-                    fprintf(stderr, "Unknown option: '%c'\n", optopt);
-                }
-
-                print_help();
-                return 1;
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                break;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
     // Check if option 'c' is set
     if(!(option_c_set))
     {
-        fprintf(stderr, "Error: Option 'c' is required.\n");
-        print_help();
+        usage(argv[0], EXIT_FAILURE, "");
         return EXIT_FAILURE;
     }
 
@@ -98,12 +84,18 @@ int main(int argc, char *argv[])
 }
 
 
-static void print_help(void)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: example [-a] [-b] -c value [arg1 arg2 ...]\n");
-    printf("Options:\n");
-    printf("  -a             Option 'a'\n");
-    printf("  -b             Option 'b'\n");
-    printf("  -c value       Option 'c' (required) with value\n");
-    printf("  -h             Display this help message\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s [-a] [-b] -c value [arg1 arg2 ...]\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -a             Option 'a'\n", stderr);
+    fputs("  -b             Option 'b'\n", stderr);
+    fputs("  -c value       Option 'c' (required) with value\n", stderr);
+    fputs("  -h             Display this help message\n", stderr);
+    exit(exit_code);
 }

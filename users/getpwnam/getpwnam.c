@@ -21,7 +21,7 @@
 #include <pwd.h>
 
 
-static void usage(const char *program_name, int exit_code);
+static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct passwd *entry);
 
 
@@ -42,19 +42,18 @@ int main(int argc, char *argv[])
             }
             case 'h':
             {
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
             }
             default:
             {
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
             }
         }
     }
 
     if(username == NULL)
     {
-        printf("Error: You must provide a username using -u option.\n");
-        usage(argv[0], EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE, "Error: You must provide a username using -u option.\n");
     }
 
     user_info = getpwnam(username);
@@ -72,12 +71,17 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s -u <username>\n", program_name);
-    printf("Options:\n");
-    printf("  -u <username> : Specify the username\n");
-    printf("  -h : Show help message\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s -u <username>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -u <username> : Specify the username\n", stderr);
+    fputs("  -h : Show help message\n", stderr);
     exit(exit_code);
 }
 

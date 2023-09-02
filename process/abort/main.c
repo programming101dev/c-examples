@@ -22,7 +22,7 @@
 #include <sys/resource.h>
 
 
-static void print_help(void);
+static void usage(const char *program_name, int exit_code, const char *message);
 static void abort_handler(void);
 static void set_core_dump_limit(long long size);
 
@@ -43,13 +43,9 @@ int main(int argc, char *argv[])
                 set_core_limit = true;
                 break;
             case 'h':
-                print_help();
-                return EXIT_SUCCESS;
-            case '?':
-                fprintf(stderr, "Unknown option: '%c'\n", optopt);
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_SUCCESS, NULL);
             default:
-                break;
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
@@ -72,18 +68,27 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void print_help(void)
+
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: core_dump [-l] [-h]\n");
-    printf("Options:\n");
-    printf("  -l  Set the core dump limit to unlimited\n");
-    printf("  -h  Display this help message\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s [-l] [-h]\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -l  Set the core dump limit to unlimited\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
+
 
 static void abort_handler(void)
 {
     printf("Abort handler called.\n");
 }
+
 
 static void set_core_dump_limit(long long size)
 {

@@ -50,7 +50,6 @@ int main(void)
         { isxdigit, "xdigit", "Hex Digit" }
     };
 
-
     printf("Char | Binary  | Oct | Dec | Hex | ");
 
     for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)

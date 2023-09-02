@@ -21,13 +21,14 @@
 #include <getopt.h>
 #include <stdbool.h>
 
-static void usage(const char *program_name, int exit_code);
+
+static void usage(const char *program_name, int exit_code, const char *message);
+
 
 int main(int argc, char *argv[])
 {
     char *endptr;
     gid_t new_gid = (gid_t)-1;
-    bool new_gid_set = false;
 
     int opt;
     while((opt = getopt(argc, argv, "hu:")) != -1)
@@ -35,20 +36,19 @@ int main(int argc, char *argv[])
         switch(opt)
         {
             case 'h':
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 break;
             case 'u':
                 new_gid = (gid_t) strtol(optarg, &endptr, 10);
-                new_gid_set = true;
                 break;
             default:
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
         }
     }
 
-    if (!new_gid_set)
+    if(new_gid == (gid_t)-1)
     {
-        usage(argv[0], EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE, "");
     }
 
     if(setegid(new_gid) == -1)
@@ -63,8 +63,13 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
     fprintf(stderr, "Usage: %s -u <new_gid>\n", program_name);
     exit(exit_code);
 }

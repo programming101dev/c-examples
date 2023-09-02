@@ -25,7 +25,7 @@
 #include <string.h>
 
 
-static void display_help(const char *program_name);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -38,27 +38,25 @@ int main(int argc, char *argv[])
     {
         switch(opt)
         {
-            case 'h':
-            {
-                display_help(argv[0]);
-                return EXIT_SUCCESS;
-            }
             case 'p':
             {
                 port = optarg;
                 break;
             }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
             default:
             {
-                display_help(argv[0]);
-                return EXIT_FAILURE;
+                usage(argv[0], EXIT_FAILURE, NULL);
             }
         }
     }
 
     if(optind >= argc)
     {
-        display_help(argv[0]);
+        usage(argv[0], EXIT_FAILURE, "");
         return EXIT_FAILURE;
     }
 
@@ -122,8 +120,14 @@ int main(int argc, char *argv[])
 }
 
 
-static void display_help(const char *program_name)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s -p <port> <server_address>\n", program_name);
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s -p <port> <server_address>\n", program_name);
+    exit(exit_code);
 }
 

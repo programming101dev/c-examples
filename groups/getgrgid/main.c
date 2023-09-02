@@ -22,7 +22,7 @@
 #include <getopt.h>
 
 
-static void usage(const char *program_name, int exit_code);
+static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct group *entry);
 
 
@@ -40,18 +40,18 @@ int main(int argc, char *argv[])
         {
             case 'h':
             {
-                usage(argv[0], EXIT_SUCCESS);
+                usage(argv[0], EXIT_SUCCESS, NULL);
             }
             default:
             {
-                usage(argv[0], EXIT_FAILURE);
+                usage(argv[0], EXIT_FAILURE, NULL);
             }
         }
     }
 
     if(optind != argc - 1)
     {
-        usage(argv[0], EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
     }
 
     errno = 0;
@@ -79,11 +79,16 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name, int exit_code)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s <gid>\n", program_name);
-    printf("Options:\n");
-    printf("  -h : Display this help message\n");
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s <gid>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h : Display this help message\n", stderr);
     exit(exit_code);
 }
 

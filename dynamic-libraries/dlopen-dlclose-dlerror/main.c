@@ -21,7 +21,7 @@
 #include <dlfcn.h>
 
 
-static void display_help(const char *program_name);
+static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -34,17 +34,17 @@ int main(int argc, char *argv[])
         switch(opt)
         {
             case 'h':
-                display_help(argv[0]);
+                usage(argv[0], EXIT_SUCCESS,  NULL);
                 return 0;
             default:
-                display_help(argv[0]);
+                usage(argv[0], EXIT_SUCCESS, NULL);
                 return 1;
         }
     }
 
     if(optind >= argc)
     {
-        display_help(argv[0]);
+        usage(argv[0], EXIT_FAILURE, "");
         return 1;
     }
 
@@ -70,7 +70,13 @@ int main(int argc, char *argv[])
 }
 
 
-static void display_help(const char *program_name)
+static void usage(const char *program_name, int exit_code, const char *message)
 {
-    printf("Usage: %s -h <library_name>\n", program_name);
+    if(message)
+    {
+        fputs(message, stderr);
+    }
+
+    fprintf(stderr, "Usage: %s -h <library_name>\n", program_name);
+    exit(exit_code);
 }

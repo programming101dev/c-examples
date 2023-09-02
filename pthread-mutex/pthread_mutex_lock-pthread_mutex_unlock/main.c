@@ -130,8 +130,8 @@ static void *threadFunction(void *arg)
 
 static void printHelp(void)
 {
-    printf("Usage: ./program_name [-h] [-m]\n");
-    printf("Options:\n");
-    printf("  -h        Display this help message.\n");
-    printf("  -m        Use mutex for threadFunction (default is no mutex).\n");
+    fprintf(stderr, "Usage: ./program_name [-h] [-m]\n");
+    fputs("Options:\n", stderr);
+    fputs("  -h        Display this help message.\n", stderr);
+    fputs("  -m        Use mutex for threadFunction (default is no mutex).\n", stderr);
 }

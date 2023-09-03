@@ -23,20 +23,54 @@
 
 
 static void usage(const char *program_name, int exit_code, const char *message);
+static void process_arguments(int argc, char *argv[], gid_t *gid);
 static void print_entry(const struct group *entry);
 
 
 int main(int argc, char *argv[])
 {
-    int opt;
-    char *endptr;
-    long int gid_long;
     gid_t gid;
     struct group *group_info;
 
+    process_arguments(argc, argv, &gid);
+    group_info = getgrgid(gid);
+
+    if(group_info == NULL)
+    {
+        printf("Group with GID %d not found.\n", gid);
+    }
+    else
+    {
+        print_entry(group_info);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s <gid>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h : Display this help message\n", stderr);
+    exit(exit_code);
+}
+
+
+static void process_arguments(int argc, char *argv[], gid_t *gid)
+{
+    int opt;
+    char *endptr;
+    long int gid_long;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'h':
             {
@@ -46,7 +80,6 @@ int main(int argc, char *argv[])
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
                 break;
@@ -68,37 +101,10 @@ int main(int argc, char *argv[])
 
     if(errno != 0 || *endptr != '\0')
     {
-        printf("Invalid GID: %s\n", argv[optind]);
-        return EXIT_FAILURE;
+        usage(argv[0], EXIT_FAILURE, "Invalid gid");
     }
 
-    gid = (gid_t)gid_long;
-    group_info = getgrgid(gid);
-
-    if(group_info != NULL)
-    {
-        print_entry(group_info);
-    }
-    else
-    {
-        printf("Group with GID %d not found.\n", gid);
-    }
-
-    return EXIT_SUCCESS;
-}
-
-
-static void usage(const char *program_name, int exit_code, const char *message)
-{
-    if(message)
-    {
-        fputs(message, stderr);
-    }
-
-    fprintf(stderr, "Usage: %s <gid>\n", program_name);
-    fputs("Options:\n", stderr);
-    fputs("  -h : Display this help message\n", stderr);
-    exit(exit_code);
+    *gid = (gid_t)gid_long;
 }
 
 

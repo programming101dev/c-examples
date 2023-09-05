@@ -40,6 +40,7 @@ int main(void)
     }
 
     // Open the file to read
+    // TODO: make this a command line argument with a default
     FILE *file = fopen("../example.txt", "r");
     if(file == NULL)
     {

@@ -70,7 +70,7 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
             {
                 char message[24];
 
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
             default:

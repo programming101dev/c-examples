@@ -22,7 +22,6 @@
 
 
 static char *getCurrentWorkingDirectory(long path_max);
-
 static void printCurrentWorkingDirectory(long path_max);
 
 
@@ -41,6 +40,7 @@ int main(void)
 
     printCurrentWorkingDirectory(path_max);
 
+    // TODO: make this a command line argument with a default
     if(chdir("/") == -1)
     {
         perror("chdir");

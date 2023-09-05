@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
             {
                 char message[24];
 
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
             default:

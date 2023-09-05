@@ -21,6 +21,7 @@
 
 int main(void)
 {
+    // TODO: make this a command line argument with a default
     unsigned short host_value = 12345;
     unsigned short network_value = htons(host_value);
 

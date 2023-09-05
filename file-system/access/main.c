@@ -26,6 +26,7 @@ static void check_file_access(const char *filename, int mode, const char *access
 
 int main(void)
 {
+    // TODO: make this a command line argument with a default
     const char *filename = "../../example.txt";
 
     check_file_access(filename, R_OK, "readable");

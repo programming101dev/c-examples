@@ -17,40 +17,35 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <pwd.h>
-#include <errno.h>
 #include <getopt.h>
+#include <ftw.h>
 
 
-static void parse_arguments(int argc, char *argv[], uid_t *uid);
+static void parse_arguments(int argc, char *argv[], char **directory);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void print_entry(const struct passwd *entry);
+static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
 
 
 int main(int argc, char *argv[])
 {
-    uid_t uid = (uid_t)-1;
+    char *directory;
 
-    parse_arguments(argc, argv, &uid);
-    struct passwd *user_info = getpwuid(uid);
+    parse_arguments(argc, argv, &directory);
 
-    if(user_info != NULL)
+    // Use nftw to traverse the directory tree recursively
+    if(nftw(directory, print_file, 1, FTW_PHYS) == -1)
     {
-        print_entry(user_info);
-    }
-    else
-    {
-        printf("User with UID %d not found.\n", uid);
+        perror("nftw");
+        return 1;
     }
 
     return EXIT_SUCCESS;
 }
 
-static void parse_arguments(int argc, char *argv[], uid_t *uid)
+
+static void parse_arguments(int argc, char *argv[], char **directory)
 {
     int opt;
-    char *endptr;
-    long int uid_long = -1;
 
     opterr = 0;
 
@@ -78,27 +73,14 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The user id is required");
+        usage(argv[0], EXIT_FAILURE, "The directory is required");
     }
     else if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(uid_long == -1)
-    {
-        usage(argv[0], EXIT_FAILURE, NULL);
-    }
-
-    uid_long = strtol(optarg, &endptr, 10);
-
-    if(errno != 0 || *endptr != '\0')
-    {
-        fprintf(stderr, "Invalid UID: %s\n", optarg);
-        usage(argv[0], EXIT_FAILURE, NULL);
-    }
-
-    *uid = (uid_t) uid_long;
+    *directory = argv[optind];
 }
 
 
@@ -109,19 +91,31 @@ _Noreturn  static void usage(const char *program_name, int exit_code, const char
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <user id>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <directory>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 
-static void print_entry(const struct passwd *entry)
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
-    printf("Username: %s\n", entry->pw_name);
-    printf("User ID (UID): %d\n", entry->pw_uid);
-    printf("Group ID (GID): %d\n", entry->pw_gid);
-    printf("Home directory: %s\n", entry->pw_dir);
-    printf("Login shell: %s\n", entry->pw_shell);
-    printf("-------------------------\n");
+    if(tflag == FTW_F)
+    {
+        printf("File: %s\n", fpath);
+    }
+    else if(tflag == FTW_D)
+    {
+        printf("Directory: %s\n", fpath);
+    }
+    else if(tflag == FTW_SL)
+    {
+        printf("Link: %s\n", fpath);
+    }
+
+    return 0; // Continue traversing the directory tree
 }
 
+#pragma GCC diagnostic pop

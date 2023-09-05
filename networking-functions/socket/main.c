@@ -53,7 +53,7 @@ static int create_socket(void)
 
     fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (fd == -1)
+    if(fd == -1)
     {
         perror("Socket creation failed");
         return -1;

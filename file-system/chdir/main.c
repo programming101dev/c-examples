@@ -21,7 +21,8 @@
 #include <errno.h>
 
 
-static char* getCurrentWorkingDirectory(long path_max);
+static char *getCurrentWorkingDirectory(long path_max);
+
 static void printCurrentWorkingDirectory(long path_max);
 
 
@@ -40,7 +41,7 @@ int main(void)
 
     printCurrentWorkingDirectory(path_max);
 
-    if (chdir("/") == -1)
+    if(chdir("/") == -1)
     {
         perror("chdir");
         exit(EXIT_FAILURE);
@@ -51,14 +52,14 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-char* getCurrentWorkingDirectory(long path_max)
+char *getCurrentWorkingDirectory(long path_max)
 {
     char *buffer = NULL;
-    size_t size = (size_t)path_max;
+    size_t size = (size_t) path_max;
 
     buffer = NULL;
 
-    while (1)
+    while(1)
     {
         buffer = realloc(buffer, size);
 

@@ -21,8 +21,11 @@
 
 
 static void signal_handler(int signal_number);
+
 static int check_pending_signal(void);
+
 static int block_signal(int signal_num, sigset_t *block_set);
+
 static int unblock_signal(sigset_t *block_set);
 
 

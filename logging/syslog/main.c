@@ -34,6 +34,6 @@ int main(void)
     syslog(LOG_INFO, "This is an informational message.");
     syslog(LOG_DEBUG, "This is a debug message.");
     closelog();
-    
+
     return EXIT_SUCCESS;
 }

@@ -21,39 +21,58 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], uid_t *new_uid, uid_t *new_euid);
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *endptr;
-    uid_t new_uid;
-    uid_t new_euid;
+    uid_t new_uid = (uid_t)-1;
+    uid_t new_euid = (uid_t)-1;
 
-    int opt;
-    while ((opt = getopt(argc, argv, "hu:e:")) != -1)
+    parse_arguments(argc, argv, &new_uid, &new_euid);
+
+    if(setreuid(new_uid, new_euid) == -1)
     {
-        switch (opt)
+        perror("setreuid");
+        return EXIT_FAILURE;
+    }
+
+    printf("Real UID: %d\n", getuid());
+    printf("Effective UID: %d\n", geteuid());
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], uid_t *new_uid, uid_t *new_euid)
+{
+    int opt;
+    char *endptr;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "hu:e:")) != -1)
+    {
+        switch(opt)
         {
             case 'u':
             {
-                new_uid = (uid_t) strtol(optarg, &endptr, 10);
+                *new_uid = (uid_t) strtol(optarg, &endptr, 10);
 
                 if(*endptr != '\0')
                 {
-                    fprintf(stderr, "Invalid UID format: %s\n", optarg);
-                    return EXIT_FAILURE;
+                    usage(argv[0], EXIT_FAILURE, "Invalid user id format");
                 }
                 break;
             }
             case 'e':
             {
-                new_euid = (uid_t) strtol(optarg, &endptr, 10);
+                *new_euid = (uid_t) strtol(optarg, &endptr, 10);
 
                 if(*endptr != '\0')
                 {
-                    fprintf(stderr, "Invalid Effective UID format: %s\n", optarg);
-                    return EXIT_FAILURE;
+                    usage(argv[0], EXIT_FAILURE, "Invalid effective user id format");
                 }
                 break;
             }
@@ -77,21 +96,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (optind < argc)
+    if(optind < argc)
     {
         usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
     }
-
-    if (setreuid(new_uid, new_euid) == -1)
-    {
-        perror("setreuid");
-        return EXIT_FAILURE;
-    }
-
-    printf("Real UID: %d\n", getuid());
-    printf("Effective UID: %d\n", geteuid());
-
-    return EXIT_SUCCESS;
 }
 
 
@@ -99,13 +107,13 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -u <new_uid> -e <new_euid>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -u <user id> -e <effective user id>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -u <new_uid> : Specify the new UID\n", stderr);
-    fputs("  -e <new_euid> : Specify the new effective UID\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h                      Display this help message\n", stderr);
+    fputs("  -u <user id>            Specify the new user id\n", stderr);
+    fputs("  -e <effective user id>  Specify the new effective user id\n", stderr);
     exit(exit_code);
 }

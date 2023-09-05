@@ -25,6 +25,7 @@
 
 
 static long long performCalculation(size_t size, size_t iterations);
+
 static void printUsage(struct rusage ru);
 
 

@@ -34,31 +34,31 @@ struct signal_info
 int main(void)
 {
     struct signal_info signals[] =
-    {
-        {SIGABRT,   "SIGABRT"},
-        {SIGALRM,   "SIGALRM"},
-        {SIGCHLD,   "SIGCHLD"},
-        {SIGCONT,   "SIGCONT"},
-        {SIGFPE,    "SIGFPE"},
-        {SIGHUP,    "SIGHUP"},
-        {SIGILL,    "SIGILL"},
-        {SIGINT,    "SIGINT"},
-        {SIGPIPE,   "SIGPIPE"},
-        {SIGQUIT,   "SIGQUIT"},
-        {SIGSEGV,   "SIGSEGV"},
-        {SIGSYS,    "SIGSYS"},
-        {SIGTERM,   "SIGTERM"},
-        {SIGTRAP,   "SIGTRAP"},
-        {SIGTSTP,   "SIGTSTP"},
-        {SIGTTIN,   "SIGTTIN"},
-        {SIGTTOU,   "SIGTTOU"},
-        {SIGURG,    "SIGURG"},
-        {SIGUSR1,   "SIGUSR1"},
-        {SIGUSR2,   "SIGUSR2"},
-        {SIGVTALRM, "SIGVTALRM"},
-        {SIGXCPU,   "SIGXCPU"},
-        {SIGXFSZ,   "SIGXFSZ"}
-    };
+            {
+                    {SIGABRT,   "SIGABRT"},
+                    {SIGALRM,   "SIGALRM"},
+                    {SIGCHLD,   "SIGCHLD"},
+                    {SIGCONT,   "SIGCONT"},
+                    {SIGFPE,    "SIGFPE"},
+                    {SIGHUP,    "SIGHUP"},
+                    {SIGILL,    "SIGILL"},
+                    {SIGINT,    "SIGINT"},
+                    {SIGPIPE,   "SIGPIPE"},
+                    {SIGQUIT,   "SIGQUIT"},
+                    {SIGSEGV,   "SIGSEGV"},
+                    {SIGSYS,    "SIGSYS"},
+                    {SIGTERM,   "SIGTERM"},
+                    {SIGTRAP,   "SIGTRAP"},
+                    {SIGTSTP,   "SIGTSTP"},
+                    {SIGTTIN,   "SIGTTIN"},
+                    {SIGTTOU,   "SIGTTOU"},
+                    {SIGURG,    "SIGURG"},
+                    {SIGUSR1,   "SIGUSR1"},
+                    {SIGUSR2,   "SIGUSR2"},
+                    {SIGVTALRM, "SIGVTALRM"},
+                    {SIGXCPU,   "SIGXCPU"},
+                    {SIGXFSZ,   "SIGXFSZ"}
+            };
 
     int n = sizeof(signals) / sizeof(signals[0]);
     struct sigaction sa;

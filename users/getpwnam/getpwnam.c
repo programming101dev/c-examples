@@ -21,25 +21,44 @@
 #include <pwd.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **username);
+
 static void usage(const char *program_name, int exit_code, const char *message);
+
 static void print_entry(const struct passwd *entry);
 
 
 int main(int argc, char *argv[])
 {
-    const char *username;
+    char *username = NULL;
     struct passwd *user_info;
 
-    int opt;
-    while ((opt = getopt(argc, argv, "hu:")) != -1)
+    parse_arguments(argc, argv, &username);
+    user_info = getpwnam(username);
+
+    if(user_info != NULL)
     {
-        switch (opt)
+        print_entry(user_info);
+    }
+    else
+    {
+        printf("User '%s' not found.\n", username);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **username)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
         {
-            case 'u':
-            {
-                username = optarg;
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -60,23 +79,21 @@ int main(int argc, char *argv[])
         }
     }
 
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The user name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
     if(username == NULL)
     {
         usage(argv[0], EXIT_FAILURE, "Error: You must provide a username using -u option.\n");
     }
 
-    user_info = getpwnam(username);
-
-    if(user_info != NULL)
-    {
-        print_entry(user_info);
-    }
-    else
-    {
-        printf("User '%s' not found.\n", username);
-    }
-
-    return EXIT_SUCCESS;
+    *username = optarg;
 }
 
 
@@ -84,13 +101,12 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -u <username>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <user name>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -u <username> : Specify the username\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 

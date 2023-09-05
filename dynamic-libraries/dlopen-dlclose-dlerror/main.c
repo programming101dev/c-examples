@@ -55,8 +55,11 @@ int main(int argc, char *argv[])
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "");
-        return 1;
+        usage(argv[0], EXIT_FAILURE, "The library name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
     library_name = argv[optind];
@@ -85,9 +88,9 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -h <library_name>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <library name>\n", program_name);
     exit(exit_code);
 }

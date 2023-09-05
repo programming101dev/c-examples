@@ -17,8 +17,9 @@
 
 #include <stdio.h>
 #include <pthread.h>
-#include <stdlib.h> // For atoi
-#include <getopt.h> // For getopt
+#include <stdbool.h>
+#include <stdlib.h>
+#include <getopt.h>
 
 
 #define NUM_THREADS 10
@@ -28,33 +29,86 @@ struct thread_data
 {
     int *sharedVariable;
     pthread_mutex_t *mutex;
-    int useMutex;
+    bool use_mutex;
 };
 
 
+static void parse_arguments(int argc, char *argv[], bool *use_mutex);
+
 static void usage(const char *program_name, int exit_code, const char *message);
-static void *threadFunction(void *arg);
+
+static void *thread_function(void *arg);
 
 
 int main(int argc, char *argv[])
 {
+    bool use_mutex = false; // Default is no mutex
+    // Initialize the mutex if needed
+    pthread_mutex_t mutex;
+
+    parse_arguments(argc, argv, &use_mutex);
+
+    if(use_mutex && pthread_mutex_init(&mutex, NULL) != 0)
+    {
+        fprintf(stderr, "Error: Mutex initialization failed.\n");
+        return 1;
+    }
+
+    // Create an array of threads
+    pthread_t threads[NUM_THREADS];
+    int sharedVariable = 0; // Local shared variable for main thread
+    int i;
+
+    // Create multiple threads
+    struct thread_data data;
+    data.sharedVariable = &sharedVariable;
+    data.mutex = &mutex;
+    data.use_mutex = use_mutex;
+
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        if(pthread_create(&threads[i], NULL, thread_function, (void *) &data) != 0)
+        {
+            fprintf(stderr, "Error: Thread creation failed.\n");
+            return 1;
+        }
+    }
+
+    // Wait for all threads to finish
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+
+    // Destroy the mutex if needed
+    if(use_mutex)
+    {
+        pthread_mutex_destroy(&mutex);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], bool *use_mutex)
+{
     int opt;
-    int useMutex = 0; // Default is no mutex
+
+    opterr = 0;
 
     // Process command-line options
     while((opt = getopt(argc, argv, "hm")) != -1)
     {
         switch(opt)
         {
+            case 'm':
+            {
+                *use_mutex = 1;
+                break;
+            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                return EXIT_SUCCESS;
-            }
-            case 'm':
-            {
-                useMutex = 1;
-                break;
             }
             case '?':
             {
@@ -70,57 +124,29 @@ int main(int argc, char *argv[])
             }
         }
     }
-
-    // Initialize the mutex if needed
-    pthread_mutex_t mutex;
-
-    if(useMutex && pthread_mutex_init(&mutex, NULL) != 0)
-    {
-        fprintf(stderr, "Error: Mutex initialization failed.\n");
-        return 1;
-    }
-
-    // Create an array of threads
-    pthread_t threads[NUM_THREADS];
-    int sharedVariable = 0; // Local shared variable for main thread
-    int i;
-
-    // Create multiple threads
-    struct thread_data data;
-    data.sharedVariable = &sharedVariable;
-    data.mutex = &mutex;
-    data.useMutex = useMutex;
-
-    for(i = 0; i < NUM_THREADS; i++)
-    {
-        if(pthread_create(&threads[i], NULL, threadFunction, (void *) &data) != 0)
-        {
-            fprintf(stderr, "Error: Thread creation failed.\n");
-            return 1;
-        }
-    }
-
-    // Wait for all threads to finish
-    for(i = 0; i < NUM_THREADS; i++)
-    {
-        pthread_join(threads[i], NULL);
-    }
-
-    // Destroy the mutex if needed
-    if(useMutex)
-    {
-        pthread_mutex_destroy(&mutex);
-    }
-
-    return EXIT_SUCCESS;
 }
 
 
-static void *threadFunction(void *arg)
+static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] [-m]\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message.\n", stderr);
+    fputs("  -m  Use mutex (default is no mutex).\n", stderr);
+    exit(exit_code);
+}
+
+
+static void *thread_function(void *arg)
 {
     struct thread_data *data = (struct thread_data *) arg;
 
-    if(data->useMutex)
+    if(data->use_mutex)
     {
         // Lock the mutex before accessing the shared variable
         pthread_mutex_lock(data->mutex);
@@ -131,7 +157,7 @@ static void *threadFunction(void *arg)
     printf("Thread %ld: Shared variable value: %d\n", (long) pthread_self(), *(data->sharedVariable));
     // sleep(1); // Introduce a 1-second delay
 
-    if(data->useMutex)
+    if(data->use_mutex)
     {
         // Unlock the mutex after finishing the critical section
         pthread_mutex_unlock(data->mutex);
@@ -139,19 +165,4 @@ static void *threadFunction(void *arg)
 
     // Exit the thread
     pthread_exit(NULL);
-}
-
-
-static void usage(const char *program_name, int exit_code, const char *message)
-{
-    if(message)
-    {
-        fputs(message, stderr);
-    }
-
-    fprintf(stderr, "Usage: %s [-h] [-m]\n", program_name);
-    fputs("Options:\n", stderr);
-    fputs("  -h        Display this help message.\n", stderr);
-    fputs("  -m        Use mutex for threadFunction (default is no mutex).\n", stderr);
-    exit(exit_code);
 }

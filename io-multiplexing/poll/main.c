@@ -30,9 +30,13 @@
 volatile int running = 1;
 
 void signal_handler(int signum);
+
 int create_server_socket(void);
+
 void handle_new_client(int server_socket, int **client_sockets, int *max_clients);
+
 void handle_client_data(int sd, int **client_sockets, int *max_clients);
+
 void setup_signal_handler(void);
 
 

@@ -24,9 +24,15 @@ int main(void)
 {
     uint16_t value = 42;
 
-    printf("Using PRIu16 (unsigned): %" PRIu16 "\n", value);
-    printf("Using PRIx16 (hexadecimal): %" PRIx16 "\n", value);
-    printf("Using PRIX16 (uppercase hexadecimal): %" PRIX16 "\n", value);
+    printf("Using PRIu16 (unsigned): %"
+    PRIu16
+    "\n", value);
+    printf("Using PRIx16 (hexadecimal): %"
+    PRIx16
+    "\n", value);
+    printf("Using PRIX16 (uppercase hexadecimal): %"
+    PRIX16
+    "\n", value);
 
     return EXIT_SUCCESS;
 }

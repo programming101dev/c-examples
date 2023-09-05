@@ -29,6 +29,7 @@
 
 
 static void send_word(int sockfd, const char *word, uint8_t length);
+
 static void error_exit(const char *msg);
 
 // TODO: fork N children - make N a command line argument

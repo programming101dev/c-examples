@@ -27,8 +27,11 @@
 
 
 void child_process(int sockfd);
+
 void parent_process(int sockfd);
+
 void send_word(int sockfd, const char *word, uint8_t length);
+
 void error_exit(const char *msg);
 
 

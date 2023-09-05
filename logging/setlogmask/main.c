@@ -31,8 +31,8 @@ int main(void)
     openlog("log-demo", LOG_PID, LOG_USER);
 
     mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) |
-               LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) |
-               LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
+           LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) |
+           LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
 
     if(setlogmask(mask) == -1)
     {

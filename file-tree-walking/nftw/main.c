@@ -21,13 +21,35 @@
 #include <ftw.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **directory);
+
 static void usage(const char *program_name, int exit_code, const char *message);
+
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
 
 
 int main(int argc, char *argv[])
 {
+    char *directory;
+
+    parse_arguments(argc, argv, &directory);
+
+    // Use nftw to traverse the directory tree recursively
+    if(nftw(directory, print_file, 1, FTW_PHYS) == -1)
+    {
+        perror("nftw");
+        return 1;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **directory)
+{
     int opt;
+
+    opterr = 0;
 
     while((opt = getopt(argc, argv, "h")) != -1)
     {
@@ -53,20 +75,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(optind != argc - 1)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "");
-        return 1;
+        usage(argv[0], EXIT_FAILURE, "The directory is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    // Use nftw to traverse the directory tree recursively
-    if(nftw(argv[optind], print_file, 10, FTW_PHYS) == -1)
-    {
-        perror("nftw");
-        return 1;
-    }
-
-    return EXIT_SUCCESS;
+    *directory = argv[optind];
 }
 
 
@@ -74,16 +92,19 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s <directory>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <directory>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
     if(tflag == FTW_F)

@@ -21,7 +21,9 @@
 
 
 static void create_sample_file(const char *filename);
+
 static void create_symbolic_link(const char *source_filename, const char *link_filename);
+
 static void check_file_existence(const char *filename, const char *message);
 
 
@@ -44,7 +46,7 @@ int main(void)
 
     // Deleting source file
     printf("Deleting file %s\n", source_filename);
-    if (unlink(source_filename) == -1)
+    if(unlink(source_filename) == -1)
     {
         perror("Error deleting source file");
         return EXIT_FAILURE;
@@ -54,7 +56,7 @@ int main(void)
 
     // Deleting symbolic link
     printf("Deleting symbolic link %s\n", link_filename);
-    if (unlink(link_filename) == -1)
+    if(unlink(link_filename) == -1)
     {
         perror("Error deleting symbolic link");
         return EXIT_FAILURE;
@@ -70,7 +72,7 @@ static void create_sample_file(const char *filename)
     // Variable declarations
     FILE *file = fopen(filename, "w");
 
-    if (file == NULL)
+    if(file == NULL)
     {
         perror("Error creating sample file");
         exit(EXIT_FAILURE);
@@ -83,7 +85,7 @@ static void create_sample_file(const char *filename)
 
 static void create_symbolic_link(const char *source_filename, const char *link_filename)
 {
-    if (symlink(source_filename, link_filename) == -1)
+    if(symlink(source_filename, link_filename) == -1)
     {
         perror("Error creating symbolic link");
         exit(EXIT_FAILURE);
@@ -92,7 +94,7 @@ static void create_symbolic_link(const char *source_filename, const char *link_f
 
 static void check_file_existence(const char *filename, const char *message)
 {
-    if (access(filename, F_OK) == 0)
+    if(access(filename, F_OK) == 0)
     {
         printf("\t%s '%s' exists.\n", message, filename);
     }

@@ -124,8 +124,10 @@ int main(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
+
 #pragma GCC diagnostic pop

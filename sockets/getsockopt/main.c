@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 
+static void parse_arguments(int argc, char *argv[], int *port);
 static void usage(const char *program_name, int exit_code, const char *message);
 static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str);
 
@@ -31,48 +32,8 @@ static void print_socket_opt(int sockfd, int option_level, int option_name, cons
 int main(int argc, char *argv[])
 {
     int port = 0;
-    int opt;
 
-    while((opt = getopt(argc, argv, "hp:")) != -1)
-    {
-        switch(opt)
-        {
-            case 'p':
-            {
-                port = (int) strtol(optarg, NULL, 10);
-
-                if(port == 0)
-                {
-                    fprintf(stderr, "Invalid port number\n");
-                    return 1;
-                }
-                break;
-            }
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
-            }
-            case '?':
-            {
-                char message[24];
-
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
-                usage(argv[0], EXIT_FAILURE, message);
-                break;
-            }
-            default:
-            {
-                usage(argv[0], EXIT_FAILURE, NULL);
-            }
-        }
-    }
-
-    if(port == 0)
-    {
-        fprintf(stderr, "Port number not specified. Use -p <port> to set the port.\n");
-        return EXIT_FAILURE;
-    }
+    parse_arguments(argc, argv, &port);
 
     printf("Port: %d\n", port);
 
@@ -132,14 +93,72 @@ int main(int argc, char *argv[])
 }
 
 
+static void parse_arguments(int argc, char *argv[], int *port)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'p':
+            {
+                *port = (int) strtol(optarg, NULL, 10);
+
+                if(*port == 0)
+                {
+                    usage(argv[0], EXIT_SUCCESS, "Invalid port number");
+                }
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The port is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    if(port == 0)
+    {
+        fprintf(stderr, "Port number not specified. Use -p <port> to set the port.\n");
+    }
+}
+
+
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -p <port>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <port>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 

@@ -21,52 +21,23 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **command);
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    const char *default_command = "ls -l ~/*.txt";
-
-    const char *command;
+    char *command = NULL;
     char *saveptr;
     char *token;
     char *token_copy;
     char delimiter[] = " ";
-    int opt;
 
-    while ((opt = getopt(argc, argv, "hc:")) != -1)
+    parse_arguments(argc, argv, &command);
+
+    if(command == NULL)
     {
-        switch (opt)
-        {
-            case 'c':
-            {
-                command = optarg;
-                break;
-            }
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
-            }
-            case '?':
-            {
-                char message[24];
-
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
-                usage(argv[0], EXIT_FAILURE, message);
-                break;
-            }
-            default:
-            {
-                usage(argv[0], EXIT_FAILURE, NULL);
-            }
-        }
-    }
-
-    if (optind >= argc)
-    {
-        command = default_command;
+        command = strdup("ls -l ~/*.txt");
     }
 
     token_copy = strdup(command);
@@ -92,16 +63,57 @@ int main(int argc, char *argv[])
 }
 
 
+static void parse_arguments(int argc, char *argv[], char **command)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(argc - optind > 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many unnamed arguments.");
+    }
+
+    if(argc - optind == 1)
+    {
+        *command = optarg;
+    }
+}
+
+
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-c command]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [command]\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -c <command> : Specify the command (default: 'ls -l ~/*.txt')\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h            Display this help message\n", stderr);
     exit(exit_code);
 }

@@ -28,7 +28,7 @@ int main(void)
     int size = sizeof(arr) / sizeof(arr[0]);
 
     printf("Original array: ");
-    for (int i = 0; i < size; i++)
+    for(int i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
@@ -40,7 +40,7 @@ int main(void)
 
     printf("Sorted array: ");
 
-    for (int i = 0; i < size; i++)
+    for(int i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
@@ -53,6 +53,6 @@ int main(void)
 
 static int intcmp(const void *a, const void *b)
 {
-    return (*(const int *)a - *(const int *)b);
+    return (*(const int *) a - *(const int *) b);
 }
 

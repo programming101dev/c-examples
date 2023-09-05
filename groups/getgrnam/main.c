@@ -21,23 +21,47 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **group_name);
+
 static void usage(const char *program_name, int exit_code, const char *message);
+
 static void print_entry(const struct group *entry);
 
 
 int main(int argc, char *argv[])
 {
-    const char *groupname;
+    char *group_name;
     struct group *group_info;
 
-    int opt;
-    while ((opt = getopt(argc, argv, "hg:")) != -1)
+    parse_arguments(argc, argv, &group_name);
+    group_info = getgrnam(group_name);
+
+    if(group_info != NULL)
     {
-        switch (opt)
+        print_entry(group_info);
+    }
+    else
+    {
+        printf("Group '%s' not found.\n", group_name);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **group_name)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
         {
             case 'g':
             {
-                groupname = optarg;
+                *group_name = optarg;
                 break;
             }
             case 'h':
@@ -60,23 +84,14 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(optind < argc)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
+        usage(argv[0], EXIT_FAILURE, "The group name is required");
     }
-
-    group_info = getgrnam(groupname);
-
-    if (group_info != NULL)
+    else if(optind < argc - 1)
     {
-        print_entry(group_info);
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-    else
-    {
-        printf("Group '%s' not found.\n", groupname);
-    }
-
-    return EXIT_SUCCESS;
 }
 
 
@@ -84,13 +99,12 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -g <groupname>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <group name>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -g <groupname> : Specify the groupname\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 
@@ -104,7 +118,7 @@ static void print_entry(const struct group *entry)
     printf("Group Members:\n");
     members = entry->gr_mem;
 
-    while (*members != NULL)
+    while(*members != NULL)
     {
         printf(" - %s\n", *members);
         members++;

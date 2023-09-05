@@ -23,17 +23,33 @@
 #include <unistd.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **host_name);
 static void usage(const char *program_name, int exit_code, const char *message);
 static int resolve_hostname_to_ip(const char *hostname);
 
 
 int main(int argc, char *argv[])
 {
-    int option;
+    char *host_name;
+    int result;
 
-    while((option = getopt(argc, argv, "h")) != -1)
+    host_name = NULL;
+    parse_arguments(argc, argv, &host_name);
+    result = resolve_hostname_to_ip(host_name);
+
+    return result;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **host_name)
+{
+    int opt;
+
+    opt = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch(option)
+        switch(opt)
         {
             case 'h':
             {
@@ -55,25 +71,28 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(argc != optind + 1)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "");
+        usage(argv[0], EXIT_FAILURE, "The host name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    char *hostname = argv[optind];
-    int result = resolve_hostname_to_ip(hostname);
-    return result;
+    *host_name = argv[optind];
 }
-
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] hostname\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <host name>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 
@@ -89,6 +108,7 @@ static int resolve_hostname_to_ip(const char *hostname)
     hints.ai_socktype = SOCK_STREAM; // Use TCP socket type
 
     error = getaddrinfo(hostname, NULL, &hints, &result);
+
     if(error != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
@@ -121,5 +141,6 @@ static int resolve_hostname_to_ip(const char *hostname)
     }
 
     freeaddrinfo(result);
+
     return EXIT_SUCCESS;
 }

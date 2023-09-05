@@ -22,25 +22,61 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], bool *set_sleep);
 static void usage(const char *program_name, int exit_code, const char *message);
 static void print_process_info(const char *name);
 
 
 int main(int argc, char *argv[])
 {
-    int opt;
-    bool sleep_option;
+    bool set_sleep = false;
+    pid_t pid;
 
-    sleep_option = false;
+    parse_arguments(argc, argv, &set_sleep);
+    pid = fork();
+
+    if(pid == -1)
+    {
+        perror("Error creating child process");
+        return EXIT_FAILURE;
+    }
+    else if(pid == 0)
+    {
+        // This is the child process
+        print_process_info("Child");
+        printf("Child process finished.\n");
+    }
+    else
+    {
+        // This is the parent process
+        print_process_info("Parent");
+
+        if(set_sleep)
+        {
+            sleep(2);
+        }
+
+        printf("Parent process finished.\n");
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], bool *set_sleep)
+{
+    int opt;
+
+    opterr = 0;
 
     // Parse command-line options
-    while((opt = getopt(argc, argv, "sh")) != -1)
+    while((opt = getopt(argc, argv, "hs")) != -1)
     {
         switch(opt)
         {
             case 's':
             {
-                sleep_option = true;
+                *set_sleep = true;
                 break;
             }
             case 'h':
@@ -62,51 +98,25 @@ int main(int argc, char *argv[])
             }
         }
     }
-
-    pid_t pid = fork();
-
-    if(pid == -1)
-    {
-        perror("Error creating child process");
-        return EXIT_FAILURE;
-    }
-    else if(pid == 0)
-    {
-        // This is the child process
-        print_process_info("Child");
-        printf("Child process finished.\n");
-    }
-    else
-    {
-        // This is the parent process
-        print_process_info("Parent");
-
-        if(sleep_option)
-        {
-            sleep(2);
-        }
-
-        printf("Parent process finished.\n");
-    }
-
-    return EXIT_SUCCESS;
 }
 
-static void print_process_info(const char *name)
-{
-    printf("Name: %s, Process: PID=%d, Parent PID=%d\n", name, getpid(), getppid());
-}
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-s] [-h]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [-s]\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -s  Sleep for 2 seconds (only applicable for the parent process)\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
+    fputs("  -s  Sleep for 2 seconds (only applicable for the parent process)\n", stderr);
     exit(exit_code);
+}
+
+
+static void print_process_info(const char *name)
+{
+    printf("Name: %s, Process: PID=%d, Parent PID=%d\n", name, getpid(), getppid());
 }

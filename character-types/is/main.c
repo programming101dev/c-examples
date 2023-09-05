@@ -23,32 +23,34 @@
 struct func_info
 {
     int (*func)(int ch);
+
     const char *name;
     const char *message;
 };
 
 
 static void print_binary(int ch);
+
 static void print_info(const struct func_info *info, int ch);
 
 
 int main(void)
 {
     static struct func_info info[] =
-    {
-        { isalnum, "alnum", "Alphanumeric" },
-        { isalpha, "alpha", "Alphabetic" },
-        { isblank, "blank", "Blank" },
-        { iscntrl, "cntrl", "Control" },
-        { isdigit, "digit", "Digit" },
-        { isgraph, "graph", "Graph" },
-        { islower, "lower", "Lowercase" },
-        { isprint, "print", "Printable" },
-        { ispunct, "punct", "Punctuation" },
-        { isspace, "space", "Whitespace" },
-        { isupper, "upper", "Uppercase" },
-        { isxdigit, "xdigit", "Hex Digit" }
-    };
+            {
+                    {isalnum,  "alnum",  "Alphanumeric"},
+                    {isalpha,  "alpha",  "Alphabetic"},
+                    {isblank,  "blank",  "Blank"},
+                    {iscntrl,  "cntrl",  "Control"},
+                    {isdigit,  "digit",  "Digit"},
+                    {isgraph,  "graph",  "Graph"},
+                    {islower,  "lower",  "Lowercase"},
+                    {isprint,  "print",  "Printable"},
+                    {ispunct,  "punct",  "Punctuation"},
+                    {isspace,  "space",  "Whitespace"},
+                    {isupper,  "upper",  "Uppercase"},
+                    {isxdigit, "xdigit", "Hex Digit"}
+            };
 
     printf("Char | Binary  | Oct | Dec | Hex | ");
 

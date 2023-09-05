@@ -1,19 +1,72 @@
+/*
+ * This code is licensed under the Attribution-NonCommercial-NoDerivatives 4.0 International license.
+ *
+ * Author: D'Arcy Smith (ds@programming101.dev)
+ *
+ * You are free to:
+ *   - Share: Copy and redistribute the material in any medium or format.
+ *   - Under the following terms:
+ *       - Attribution: You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+ *       - NonCommercial: You may not use the material for commercial purposes.
+ *       - NoDerivatives: If you remix, transform, or build upon the material, you may not distribute the modified material.
+ *
+ * For more details, please refer to the full license text at:
+ * https://creativecommons.org/licenses/by-nc-nd/4.0/
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
+#include <getopt.h>
 #include <errno.h>
+#include <unistd.h>
 
+
+static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *user_id, gid_t *group_id);
 
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    const char *file_path = NULL;
-    uid_t user_id = 0;
-    gid_t group_id = 0;
+    char *file_path = NULL;
+    uid_t user_id = (uid_t) - 1;
+    gid_t group_id = (gid_t) - 1;
+
+    parse_arguments(argc, argv, &file_path, &user_id, &group_id);
+
+    if(file_path == NULL)
+    {
+        usage(argv[0], EXIT_FAILURE, "-f is required");
+    }
+
+    if(user_id == (uid_t) - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "-u is required");
+    }
+
+    if(group_id == (gid_t) - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "-g is required");
+    }
+
+    if(chown(file_path, user_id, group_id) == -1)
+    {
+        perror("chown");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("File ownership changed successfully.\n");
+
+    return 0;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *user_id, gid_t *group_id)
+{
     int opt;
+
+    opterr = 0;
 
     while((opt = getopt(argc, argv, "hf:u:g:")) != -1)
     {
@@ -21,13 +74,13 @@ int main(int argc, char *argv[])
         {
             case 'f':
             {
-                file_path = optarg;
+                *file_path = optarg;
                 break;
             }
             case 'u':
             {
                 errno = 0;
-                user_id = strtol(optarg, NULL, 10);
+                *user_id = strtol(optarg, NULL, 10);
 
                 if(errno != 0)
                 {
@@ -39,7 +92,7 @@ int main(int argc, char *argv[])
             case 'g':
             {
                 errno = 0;
-                group_id = strtol(optarg, NULL, 10);
+                *group_id = strtol(optarg, NULL, 10);
 
                 if(errno != 0)
                 {
@@ -67,35 +120,21 @@ int main(int argc, char *argv[])
             }
         }
     }
-
-    if(file_path == NULL || user_id == 0 || group_id == 0)
-    {
-        usage(argv[0], EXIT_FAILURE, "");
-    }
-
-    if(chown(file_path, user_id, group_id) == -1)
-    {
-        perror("chown");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("File ownership changed successfully.\n");
-
-    exit(EXIT_SUCCESS);
 }
+
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -f <file_path> -u <user_id> -g <group_id>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -f <file path> -u <user id> -g <group id>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -h : Display this help message\n", stderr);
-    fputs("  -f : File path\n", stderr);
-    fputs("  -u : User ID\n", stderr);
-    fputs("  -g : Group ID\n", stderr);
+    fputs("  -h              Display this help message\n", stderr);
+    fputs("  -f <file path>  File path\n", stderr);
+    fputs("  -u <user id>    User ID\n", stderr);
+    fputs("  -g <group id>   Group ID\n", stderr);
     exit(exit_code);
 }

@@ -24,11 +24,21 @@ int main(void)
 {
     int32_t value = 42;
 
-    printf("Using PRId32 (decimal): %" PRId32 "\n", value);
-    printf("Using PRIi32 (decimal): %" PRIi32 "\n", value);
-    printf("Using PRIu32 (unsigned): %" PRIu32 "\n", (uint32_t)value);
-    printf("Using PRIx32 (hexadecimal): %" PRIx32 "\n", (uint32_t)value);
-    printf("Using PRIX32 (uppercase hexadecimal): %" PRIX32 "\n", (uint32_t)value);
+    printf("Using PRId32 (decimal): %"
+    PRId32
+    "\n", value);
+    printf("Using PRIi32 (decimal): %"
+    PRIi32
+    "\n", value);
+    printf("Using PRIu32 (unsigned): %"
+    PRIu32
+    "\n", (uint32_t) value);
+    printf("Using PRIx32 (hexadecimal): %"
+    PRIx32
+    "\n", (uint32_t) value);
+    printf("Using PRIX32 (uppercase hexadecimal): %"
+    PRIX32
+    "\n", (uint32_t) value);
 
     return EXIT_SUCCESS;
 }

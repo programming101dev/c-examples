@@ -24,11 +24,21 @@ int main(void)
 {
     int16_t value = -42;
 
-    printf("Using PRId16 (decimal): %" PRId16 "\n", value);
-    printf("Using PRIi16 (decimal): %" PRIi16 "\n", value);
-    printf("Using PRIu16 (unsigned): %" PRIu16 "\n", (uint16_t)value);
-    printf("Using PRIx16 (hexadecimal): %" PRIx16 "\n", (uint16_t)value);
-    printf("Using PRIX16 (uppercase hexadecimal): %" PRIX16 "\n", (uint16_t)value);
+    printf("Using PRId16 (decimal): %"
+    PRId16
+    "\n", value);
+    printf("Using PRIi16 (decimal): %"
+    PRIi16
+    "\n", value);
+    printf("Using PRIu16 (unsigned): %"
+    PRIu16
+    "\n", (uint16_t) value);
+    printf("Using PRIx16 (hexadecimal): %"
+    PRIx16
+    "\n", (uint16_t) value);
+    printf("Using PRIX16 (uppercase hexadecimal): %"
+    PRIX16
+    "\n", (uint16_t) value);
 
     return EXIT_SUCCESS;
 }

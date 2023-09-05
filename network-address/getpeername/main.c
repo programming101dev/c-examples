@@ -25,56 +25,23 @@
 #include <string.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **server_address, char **port);
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    int opt;
-    char *server_address = NULL;
-    const char *port = NULL;
+    char *server_address;
+    char *port;
 
-    while((opt = getopt(argc, argv, "hp:")) != -1)
-    {
-        switch(opt)
-        {
-            case 'p':
-            {
-                port = optarg;
-                break;
-            }
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
-            }
-            case '?':
-            {
-                char message[24];
-
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
-                usage(argv[0], EXIT_FAILURE, message);
-                break;
-            }
-            default:
-            {
-                usage(argv[0], EXIT_FAILURE, NULL);
-            }
-        }
-    }
-
-    if(optind >= argc)
-    {
-        usage(argv[0], EXIT_FAILURE, "");
-        return EXIT_FAILURE;
-    }
-
-    server_address = argv[optind];
+    server_address = NULL;
+    port = NULL;
+    parse_arguments(argc, argv, &server_address, &port);
 
     if(port == NULL)
     {
         printf("Port not provided. Using default port 8080.\n");
-        port = "8080";
+        port = strdup("8080");
     }
 
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -129,14 +96,65 @@ int main(int argc, char *argv[])
 }
 
 
+static void parse_arguments(int argc, char *argv[], char **server_address, char **port)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "hp:")) != -1)
+    {
+        switch(opt)
+        {
+            case 'p':
+            {
+                *port = optarg;
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The server address is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *server_address = argv[optind];
+}
+
+
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -p <port> <server_address>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [-p <port>] <server address>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h         Display this help message\n", stderr);
+    fputs("  -p <port>  THe port to connect to\n", stderr);
     exit(exit_code);
 }
 

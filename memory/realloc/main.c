@@ -20,7 +20,9 @@
 
 
 static void initialize_array(int *array, int num_elements);
+
 static void print_array(const char *message, const int *array, int num_elements);
+
 static int *resize_array(int *array, int new_num_elements);
 
 

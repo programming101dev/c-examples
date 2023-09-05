@@ -21,23 +21,42 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], uid_t *uid);
+
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    uid_t new_uid = (uid_t)-1;
-    int opt;
-    int has_new_uid_option = 0;
+    uid_t new_uid = (uid_t) - 1;
 
-    while ((opt = getopt(argc, argv, "hu:")) != -1)
+    parse_arguments(argc, argv, &new_uid);
+
+    if(seteuid(new_uid) == -1)
     {
-        switch (opt)
+        perror("seteuid");
+        return EXIT_FAILURE;
+    }
+
+    printf("Real UID: %d\n", getuid());
+    printf("Effective UID: %d\n", geteuid());
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], uid_t *uid)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
         {
             case 'u':
             {
-                new_uid = (uid_t) strtol(optarg, NULL, 10);
-                has_new_uid_option = 1;
                 break;
             }
             case 'h':
@@ -60,21 +79,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(!(has_new_uid_option))
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "");
+        usage(argv[0], EXIT_FAILURE, "The user id is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if (seteuid(new_uid) == -1)
-    {
-        perror("seteuid");
-        return EXIT_FAILURE;
-    }
-
-    printf("Real UID: %d\n", getuid());
-    printf("Effective UID: %d\n", geteuid());
-
-    return EXIT_SUCCESS;
+    *uid = (uid_t) strtol(optarg, NULL, 10);
 }
 
 
@@ -82,12 +96,11 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -u <new_uid>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <user id>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -u <new_uid> : Specify the new UID\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }

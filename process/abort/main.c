@@ -22,6 +22,7 @@
 #include <sys/resource.h>
 
 
+static void parse_arguments(int argc, char *argv[], bool *set_core_limit);
 static void usage(const char *program_name, int exit_code, const char *message);
 static void abort_handler(void);
 static void set_core_dump_limit(long long size);
@@ -29,40 +30,9 @@ static void set_core_dump_limit(long long size);
 
 int main(int argc, char *argv[])
 {
-    int opt;
-    bool set_core_limit;
+    bool set_core_limit = false;
 
-    set_core_limit = false;
-
-    // Parse command-line options
-    while((opt = getopt(argc, argv, "lh")) != -1)
-    {
-        switch(opt)
-        {
-            case 'l':
-            {
-                set_core_limit = true;
-                break;
-            }
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
-            }
-            case '?':
-            {
-                char message[24];
-
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
-                usage(argv[0], EXIT_FAILURE, message);
-                break;
-            }
-            default:
-            {
-                usage(argv[0], EXIT_FAILURE, NULL);
-            }
-        }
-    }
+    parse_arguments(argc, argv, &set_core_limit);
 
     if(atexit(abort_handler) != 0)
     {
@@ -84,17 +54,55 @@ int main(int argc, char *argv[])
 }
 
 
+static void parse_arguments(int argc, char *argv[], bool *set_core_limit)
+{
+    int opt;
+
+    opterr = 0;
+
+    // Parse command-line options
+    while((opt = getopt(argc, argv, "hl")) != -1)
+    {
+        switch(opt)
+        {
+            case 'l':
+            {
+                *set_core_limit = true;
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+}
+
+
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-l] [-h]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [-l]\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -l  Set the core dump limit to unlimited\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
+    fputs("  -l  Set the core dump limit to unlimited\n", stderr);
     exit(exit_code);
 }
 

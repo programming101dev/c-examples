@@ -21,17 +21,44 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **pattern);
+
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    const char *pattern = NULL;
+    char *pattern = NULL;
+
+    parse_arguments(argc, argv, &pattern);
+
+    for(int i = optind + 1; i < argc; i++)
+    {
+        const char *filename = argv[i];
+
+        if(fnmatch(pattern, filename, 0) != 0)
+        {
+            printf("Filename '%s' doesn't match the pattern.\n", filename);
+        }
+        else
+        {
+            printf("Filename '%s' matches the pattern.\n", filename);
+        }
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **pattern)
+{
     int opt;
+
+    opterr = 0;
 
     while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
             {
@@ -53,37 +80,24 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(argc - optind < 2)
+    if (optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
+        usage(argv[0], EXIT_FAILURE, "Pattern is required.\n");
     }
 
-    pattern = argv[optind];
-
-    for (int i = optind + 1; i < argc; i++)
-    {
-        const char *filename = argv[i];
-
-        if (fnmatch(pattern, filename, 0) != 0)
-        {
-            printf("Filename '%s' doesn't match the pattern.\n", filename);
-        }
-        else
-        {
-            printf("Filename '%s' matches the pattern.\n", filename);
-        }
-    }
-
-    return EXIT_SUCCESS;
+    *pattern = argv[optind];
 }
+
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s pattern filename1 filename2 ...\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <pattern> <filename1> [filename2 ...]\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }

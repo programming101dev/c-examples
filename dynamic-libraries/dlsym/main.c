@@ -21,53 +21,31 @@
 #include <dlfcn.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **library_name, char **function_name);
+
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    int opt;
     char *library_name = NULL;
     char *function_name = NULL;
     void *handle;
     void (*func)(const char *);
 
-    while((opt = getopt(argc, argv, "h:f:")) != -1)
-    {
-        switch(opt)
-        {
-            case 'f':
-            {
-                function_name = optarg;
-                break;
-            }
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
-            }
-            case '?':
-            {
-                char message[24];
+    parse_arguments(argc, argv, &library_name, &function_name);
 
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
-                usage(argv[0], EXIT_FAILURE, message);
-                break;
-            }
-            default:
-            {
-                usage(argv[0], EXIT_FAILURE, NULL);
-            }
-        }
-    }
-
-    if(optind >= argc || function_name == NULL)
+    if(library_name == NULL)
     {
-        usage(argv[0], EXIT_FAILURE, "");
+        usage(argv[0], EXIT_FAILURE, "-l is required");
         return EXIT_FAILURE;
     }
 
-    library_name = argv[optind];
+    if(function_name == NULL)
+    {
+        usage(argv[0], EXIT_FAILURE, "-f is required");
+        return EXIT_FAILURE;
+    }
 
     // Load the shared library dynamically
     handle = dlopen(library_name, RTLD_LAZY);
@@ -78,11 +56,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
     // Get the symbol from the shared library
     func = (void (*)(const char *)) dlsym(handle, function_name);
-#pragma GCC diagnostic pop
+
     if(!func)
     {
         fprintf(stderr, "Error getting the symbol '%s': %s\n", function_name, dlerror());
@@ -104,13 +80,58 @@ int main(int argc, char *argv[])
 }
 
 
+static void parse_arguments(int argc, char *argv[], char **library_name, char **function_name)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "hl:f:")) != -1)
+    {
+        switch(opt)
+        {
+            case 'l':
+            {
+                *library_name = optarg;
+            }
+            case 'f':
+            {
+                *function_name = optarg;
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+}
+
+
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -h <library_name> -f <function_name>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -l <library name> -f <function name>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    fputs("  -l <library name>  Path to the shared library to load\n", stderr);
+    fputs("  -f <function name> Function to call from the library (must be (void))\n", stderr);
     exit(exit_code);
 }

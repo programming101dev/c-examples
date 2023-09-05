@@ -15,33 +15,61 @@
  */
 
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <wordexp.h>
-#include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **command);
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    const char *default_command = "ls -l ~/*.txt";
-
-    const char *command;
+    char *command = NULL;
     wordexp_t result;
     int ret;
 
-    int opt;
-    while ((opt = getopt(argc, argv, "hc:")) != -1)
+    parse_arguments(argc, argv, &command);
+
+    if(command == NULL)
     {
-        switch (opt)
+        command = strdup("ls -l ~/*.txt");
+    }
+
+    ret = wordexp(command, &result, 0);
+
+    if(ret != 0)
+    {
+        printf("Error expanding command: %d\n", ret);
+        return EXIT_FAILURE;
+    }
+
+    printf("Expanded words:\n");
+
+    for(size_t i = 0; i < result.we_wordc; ++i)
+    {
+        printf("Word %zu: %s\n", i, result.we_wordv[i]);
+    }
+
+    wordfree(&result);
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **command)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
         {
-            case 'c':
-            {
-                command = optarg;
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -62,28 +90,15 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (optind >= argc) {
-        command = default_command;
-    }
-
-    ret = wordexp(command, &result, 0);
-
-    if (ret != 0)
+    if(argc - optind > 1)
     {
-        printf("Error expanding command: %d\n", ret);
-        return EXIT_FAILURE;
+        usage(argv[0], EXIT_FAILURE, "Too many unnamed arguments.");
     }
 
-    printf("Expanded words:\n");
-
-    for (size_t i = 0; i < result.we_wordc; ++i)
+    if(argc - optind == 1)
     {
-        printf("Word %zu: %s\n", i, result.we_wordv[i]);
+        *command = optarg;
     }
-
-    wordfree(&result);
-
-    return EXIT_SUCCESS;
 }
 
 
@@ -91,12 +106,11 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-c command]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [command]\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -c <command> : Specify the command (default: 'ls -l ~/*.txt')\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h            Display this help message\n", stderr);
     exit(exit_code);
 }

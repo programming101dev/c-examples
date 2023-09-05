@@ -20,7 +20,9 @@
 
 
 static void exit_handler1(void);
+
 static void exit_handler2(void);
+
 static void exit_handler3(void);
 
 

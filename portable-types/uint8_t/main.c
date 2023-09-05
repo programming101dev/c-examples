@@ -24,9 +24,15 @@ int main(void)
 {
     uint8_t value = 42;
 
-    printf("Using PRIu8 (unsigned): %" PRIu8 "\n", value);
-    printf("Using PRIx8 (hexadecimal): %" PRIx8 "\n", value);
-    printf("Using PRIX8 (uppercase hexadecimal): %" PRIX8 "\n", value);
+    printf("Using PRIu8 (unsigned): %"
+    PRIu8
+    "\n", value);
+    printf("Using PRIx8 (hexadecimal): %"
+    PRIx8
+    "\n", value);
+    printf("Using PRIX8 (uppercase hexadecimal): %"
+    PRIX8
+    "\n", value);
 
     return EXIT_SUCCESS;
 }

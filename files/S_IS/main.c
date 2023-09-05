@@ -22,29 +22,56 @@
 #include <sys/stat.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **filename);
+
 static void usage(const char *program_name, int exit_code, const char *message);
+
 static void print_file_info(const struct stat *fileStat);
+
 static void print_special_type(const struct stat *fileStat);
+
 static void print_extended_type(const struct stat *fileStat);
+
 static void print_permissions(mode_t mode);
+
 static void print_time(const char *label, time_t timeValue);
 
 
 int main(int argc, char *argv[])
 {
-    const char *filename = NULL;
+    char *filename = NULL;
     struct stat fileStat;
+
+    parse_arguments(argc, argv, &filename);
+
+    if(filename == NULL)
+    {
+        usage(argv[0], EXIT_FAILURE, "Error: You must provide a filename using -f option.\n");
+    }
+
+    if(stat(filename, &fileStat) == -1)
+    {
+        perror("Error getting file stats");
+        return EXIT_FAILURE;
+    }
+
+    printf("File Information for '%s':\n\n", filename);
+    print_file_info(&fileStat);
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **filename)
+{
     int opt;
 
-    while ((opt = getopt(argc, argv, "hf:")) != -1)
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
-            case 'f':
-            {
-                filename = optarg;
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -65,21 +92,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(filename == NULL)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Error: You must provide a filename using -f option.\n");
+        usage(argv[0], EXIT_FAILURE, "The file name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(stat(filename, &fileStat) == -1)
-    {
-        perror("Error getting file stats");
-        return EXIT_FAILURE;
-    }
-
-    printf("File Information for '%s':\n\n", filename);
-    print_file_info(&fileStat);
-
-    return EXIT_SUCCESS;
+    *filename = argv[optind];
 }
 
 
@@ -87,10 +109,12 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s <filename>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <file name>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 
@@ -99,11 +123,11 @@ static void print_file_info(const struct stat *fileStat)
 {
     print_special_type(fileStat);
     print_extended_type(fileStat);
-    printf("File Size: %lld bytes\n", (long long)fileStat->st_size);
+    printf("File Size: %lld bytes\n", (long long) fileStat->st_size);
     print_permissions(fileStat->st_mode);
-    printf("File inode: %lld\n", (long long)fileStat->st_ino);
-    printf("Device ID: %lld\n", (long long)fileStat->st_dev);
-    printf("Number of hard links: %lld\n", (long long)fileStat->st_nlink);
+    printf("File inode: %lld\n", (long long) fileStat->st_ino);
+    printf("Device ID: %lld\n", (long long) fileStat->st_dev);
+    printf("Number of hard links: %lld\n", (long long) fileStat->st_nlink);
     printf("File Owner UID: %d\n", fileStat->st_uid);
     printf("File Group GID: %d\n", fileStat->st_gid);
     print_time("Last access time", fileStat->st_atime);
@@ -114,31 +138,31 @@ static void print_file_info(const struct stat *fileStat)
 
 static void print_special_type(const struct stat *fileStat)
 {
-    if (S_ISBLK(fileStat->st_mode))
+    if(S_ISBLK(fileStat->st_mode))
     {
         printf("Type: Block special file\n");
     }
-    else if (S_ISCHR(fileStat->st_mode))
+    else if(S_ISCHR(fileStat->st_mode))
     {
         printf("Type: Character special file\n");
     }
-    else if (S_ISDIR(fileStat->st_mode))
+    else if(S_ISDIR(fileStat->st_mode))
     {
         printf("Type: Directory\n");
     }
-    else if (S_ISFIFO(fileStat->st_mode))
+    else if(S_ISFIFO(fileStat->st_mode))
     {
         printf("Type: FIFO/Named Pipe\n");
     }
-    else if (S_ISREG(fileStat->st_mode))
+    else if(S_ISREG(fileStat->st_mode))
     {
         printf("Type: Regular file\n");
     }
-    else if (S_ISLNK(fileStat->st_mode))
+    else if(S_ISLNK(fileStat->st_mode))
     {
         printf("Type: Symbolic link\n");
     }
-    else if (S_ISSOCK(fileStat->st_mode))
+    else if(S_ISSOCK(fileStat->st_mode))
     {
         printf("Type: Socket\n");
     }
@@ -152,7 +176,7 @@ static void print_special_type(const struct stat *fileStat)
 static void print_extended_type(const struct stat *fileStat)
 {
     // compiler trick - on macOS these all return 0 so fileStat is unused
-    (void)fileStat;
+    (void) fileStat;
 
     if(S_TYPEISMQ(fileStat))
     {
@@ -179,5 +203,4 @@ static void print_time(const char *label, time_t timeValue)
 {
     printf("%s: %ld\n", label, timeValue);
 }
-
 

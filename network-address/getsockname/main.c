@@ -25,51 +25,16 @@
 #include <netdb.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **host_name, char **port);
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    int opt;
     char *port = NULL;
-    char *hostname = NULL;
+    char *host_name = NULL;
 
-    while((opt = getopt(argc, argv, "hp:")) != -1)
-    {
-        switch(opt)
-        {
-            case 'p':
-            {
-                port = optarg;
-                break;
-            }
-            case 'h':
-            {
-                usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
-            }
-            case '?':
-            {
-                char message[24];
-
-                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
-                usage(argv[0], EXIT_FAILURE, message);
-                break;
-            }
-            default:
-            {
-                usage(argv[0], EXIT_FAILURE, NULL);
-            }
-        }
-    }
-
-    if(port == NULL || optind >= argc)
-    {
-        usage(argv[0], EXIT_FAILURE, "");
-    }
-
-    hostname = argv[optind];
-
+    parse_arguments(argc, argv, &host_name, &port);
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
@@ -83,7 +48,7 @@ int main(int argc, char *argv[])
     hints.ai_family = AF_INET;        // IPv4
     hints.ai_socktype = SOCK_STREAM;  // TCP
 
-    int status = getaddrinfo(hostname, port, &hints, &result);
+    int status = getaddrinfo(host_name, port, &hints, &result);
     if(status != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
@@ -129,13 +94,69 @@ int main(int argc, char *argv[])
 }
 
 
+static void parse_arguments(int argc, char *argv[], char **host_name, char **port)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "hp:")) != -1)
+    {
+        switch(opt)
+        {
+            case 'p':
+            {
+                *port = optarg;
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+                break;
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The host name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    if(port == NULL || optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "");
+    }
+
+    *host_name = argv[optind];
+}
+
+
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -p <port> <hostname>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [-p <port>] <host name>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h         Display this help message\n", stderr);
+    fputs("  -p <port>  The port to connect to\n", stderr);
     exit(exit_code);
 }

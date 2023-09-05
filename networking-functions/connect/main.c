@@ -11,9 +11,13 @@
 
 
 static int create_socket(void);
+
 static struct sockaddr_in prepare_server_address(int client_fd);
+
 static void connect_to_server(int client_fd, struct sockaddr_in server_addr);
+
 static void do_communication(int client_fd);
+
 static void close_socket(int client_fd);
 
 
@@ -65,7 +69,7 @@ static struct sockaddr_in prepare_server_address(int client_fd)
 
 static void connect_to_server(int client_fd, struct sockaddr_in server_addr)
 {
-    if(connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    if(connect(client_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
     {
         perror("Connection failed");
         close_socket(client_fd);
@@ -76,16 +80,19 @@ static void connect_to_server(int client_fd, struct sockaddr_in server_addr)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void do_communication(int client_fd)
 {
     // Perform communication or other actions here
 }
+
 #pragma GCC diagnostic pop
 
 
 static void close_socket(int client_fd)
 {
-    if(close(client_fd) == -1) {
+    if(close(client_fd) == -1)
+    {
         perror("Error closing socket");
         exit(EXIT_FAILURE);
     }

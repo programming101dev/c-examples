@@ -21,20 +21,74 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_egid);
+
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *endptr;
     gid_t new_gid;
     gid_t new_egid;
 
-    int opt;
-    while ((opt = getopt(argc, argv, "h")) != -1)
+    parse_arguments(argc, argv, &new_gid, &new_egid);
+
+    if(new_gid == (gid_t)-1)
     {
-        switch (opt)
+        usage(argv[0], EXIT_FAILURE, "");
+    }
+
+    if(new_egid == (gid_t)-1)
+    {
+        usage(argv[0], EXIT_FAILURE, "");
+    }
+
+    if(setregid(new_gid, new_egid) == -1)
+    {
+        perror("setregid");
+        return EXIT_FAILURE;
+    }
+
+    printf("Real GID: %d\n", getgid());
+    printf("Effective GID: %d\n", getegid());
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_egid)
+{
+    int opt;
+    char *endptr;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "hg:e:")) != -1)
+    {
+        switch(opt)
         {
+            case 'g':
+            {
+                *new_gid = (gid_t) strtol(argv[optind], &endptr, 10);
+
+                if(*endptr != '\0')
+                {
+                    usage(argv[0], EXIT_FAILURE, "Invalid group_id format");
+                }
+
+                break;
+            }
+            case 'e':
+            {
+                *new_egid = (gid_t) strtol(argv[optind + 1], &endptr, 10);
+
+                if(*endptr != '\0')
+                {
+                    usage(argv[0], EXIT_FAILURE, "Invalid effective group_id format");
+                }
+
+                break;
+            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -54,46 +108,20 @@ int main(int argc, char *argv[])
             }
         }
     }
-
-    if(argc != optind + 2)
-    {
-        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
-    }
-
-    new_gid = (gid_t)strtol(argv[optind], &endptr, 10);
-
-    if(*endptr != '\0')
-    {
-        usage(argv[0], EXIT_FAILURE, "Invalid GID format");
-    }
-
-    new_egid = (gid_t)strtol(argv[optind + 1], &endptr, 10);
-
-    if (*endptr != '\0')
-    {
-        fprintf(stderr, "Invalid Effective GID format: %s\n", argv[optind + 1]);
-        return EXIT_FAILURE;
-    }
-
-    if (setregid(new_gid, new_egid) == -1)
-    {
-        perror("setregid");
-        return EXIT_FAILURE;
-    }
-
-    printf("Real GID: %d\n", getgid());
-    printf("Effective GID: %d\n", getegid());
-
-    return EXIT_SUCCESS;
 }
+
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s <new_gid> <new_egid>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -g <group id> -e <effective group id>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h                       Display this help message\n", stderr);
+    fputs("  -g <group id>            Specify the new group id\n", stderr);
+    fputs("  -e <effective group id>  Specify the new effective group id\n", stderr);
     exit(exit_code);
 }

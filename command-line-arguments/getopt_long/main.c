@@ -15,55 +15,75 @@
  */
 
 
-#include <getopt.h>
 #include <stdbool.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
+
+static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value);
 
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    int opt;
-    bool option_alpha_set = false;
-    bool option_beta_set = false;
-    bool option_charlie_set = false;
-    char *option_charlie_value = NULL;
-    struct option long_options[] =
+    bool option_a_set = false;
+    bool option_b_set = false;
+    char *option_c_value = NULL;
+
+    parse_arguments(argc, argv, &option_a_set, &option_b_set, &option_c_value);
+
+    if(option_c_value == NULL)
     {
-            {"alpha", no_argument, NULL, 'a'},
-            {"beta", no_argument, NULL, 'b'},
-            {"charlie", required_argument, NULL, 'c'},
-            {"help", no_argument, NULL, 'h'},
-            {NULL, 0, NULL, 0}
-    };
+        usage(argv[0], EXIT_FAILURE, "-c is required");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Is option 'a' set?: %d\n", option_a_set);
+    printf("Is option 'b' set?: %d\n", option_b_set);
+    printf("Value of option 'c': %s\n", option_c_value);
+
+    for(int i = optind; i < argc; i++)
+    {
+        printf("Unnamed argument %d: '%s'\n", (i - optind + 1), argv[i]);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value)
+{
+    static struct option long_options[] =
+            {
+                    {"alpha",   no_argument,       NULL, 'a'},
+                    {"beta",    no_argument,       NULL, 'b'},
+                    {"charlie", required_argument, NULL, 'c'},
+                    {"help",    no_argument,       NULL, 'h'},
+                    {NULL,      0,                 NULL, 0}
+            };
+    int opt;
 
     opterr = 0;
 
-    while ((opt = getopt_long(argc, argv, "abc:h", long_options, NULL)) != -1)
+    while((opt = getopt_long(argc, argv, "habc:", long_options, NULL)) != -1)
     {
         switch(opt)
         {
             case 'a':
             {
-                printf("Option 'alpha' is set\n");
-                option_alpha_set = true;
+                *option_a_set = true;
                 break;
             }
             case 'b':
             {
-                printf("Option 'beta' is set\n");
-                option_beta_set = true;
+                *option_b_set = true;
                 break;
             }
             case 'c':
             {
-                printf("Option 'charlie' is set with value '%s'\n", optarg);
-                option_charlie_set = true;
-                option_charlie_value = optarg;
+                *option_c_value = optarg;
                 break;
             }
             case 'h':
@@ -85,25 +105,6 @@ int main(int argc, char *argv[])
             }
         }
     }
-
-    // Check if option 'charlie' is set
-    if(!(option_charlie_set))
-    {
-        usage(argv[0], EXIT_FAILURE, "");
-        return EXIT_FAILURE;
-    }
-
-    printf("Is option 'alpha' set?: %d\n", option_alpha_set);
-    printf("Is option 'beta' set?: %d\n", option_beta_set);
-    printf("Value of option 'charlie': %s\n", option_charlie_value);
-
-    // Print remaining non-option arguments
-    for (int i = optind; i < argc; i++)
-    {
-        printf("Non-option argument: '%s'\n", argv[i]);
-    }
-
-    return EXIT_SUCCESS;
 }
 
 
@@ -111,14 +112,15 @@ static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [OPTIONS] [arg1 arg2 ...]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [-a] [-b] -c <value> [arg1 arg2 ...]\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -a, --alpha            Option 'alpha'\n", stderr);
-    fputs("  -b, --beta             Option 'beta'\n", stderr);
-    fputs("  -c, --charlie value    Option 'charlie' (required) with value\n", stderr);
-    fputs("  -h, --help             Display this help message\n", stderr);
+    fputs("  -h, --help                     Display this help message\n", stderr);
+    fputs("  -a, --alpha                    Option 'a'\n", stderr);
+    fputs("  -b, --beta                     Option 'b'\n", stderr);
+    fputs("  -c <value>, --charlie <value>  Option 'c' (required) with value\n", stderr);
     exit(exit_code);
 }
+

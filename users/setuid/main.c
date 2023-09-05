@@ -21,30 +21,40 @@
 #include <getopt.h>
 
 
+static void parse_arguments(int argc, char *argv[], uid_t *new_uid);
 static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *endptr;
-    uid_t new_uid;
+    uid_t new_uid = (uid_t)-1;
 
-    int opt;
-    while ((opt = getopt(argc, argv, "hu:")) != -1)
+    parse_arguments(argc, argv, &new_uid);
+
+    if(setuid(new_uid) == -1)
     {
-        switch (opt)
-        {
-            case 'u':
-            {
-                new_uid = (uid_t) strtol(optarg, &endptr, 10);
+        perror("setuid");
+        return EXIT_FAILURE;
+    }
 
-                if(*endptr != '\0')
-                {
-                    fprintf(stderr, "Invalid UID format: %s\n", optarg);
-                    return EXIT_FAILURE;
-                }
-                break;
-            }
+    printf("Real UID: %d\n", getuid());
+    printf("Effective UID: %d\n", geteuid());
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], uid_t *new_uid)
+{
+    int opt;
+    char *endptr;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -65,33 +75,33 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (optind < argc)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
+        usage(argv[0], EXIT_FAILURE, "The user id is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if (setuid(new_uid) == -1)
+    *new_uid = (uid_t) strtol(optarg, &endptr, 10);
+
+    if(*endptr != '\0')
     {
-        perror("setuid");
-        return EXIT_FAILURE;
+        usage(argv[0], EXIT_SUCCESS, "Invalid user id format");
     }
-
-    printf("Real UID: %d\n", getuid());
-    printf("Effective UID: %d\n", geteuid());
-
-    return EXIT_SUCCESS;
 }
+
 
 static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
-        fputs(message, stderr);
+        fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s -u <new_uid>\n", program_name);
+    fprintf(stderr, "Usage: [-h] %s <user id>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -u <new_uid> : Specify the new UID\n", stderr);
-    fputs("  -h : Show help message\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }

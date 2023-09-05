@@ -23,7 +23,9 @@
 
 
 static void usage(const char *program_name, int exit_code, const char *message);
-static void process_arguments(int argc, char *argv[], gid_t *gid);
+
+static void parse_arguments(int argc, char *argv[], gid_t *gid);
+
 static void print_entry(const struct group *entry);
 
 
@@ -32,7 +34,7 @@ int main(int argc, char *argv[])
     gid_t gid;
     struct group *group_info;
 
-    process_arguments(argc, argv, &gid);
+    parse_arguments(argc, argv, &gid);
     group_info = getgrgid(gid);
 
     if(group_info == NULL)
@@ -48,29 +50,17 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+static void parse_arguments(int argc, char *argv[], gid_t *gid)
 {
-    if(message)
-    {
-        fprintf(stderr, "%s\n", message);
-    }
-
-    fprintf(stderr, "Usage: %s <gid>\n", program_name);
-    fputs("Options:\n", stderr);
-    fputs("  -h : Display this help message\n", stderr);
-    exit(exit_code);
-}
-
-
-static void process_arguments(int argc, char *argv[], gid_t *gid)
-{
-    int opt;
     char *endptr;
     long int gid_long;
+    int opt;
+
+    opterr = 0;
 
     while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
             {
@@ -80,6 +70,7 @@ static void process_arguments(int argc, char *argv[], gid_t *gid)
             case '?':
             {
                 char message[24];
+
                 snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
                 break;
@@ -91,9 +82,13 @@ static void process_arguments(int argc, char *argv[], gid_t *gid)
         }
     }
 
-    if(optind != argc - 1)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
     errno = 0;
@@ -104,7 +99,21 @@ static void process_arguments(int argc, char *argv[], gid_t *gid)
         usage(argv[0], EXIT_FAILURE, "Invalid gid");
     }
 
-    *gid = (gid_t)gid_long;
+    *gid = (gid_t) gid_long;
+}
+
+
+static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <group id>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
 
 

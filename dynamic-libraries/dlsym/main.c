@@ -22,8 +22,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **library_name, char **function_name);
-
-static void usage(const char *program_name, int exit_code, const char *message);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -38,13 +37,11 @@ int main(int argc, char *argv[])
     if(library_name == NULL)
     {
         usage(argv[0], EXIT_FAILURE, "-l is required");
-        return EXIT_FAILURE;
     }
 
     if(function_name == NULL)
     {
         usage(argv[0], EXIT_FAILURE, "-f is required");
-        return EXIT_FAILURE;
     }
 
     // Load the shared library dynamically
@@ -126,7 +123,6 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
             }
             case '?':
             {
@@ -134,7 +130,6 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
 
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
-                break;
             }
             default:
             {
@@ -145,7 +140,7 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

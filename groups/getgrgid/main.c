@@ -22,10 +22,8 @@
 #include <getopt.h>
 
 
-static void usage(const char *program_name, int exit_code, const char *message);
-
 static void parse_arguments(int argc, char *argv[], gid_t *gid);
-
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct group *entry);
 
 
@@ -103,7 +101,7 @@ static void parse_arguments(int argc, char *argv[], gid_t *gid)
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

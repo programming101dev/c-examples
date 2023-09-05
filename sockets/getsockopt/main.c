@@ -25,7 +25,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], int *port);
-static void usage(const char *program_name, int exit_code, const char *message);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str);
 
 
@@ -116,7 +116,6 @@ static void parse_arguments(int argc, char *argv[], int *port)
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
             }
             case '?':
             {
@@ -124,7 +123,6 @@ static void parse_arguments(int argc, char *argv[], int *port)
 
                 snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
-                break;
             }
             default:
             {
@@ -149,7 +147,7 @@ static void parse_arguments(int argc, char *argv[], int *port)
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

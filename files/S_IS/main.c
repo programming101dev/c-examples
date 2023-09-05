@@ -23,17 +23,11 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **filename);
-
-static void usage(const char *program_name, int exit_code, const char *message);
-
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_file_info(const struct stat *fileStat);
-
 static void print_special_type(const struct stat *fileStat);
-
 static void print_extended_type(const struct stat *fileStat);
-
 static void print_permissions(mode_t mode);
-
 static void print_time(const char *label, time_t timeValue);
 
 
@@ -75,7 +69,6 @@ static void parse_arguments(int argc, char *argv[], char **filename)
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
             }
             case '?':
             {
@@ -83,7 +76,6 @@ static void parse_arguments(int argc, char *argv[], char **filename)
 
                 snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
-                break;
             }
             default:
             {
@@ -105,7 +97,7 @@ static void parse_arguments(int argc, char *argv[], char **filename)
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

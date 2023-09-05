@@ -22,8 +22,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_egid);
-
-static void usage(const char *program_name, int exit_code, const char *message);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -92,7 +91,6 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_e
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
             }
             case '?':
             {
@@ -100,7 +98,6 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_e
 
                 snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
-                break;
             }
             default:
             {
@@ -111,7 +108,7 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_e
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

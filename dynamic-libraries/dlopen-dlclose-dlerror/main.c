@@ -21,7 +21,7 @@
 #include <dlfcn.h>
 
 
-static void usage(const char *program_name, int exit_code, const char *message);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
             }
             case '?':
             {
@@ -44,7 +43,6 @@ int main(int argc, char *argv[])
 
                 snprintf(message, sizeof(message), "Unknown option '-%c'.\n", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
-                break;
             }
             default:
             {
@@ -84,7 +82,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

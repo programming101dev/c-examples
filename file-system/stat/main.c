@@ -20,6 +20,9 @@
 #include <sys/stat.h>
 
 
+// TODO: take the path as a command line argument
+
+
 int main(void)
 {
     const char *filename = "../../example.txt";

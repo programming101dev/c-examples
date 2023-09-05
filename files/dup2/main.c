@@ -58,7 +58,7 @@ int main(void)
     if(printf("This will be written to the temporary file using printf.\n") < 0)
     {
         perror("Error writing to temporary file");
-        close(original_fd); // Close the file descriptor before exiting
+        close(original_fd);
         return EXIT_FAILURE;
     }
 

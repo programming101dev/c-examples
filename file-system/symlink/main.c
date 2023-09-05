@@ -21,9 +21,7 @@
 
 
 static void create_sample_file(const char *filename);
-
 static void create_symbolic_link(const char *source_filename, const char *link_filename);
-
 static void check_file_existence(const char *filename, const char *message);
 
 

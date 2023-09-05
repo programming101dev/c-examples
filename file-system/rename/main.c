@@ -31,6 +31,8 @@ int main(void)
 
     file = fopen(old_filename, "w");
 
+    // TODO: handle error
+
     if(file != NULL)
     {
         fprintf(file, "This is a sample file.\n");

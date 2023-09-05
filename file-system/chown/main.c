@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     if(file_path == NULL)
     {
-        usage(argv[0], EXIT_FAILURE, "-f is required");
+        usage(argv[0], EXIT_FAILURE, "file path is required");
     }
 
     if(user_id == (uid_t) - 1)
@@ -67,15 +67,10 @@ static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *use
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "hf:u:g:")) != -1)
+    while((opt = getopt(argc, argv, "hu:g:")) != -1)
     {
         switch(opt)
         {
-            case 'f':
-            {
-                *file_path = optarg;
-                break;
-            }
             case 'u':
             {
                 errno = 0;
@@ -117,6 +112,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *use
             }
         }
     }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The file path is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
 }
 
 
@@ -127,10 +133,9 @@ _Noreturn  static void usage(const char *program_name, int exit_code, const char
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] -f <file path> -u <user id> -g <group id>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -u <user id> -g <group id> <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h              Display this help message\n", stderr);
-    fputs("  -f <file path>  File path\n", stderr);
     fputs("  -u <user id>    User ID\n", stderr);
     fputs("  -g <group id>   Group ID\n", stderr);
     exit(exit_code);

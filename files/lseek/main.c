@@ -25,6 +25,9 @@
 static void display_file(int fd, const char *message);
 
 
+// TODO: take the file name & seek offset in from the command line
+
+
 int main(void)
 {
     int fd;
@@ -41,7 +44,7 @@ int main(void)
     lseek(fd, 0L, SEEK_SET);
     display_file(fd, "\n\nFile contents after SEEK_SET:\n\n");
     lseek(fd, -10L, SEEK_CUR);
-    display_file(fd, "\n\nFile contents after SEEK_CUR -10:\n\n");
+    display_file(fd, "\n\nFile contents after SEEK_CUR - 10:\n\n");
 
     close(fd);
     return EXIT_SUCCESS;

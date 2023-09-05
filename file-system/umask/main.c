@@ -22,9 +22,7 @@
 
 
 static void create_file(const char *filename, const char *content);
-
 static void print_file_permissions(const char *filename);
-
 static void delete_file(const char *filename);
 
 

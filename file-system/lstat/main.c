@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 
+// TODO: pass the filename in the command line args, maybe use a default
 int main(void)
 {
     const char *filename = "../../example.txt";

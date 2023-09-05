@@ -33,6 +33,8 @@ int main(void)
         return EXIT_FAILURE;
     }
 
+    // TODO: print that the file was created
+
     fprintf(file, "This is a sample file.\n");
     fclose(file);
 

@@ -22,6 +22,9 @@
 #include <unistd.h>
 
 
+// TODO: take the file name in from the command line
+
+
 int main(void)
 {
     int fd;

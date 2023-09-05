@@ -19,24 +19,29 @@
 #include <dirent.h>
 
 
+#if defined(__APPLE__)
+    #define D_INO_FORMAT "%lld"
+#else
+    #define D_INO_FORMAT "%ld"
+#endif
+
+// TODO: take the path as a command line argument
+
 int main(void)
 {
     DIR *dir = opendir(".");
+    struct dirent *entry;
+
     if(dir == NULL)
     {
         perror("opendir");
         return 1;
     }
 
-    struct dirent *entry;
     while((entry = readdir(dir)) != NULL)
     {
         printf("Name: %s\n", entry->d_name);
-#if defined(__APPLE__)
-        printf("Inode number: %lld\n", entry->d_ino);
-#else
-        printf("Inode number: %ld\n", entry->d_ino);
-#endif
+        printf("Inode number: " D_INO_FORMAT "\n", entry->d_ino);
         printf("\n");
     }
 

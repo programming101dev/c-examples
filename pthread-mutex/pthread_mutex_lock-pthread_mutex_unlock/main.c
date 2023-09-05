@@ -109,6 +109,7 @@ static void parse_arguments(int argc, char *argv[], bool *use_mutex)
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
+                break;
             }
             case '?':
             {

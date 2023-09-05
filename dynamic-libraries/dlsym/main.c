@@ -57,7 +57,30 @@ int main(int argc, char *argv[])
     }
 
     // Get the symbol from the shared library
-    func = (void (*)(const char *)) dlsym(handle, function_name);
+    /*
+        The expression *(void **)(&func) might look complex, but it's used to correctly assign a function pointer
+        obtained from dlsym to the func variable.
+
+        Let's break down the expression step by step:
+
+        &func:
+            This takes the address of the func variable. It gives us a pointer to a function pointer,
+            so it has a type of void ** (pointer to pointer to void).
+
+        (void **)(&func):
+            This explicitly casts the address of func to a void ** type. The void ** type
+            indicates a pointer to a pointer to void. This is necessary because dlsym returns a void *
+            (pointer to void), but we need to assign that to a function pointer variable func, which has a
+            different type.
+
+        *(void **)(&func):
+            This dereferences the void ** pointer obtained from the previous step. It effectively
+            treats the func variable as a void * pointer (since func is a function pointer), and then it performs
+            a double indirection to get the value pointed to by the void ** pointer. This is done to properly assign
+            the function pointer returned by dlsym to the func variable.
+    */
+
+    *(void **)(&func) = dlsym(handle, function_name);
 
     if(!func)
     {
@@ -93,6 +116,7 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
             case 'l':
             {
                 *library_name = optarg;
+                break;
             }
             case 'f':
             {

@@ -22,6 +22,7 @@
 
 // TODO: take the path as a command line argument
 
+
 int main(void)
 {
     DIR *dir = opendir(".");

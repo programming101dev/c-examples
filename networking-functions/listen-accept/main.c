@@ -23,16 +23,15 @@
 #include <unistd.h>
 
 
+static int create_socket(void);
+static void bind_socket(int server_fd);
+static void start_listening(int server_fd);
+static int accept_connection(int server_fd);
+
+
 #define PORT 8080
 #define BACKLOG 5
 
-static int create_socket(void);
-
-static void bind_socket(int server_fd);
-
-static void start_listening(int server_fd);
-
-static int accept_connection(int server_fd);
 
 int main(void)
 {

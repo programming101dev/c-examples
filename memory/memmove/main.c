@@ -22,7 +22,6 @@
 
 int main(void)
 {
-    // Source data
     int source_data[] = {1, 2, 3, 4, 5};
     int num_elements;
     int destination_buffer[5];

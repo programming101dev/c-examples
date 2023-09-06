@@ -23,9 +23,7 @@
 
 
 static void *child_process(void *arg);
-
 static void *parent_process(void *arg);
-
 static void send_word(const char *word);
 
 

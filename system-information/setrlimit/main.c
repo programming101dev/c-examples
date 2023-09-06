@@ -20,11 +20,11 @@
 #include <sys/resource.h>
 
 
+static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit);
+
+
 #define SET_LIMIT(resource, soft_limit, hard_limit) \
     set_rlimit(resource, #resource, soft_limit, hard_limit)
-
-
-static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit);
 
 
 int main(void)

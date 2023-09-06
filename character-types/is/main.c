@@ -30,7 +30,6 @@ struct func_info
 
 
 static void print_binary(int ch);
-
 static void print_info(const struct func_info *info, int ch);
 
 

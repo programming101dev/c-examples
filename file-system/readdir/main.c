@@ -25,7 +25,9 @@
     #define D_INO_FORMAT "%ld"
 #endif
 
+
 // TODO: take the path as a command line argument
+
 
 int main(void)
 {

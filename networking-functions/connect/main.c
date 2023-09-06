@@ -6,19 +6,15 @@
 #include <unistd.h>
 
 
+static int create_socket(void);
+static struct sockaddr_in prepare_server_address(int client_fd);
+static void connect_to_server(int client_fd, struct sockaddr_in server_addr);
+static void do_communication(int client_fd);
+static void close_socket(int client_fd);
+
+
 #define SERVER_IP "127.0.0.1"
 #define PORT 8080
-
-
-static int create_socket(void);
-
-static struct sockaddr_in prepare_server_address(int client_fd);
-
-static void connect_to_server(int client_fd, struct sockaddr_in server_addr);
-
-static void do_communication(int client_fd);
-
-static void close_socket(int client_fd);
 
 
 int main(void)

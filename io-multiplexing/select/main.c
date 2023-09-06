@@ -25,12 +25,13 @@
 #include <unistd.h>
 
 
+static void signal_handler(int signum);
+
+
 #define SOCKET_PATH "/tmp/example_socket" // Replace with your desired socket path
 
+
 volatile int running = 1;
-
-
-static void signal_handler(int signum);
 
 
 int main(void)
@@ -173,7 +174,7 @@ int main(void)
                 }
             }
         }
-    } // End of the main loop
+    }
 
     // Cleanup and close all client sockets
     for(i = 0; i < max_clients; i++)

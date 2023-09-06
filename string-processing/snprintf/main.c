@@ -29,34 +29,21 @@ static void convertChar(char c, char *buffer, size_t bufferSize);
 
 // Integer Types
 static void convertInt8(int8_t num, char *buffer, size_t bufferSize);
-
 static void convertUInt8(uint8_t num, char *buffer, size_t bufferSize);
-
 static void convertInt16(int16_t num, char *buffer, size_t bufferSize);
-
 static void convertUInt16(uint16_t num, char *buffer, size_t bufferSize);
-
 static void convertInt32(int32_t num, char *buffer, size_t bufferSize);
-
 static void convertUInt32(uint32_t num, char *buffer, size_t bufferSize);
-
 static void convertInt(int num, char *buffer, size_t bufferSize);
-
 static void convertUInt(unsigned int num, char *buffer, size_t bufferSize);
-
 static void convertLong(long num, char *buffer, size_t bufferSize);
-
 static void convertULong(unsigned long num, char *buffer, size_t bufferSize);
-
 static void convertLongLong(long long num, char *buffer, size_t bufferSize);
-
 static void convertULongLong(unsigned long long num, char *buffer, size_t bufferSize);
 
 // Floating-Point Types
 static void convertFloat(float num, char *buffer, size_t bufferSize);
-
 static void convertDouble(double num, char *buffer, size_t bufferSize);
-
 static void convertLongDouble(long double num, char *buffer, size_t bufferSize);
 
 // Pointer Types
@@ -64,9 +51,7 @@ static void convertPointer(const void *ptr, char *buffer, size_t bufferSize);
 
 // Size and Offset Types
 static void convertSize(size_t num, char *buffer, size_t bufferSize);
-
 static void convertSSize(ssize_t num, char *buffer, size_t bufferSize);
-
 static void convertOff(off_t num, char *buffer, size_t bufferSize);
 
 // Boolean Type
@@ -74,9 +59,7 @@ static void convertBool(bool value, char *buffer, size_t bufferSize);
 
 // Process and User ID Types (POSIX-specific)
 static void convertPid(pid_t num, char *buffer, size_t bufferSize);
-
 static void convertUid(uid_t num, char *buffer, size_t bufferSize);
-
 static void convertGid(gid_t num, char *buffer, size_t bufferSize);
 
 

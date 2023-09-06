@@ -24,18 +24,15 @@
 #include <semaphore.h>
 
 
+static void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
+static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
+static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
+static void error_exit(const char *msg);
+
+
 #define MAX_WORD_LENGTH 255
 #define SEM_PARENT "/sem_parent"
 #define SEM_CHILD "/sem_child"
-
-
-static void child_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
-
-static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
-
-static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
-
-static void error_exit(const char *msg);
 
 
 int main(void)

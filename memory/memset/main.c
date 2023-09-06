@@ -22,7 +22,6 @@
 
 
 static void print_array(const int *arr, int size);
-
 static void fill_with_random_ints(int *arr, int size);
 
 

@@ -21,7 +21,6 @@
 
 
 static void print_entries(void);
-
 static void print_entry(const struct group *entry);
 
 

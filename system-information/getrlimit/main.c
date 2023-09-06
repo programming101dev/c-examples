@@ -20,11 +20,11 @@
 #include <sys/resource.h>
 
 
+static void show_limit(int resource, const char *name);
+
+
 #define SHOW_LIMIT(resource) \
     show_limit(resource, #resource)
-
-
-static void show_limit(int resource, const char *name);
 
 
 int main(void)

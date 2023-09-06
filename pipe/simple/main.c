@@ -22,16 +22,13 @@
 #include <unistd.h>
 
 
-#define MAX_WORD_LENGTH 255
-
-
 static void child_process(int pipefd[2]);
-
 static void parent_process(int pipefd[2]);
-
 static void send_word(int pipefd, const char *word, uint8_t length);
-
 static void error_exit(const char *msg);
+
+
+#define MAX_WORD_LENGTH 255
 
 
 int main(void)

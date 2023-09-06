@@ -23,11 +23,12 @@
 #include <unistd.h>
 
 
+static int create_socket(void);
+static void bind_socket(int server_fd);
+
+
 #define PORT 8080
 
-static int create_socket(void);
-
-static void bind_socket(int server_fd);
 
 int main(void)
 {

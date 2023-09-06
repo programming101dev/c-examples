@@ -23,7 +23,6 @@
 
 
 static void print_process_info(const char *name);
-
 static void child_process(const char *name);
 
 

@@ -15,7 +15,6 @@
  */
 
 
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/times.h>
@@ -25,7 +24,6 @@
 
 
 static long long performCalculation(size_t size, size_t iterations);
-
 static void printTimes(struct tms tms_data);
 
 

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 
+
 int main(void)
 {
     openlog("log-demo", LOG_PID | LOG_CONS, LOG_USER);

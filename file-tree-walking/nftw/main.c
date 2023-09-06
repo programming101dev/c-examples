@@ -100,7 +100,6 @@ _Noreturn  static void usage(const char *program_name, int exit_code, const char
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
     if(tflag == FTW_F)
@@ -118,5 +117,4 @@ static int print_file(const char *fpath, const struct stat *sb, int tflag, struc
 
     return 0; // Continue traversing the directory tree
 }
-
 #pragma GCC diagnostic pop

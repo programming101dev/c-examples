@@ -31,6 +31,9 @@ static void error_exit(const char *msg);
 #define MAX_WORD_LENGTH 255
 
 
+// TODO: pass the filename on the command line
+
+
 int main(void)
 {
     int pipefd[2];
@@ -57,7 +60,7 @@ int main(void)
         parent_process(pipefd);
     }
 
-    return EXIT_SUCCESS;  // This line will not be executed, but it's here to keep the compiler happy.
+    return EXIT_SUCCESS;
 }
 
 

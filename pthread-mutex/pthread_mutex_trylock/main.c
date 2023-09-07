@@ -34,6 +34,9 @@ struct thread_data
 static void *threadFunction(void *arg);
 
 
+// TODO: is there a way to make it so that trylock doesn't succeed?
+
+
 int main(void)
 {
     // Initialize the mutex

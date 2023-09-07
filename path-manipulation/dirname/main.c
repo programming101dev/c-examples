@@ -19,6 +19,9 @@
 #include <libgen.h>
 
 
+// TODO: make the path a command line argument
+
+
 int main(void)
 {
     char path[] = "/path/to/some/file.txt";

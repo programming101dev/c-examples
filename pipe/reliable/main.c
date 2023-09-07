@@ -37,6 +37,9 @@ static void read_fully(int fd, void *buf, size_t count);
 #define SEM_CHILD "/sem_child"
 
 
+// TODO: pass the filename on the command line
+
+
 int main(void)
 {
     int pipefd[2];

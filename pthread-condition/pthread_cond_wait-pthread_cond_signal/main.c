@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <pthread.h>
 
@@ -34,6 +33,10 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 int word_ready = 0;
 char *shared_word = NULL;
+
+
+// TODO: pass the file name on the command line
+// TODO: this doesn't work properly - send_word(NULL) crashes
 
 
 int main(void)
@@ -103,7 +106,6 @@ static void send_word(const char *word)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
 static void *child_process(void *arg)
 {
     FILE *file;
@@ -120,8 +122,8 @@ static void *child_process(void *arg)
     while(fgets(line, sizeof(line), file) != NULL)
     {
         line[strcspn(line, "\n")] = '\0'; // Remove the newline character if present
-
         token = strtok_r(line, " \t", &saveptr);
+
         while(token != NULL)
         {
             send_word(token);
@@ -129,7 +131,7 @@ static void *child_process(void *arg)
         }
     }
 
-    send_word(NULL); // Signal end of words
+    send_word(NULL);
 
     if(fclose(file) != 0)
     {
@@ -139,13 +141,11 @@ static void *child_process(void *arg)
 
     pthread_exit(NULL);
 }
-
 #pragma GCC diagnostic pop
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
 static void *parent_process(void *arg)
 {
     char *word;
@@ -186,5 +186,4 @@ static void *parent_process(void *arg)
 
     pthread_exit(NULL);
 }
-
 #pragma GCC diagnostic pop

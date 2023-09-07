@@ -20,19 +20,22 @@
 #include <stdlib.h>
 
 
+static void display_value(uint16_t value);
+
+
 int main(void)
 {
-    uint16_t value = 42;
-
-    printf("Using PRIu16 (unsigned): %"
-    PRIu16
-    "\n", value);
-    printf("Using PRIx16 (hexadecimal): %"
-    PRIx16
-    "\n", value);
-    printf("Using PRIX16 (uppercase hexadecimal): %"
-    PRIX16
-    "\n", value);
+    display_value(0);
+    printf("----\n");
+    display_value(UINT16_MAX);
 
     return EXIT_SUCCESS;
+}
+
+
+static void display_value(uint16_t value)
+{
+    printf("Using PRIu16 (unsigned): %" PRIu16 "\n", value);
+    printf("Using PRIx16 (hexadecimal): %" PRIx16 "\n", value);
+    printf("Using PRIX16 (uppercase hexadecimal): %" PRIX16 "\n", value);
 }

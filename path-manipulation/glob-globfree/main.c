@@ -20,6 +20,9 @@
 #include <glob.h>
 
 
+// TODO: make the pattern a command line argument
+
+
 int main(void)
 {
     const char *pattern = "*.c";

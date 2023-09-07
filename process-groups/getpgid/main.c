@@ -22,9 +22,9 @@
 
 int main(void)
 {
-    pid_t pid = getpid(); // Get the PID of the current process
-
+    pid_t pid = getpid();
     pid_t pgid = getpgid(pid);
+
     if(pgid == -1)
     {
         perror("Error getting PGID");

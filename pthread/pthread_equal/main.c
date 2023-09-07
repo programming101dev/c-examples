@@ -29,6 +29,16 @@ int main(void)
     pthread_create(&thread1, NULL, thread_function, NULL);
     pthread_create(&thread2, NULL, thread_function, NULL);
 
+    // Check if thread1 and thread1 have the same thread ID
+    if(pthread_equal(thread1, thread1))
+    {
+        printf("Thread 1 and Thread 1 have the same thread ID.\n");
+    }
+    else
+    {
+        printf("Thread 1 and Thread 1 have different thread IDs.\n");
+    }
+
     // Check if thread1 and thread2 have the same thread ID
     if(pthread_equal(thread1, thread2))
     {

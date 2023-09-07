@@ -20,25 +20,24 @@
 #include <stdlib.h>
 
 
+static void display_value(int32_t value);
+
+
 int main(void)
 {
-    int32_t value = 42;
-
-    printf("Using PRId32 (decimal): %"
-    PRId32
-    "\n", value);
-    printf("Using PRIi32 (decimal): %"
-    PRIi32
-    "\n", value);
-    printf("Using PRIu32 (unsigned): %"
-    PRIu32
-    "\n", (uint32_t) value);
-    printf("Using PRIx32 (hexadecimal): %"
-    PRIx32
-    "\n", (uint32_t) value);
-    printf("Using PRIX32 (uppercase hexadecimal): %"
-    PRIX32
-    "\n", (uint32_t) value);
+    display_value(INT32_MIN);
+    printf("----\n");
+    display_value(INT32_MAX);
 
     return EXIT_SUCCESS;
+}
+
+
+static void display_value(int32_t value)
+{
+    printf("Using PRId16 (decimal): %" PRId32 "\n", value);
+    printf("Using PRIi16 (decimal): %" PRIi32 "\n", value);
+    printf("Using PRIu16 (unsigned): %" PRIu32 "\n", (uint32_t) value);
+    printf("Using PRIx16 (hexadecimal): %" PRIx32 "\n", (uint32_t) value);
+    printf("Using PRIX16 (uppercase hexadecimal): %" PRIX32 "\n", (uint32_t) value);
 }

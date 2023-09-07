@@ -26,13 +26,18 @@
 static long long performCalculation(size_t size, size_t iterations);
 
 
+// TODO: make a function
+
+
 int main(void)
 {
     const size_t MAX_NUMBERS = 100000;
     const size_t NUM_ITERATIONS = 20000;
     double cpu_time_used;
+    clock_t start_time;
 
     pid_t pid = fork();
+    start_time = clock();
 
     if(pid < 0)
     {
@@ -41,25 +46,29 @@ int main(void)
     }
     else if(pid == 0)
     {
+        clock_t end_time;
         long long sum;
 
-        sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
-        printf("Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
-        exit(EXIT_SUCCESS);
-    }
-    else
-    {
-        clock_t start_time, end_time;
-        long long sum;
-
-        start_time = clock();
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
         wait(NULL);
         end_time = clock();
-        printf("Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
-        printf("Real Time: %jd clock ticks\n", (intmax_t)(end_time - start_time));
+        printf("Child: Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
+        printf("Child: Real Time: %jd clock ticks\n", (intmax_t)(end_time - start_time));
         cpu_time_used = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
-        printf("CPU time used: %f seconds\n", cpu_time_used);
+        printf("Child: CPU time used: %f seconds\n", cpu_time_used);
+    }
+    else
+    {
+        clock_t end_time;
+        long long sum;
+
+        sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
+        wait(NULL);
+        end_time = clock();
+        printf("Parent: Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
+        printf("Parent: Real Time: %jd clock ticks\n", (intmax_t)(end_time - start_time));
+        cpu_time_used = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
+        printf("Parent: CPU time used: %f seconds\n", cpu_time_used);
     }
 
     return EXIT_SUCCESS;

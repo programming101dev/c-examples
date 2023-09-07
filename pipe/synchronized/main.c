@@ -35,6 +35,9 @@ static void error_exit(const char *msg);
 #define SEM_CHILD "/sem_child"
 
 
+// TODO: pass the filename on the command line
+
+
 int main(void)
 {
     int pipefd[2];

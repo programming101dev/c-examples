@@ -32,8 +32,7 @@ int main(void)
         return 1;
     }
 
-    pid_t new_pgid = getpid(); // Use the PID of the current process as the new PGID
-
+    pid_t new_pgid = getpid();
     printf("Original Process ID (PID): %d\n", new_pgid);
 
     // Fork a new child process
@@ -48,11 +47,10 @@ int main(void)
     else if(child_pid == 0)
     {
         // Child process
-        new_pgid = getpid() + 100; // Set a different value for the new PGID
+        new_pgid = getpid() + 100;
 
         printf("Child Process ID (PID): %d\n", getpid());
 
-        // Create a new session for the child process
         if(setsid() == -1)
         {
             perror("Error creating a new session for the child process");
@@ -62,7 +60,7 @@ int main(void)
 
         printf("Child Process Group ID (PGID) after creating a new session: %d\n", getpid());
 
-        // Change the PGID of the child process
+        // TODO: linux always fails?
         if(setpgid(getpid(), new_pgid) == -1)
         {
             perror("Error setting PGID for the child process");

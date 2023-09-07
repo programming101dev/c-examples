@@ -57,11 +57,6 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
     {
         switch(opt)
         {
-            case 'g':
-            {
-                *group_name = optarg;
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -88,10 +83,12 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
+    *group_name = argv[optind];
 }
 
 
-_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
@@ -114,11 +111,16 @@ static void print_entry(const struct group *entry)
     printf("Group Members:\n");
     members = entry->gr_mem;
 
-    while(*members != NULL)
+    if(members)
     {
-        printf(" - %s\n", *members);
-        members++;
-    }
+        // TODO: crashes on macos
+        while(*members != NULL)
+        {
+            // TODO: crashes on macos
+            printf(" - %s\n", *members);
+            members++;
+        }
 
-    printf("-------------------------\n");
+        printf("-------------------------\n");
+    }
 }

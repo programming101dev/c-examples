@@ -89,7 +89,7 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
 }
 
 
-_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

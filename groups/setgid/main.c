@@ -90,7 +90,7 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *new_gid = (gid_t)strtol(optarg, &endptr, 10);
+    *new_gid = (gid_t)strtol(argv[optind], &endptr, 10);
 
     if(*endptr != '\0')
     {
@@ -99,7 +99,7 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid)
 }
 
 
-_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

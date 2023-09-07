@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 }
 
 
-_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {

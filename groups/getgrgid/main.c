@@ -101,7 +101,7 @@ static void parse_arguments(int argc, char *argv[], gid_t *gid)
 }
 
 
-_Noreturn  static void usage(const char *program_name, int exit_code, const char *message)
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
     {
@@ -124,11 +124,16 @@ static void print_entry(const struct group *entry)
     printf("Group Members:\n");
     members = entry->gr_mem;
 
-    while(*members != NULL)
+    if(members != NULL)
     {
-        printf(" - %s\n", *members);
-        members++;
-    }
+        // TODO: this crashes on macOS
+        while(*members != NULL)
+        {
+            // TODO: this crashes on macOS
+            printf(" - %s\n", *members);
+            members++;
+        }
 
-    printf("-------------------------\n");
+        printf("-------------------------\n");
+    }
 }

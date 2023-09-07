@@ -19,6 +19,9 @@
 #include <stdlib.h>
 
 
+// TODO: pass the command on the command line
+
+
 int main(void)
 {
     char buffer[128];

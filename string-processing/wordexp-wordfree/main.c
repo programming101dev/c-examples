@@ -26,6 +26,9 @@ static void parse_arguments(int argc, char *argv[], char **command);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+// TODO: take the string on the command line
+
+
 int main(int argc, char *argv[])
 {
     char *command = NULL;
@@ -44,6 +47,7 @@ int main(int argc, char *argv[])
     if(ret != 0)
     {
         printf("Error expanding command: %d\n", ret);
+        free(command);
         return EXIT_FAILURE;
     }
 
@@ -55,6 +59,7 @@ int main(int argc, char *argv[])
     }
 
     wordfree(&result);
+    free(command);
 
     return EXIT_SUCCESS;
 }
@@ -95,7 +100,7 @@ static void parse_arguments(int argc, char *argv[], char **command)
 
     if(argc - optind == 1)
     {
-        *command = optarg;
+        *command = strdup(argv[optind]);
     }
 }
 

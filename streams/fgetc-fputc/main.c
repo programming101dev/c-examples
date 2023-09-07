@@ -27,7 +27,9 @@ int main(void)
 
     while((c = fgetc(stdin)) != EOF)
     {
+        printf("you typed: ");
         putchar(c);
+        putchar('\n');
     }
 
     return EXIT_SUCCESS;

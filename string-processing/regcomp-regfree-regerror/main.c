@@ -26,6 +26,9 @@ static void parse_arguments(int argc, char *argv[], char **pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+// TODO: what are some valid vs invalid regexs?
+
+
 int main(int argc, char *argv[])
 {
     regex_t regex;
@@ -46,13 +49,14 @@ int main(int argc, char *argv[])
     {
         regerror(ret, &regex, error_buffer, sizeof(error_buffer));
         printf("Error compiling regex: %s\n", error_buffer);
+        free(pattern);
 
         return EXIT_FAILURE;
     }
 
     printf("Regular expression compiled successfully\n");
-
     regfree(&regex);
+    free(pattern);
 
     return EXIT_SUCCESS;
 }
@@ -68,11 +72,6 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
     {
         switch(opt)
         {
-            case 'p':
-            {
-                *pattern = optarg;
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -90,6 +89,8 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
             }
         }
     }
+
+    *pattern = strdup(argv[optind]);
 }
 
 

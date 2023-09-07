@@ -44,7 +44,7 @@ int main(void)
     const char *shm_name = "/my_shared_memory";
 
     // Open the shared memory
-    shm_fd = shm_open(shm_name, O_RDWR, S_IRUSR | S_IWUSR);
+    shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if(shm_fd == -1)
     {
         perror("shm_open");

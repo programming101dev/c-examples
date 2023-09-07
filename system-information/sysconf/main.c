@@ -198,3 +198,6 @@ static long get_sysconf_value(int name, const char *name_str)
 
     return value;
 }
+
+
+// TODO: Linux prints odd for some

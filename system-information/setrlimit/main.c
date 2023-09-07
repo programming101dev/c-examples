@@ -60,3 +60,6 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
         printf("  Hard limit set to: %lld\n", (long long) rlim.rlim_max);
     }
 }
+
+
+// TODO - linux has a crash with this

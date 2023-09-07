@@ -23,6 +23,9 @@
 static void search_for(const char *needle, const char *haystack);
 
 
+// TODO: pass in the string and the search on the command line
+
+
 int main(void)
 {
     const char *str = "Hello, World!";

@@ -24,6 +24,9 @@
 void signal_handler(int signal_number);
 
 
+// TODO: some signals cause it to exit (like USR2)
+
+
 int main(void)
 {
     // Set up the signal handler

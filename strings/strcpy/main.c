@@ -36,6 +36,8 @@ int main(void)
         return EXIT_FAILURE;
     }
 
+    // TODO:  make a string with a differnt value and larder size and then strcpy into it, print before and after
+
     strcpy(destination, source);
     printf("Copied string: %s\n", destination);
     free(destination);

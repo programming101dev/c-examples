@@ -69,6 +69,8 @@ int main(void)
     {
         // Parent process
         printf("Parent waiting for SIGINT...\n");
+
+        // TODO: should I put something in the set?
         sigset_t empty_set;
         sigemptyset(&empty_set);
         sigsuspend(&empty_set);

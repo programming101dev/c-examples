@@ -84,7 +84,7 @@ int main(void)
             exit(EXIT_FAILURE);
         }
 
-        printf("Parent process (PID %d): Done waiting\n", getpid());
+        printf("Parent process (PID %d): Done sem_wait\n", getpid());
 
         // Release the semaphore (post)
         sem_post(semaphore);
@@ -98,7 +98,7 @@ int main(void)
             exit(EXIT_FAILURE);
         }
 
-        printf("Parent process (PID %d): Child completed.\n", getpid());
+        printf("Parent process (PID %d): Done waiting.\n", getpid());
 
         // Unlink the semaphore after use
         if(sem_unlink(sem_name) == -1)

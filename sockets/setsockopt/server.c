@@ -23,6 +23,9 @@
 #include <netinet/in.h>
 
 
+// TODO: pass the port as a command line option
+
+
 int main(void)
 {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -37,7 +40,7 @@ int main(void)
     {
         perror("setsockopt");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     struct sockaddr_in server_addr;
@@ -51,7 +54,7 @@ int main(void)
     {
         perror("bind");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Start listening for incoming connections
@@ -59,7 +62,7 @@ int main(void)
     {
         perror("listen");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     printf("Server is listening on port 8888...\n");
@@ -72,12 +75,12 @@ int main(void)
     {
         perror("accept");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     printf("Client connected!\n");
 
     close(client_sockfd);
     close(sockfd);
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -38,7 +38,12 @@ int main(int argc, char *argv[])
 
     if(pattern == NULL)
     {
-        pattern = strdup("invalid[");
+        usage(argv[0], EXIT_FAILURE, "X");
+    }
+
+    if(test_string == NULL)
+    {
+        usage(argv[0], EXIT_FAILURE, "Y");
     }
 
     ret = regcomp(&regex, pattern, 0);
@@ -80,20 +85,10 @@ static void parse_arguments(int argc, char *argv[], char **pattern, char **test_
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "ht:p:")) != -1)
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
         {
-            case 'p':
-            {
-                *pattern = optarg;
-                break;
-            }
-            case 't':
-            {
-                *test_string = optarg;
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -107,24 +102,22 @@ static void parse_arguments(int argc, char *argv[], char **pattern, char **test_
             }
             default:
             {
-                usage(argv[0], EXIT_FAILURE, NULL);
+                usage(argv[0], EXIT_FAILURE, "Z");
             }
         }
     }
 
-    if(optind >= argc)
+    if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The test string is required");
     }
-    else if(optind < argc - 1)
+    else if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(test_string == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "Error: You must provide a test string using -t option.\n");
-    }
+    *pattern = argv[optind];
+    *test_string = argv[optind + 1];
 }
 
 
@@ -135,10 +128,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] [-p pattern] <test string>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -p pattern <test string>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h            Display this help message\n", stderr);
-    fputs("  -p <pattern>  Specify the regular expression pattern (default: 'invalid[')\n", stderr);
+    fputs("  -p <pattern>  Specify the regular expression pattern\n", stderr);
     exit(exit_code);
 }
 

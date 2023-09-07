@@ -31,9 +31,14 @@ static void print_socket_opt(int sockfd, int option_level, int option_name, cons
 
 int main(int argc, char *argv[])
 {
-    int port = 0;
+    int port = -1;
 
     parse_arguments(argc, argv, &port);
+
+    if(port == -1)
+    {
+        fprintf(stderr, "Port number not specified. Use -p <port> to set the port.\n");
+    }
 
     printf("Port: %d\n", port);
 
@@ -45,6 +50,8 @@ int main(int argc, char *argv[])
         perror("socket");
         return EXIT_FAILURE;
     }
+
+    // TODO: do I need to bind and listen for this to work?
 
     // Bind the socket to the specified port
     struct sockaddr_in server_addr;
@@ -103,16 +110,6 @@ static void parse_arguments(int argc, char *argv[], int *port)
     {
         switch(opt)
         {
-            case 'p':
-            {
-                *port = (int) strtol(optarg, NULL, 10);
-
-                if(*port == 0)
-                {
-                    usage(argv[0], EXIT_SUCCESS, "Invalid port number");
-                }
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -140,9 +137,11 @@ static void parse_arguments(int argc, char *argv[], int *port)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(port == 0)
+    *port = (int) strtol(argv[optind], NULL, 10);
+
+    if(*port == 0)
     {
-        fprintf(stderr, "Port number not specified. Use -p <port> to set the port.\n");
+        usage(argv[0], EXIT_SUCCESS, "Invalid port number");
     }
 }
 

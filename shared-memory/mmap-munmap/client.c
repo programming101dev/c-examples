@@ -32,6 +32,9 @@ static size_t get_page_size(void);
 #define SERVER_SEM_NAME "/server_semaphore"
 
 
+// TODO: pass file name on command line
+
+
 int main(void)
 {
     int shm_fd;
@@ -84,13 +87,16 @@ int main(void)
     }
 
     char buffer[100];
+
     while(fgets(buffer, sizeof(buffer), file))
     {
         char *word;
         char *saveptr;
         word = strtok_r(buffer, " \t\n", &saveptr);
+
         while(word != NULL)
         {
+            // TODO: this crashes on Linux
             // Copy the word into shared memory
             strcpy(shm_ptr, word);
 

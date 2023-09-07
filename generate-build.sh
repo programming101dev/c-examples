@@ -64,6 +64,38 @@ SANITIZER_FLAGS=(
         "-fno-omit-frame-pointer"
 )
 
+ANALYZER_FLAGS=(
+        "-fanalyzer"
+        "-fanalyzer-call-summaries"
+        "-fanalyzer-checker=name"
+        "-fanalyzer-fine-grained"
+        "-fanalyzer-show-events-in-system-headers"
+        "-fanalyzer-transitivity"
+        "-fanalyzer-verbose-edges"
+        "-fanalyzer-verbose-state-changes"
+        "-fanalyzer-verbosity=4"
+        "-fdump-analyzer"
+        "-fdump-analyzer-callgraph"
+        "-fdump-analyzer-exploded-graph"
+        "-fdump-analyzer-exploded-nodes-3"
+        "-fdump-analyzer-exploded-paths"
+        "-fdump-analyzer-feasibility"
+        "-fdump-analyzer-json"
+        "-fdump-analyzer-state-purge"
+        "-fdump-analyzer-stderr"
+        "-fdump-analyzer-supergraph"
+        "-fdump-analyzer-untracked"
+        "-Wanalyzer-too-complex"
+)
+
+DEBUG_FLAGS=(
+        "-g3"
+        "-ggdb"
+        "-fvar-tracking"
+        "-fvar-tracking-assignments"
+        "-gcolumn-info"
+)
+
 # Check if the provided flag is supported
 function is_flag_supported() {
     local flag="$1"
@@ -106,6 +138,20 @@ for FLAG in "${SANITIZER_FLAGS[@]}"; do
     fi
 done
 
+SUPPORTED_ANALYZER_FLAGS=""
+for FLAG in "${ANALYZER_FLAGS[@]}"; do
+    if is_flag_supported "$FLAG"; then
+        SUPPORTED_ANALYZER_FLAGS="$SUPPORTED_ANALYZER_FLAGS $FLAG"
+    fi
+done
+
+SUPPORTED_DEBUG_FLAGS=""
+for FLAG in "${DEBUG_FLAGS[@]}"; do
+    if is_flag_supported "$FLAG"; then
+        SUPPORTED_DEBUG_FLAGS="$SUPPORTED_DEBUG_FLAGS $FLAG"
+    fi
+done
+
 # Generate the final script
 cat <<EOL > build.sh
 #!/bin/bash
@@ -114,6 +160,8 @@ set -e
 
 WARNING_FLAGS="$SUPPORTED_WARNING_FLAGS"
 SANITIZER_FLAGS="$SUPPORTED_SANITIZER_FLAGS"
+ANALYZER_FLAGS="$SUPPORTED_ANALYZER_FLAGS"
+DEBUG_FLAGS="$SUPPORTED_DEBUG_FLAGS"
 
 # Find all directories that contain .c files, sort them, and iterate through them
 find . -name "*.c" -exec dirname {} \; | sort -u | while read -r dir; do
@@ -121,12 +169,12 @@ find . -name "*.c" -exec dirname {} \; | sort -u | while read -r dir; do
   find "\$dir" -maxdepth 1 -name "*.c" -type f | sort | while read -r file; do
     if [[ "\$file" == *"testlib-1.c" || "\$file" == *"testlib-2.c" ]]; then
       if [[ "\$(uname)" == "Darwin" ]]; then
-        gcc -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.dylib"
+        gcc -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.dylib"
       else
-        gcc -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.so"
+        gcc -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.so"
       fi
     else
-      gcc -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE \$WARNING_FLAGS \$SANITIZER_FLAGS "\$file" -o "\${file%.c}.out"
+      gcc -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.out"
     fi
 
     if [ \$? -ne 0 ]; then

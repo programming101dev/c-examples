@@ -19,6 +19,9 @@
 #include <stdlib.h>
 
 
+// TODO: pass the file in on the command line
+
+
 int main(void)
 {
     const char buffer[] = "This is an attempt to write.";

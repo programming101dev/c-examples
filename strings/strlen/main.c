@@ -20,6 +20,9 @@
 #include <string.h>
 
 
+// TODO: pass the string on the command line
+
+
 int main(void)
 {
     const char str[] = "Hello, World!";

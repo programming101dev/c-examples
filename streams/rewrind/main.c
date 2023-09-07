@@ -22,6 +22,9 @@
 static void display_file(FILE *file, const char *message);
 
 
+// TODO: pass file name on the command line
+
+
 int main(void)
 {
     FILE *file;

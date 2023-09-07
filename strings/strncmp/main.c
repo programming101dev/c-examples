@@ -22,6 +22,7 @@
 
 int main(void)
 {
+    // TODO: need to show them not being equal too
     const char *str1 = "Hello, World!";
     const char *str2 = "Hello, World!";
     const char *str3 = "Hello, World?";

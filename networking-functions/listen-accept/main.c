@@ -33,6 +33,10 @@ static int accept_connection(int server_fd);
 #define BACKLOG 5
 
 
+// TODO pass the port and backlog in on the command line
+// TODO print out what we are listening on for ip address
+
+
 int main(void)
 {
     int server_fd;

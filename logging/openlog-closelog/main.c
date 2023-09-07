@@ -19,6 +19,9 @@
 #include <syslog.h>
 
 
+// TODO: make log-demo a command line argument with a default if not present
+
+
 int main(void)
 {
     openlog("log-demo", LOG_PID | LOG_CONS, LOG_USER);

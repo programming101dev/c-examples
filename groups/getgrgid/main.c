@@ -117,23 +117,21 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static void print_entry(const struct group *entry)
 {
-    char **members;
-
     printf("Group name: %s\n", entry->gr_name);
     printf("Group ID (GID): %d\n", entry->gr_gid);
     printf("Group Members:\n");
-    members = entry->gr_mem;
 
-    if(members != NULL)
+    if(entry->gr_mem != NULL)
     {
-        // TODO: this crashes on macOS
-        while(*members != NULL)
+        for(int i = 0; entry->gr_mem[i] != NULL; i++)
         {
-            // TODO: this crashes on macOS
-            printf(" - %s\n", *members);
-            members++;
+            printf(" - %s\n", entry->gr_mem[i]);
         }
 
         printf("-------------------------\n");
+    }
+    else
+    {
+        printf("No members found.\n");
     }
 }

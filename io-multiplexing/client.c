@@ -33,6 +33,7 @@ static void error_exit(const char *msg);
 
 
 // TODO: fork N children - make N a command line argument
+// TODO: pass the file name on the command line
 
 
 int main(void)

@@ -17,6 +17,9 @@ static void close_socket(int client_fd);
 #define PORT 8080
 
 
+// TODO pass the port and IP in on the command line
+
+
 int main(void)
 {
     int client_fd = create_socket();

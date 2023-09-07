@@ -30,16 +30,18 @@ int main(int argc, char *argv[])
     gid_t new_gid;
     gid_t new_egid;
 
+    new_gid = (gid_t)-1;
+    new_egid = (gid_t)-1;
     parse_arguments(argc, argv, &new_gid, &new_egid);
 
     if(new_gid == (gid_t)-1)
     {
-        usage(argv[0], EXIT_FAILURE, "");
+        usage(argv[0], EXIT_FAILURE, "-g is required");
     }
 
     if(new_egid == (gid_t)-1)
     {
-        usage(argv[0], EXIT_FAILURE, "");
+        usage(argv[0], EXIT_FAILURE, "-e is required");
     }
 
     if(setregid(new_gid, new_egid) == -1)
@@ -58,7 +60,6 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_egid)
 {
     int opt;
-    char *endptr;
 
     opterr = 0;
 
@@ -68,22 +69,26 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_e
         {
             case 'g':
             {
-                *new_gid = (gid_t) strtol(argv[optind], &endptr, 10);
+                char *endptr;
+
+                *new_gid = (gid_t)strtol(optarg, &endptr, 10);
 
                 if(*endptr != '\0')
                 {
-                    usage(argv[0], EXIT_FAILURE, "Invalid group_id format");
+                    usage(argv[0], EXIT_FAILURE, "Invalid group id format");
                 }
 
                 break;
             }
             case 'e':
             {
-                *new_egid = (gid_t) strtol(argv[optind + 1], &endptr, 10);
+                char *endptr;
+
+                *new_egid = (gid_t)strtol(optarg, &endptr, 10);
 
                 if(*endptr != '\0')
                 {
-                    usage(argv[0], EXIT_FAILURE, "Invalid effective group_id format");
+                    usage(argv[0], EXIT_FAILURE, "Invalid effective group id format");
                 }
 
                 break;

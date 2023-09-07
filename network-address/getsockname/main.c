@@ -76,20 +76,22 @@ int main(int argc, char *argv[])
     // Get the local address and port number associated with the socket
     struct sockaddr_in local_addr;
     socklen_t addrlen = sizeof(local_addr);
+
     if(getsockname(sockfd, (struct sockaddr *) &local_addr, &addrlen) == -1)
     {
         perror("getsockname");
         close(sockfd);
         freeaddrinfo(result);
+        free(port);
         return EXIT_FAILURE;
     }
 
     char ipstr[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET_ADDRSTRLEN);
     printf("Local Address: %s:%d\n", ipstr, ntohs(local_addr.sin_port));
-
-    freeaddrinfo(result);
     close(sockfd);
+    freeaddrinfo(result);
+    free(port);
     return EXIT_SUCCESS;
 }
 
@@ -106,7 +108,7 @@ static void parse_arguments(int argc, char *argv[], char **host_name, char **por
         {
             case 'p':
             {
-                *port = optarg;
+                *port = strdup(optarg);
                 break;
             }
             case 'h':

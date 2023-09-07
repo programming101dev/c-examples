@@ -38,7 +38,6 @@ int main(void)
 
     printf("List of Network Interfaces:\n");
 
-    // Iterate through the linked list of interfaces
     for(ifaddr = interfaces; ifaddr != NULL; ifaddr = ifaddr->ifa_next)
     {
         if(ifaddr->ifa_addr == NULL)
@@ -46,7 +45,6 @@ int main(void)
             continue;
         }
 
-        // Get the IP address as a string
         if(ifaddr->ifa_addr->sa_family == AF_INET)
         {
             struct sockaddr_in *s4 = (struct sockaddr_in *) ifaddr->ifa_addr;
@@ -65,7 +63,6 @@ int main(void)
         printf("%-12s : %s\n", ifaddr->ifa_name, host);
     }
 
-    // Free the memory allocated by getifaddrs
     freeifaddrs(interfaces);
 
     return EXIT_SUCCESS;

@@ -15,9 +15,9 @@
  */
 
 
+#include <grp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <grp.h>
 
 
 static void print_entries(void);

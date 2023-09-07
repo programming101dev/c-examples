@@ -48,13 +48,14 @@ static void convert(const char *str)
     errno = 0;
     result = strtod(str, &endptr);
 
-// Check for conversion errors
+    // Check for conversion errors
     double tolerance = 1e-6; // Define your desired tolerance
     if((errno == ERANGE && (fabs(result - HUGE_VAL) < tolerance || fabs(result + HUGE_VAL) < tolerance)) ||
        (errno != 0 && fabs(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }
+
     // Check if the entire string was converted
     if(endptr == str)
     {

@@ -24,6 +24,9 @@
 void logMessages(void);
 
 
+// TODO: make log-demo a command line argument with a default if not present
+
+
 int main(void)
 {
     int mask;

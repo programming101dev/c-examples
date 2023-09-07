@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
         perror("connect");
         close(sockfd);
         freeaddrinfo(result);
+        free(port);
         return EXIT_FAILURE;
     }
 
@@ -88,9 +89,9 @@ int main(int argc, char *argv[])
     char ipstr[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(peer_addr->sin_addr), ipstr, INET_ADDRSTRLEN);
     printf("Connected to: %s:%s\n", ipstr, port);
-
-    freeaddrinfo(result);
     close(sockfd);
+    freeaddrinfo(result);
+    free(port);
 
     return EXIT_SUCCESS;
 }
@@ -108,7 +109,7 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
         {
             case 'p':
             {
-                *port = optarg;
+                *port = strdup(optarg);
                 break;
             }
             case 'h':

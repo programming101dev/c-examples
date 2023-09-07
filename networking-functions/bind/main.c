@@ -30,6 +30,9 @@ static void bind_socket(int server_fd);
 #define PORT 8080
 
 
+// TODO pass the port in on the command line
+
+
 int main(void)
 {
     int server_fd;

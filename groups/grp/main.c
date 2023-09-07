@@ -59,18 +59,21 @@ static void print_entries(void)
 
 static void print_entry(const struct group *entry)
 {
-    char **members;
-
     printf("Group name: %s\n", entry->gr_name);
     printf("Group ID (GID): %d\n", entry->gr_gid);
     printf("Group Members:\n");
-    members = entry->gr_mem;
 
-    while(*members != NULL)
+    if(entry->gr_mem != NULL)
     {
-        printf(" - %s\n", *members);
-        members++;
-    }
+        for(int i = 0; entry->gr_mem[i] != NULL; i++)
+        {
+            printf(" - %s\n", entry->gr_mem[i]);
+        }
 
-    printf("-------------------------\n");
+        printf("-------------------------\n");
+    }
+    else
+    {
+        printf("No members found.\n");
+    }
 }

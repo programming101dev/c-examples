@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 {
     gid_t new_gid;
 
-    new_gid = (gid_t) - 1;
+    new_gid = (gid_t)-1;
 
     parse_arguments(argc, argv, &new_gid);
 

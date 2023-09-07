@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
     char *group_name;
     struct group *group_info;
 
+    group_name = NULL;
     parse_arguments(argc, argv, &group_name);
     group_info = getgrnam(group_name);
 

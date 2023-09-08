@@ -26,6 +26,9 @@
 #define PORT 8080
 
 
+// TODO: read the port and hessage from the command line
+
+
 int main(void)
 {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);

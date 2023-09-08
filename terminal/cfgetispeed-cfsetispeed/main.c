@@ -21,6 +21,9 @@
 #include <unistd.h>
 
 
+// TODO: pass the new baud on the commadn line
+
+
 int main(void)
 {
     struct termios term;

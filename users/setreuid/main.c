@@ -32,6 +32,16 @@ int main(int argc, char *argv[])
 
     parse_arguments(argc, argv, &new_uid, &new_euid);
 
+    if(new_uid == (uid_t)-1)
+    {
+        usage(argv[0], EXIT_FAILURE, "A");
+    }
+
+    if(new_euid == (uid_t)-1)
+    {
+        usage(argv[0], EXIT_FAILURE, "B");
+    }
+
     if(setreuid(new_uid, new_euid) == -1)
     {
         perror("setreuid");
@@ -115,3 +125,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -e <effective user id>  Specify the new effective user id\n", stderr);
     exit(exit_code);
 }
+
+
+// TODO: linux has an error

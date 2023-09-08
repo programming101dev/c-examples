@@ -89,7 +89,7 @@ static void parse_arguments(int argc, char *argv[], char **username)
         usage(argv[0], EXIT_FAILURE, "Error: You must provide a username using -u option.\n");
     }
 
-    *username = optarg;
+    *username = argv[optind];
 }
 
 

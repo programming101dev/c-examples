@@ -54,6 +54,8 @@ int main(void)
 
     // Read the first character without echoing
     printf("Type the first character: ");
+    fflush(stdout);
+
     if(read(STDIN_FILENO, &ch, 1) == 1)
     {
         printf("%c\n", ch);
@@ -69,6 +71,8 @@ int main(void)
 
     // Read the rest of the characters with echoing
     printf("Type the rest of the characters: ");
+    fflush(stdout);
+
     while(1)
     {
         if(read(STDIN_FILENO, &ch, 1) == 1)

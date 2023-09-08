@@ -85,7 +85,7 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *uid = (uid_t) strtol(optarg, NULL, 10);
+    *uid = (uid_t) strtol(argv[optind], NULL, 10);
 }
 
 

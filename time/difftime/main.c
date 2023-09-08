@@ -21,6 +21,9 @@
 #include <unistd.h>
 
 
+// TODO: get time to sleep from the command line
+
+
 int main(void)
 {
     time_t start_time;
@@ -45,7 +48,7 @@ int main(void)
     }
 
     // Calculate the time difference
-    if(end_time == (time_t) - 1 || start_time == (time_t) - 1)
+    if(end_time == (time_t)-1 || start_time == (time_t)-1)
     {
         perror("Invalid time values");
         return EXIT_FAILURE;

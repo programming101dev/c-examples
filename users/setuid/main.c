@@ -82,7 +82,7 @@ static void parse_arguments(int argc, char *argv[], uid_t *new_uid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *new_uid = (uid_t) strtol(optarg, &endptr, 10);
+    *new_uid = (uid_t) strtol(argv[optind], &endptr, 10);
 
     if(*endptr != '\0')
     {
@@ -103,3 +103,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
+
+
+// TODO: linux has an error

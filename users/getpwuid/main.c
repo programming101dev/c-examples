@@ -32,6 +32,12 @@ int main(int argc, char *argv[])
     uid_t uid = (uid_t)-1;
 
     parse_arguments(argc, argv, &uid);
+
+    if(uid == (uid_t)-1)
+    {
+        usage(argv[0], EXIT_FAILURE, NULL);
+    }
+
     struct passwd *user_info = getpwuid(uid);
 
     if(user_info != NULL)
@@ -85,16 +91,16 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(uid_long == -1)
-    {
-        usage(argv[0], EXIT_FAILURE, NULL);
-    }
-
-    uid_long = strtol(optarg, &endptr, 10);
+    uid_long = strtol(argv[optind], &endptr, 10);
 
     if(errno != 0 || *endptr != '\0')
     {
         fprintf(stderr, "Invalid UID: %s\n", optarg);
+        usage(argv[0], EXIT_FAILURE, NULL);
+    }
+
+    if(uid_long == -1)
+    {
         usage(argv[0], EXIT_FAILURE, NULL);
     }
 

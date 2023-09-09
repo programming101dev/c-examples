@@ -24,6 +24,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **host_name);
+static void handle_arguments(const char *binary_name, const char *host_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int resolve_hostname_to_ip(const char *hostname);
 
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
 
     host_name = NULL;
     parse_arguments(argc, argv, &host_name);
+    handle_arguments(argv[0], host_name);
     result = resolve_hostname_to_ip(host_name);
 
     return result;
@@ -80,6 +82,16 @@ static void parse_arguments(int argc, char *argv[], char **host_name)
 
     *host_name = argv[optind];
 }
+
+
+static void handle_arguments(const char *binary_name, const char *host_name)
+{
+    if(host_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

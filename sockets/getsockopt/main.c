@@ -15,8 +15,10 @@
  */
 
 
+#include <errno.h>
 #include <getopt.h>
 #include <netinet/in.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,25 +26,22 @@
 #include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], int *port);
+static void parse_arguments(int argc, char *argv[], char **port);
+static void handle_arguments(const char *binary_name, const char *port_str, in_port_t *port);
+static in_port_t parse_port(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str);
 
 
 int main(int argc, char *argv[])
 {
-    int port = -1;
+    char *port_str;
+    in_port_t port;
 
-    parse_arguments(argc, argv, &port);
-
-    if(port == -1)
-    {
-        fprintf(stderr, "Port number not specified. Use -p <port> to set the port.\n");
-    }
-
+    port_str = NULL;
+    parse_arguments(argc, argv, &port_str);
+    handle_arguments(argv[0], port_str, &port);
     printf("Port: %d\n", port);
-
-    // Create a listening socket
     int listen_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(listen_sockfd == -1)
@@ -100,7 +99,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], int *port)
+static void parse_arguments(int argc, char *argv[], char **port)
 {
     int opt;
 
@@ -137,12 +136,47 @@ static void parse_arguments(int argc, char *argv[], int *port)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *port = (int) strtol(argv[optind], NULL, 10);
+    *port = argv[optind];
+}
 
-    if(*port == 0)
+
+static void handle_arguments(const char *binary_name, const char *port_str, in_port_t *port)
+{
+    if(port_str == NULL)
     {
-        usage(argv[0], EXIT_SUCCESS, "Invalid port number");
+        usage(binary_name, EXIT_FAILURE, "");
     }
+
+    *port = parse_port(binary_name, port_str);
+}
+
+
+static in_port_t parse_port(const char *binary_name, const char *port_str)
+{
+    char *endptr;
+    long int parsed_port;
+
+    errno = 0;
+    parsed_port = strtol(port_str, &endptr, 10);
+
+    if (errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing port number.");
+    }
+
+    // Check if there are any non-numeric characters in port_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in port number.");
+    }
+
+    // Check if the port is within the valid range
+    if(parsed_port < 0 || parsed_port > UINT16_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Port number out of range.");
+    }
+
+    return (in_port_t)parsed_port;
 }
 
 

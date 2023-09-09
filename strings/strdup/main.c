@@ -15,20 +15,26 @@
  */
 
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-// TODO: pass the string on the command line
+static void parse_arguments(int argc, char *argv[], char **string);
+static void handle_arguments(const char *binary_name, const char *string);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    const char *source = "Hello, World!";
+    char *string;
     char *duplicate;
 
-    duplicate = strdup(source);
+    string = NULL;
+    parse_arguments(argc, argv, &string);
+    handle_arguments(argv[0], string);
+    duplicate = strdup(string);
 
     if(duplicate == NULL)
     {
@@ -41,4 +47,69 @@ int main(void)
     free(duplicate);
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **string)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *string = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *string)
+{
+    if(string == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }

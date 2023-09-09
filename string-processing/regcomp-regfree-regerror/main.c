@@ -23,6 +23,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **pattern);
+static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -31,18 +32,14 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
+    char *pattern;
     regex_t regex;
     int ret;
     char error_buffer[100];
-    char *pattern =  NULL;
 
+    pattern = NULL;
     parse_arguments(argc, argv, &pattern);
-
-    if(pattern == NULL)
-    {
-        pattern = strdup("invalid[");
-    }
-
+    handle_arguments(argv[0], pattern);
     ret = regcomp(&regex, pattern, 0);
 
     if(ret != 0)
@@ -91,6 +88,15 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
     }
 
     *pattern = strdup(argv[optind]);
+}
+
+
+static void handle_arguments(const char *binary_name, const char *pattern)
+{
+    if(pattern == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

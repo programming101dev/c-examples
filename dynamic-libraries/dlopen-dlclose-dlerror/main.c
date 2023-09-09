@@ -21,13 +21,42 @@
 #include <dlfcn.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **library_path);
+static void handle_arguments(const char *binary_name, const char *library_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
+    char *library_path;
+
+    library_path = NULL;
+    parse_arguments(argc, argv, &library_path);
+    handle_arguments(argv[0], library_path);
+
+    void *handle = dlopen(library_path, RTLD_LAZY);
+
+    if(!handle)
+    {
+        fprintf(stderr, "Error loading the shared library: %s\n", dlerror());
+        return EXIT_FAILURE;
+    }
+
+    if(dlclose(handle) != 0)
+    {
+        fprintf(stderr, "Error unloading the shared library: %s\n", dlerror());
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **library_path)
+{
     int opt;
-    char *library_name = NULL;
+
+    opterr = 0;
 
     while((opt = getopt(argc, argv, "h:")) != -1)
     {
@@ -60,25 +89,16 @@ int main(int argc, char *argv[])
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    library_name = argv[optind];
+    *library_path = argv[optind];
+}
 
-    // Load the shared library dynamically
-    void *handle = dlopen(library_name, RTLD_LAZY);
 
-    if(!handle)
+static void handle_arguments(const char *binary_name, const char *library_path)
+{
+    if(library_path == NULL)
     {
-        fprintf(stderr, "Error loading the shared library: %s\n", dlerror());
-        return 1;
+        usage(binary_name, EXIT_FAILURE, "");
     }
-
-    // Close the shared library
-    if(dlclose(handle) != 0)
-    {
-        fprintf(stderr, "Error unloading the shared library: %s\n", dlerror());
-        return 1;
-    }
-
-    return EXIT_SUCCESS;
 }
 
 

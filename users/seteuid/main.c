@@ -15,23 +15,30 @@
  */
 
 
+#include <errno.h>
+#include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <getopt.h>
 
 
-static void parse_arguments(int argc, char *argv[], uid_t *uid);
+static void parse_arguments(int argc, char *argv[], char **user_id);
+static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid);
+static uid_t parse_uid(const char *binary_name, const char *uid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    uid_t new_uid = (uid_t) - 1;
+    char *user_id;
+    uid_t uid;
 
-    parse_arguments(argc, argv, &new_uid);
+    user_id = NULL;
+    parse_arguments(argc, argv, &user_id);
+    handle_arguments(argv[0], user_id, &uid);
 
-    if(seteuid(new_uid) == -1)
+    if(seteuid(uid) == -1)
     {
         perror("seteuid");
         return EXIT_FAILURE;
@@ -44,7 +51,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], uid_t *uid)
+static void parse_arguments(int argc, char *argv[], char **user_id)
 {
     int opt;
 
@@ -54,10 +61,6 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
     {
         switch(opt)
         {
-            case 'u':
-            {
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -85,7 +88,47 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *uid = (uid_t) strtol(argv[optind], NULL, 10);
+    *user_id = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid)
+{
+    if(user_id == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *uid = parse_uid(binary_name, user_id);
+}
+
+
+static uid_t parse_uid(const char *binary_name, const char *uid_str)
+{
+    char *endptr;
+    long int parsed_uid;
+
+    errno = 0;
+    parsed_uid = strtol(uid_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing UID.");
+    }
+
+    // Check if there are any non-numeric characters in uid_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in UID.");
+    }
+
+    // Check if the UID is within the valid range
+    if (parsed_uid < 0 || parsed_uid > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "UID out of range.");
+    }
+
+    return (uid_t)parsed_uid;
 }
 
 

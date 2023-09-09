@@ -22,30 +22,32 @@
 #include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **file_name);
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *file_name = NULL;
+    char *file_path;
     FILE *file;
 
-    parse_arguments(argc, argv, &file_name);
-
-    file = fopen(file_name, "rb");
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
+    file = fopen(file_path, "rb");
 
     if(file == NULL)
     {
-        fprintf(stderr, "Error opening the file '%s': %s\n", file_name, strerror(errno));
+        fprintf(stderr, "Error opening the file '%s': %s\n", file_path, strerror(errno));
         return EXIT_FAILURE;
     }
 
-    printf("Successfully opened file: %s\n", file_name);
+    printf("Successfully opened file: %s\n", file_path);
 
     if(fclose(file) != 0)
     {
-        fprintf(stderr, "Error closing the file '%s': %s\n", file_name, strerror(errno));
+        fprintf(stderr, "Error closing the file '%s': %s\n", file_path, strerror(errno));
         return EXIT_FAILURE;
     }
 
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **file_name)
+static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
 
@@ -90,7 +92,16 @@ static void parse_arguments(int argc, char *argv[], char **file_name)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *file_name = argv[optind];
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

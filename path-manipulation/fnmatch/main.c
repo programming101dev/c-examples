@@ -22,14 +22,17 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **pattern);
+static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *pattern = NULL;
+    char *pattern;
 
+    pattern = NULL;
     parse_arguments(argc, argv, &pattern);
+    handle_arguments(argv[0], pattern);
 
     for(int i = optind + 1; i < argc; i++)
     {
@@ -83,6 +86,15 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
     }
 
     *pattern = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *pattern)
+{
+    if(pattern == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

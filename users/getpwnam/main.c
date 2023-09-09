@@ -21,18 +21,21 @@
 #include <pwd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **username);
+static void parse_arguments(int argc, char *argv[], char **user_name);
+static void handle_arguments(const char *binary_name, const char *user_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct passwd *entry);
 
 
 int main(int argc, char *argv[])
 {
-    char *username = NULL;
+    char *user_name;
     struct passwd *user_info;
 
-    parse_arguments(argc, argv, &username);
-    user_info = getpwnam(username);
+    user_name = NULL;
+    parse_arguments(argc, argv, &user_name);
+    handle_arguments(argv[0], user_name);
+    user_info = getpwnam(user_name);
 
     if(user_info != NULL)
     {
@@ -40,14 +43,14 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("User '%s' not found.\n", username);
+        printf("User '%s' not found.\n", user_name);
     }
 
     return EXIT_SUCCESS;
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **username)
+static void parse_arguments(int argc, char *argv[], char **user_name)
 {
     int opt;
 
@@ -84,12 +87,16 @@ static void parse_arguments(int argc, char *argv[], char **username)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(username == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "Error: You must provide a username using -u option.\n");
-    }
+    *user_name = argv[optind];
+}
 
-    *username = argv[optind];
+
+static void handle_arguments(const char *binary_name, const char *user_name)
+{
+    if(user_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

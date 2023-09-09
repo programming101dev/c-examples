@@ -15,24 +15,32 @@
  */
 
 
+#include <errno.h>
+#include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <getopt.h>
 
 
-static void parse_arguments(int argc, char *argv[], bool *set_sleep);
+// TODO: maybe the sleep seconds should be a parameter?
+
+
+static void parse_arguments(int argc, char *argv[], char **seconds);
+static void handle_arguments(const char *binary_name, char *seconds_str, unsigned int *seconds);
+static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_process_info(const char *name);
 
 
 int main(int argc, char *argv[])
 {
-    bool set_sleep = false;
+    char *seconds_str;
+    unsigned int seconds;
     pid_t pid;
 
-    parse_arguments(argc, argv, &set_sleep);
+    parse_arguments(argc, argv, &seconds_str);
+    handle_arguments(argv[0], seconds_str, &seconds);
     pid = fork();
 
     if(pid == -1)
@@ -50,12 +58,7 @@ int main(int argc, char *argv[])
     {
         // This is the parent process
         print_process_info("Parent");
-
-        if(set_sleep)
-        {
-            sleep(2);
-        }
-
+        sleep(seconds);
         printf("Parent process finished.\n");
     }
 
@@ -63,20 +66,20 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], bool *set_sleep)
+static void parse_arguments(int argc, char *argv[], char **seconds)
 {
     int opt;
 
     opterr = 0;
 
     // Parse command-line options
-    while((opt = getopt(argc, argv, "hs")) != -1)
+    while((opt = getopt(argc, argv, "hs:")) != -1)
     {
         switch(opt)
         {
             case 's':
             {
-                *set_sleep = true;
+                *seconds = optarg;
                 break;
             }
             case 'h':
@@ -96,6 +99,48 @@ static void parse_arguments(int argc, char *argv[], bool *set_sleep)
             }
         }
     }
+}
+
+
+static void handle_arguments(const char *binary_name, char *seconds_str, unsigned int *seconds)
+{
+    if(seconds_str == NULL)
+    {
+        *seconds = 0;
+    }
+    else
+    {
+        *seconds = parse_unsigned_int(binary_name, seconds_str);
+    }
+}
+
+
+static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
+{
+    char *endptr;
+    unsigned long parsed_value;
+
+    errno = 0;
+    parsed_value = strtoul(str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    // Check if the parsed value is within the valid range for unsigned int
+    if(parsed_value > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
+    }
+
+    return (unsigned int)parsed_value;
 }
 
 

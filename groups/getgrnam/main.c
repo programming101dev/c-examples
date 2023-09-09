@@ -22,6 +22,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **group_name);
+static void handle_arguments(const char *binary_name, const char *group_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct group *entry);
 
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
 
     group_name = NULL;
     parse_arguments(argc, argv, &group_name);
+    handle_arguments(argv[0], group_name);
     group_info = getgrnam(group_name);
 
     if(group_info != NULL)
@@ -86,6 +88,15 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
     }
 
     *group_name = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *group_name)
+{
+    if(group_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

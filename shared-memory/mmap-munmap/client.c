@@ -24,6 +24,9 @@
 #include <unistd.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static size_t get_page_size(void);
 
 
@@ -32,16 +35,18 @@ static size_t get_page_size(void);
 #define SERVER_SEM_NAME "/server_semaphore"
 
 
-// TODO: pass file name on command line
-
-
-int main(void)
+int main(int argc, char *argv[])
 {
+    char *file_path;
     int shm_fd;
     char *shm_ptr;
     sem_t *client_sem, *server_sem;
     size_t page_size = get_page_size();
     size_t shm_size = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
+
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
 
     // Open the shared memory
     const char *shm_name = "/my_shared_memory";
@@ -79,7 +84,7 @@ int main(void)
     }
 
     // Open and read the file
-    FILE *file = fopen("../../example.txt", "r");
+    FILE *file = fopen(file_path, "r");
     if(!file)
     {
         perror("fopen");
@@ -128,6 +133,71 @@ int main(void)
     close(shm_fd);
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
 
 

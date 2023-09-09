@@ -25,16 +25,20 @@
 #include <netdb.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **host_name, char **port);
+static void parse_arguments(int argc, char *argv[], char **host_name, char **service);
+static void handle_arguments(const char *binary_name, const char *host_name, const char *service);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *port = NULL;
-    char *host_name = NULL;
+    char *host_name;
+    char *service;
 
-    parse_arguments(argc, argv, &host_name, &port);
+    host_name = NULL;
+    service = NULL;
+    parse_arguments(argc, argv, &host_name, &service);
+    handle_arguments(argv[0], host_name, service);
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
@@ -45,10 +49,10 @@ int main(int argc, char *argv[])
 
     struct addrinfo hints, *result, *rp;
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;        // IPv4
-    hints.ai_socktype = SOCK_STREAM;  // TCP
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
 
-    int status = getaddrinfo(host_name, port, &hints, &result);
+    int status = getaddrinfo(host_name, service, &hints, &result);
     if(status != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
@@ -82,7 +86,6 @@ int main(int argc, char *argv[])
         perror("getsockname");
         close(sockfd);
         freeaddrinfo(result);
-        free(port);
         return EXIT_FAILURE;
     }
 
@@ -91,26 +94,21 @@ int main(int argc, char *argv[])
     printf("Local Address: %s:%d\n", ipstr, ntohs(local_addr.sin_port));
     close(sockfd);
     freeaddrinfo(result);
-    free(port);
+
     return EXIT_SUCCESS;
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **host_name, char **port)
+static void parse_arguments(int argc, char *argv[], char **host_name, char **service)
 {
     int opt;
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "hp:")) != -1)
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
         {
-            case 'p':
-            {
-                *port = strdup(optarg);
-                break;
-            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -129,21 +127,31 @@ static void parse_arguments(int argc, char *argv[], char **host_name, char **por
         }
     }
 
-    if(optind >= argc)
+    if(optind + 1 >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The host name is required");
+        usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-    else if(optind < argc - 1)
+    else if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    if(port == NULL || optind >= argc)
+    *host_name = argv[optind];
+    *service = argv[optind + 1];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *host_name, const char *service)
+{
+    if(host_name == NULL)
     {
-        usage(argv[0], EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "X");
     }
 
-    *host_name = argv[optind];
+    if(service == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "Y");
+    }
 }
 
 
@@ -154,9 +162,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] [-p <port>] <host name>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <host name> <service>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h         Display this help message\n", stderr);
-    fputs("  -p <port>  The port to connect to\n", stderr);
     exit(exit_code);
 }

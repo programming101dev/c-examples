@@ -23,18 +23,26 @@
 #include <sys/socket.h>
 
 
-#define MAX_WORD_LENGTH 255
-
-
-void child_process(int sockfd);
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+void child_process(int sockfd, const char *file_name);
 void parent_process(int sockfd);
 void send_word(int sockfd, const char *word, uint8_t length);
 void error_exit(const char *msg);
 
 
-int main(void)
+#define MAX_WORD_LENGTH 255
+
+
+int main(int argc, char *argv[])
 {
+    char *file_path;
     int sockfd[2];
+
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
 
     if(socketpair(AF_UNIX, SOCK_STREAM, 0, sockfd) == -1)
     {
@@ -51,7 +59,7 @@ int main(void)
     if(pid == 0)
     {
         close(sockfd[1]);
-        child_process(sockfd[0]);
+        child_process(sockfd[0], file_path);
     }
     else
     {
@@ -60,6 +68,71 @@ int main(void)
     }
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
 
 
@@ -94,14 +167,15 @@ void error_exit(const char *msg)
 }
 
 
-void child_process(int sockfd)
+void child_process(int sockfd, const char *file_name)
 {
     FILE *file;
     char ch;
     char word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
-    file = fopen("../../example.txt", "r");
+    file = fopen(file_name, "r");
+
     if(file == NULL)
     {
         error_exit("Error opening file");

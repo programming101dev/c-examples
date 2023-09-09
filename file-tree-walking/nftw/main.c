@@ -21,19 +21,20 @@
 #include <ftw.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **directory);
+static void parse_arguments(int argc, char *argv[], char **directory_path);
+static void handle_arguments(const char *binary_name, const char *directory_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf);
 
 
 int main(int argc, char *argv[])
 {
-    char *directory;
+    char *directory_path;
 
-    parse_arguments(argc, argv, &directory);
+    parse_arguments(argc, argv, &directory_path);
+    handle_arguments(argv[0], directory_path);
 
-    // Use nftw to traverse the directory tree recursively
-    if(nftw(directory, print_file, 1, FTW_PHYS) == -1)
+    if(nftw(directory_path, print_file, 1, FTW_PHYS) == -1)
     {
         perror("nftw");
         return 1;
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **directory)
+static void parse_arguments(int argc, char *argv[], char **directory_path)
 {
     int opt;
 
@@ -73,14 +74,23 @@ static void parse_arguments(int argc, char *argv[], char **directory)
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The directory is required");
+        usage(argv[0], EXIT_FAILURE, "The directory path is required");
     }
     else if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *directory = argv[optind];
+    *directory_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *directory_path)
+{
+    if(directory_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 
@@ -91,7 +101,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <directory>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <directory path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);

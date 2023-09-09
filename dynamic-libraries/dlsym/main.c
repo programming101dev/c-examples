@@ -22,27 +22,21 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **library_name, char **function_name);
+static void handle_arguments(const char *binary_name, const char *library_name, const char *function_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *library_name = NULL;
-    char *function_name = NULL;
+    char *library_name;
+    char *function_name;
     void *handle;
     void (*func)(const char *);
 
+    library_name = NULL;
+    function_name = NULL;
     parse_arguments(argc, argv, &library_name, &function_name);
-
-    if(library_name == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "-l is required");
-    }
-
-    if(function_name == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "-f is required");
-    }
+    handle_arguments(argv[0], library_name, function_name);
 
     // Load the shared library dynamically
     handle = dlopen(library_name, RTLD_LAZY);
@@ -136,6 +130,20 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
                 usage(argv[0], EXIT_FAILURE, NULL);
             }
         }
+    }
+}
+
+
+static void handle_arguments(const char *binary_name, const char *library_name, const char *function_name)
+{
+    if(library_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(function_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
     }
 }
 

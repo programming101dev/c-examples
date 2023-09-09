@@ -15,24 +15,34 @@
  */
 
 
+#include <errno.h>
+#include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **file_path, char **offset);
+static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset);
+static off_t parse_offset(const char *binary_name, const char *offset_str);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void display_file(int fd, const char *message);
 
 
-// TODO: take the file name & seek offset in from the command line
-
-
-int main(void)
+int main(int argc, char *argv[])
 {
+    char *file_path;
+    char *offset_str;
+    off_t offset;
     int fd;
 
-    fd = open("../../example.txt", O_RDONLY);
+    file_path = NULL;
+    offset_str = NULL;
+    parse_arguments(argc, argv, &file_path, &offset_str);
+    handle_arguments(argv[0], file_path, offset_str, &offset);
+    fd = open(file_path, O_RDONLY);
 
     if(fd == -1)
     {
@@ -40,6 +50,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
+    // TODO: use the offset that was passed in
     display_file(fd, "File contents:\n\n");
     lseek(fd, 0L, SEEK_SET);
     display_file(fd, "\n\nFile contents after SEEK_SET:\n\n");
@@ -48,6 +59,113 @@ int main(void)
 
     close(fd);
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path, char **offset)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "ho:")) != -1)
+    {
+        switch(opt)
+        {
+            case 'o':
+            {
+                *offset = optarg;
+                break;
+            }
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(offset_str == NULL)
+    {
+        usage(file_path, EXIT_FAILURE, "");
+    }
+
+    *offset = parse_offset(binary_name, offset_str);
+}
+
+
+static off_t parse_offset(const char *binary_name, const char *offset_str)
+{
+    char *endptr;
+    long long int parsed_offset;
+
+    errno = 0;
+    parsed_offset = strtoll(offset_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing offset.");
+    }
+
+    // Check if there are any non-numeric characters in offset_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in offset.");
+    }
+
+    // Check if the offset is within the valid range
+    if(parsed_offset < 0 || parsed_offset > LONG_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Offset out of range.");
+    }
+
+    return (off_t)parsed_offset;
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    fputs("  -o <offset>  The offset to move from the start of the file\n", stderr);
+    exit(exit_code);
 }
 
 

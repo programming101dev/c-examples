@@ -23,25 +23,32 @@
 #include <unistd.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+
+
 #define FIFO_FILE "../fifo_example"
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
+    char *file_path;
     int fd;
-    char line[1024]; // Adjust the buffer size as needed
+    char line[1024];
 
-    // Open the FIFO for writing
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
     fd = open(FIFO_FILE, O_WRONLY);
+
     if(fd == -1)
     {
         perror("open");
         exit(EXIT_FAILURE);
     }
 
-    // Open the file to read
-    // TODO: make this a command line argument with a default
-    FILE *file = fopen("../example.txt", "r");
+    FILE *file = fopen(file_path, "r");
     if(file == NULL)
     {
         perror("fopen");
@@ -78,4 +85,69 @@ int main(void)
     fclose(file);
     close(fd);
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }

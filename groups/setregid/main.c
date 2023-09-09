@@ -15,36 +15,33 @@
  */
 
 
+#include <errno.h>
+#include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <getopt.h>
 
 
-static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_egid);
+static void parse_arguments(int argc, char *argv[], char **group_id, char **egroup_id);
+static void handle_arguments(const char *binary_name, const char *group_id, const char *egroup_id, gid_t *gid, gid_t *egid);
+static gid_t parse_gid(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    gid_t new_gid;
-    gid_t new_egid;
+    char *group_id;
+    char *egroup_id;
+    gid_t gid;
+    gid_t egid;
 
-    new_gid = (gid_t)-1;
-    new_egid = (gid_t)-1;
-    parse_arguments(argc, argv, &new_gid, &new_egid);
+    group_id = NULL;
+    egroup_id = NULL;
+    parse_arguments(argc, argv, &group_id, &egroup_id);
+    handle_arguments(argv[0], group_id, egroup_id, &gid, &egid);
 
-    if(new_gid == (gid_t)-1)
-    {
-        usage(argv[0], EXIT_FAILURE, "-g is required");
-    }
-
-    if(new_egid == (gid_t)-1)
-    {
-        usage(argv[0], EXIT_FAILURE, "-e is required");
-    }
-
-    if(setregid(new_gid, new_egid) == -1)
+    if(setregid(gid, egid) == -1)
     {
         perror("setregid");
         return EXIT_FAILURE;
@@ -57,7 +54,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_egid)
+static void parse_arguments(int argc, char *argv[], char **group_id, char **egroup_id)
 {
     int opt;
 
@@ -69,28 +66,12 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_e
         {
             case 'g':
             {
-                char *endptr;
-
-                *new_gid = (gid_t)strtol(optarg, &endptr, 10);
-
-                if(*endptr != '\0')
-                {
-                    usage(argv[0], EXIT_FAILURE, "Invalid group id format");
-                }
-
+                *group_id = optarg;
                 break;
             }
             case 'e':
             {
-                char *endptr;
-
-                *new_egid = (gid_t)strtol(optarg, &endptr, 10);
-
-                if(*endptr != '\0')
-                {
-                    usage(argv[0], EXIT_FAILURE, "Invalid effective group id format");
-                }
-
+                *egroup_id = optarg;
                 break;
             }
             case 'h':
@@ -110,6 +91,52 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid, gid_t *new_e
             }
         }
     }
+}
+
+
+static void handle_arguments(const char *binary_name, const char *group_id, const char *egroup_id, gid_t *gid, gid_t *egid)
+{
+    if(group_id == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(egroup_id == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *gid = parse_gid(binary_name, group_id);
+    *egid = parse_gid(binary_name, egroup_id);
+}
+
+
+static gid_t parse_gid(const char *binary_name, const char *gid_str)
+{
+    char *endptr;
+    long int parsed_gid;
+
+    errno = 0;
+    parsed_gid = strtol(gid_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing GID.");
+    }
+
+    // Check if there are any non-numeric characters in uid_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in GID.");
+    }
+
+    // Check if the UID is within the valid range
+    if (parsed_gid < 0 || parsed_gid > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "GID out of range.");
+    }
+
+    return (gid_t)parsed_gid;
 }
 
 

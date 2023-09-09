@@ -15,58 +15,178 @@
  */
 
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <string.h>
 #include <arpa/inet.h>
+#include <errno.h>
+#include <getopt.h>
+#include <netinet/in.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 
-#define PORT 8080
+static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **msg);
+static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, char *message, in_port_t *port);
+static in_port_t parse_port(const char *binary_name, const char *port_str);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: read the port and hessage from the command line
-
-
-int main(void)
+int main(int argc, char *argv[])
 {
+    char *ip_address;
+    char *port_str;
+    char *message;
+    in_port_t port;
+
+    ip_address = NULL;
+    port_str = NULL;
+    message = NULL;
+    parse_arguments(argc, argv, &ip_address, &port_str, &message);
+    handle_arguments(argv[0], ip_address, port_str, message, &port);
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
     if(sockfd == -1)
     {
         perror("socket");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+    server_addr.sin_port = htons(port);
+    inet_pton(AF_INET, ip_address, &server_addr.sin_addr);
 
-    char message[] = "Hello, server!";
     int bytes_sent = sendto(sockfd, message, strlen(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr));
     if(bytes_sent == -1)
     {
         perror("sendto");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     char buffer[1024];
     socklen_t server_addr_len = sizeof(server_addr);
 
-    int bytes_received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *) &server_addr,
-                                  &server_addr_len);
+    int bytes_received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *) &server_addr, &server_addr_len);
     if(bytes_received == -1)
     {
         perror("recvfrom");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     buffer[bytes_received] = '\0';
     printf("Received from server: %s\n", buffer);
 
     close(sockfd);
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **msg)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind + 1 >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too few arguments.");
+    }
+    else if(optind < argc - 3)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *ip_address = argv[optind];
+    *port = argv[optind + 1];
+    *msg = argv[optind + 2];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, char *message, in_port_t *port)
+{
+    if(ip_address == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(port_str == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(message == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *port = parse_port(binary_name, port_str);
+}
+
+
+static in_port_t parse_port(const char *binary_name, const char *port_str)
+{
+    char *endptr;
+    long int parsed_port;
+
+    errno = 0;
+    parsed_port = strtol(port_str, &endptr, 10);
+
+    if (errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing port number.");
+    }
+
+    // Check if there are any non-numeric characters in port_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in port number.");
+    }
+
+    // Check if the port is within the valid range
+    if(parsed_port < 0 || parsed_port > UINT16_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Port number out of range.");
+    }
+
+    return (in_port_t)parsed_port;
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }

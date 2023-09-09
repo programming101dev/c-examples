@@ -22,7 +22,10 @@
 #include <unistd.h>
 
 
-static void child_process(int pipefd[2]);
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+static void child_process(int pipefd[2], const char *file_path);
 static void parent_process(int pipefd[2]);
 static void send_word(int pipefd, const char *word, uint8_t length);
 static void error_exit(const char *msg);
@@ -31,13 +34,15 @@ static void error_exit(const char *msg);
 #define MAX_WORD_LENGTH 255
 
 
-// TODO: pass the filename on the command line
-
-
-int main(void)
+int main(int argc, char *argv[])
 {
+    char *file_path;
     int pipefd[2];
     pid_t pid;
+
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
 
     if(pipe(pipefd) == -1)
     {
@@ -53,7 +58,7 @@ int main(void)
 
     if(pid == 0)
     {
-        child_process(pipefd);
+        child_process(pipefd, file_path);
     }
     else
     {
@@ -61,6 +66,71 @@ int main(void)
     }
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
 
 
@@ -95,7 +165,7 @@ static void error_exit(const char *msg)
 }
 
 
-static void child_process(int pipefd[2])
+static void child_process(int pipefd[2], const char *file_path)
 {
     FILE *file;
     char ch;
@@ -104,7 +174,7 @@ static void child_process(int pipefd[2])
 
     close(pipefd[0]);
 
-    file = fopen("../../example.txt", "r");
+    file = fopen(file_path, "r");
     if(file == NULL)
     {
         error_exit("Error opening file");

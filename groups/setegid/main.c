@@ -15,29 +15,30 @@
  */
 
 
+#include <errno.h>
+#include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <getopt.h>
 
 
-static void parse_arguments(int argc, char *argv[], gid_t *new_gid);
+static void parse_arguments(int argc, char *argv[], char **group_id);
+static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
+static gid_t parse_gid(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    gid_t new_gid;
+    char *group_id;
+    gid_t gid;
 
-    new_gid = (gid_t) - 1;
-    parse_arguments(argc, argv, &new_gid);
+    group_id = NULL;
+    parse_arguments(argc, argv, &group_id);
+    handle_arguments(argv[0], group_id, &gid);
 
-    if(new_gid == (gid_t) - 1)
-    {
-        usage(argv[0], EXIT_FAILURE, "");
-    }
-
-    if(setegid(new_gid) == -1)
+    if(setegid(gid) == -1)
     {
         perror("setegid");
         return EXIT_FAILURE;
@@ -49,10 +50,9 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void parse_arguments(int argc, char *argv[], gid_t *new_gid)
+static void parse_arguments(int argc, char *argv[], char **group_id)
 {
     int opt;
-    char *endptr;
 
     opterr = 0;
 
@@ -88,14 +88,49 @@ static void parse_arguments(int argc, char *argv[], gid_t *new_gid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    // TODO: crashes on macos
-    *new_gid = (gid_t)strtol(argv[optind], &endptr, 10);
+    *group_id = argv[optind];
+}
 
+
+static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid)
+{
+    if(group_id == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *gid = parse_gid(binary_name, group_id);
+}
+
+
+static gid_t parse_gid(const char *binary_name, const char *gid_str)
+{
+    char *endptr;
+    long int parsed_gid;
+
+    errno = 0;
+    parsed_gid = strtol(gid_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing GID.");
+    }
+
+    // Check if there are any non-numeric characters in uid_str
     if(*endptr != '\0')
     {
-        usage(argv[0], EXIT_FAILURE, "Invalid group id format\n");
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in GID.");
     }
+
+    // Check if the UID is within the valid range
+    if (parsed_gid < 0 || parsed_gid > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "GID out of range.");
+    }
+
+    return (gid_t)parsed_gid;
 }
+
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

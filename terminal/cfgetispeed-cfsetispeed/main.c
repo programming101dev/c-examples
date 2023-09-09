@@ -15,19 +15,30 @@
  */
 
 
+#include <errno.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
 
-// TODO: pass the new baud on the commadn line
+static void parse_arguments(int argc, char *argv[], char **speed);
+static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed);
+static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    struct termios term;
+    char *speed_str;
     speed_t input_baud_rate;
+    speed_t new_input_baud_rate;
+    struct termios term;
+
+    speed_str = NULL;
+    parse_arguments(argc, argv, &speed_str);
+    handle_arguments(argv[0], speed_str, &new_input_baud_rate);
 
     // Get current terminal settings
     if(tcgetattr(STDIN_FILENO, &term) != 0)
@@ -41,7 +52,8 @@ int main(void)
     printf("Current input baud rate: %d\n", (int) input_baud_rate);
 
     // Set input baud rate to 9600
-    if(cfsetispeed(&term, B9600) != 0)
+    // TODO: B9600
+    if(cfsetispeed(&term, new_input_baud_rate) != 0)
     {
         perror("cfsetispeed failed");
         return 1;
@@ -59,4 +71,134 @@ int main(void)
     printf("Updated input baud rate: %d\n", (int) input_baud_rate);
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **speed)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *speed = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed)
+{
+    if(speed_str == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *speed = parse_baud_rate(binary_name, speed_str);
+}
+
+
+static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str)
+{
+    static const speed_t baud_rates[] =
+    {
+    B0,
+     B50,
+     B75,
+     B110,
+     B134,
+     B150,
+     B200,
+     B300,
+     B600,
+     B1200,
+     B1800,
+     B2400,
+     B4800,
+     B9600,
+     B19200,
+     B38400,
+     B57600,
+     B115200,
+     B230400,
+    B460800
+    };
+    char *endptr;
+    long long int parsed_speed;
+
+    errno = 0;
+    parsed_speed = strtoll(baud_rate_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing baud rate.");
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    // Check if the parsed value matches a valid baud rate
+    int valid_baud_rate = 0;
+
+    for(size_t i = 0; i < sizeof(baud_rates) / sizeof(baud_rates[0]); i++)
+    {
+        if(parsed_speed == baud_rates[i])
+        {
+            valid_baud_rate = 1;
+            break;
+        }
+    }
+
+    if(!valid_baud_rate)
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
+    }
+
+    return (speed_t)parsed_speed;
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }

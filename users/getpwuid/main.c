@@ -15,29 +15,29 @@
  */
 
 
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pwd.h>
-#include <errno.h>
 #include <getopt.h>
 
 
-static void parse_arguments(int argc, char *argv[], uid_t *uid);
+static void parse_arguments(int argc, char *argv[], char **user_id);
+static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid);
+static uid_t parse_uid(const char *binary_name, const char *uid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct passwd *entry);
 
 
 int main(int argc, char *argv[])
 {
-    uid_t uid = (uid_t)-1;
+    char *user_id;
+    uid_t uid;
 
-    parse_arguments(argc, argv, &uid);
-
-    if(uid == (uid_t)-1)
-    {
-        usage(argv[0], EXIT_FAILURE, NULL);
-    }
-
+    user_id = NULL;
+    parse_arguments(argc, argv, &user_id);
+    handle_arguments(argv[0], user_id, &uid);
     struct passwd *user_info = getpwuid(uid);
 
     if(user_info != NULL)
@@ -52,11 +52,10 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void parse_arguments(int argc, char *argv[], uid_t *uid)
+
+static void parse_arguments(int argc, char *argv[], char **user_id)
 {
     int opt;
-    char *endptr;
-    long int uid_long = -1;
 
     opterr = 0;
 
@@ -91,20 +90,47 @@ static void parse_arguments(int argc, char *argv[], uid_t *uid)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    uid_long = strtol(argv[optind], &endptr, 10);
+    *user_id = argv[optind];
+}
 
-    if(errno != 0 || *endptr != '\0')
+
+static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid)
+{
+    if(user_id == NULL)
     {
-        fprintf(stderr, "Invalid UID: %s\n", optarg);
-        usage(argv[0], EXIT_FAILURE, NULL);
+        usage(binary_name, EXIT_FAILURE, "");
     }
 
-    if(uid_long == -1)
+    *uid = parse_uid(binary_name, user_id);
+}
+
+
+static uid_t parse_uid(const char *binary_name, const char *uid_str)
+{
+    char *endptr;
+    long int parsed_uid;
+
+    errno = 0;
+    parsed_uid = strtol(uid_str, &endptr, 10);
+
+    if(errno != 0)
     {
-        usage(argv[0], EXIT_FAILURE, NULL);
+        usage(binary_name, EXIT_FAILURE, "Error parsing UID.");
     }
 
-    *uid = (uid_t) uid_long;
+    // Check if there are any non-numeric characters in uid_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in UID.");
+    }
+
+    // Check if the UID is within the valid range
+    if (parsed_uid < 0 || parsed_uid > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "UID out of range.");
+    }
+
+    return (uid_t)parsed_uid;
 }
 
 
@@ -120,6 +146,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
+
 
 static void print_entry(const struct passwd *entry)
 {

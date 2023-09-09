@@ -15,22 +15,108 @@
  */
 
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
+static void parse_arguments(int argc, char *argv[], char **needle, char **haystack);
+static void handle_arguments(const char *binary_name, const char *needle_str, const char *haystack, char *needle);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void search_for(char needle, const char *haystack);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    const char *str = "Hello, World!";
+    char *needle_str;
+    char *haystack;
+    char needle;
 
-    search_for('o', str);
-    search_for('x', str);
+    needle_str = NULL;
+    haystack = NULL;
+    parse_arguments(argc, argv, &needle_str, &haystack);
+    handle_arguments(argv[0], needle_str, haystack, &needle);
+    search_for(needle, haystack);
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **needle, char **haystack)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind + 1 >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too few arguments.");
+    }
+    else if(optind < argc - 2)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *needle = argv[optind];
+    *haystack = argv[optind + 1];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *needle_str, const char *haystack, char *needle)
+{
+    if(needle_str == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(haystack == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(strlen(needle_str) != 1)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *needle = needle_str[0];
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
 
 

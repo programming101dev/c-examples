@@ -23,29 +23,22 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **pattern, char **test_string);
+static void handle_arguments(const char *binary_name, const char *pattern, char *test_string);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
+    char *pattern;
+    char *test_string;
     regex_t regex;
     int ret;
     char error_buffer[100];
-    char *pattern = NULL;
-    char *test_string = NULL;
 
+    pattern = NULL;
+    test_string = NULL;
     parse_arguments(argc, argv, &pattern, &test_string);
-
-    if(pattern == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "X");
-    }
-
-    if(test_string == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "Y");
-    }
-
+    handle_arguments(argv[0], pattern, test_string);
     ret = regcomp(&regex, pattern, 0);
 
     if(ret != 0)
@@ -109,7 +102,7 @@ static void parse_arguments(int argc, char *argv[], char **pattern, char **test_
 
     if(optind + 1 >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The test string is required");
+        usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
     else if(optind < argc - 2)
     {
@@ -118,6 +111,20 @@ static void parse_arguments(int argc, char *argv[], char **pattern, char **test_
 
     *pattern = argv[optind];
     *test_string = argv[optind + 1];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *pattern, char *test_string)
+{
+    if(pattern == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(test_string == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

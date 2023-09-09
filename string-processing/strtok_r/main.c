@@ -21,33 +21,27 @@
 #include <getopt.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **command);
+static void parse_arguments(int argc, char *argv[], char **string);
+static void handle_arguments(const char *binary_name, const char *string);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: pass in the string on the command line
-
 int main(int argc, char *argv[])
 {
-    char *command = NULL;
+    char *string;
     char *saveptr;
     char *token;
     char *token_copy;
     char delimiter[] = " ";
 
-    parse_arguments(argc, argv, &command);
-
-    if(command == NULL)
-    {
-        command = strdup("ls -l ~/*.txt");
-    }
-
-    token_copy = strdup(command);
+    string = NULL;
+    parse_arguments(argc, argv, &string);
+    handle_arguments(argv[0], string);
+    token_copy = strdup(string);
 
     if(token_copy == NULL)
     {
         printf("Memory allocation failed\n");
-        free(command);
         return EXIT_FAILURE;
     }
 
@@ -61,13 +55,12 @@ int main(int argc, char *argv[])
     }
 
     free(token_copy);
-    free(command);
 
     return EXIT_SUCCESS;
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **command)
+static void parse_arguments(int argc, char *argv[], char **string)
 {
     int opt;
 
@@ -102,7 +95,16 @@ static void parse_arguments(int argc, char *argv[], char **command)
 
     if(argc - optind == 1)
     {
-        *command = strdup(optarg);
+        *string = strdup(optarg);
+    }
+}
+
+
+static void handle_arguments(const char *binary_name, const char *string)
+{
+    if(string == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
     }
 }
 

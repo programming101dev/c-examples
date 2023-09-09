@@ -15,41 +15,36 @@
  */
 
 
+#include <errno.h>
+#include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
-#include <errno.h>
 #include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *user_id, gid_t *group_id);
+static void parse_arguments(int argc, char *argv[], char **file_path, char **user_id, char **group_id);
+static void handle_arguments(const char *binary_name, const char *file_path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
+static uid_t parse_uid(const char *binary_name, const char *uid_str);
+static gid_t parse_gid(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *file_path = NULL;
-    uid_t user_id = (uid_t) - 1;
-    gid_t group_id = (gid_t) - 1;
+    char *file_path;
+    char *user_id;
+    char *group_id;
+    uid_t uid;
+    gid_t gid;
 
+    file_path = NULL;
+    user_id = NULL;
+    group_id = NULL;
     parse_arguments(argc, argv, &file_path, &user_id, &group_id);
+    handle_arguments(argv[0], file_path, user_id, group_id, &uid, &gid);
 
-    if(file_path == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "file path is required");
-    }
-
-    if(user_id == (uid_t) - 1)
-    {
-        usage(argv[0], EXIT_FAILURE, "-u is required");
-    }
-
-    if(group_id == (gid_t) - 1)
-    {
-        usage(argv[0], EXIT_FAILURE, "-g is required");
-    }
-
-    if(chown(file_path, user_id, group_id) == -1)
+    if(chown(file_path, uid, gid) == -1)
     {
         perror("chown");
         exit(EXIT_FAILURE);
@@ -61,7 +56,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *user_id, gid_t *group_id)
+static void parse_arguments(int argc, char *argv[], char **file_path, char **user_id, char **group_id)
 {
     int opt;
 
@@ -73,26 +68,12 @@ static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *use
         {
             case 'u':
             {
-                errno = 0;
-                *user_id = strtol(optarg, NULL, 10);
-
-                if(errno != 0)
-                {
-                    perror("Invalid user ID");
-                    exit(EXIT_FAILURE);
-                }
+                *user_id = optarg;
                 break;
             }
             case 'g':
             {
-                errno = 0;
-                *group_id = strtol(optarg, NULL, 10);
-
-                if(errno != 0)
-                {
-                    perror("Invalid group ID");
-                    exit(EXIT_FAILURE);
-                }
+                *group_id = optarg;
                 break;
             }
             case 'h':
@@ -123,6 +104,86 @@ static void parse_arguments(int argc, char *argv[], char **file_path, uid_t *use
     }
 
     *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(user_id == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    if(group_id == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+
+    *uid = parse_uid(binary_name, user_id);
+    *gid = parse_gid(binary_name, group_id);
+}
+
+
+static uid_t parse_uid(const char *binary_name, const char *uid_str)
+{
+    char *endptr;
+    long int parsed_uid;
+
+    errno = 0;
+    parsed_uid = strtol(uid_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing UID.");
+    }
+
+    // Check if there are any non-numeric characters in uid_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in UID.");
+    }
+
+    // Check if the UID is within the valid range
+    if (parsed_uid < 0 || parsed_uid > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "UID out of range.");
+    }
+
+    return (uid_t)parsed_uid;
+}
+
+
+static gid_t parse_gid(const char *binary_name, const char *gid_str)
+{
+    char *endptr;
+    long int parsed_gid;
+
+    errno = 0;
+    parsed_gid = strtol(gid_str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing GID.");
+    }
+
+    // Check if there are any non-numeric characters in uid_str
+    if(*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in GID.");
+    }
+
+    // Check if the UID is within the valid range
+    if (parsed_gid < 0 || parsed_gid > UINT_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "GID out of range.");
+    }
+
+    return (gid_t)parsed_gid;
 }
 
 

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     if(use_mutex && pthread_mutex_init(&mutex, NULL) != 0)
     {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Create an array of threads
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         if(pthread_create(&threads[i], NULL, thread_function, (void *) &data) != 0)
         {
             fprintf(stderr, "Error: Thread creation failed.\n");
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 
@@ -93,7 +93,6 @@ static void parse_arguments(int argc, char *argv[], bool *use_mutex)
 
     opterr = 0;
 
-    // Process command-line options
     while((opt = getopt(argc, argv, "hm")) != -1)
     {
         switch(opt)

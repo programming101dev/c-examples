@@ -22,7 +22,8 @@
 #include <sys/stat.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **filename);
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_file_info(const struct stat *fileStat);
 static void print_special_type(const struct stat *fileStat);
@@ -33,23 +34,20 @@ static void print_time(const char *label, time_t timeValue);
 
 int main(int argc, char *argv[])
 {
-    char *filename = NULL;
+    char *file_path;
     struct stat fileStat;
 
-    parse_arguments(argc, argv, &filename);
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
 
-    if(filename == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "Error: You must provide a filename using -f option.\n");
-    }
-
-    if(stat(filename, &fileStat) == -1)
+    if(stat(file_path, &fileStat) == -1)
     {
         perror("Error getting file stats");
         return EXIT_FAILURE;
     }
 
-    printf("File Information for '%s':\n\n", filename);
+    printf("File Information for '%s':\n\n", file_path);
     print_file_info(&fileStat);
 
     return EXIT_SUCCESS;
@@ -94,6 +92,15 @@ static void parse_arguments(int argc, char *argv[], char **filename)
     }
 
     *filename = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
 }
 
 

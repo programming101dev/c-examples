@@ -15,15 +15,21 @@
  */
 
 
+#include <getopt.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <pthread.h>
 
 
 static void *child_process(void *arg);
 static void *parent_process(void *arg);
 static void send_word(const char *word);
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 #define MAX_WORD_LENGTH 255
@@ -35,15 +41,20 @@ int word_ready = 0;
 char *shared_word = NULL;
 
 
-// TODO: pass the file name on the command line
 // TODO: this doesn't work properly - send_word(NULL) crashes
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    pthread_t child_thread, parent_thread;
+    char *file_path;
+    pthread_t child_thread;
+    pthread_t parent_thread;
 
-    if(pthread_create(&child_thread, NULL, child_process, NULL) != 0)
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
+
+    if(pthread_create(&child_thread, NULL, child_process, file_path) != 0)
     {
         perror("Error creating child thread");
         exit(EXIT_FAILURE);
@@ -68,6 +79,71 @@ int main(void)
     }
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }
 
 
@@ -111,8 +187,11 @@ static void *child_process(void *arg)
     FILE *file;
     char *token, *saveptr;
     char line[MAX_WORD_LENGTH];
+    const char *file_path;
 
-    file = fopen("../../example.txt", "r");
+    file_path = arg;
+
+    file = fopen(file_path, "r");
     if(file == NULL)
     {
         perror("Error opening file");

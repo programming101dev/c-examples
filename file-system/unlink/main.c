@@ -20,6 +20,10 @@
 #include <unistd.h>
 
 
+// TODO: pass filename in as an argumnent
+// TODO: print more detials about what is going on
+
+
 int main(void)
 {
     const char *filename = "example.txt";

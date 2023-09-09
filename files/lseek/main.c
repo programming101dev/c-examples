@@ -28,7 +28,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **off
 static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset);
 static off_t parse_offset(const char *binary_name, const char *offset_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void display_file(int fd, const char *message);
+static void display_file(int fd, const char *message, off_t offset);
 
 
 int main(int argc, char *argv[])
@@ -51,11 +51,12 @@ int main(int argc, char *argv[])
     }
 
     // TODO: use the offset that was passed in
-    display_file(fd, "File contents:\n\n");
+    display_file(fd, "File contents", 0);
     lseek(fd, 0L, SEEK_SET);
-    display_file(fd, "\n\nFile contents after SEEK_SET:\n\n");
-    lseek(fd, -10L, SEEK_CUR);
-    display_file(fd, "\n\nFile contents after SEEK_CUR - 10:\n\n");
+    display_file(fd, "\n\nFile contents after SEEK_SET", 0);
+    lseek(fd, 0L, SEEK_SET);
+    lseek(fd, offset, SEEK_CUR);
+    display_file(fd, "\n\nFile contents after SEEK_CUR", offset);
 
     close(fd);
     return EXIT_SUCCESS;
@@ -145,7 +146,7 @@ static off_t parse_offset(const char *binary_name, const char *offset_str)
     }
 
     // Check if the offset is within the valid range
-    if(parsed_offset < 0 || parsed_offset > LONG_MAX)
+    if(parsed_offset < LONG_MIN || parsed_offset > LONG_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "Offset out of range.");
     }
@@ -169,11 +170,11 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static void display_file(int fd, const char *message)
+static void display_file(int fd, const char *message, off_t offset)
 {
     char ch;
 
-    write(STDOUT_FILENO, message, strlen(message));
+    printf("%s %ld:\n\n", message, offset);
 
     while(read(fd, &ch, 1) > 0)
     {

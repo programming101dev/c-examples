@@ -28,6 +28,10 @@ int main(void)
     char buffer[BUFFER_SIZE];
     ssize_t bytesRead;
 
+    printf("Press ctrl-d to exit.\n");
+    printf("Start typing...\n");
+    fflush(stdout);
+
     while((bytesRead = read(STDIN_FILENO, buffer, sizeof(buffer))) > 0)
     {
         ssize_t bytesWritten;

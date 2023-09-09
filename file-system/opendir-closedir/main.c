@@ -41,13 +41,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    // Do something with the directory...
+    printf("Opened directory: %s\n", directory_path);
 
     if(closedir(dir) == -1)
     {
         perror("closedir");
         return EXIT_FAILURE;
     }
+
+    printf("Closed directory: %s\n", directory_path);
 
     return EXIT_SUCCESS;
 }

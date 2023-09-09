@@ -42,11 +42,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    printf("Opened %s\n", library_path);
+
     if(dlclose(handle) != 0)
     {
         fprintf(stderr, "Error unloading the shared library: %s\n", dlerror());
         return EXIT_FAILURE;
     }
+
+    printf("Closed %s\n", library_path);
 
     return EXIT_SUCCESS;
 }

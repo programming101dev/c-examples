@@ -35,17 +35,28 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *file_path;
+    FILE *file;
     int sockfd;
     struct sockaddr_un server_addr;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
+
+    file = fopen(file_path, "r");
+
+    if(file == NULL)
+    {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
 
     if(sockfd == -1)
     {
         perror("socket");
+        fclose(file);
         exit(EXIT_FAILURE);
     }
 
@@ -56,15 +67,6 @@ int main(int argc, char *argv[])
     if(connect(sockfd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr_un)) == -1)
     {
         perror("connect");
-        close(sockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    FILE *file = fopen(file_path, "r");
-
-    if(file == NULL)
-    {
-        perror("fopen");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
@@ -99,6 +101,7 @@ int main(int argc, char *argv[])
 
     fclose(file);
     close(sockfd);
+
     return EXIT_SUCCESS;
 }
 

@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -130,28 +131,24 @@ static void handle_arguments(const char *binary_name, const char *speed_str, spe
 static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str)
 {
     static const speed_t baud_rates[] =
-    {
-    B0,
-     B50,
-     B75,
-     B110,
-     B134,
-     B150,
-     B200,
-     B300,
-     B600,
-     B1200,
-     B1800,
-     B2400,
-     B4800,
-     B9600,
-     B19200,
-     B38400,
-     B57600,
-     B115200,
-     B230400,
-    B460800
-    };
+            {
+                    B0,
+                    B50,
+                    B75,
+                    B110,
+                    B134,
+                    B150,
+                    B200,
+                    B300,
+                    B600,
+                    B1200,
+                    B1800,
+                    B2400,
+                    B4800,
+                    B9600,
+                    B19200,
+                    B38400,
+            };
     char *endptr;
     long long int parsed_speed;
 
@@ -163,18 +160,21 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
         usage(binary_name, EXIT_FAILURE, "Error parsing baud rate.");
     }
 
-    // Check if there are any non-numeric characters in the input string
     if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    // Check if the parsed value matches a valid baud rate
-    int valid_baud_rate = 0;
+    // Ensure parsed_speed is non-negative and can be safely cast to speed_t
+    if(parsed_speed < 0 || parsed_speed > (long long int)ULONG_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
+    }
 
+    int valid_baud_rate = 0;
     for(size_t i = 0; i < sizeof(baud_rates) / sizeof(baud_rates[0]); i++)
     {
-        if(parsed_speed == baud_rates[i])
+        if((speed_t)parsed_speed == baud_rates[i])
         {
             valid_baud_rate = 1;
             break;

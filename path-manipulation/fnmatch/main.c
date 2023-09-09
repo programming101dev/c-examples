@@ -80,7 +80,7 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
         }
     }
 
-    if (optind >= argc)
+    if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Pattern is required.\n");
     }

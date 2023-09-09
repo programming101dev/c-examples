@@ -127,7 +127,8 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-    else if(optind < argc - 2)
+
+    if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }

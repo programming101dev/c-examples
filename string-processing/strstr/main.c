@@ -91,7 +91,8 @@ static void parse_arguments(int argc, char *argv[], char **needle, char **haysta
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-    else if(optind < argc - 2)
+
+    if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
@@ -126,17 +127,4 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
-}
-
-
-static void display_file(FILE *file, const char *message)
-{
-    char ch;
-
-    fputs(message, stdout);
-
-    while((ch = fgetc(file)) != EOF)
-    {
-        putchar(ch);
-    }
 }

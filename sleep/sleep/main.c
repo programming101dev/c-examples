@@ -20,6 +20,9 @@
 #include <stdlib.h>
 
 
+// TODO pass seconds om the command line
+
+
 int main(void)
 {
     printf("Starting program...\n");

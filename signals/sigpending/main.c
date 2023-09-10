@@ -82,7 +82,7 @@ static int check_pending_signal(void)
     if(sigpending(&pending_set) != 0)
     {
         perror("Failed to get pending signals");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     return sigismember(&pending_set, SIGINT);
@@ -96,7 +96,7 @@ static int block_signal(int signal_num, sigset_t *block_set)
     if(sigprocmask(SIG_BLOCK, block_set, NULL) < 0)
     {
         perror("Failed to block signal");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
@@ -107,7 +107,7 @@ static int unblock_signal(sigset_t *block_set)
     if(sigprocmask(SIG_UNBLOCK, block_set, NULL) < 0)
     {
         perror("Failed to unblock signal");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;

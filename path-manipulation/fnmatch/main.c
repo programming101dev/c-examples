@@ -80,7 +80,7 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
         }
     }
 
-    // TODO test this with no files, just a pattern
+    // TODO test this with no files, just a pattern - needs to be fixed
 
     if(optind >= argc)
     {

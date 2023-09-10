@@ -20,6 +20,9 @@
 #include <pthread.h>
 
 
+// TODO: add some prints to say what is going on
+
+
 int main(void)
 {
     pthread_cond_t condition;

@@ -35,6 +35,7 @@ int main(void)
     int new_priority = nice(10);
 
     // Get the new priority after the change
+    // TODO: why is this here?
     int updated_priority = nice(0);
 
     printf("New Priority: %d\n", new_priority);

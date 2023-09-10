@@ -29,6 +29,9 @@ static void alarm_handler(int signal_number);
 volatile sig_atomic_t alarm_received = false;
 
 
+// TODO pass seconds on the command line
+
+
 int main(void)
 {
     struct sigaction sa;

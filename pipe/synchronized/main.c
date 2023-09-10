@@ -38,6 +38,9 @@ static void error_exit(const char *msg);
 #define SEM_CHILD "/sem_child"
 
 
+// TODO hangs when the file doesn't exist
+
+
 int main(int argc, char *argv[])
 {
     char *file_path;
@@ -55,6 +58,7 @@ int main(int argc, char *argv[])
     }
 
     sem_parent = sem_open(SEM_PARENT, O_CREAT, 0644, 0);
+
     if(sem_parent == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_PARENT semaphore");
@@ -67,6 +71,7 @@ int main(int argc, char *argv[])
     }
 
     pid = fork();
+
     if(pid == -1)
     {
         error_exit("Error creating child process");

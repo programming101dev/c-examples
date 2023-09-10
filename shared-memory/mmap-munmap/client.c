@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
 
         while(word != NULL)
         {
-            // TODO: this crashes on Linux
             // Copy the word into shared memory
+            // TODO: this crashes on Linux
             strcpy(shm_ptr, word);
 
             printf("Posting to client_sem\n");

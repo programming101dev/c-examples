@@ -32,6 +32,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 
 // TODO pass in the ip address to use
+// TODO do we nee to do anything past the setsockopt?
 
 
 int main(int argc, char *argv[])
@@ -51,6 +52,7 @@ int main(int argc, char *argv[])
     }
 
     int optval = 1;
+
     if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1)
     {
         perror("setsockopt");
@@ -86,6 +88,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
     int client_sockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_addr_len);
+
     if(client_sockfd == -1)
     {
         perror("accept");

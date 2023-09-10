@@ -40,6 +40,9 @@ static void read_fully(int fd, void *buf, size_t count);
 #define SEM_CHILD "/sem_child"
 
 
+// TODO hangs when the file doesn't exist
+
+
 int main(int argc, char *argv[])
 {
     char *file_path;

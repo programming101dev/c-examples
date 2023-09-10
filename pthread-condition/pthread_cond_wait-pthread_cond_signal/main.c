@@ -160,6 +160,7 @@ static void send_word(const char *word)
         }
     }
 
+    // TODO word is NULL on Linux (passing example.txt)
     shared_word = strdup(word);
 
     if(shared_word == NULL)

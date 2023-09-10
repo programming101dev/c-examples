@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
     if(fp == NULL)
     {
         perror("Error opening pipe");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    printf("Output of \"ls -l\":\n");
+    printf("Output of \"%s\":\n", command);
 
     while(fgets(buffer, sizeof(buffer), fp) != NULL)
     {
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     if(pclose(fp) == -1)
     {
         perror("Error closing pipe");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;

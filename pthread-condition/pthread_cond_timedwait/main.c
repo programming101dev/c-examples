@@ -30,6 +30,9 @@ pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
+// TODO: read the seconds to sleep on the commnand line
+
+
 int main(void)
 {
     pthread_t thread_id;

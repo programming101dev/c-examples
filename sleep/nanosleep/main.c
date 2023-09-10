@@ -21,6 +21,9 @@
 #include <time.h>
 
 
+// TODO pass seconds & nanoseconds on the command line
+
+
 int main(void)
 {
     struct timespec tim;

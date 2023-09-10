@@ -25,6 +25,9 @@
 static void signal_handler(int signal_number);
 
 
+// TODO pass seconds to sleep on the command line
+
+
 int main(void)
 {
     sigset_t mask;
@@ -54,7 +57,7 @@ int main(void)
     if(pid < 0)
     {
         perror("Fork failed");
-        return 1;
+        return EXIT_FAILURE;
     }
     else if(pid == 0)
     {
@@ -72,7 +75,7 @@ int main(void)
         if(sigwait(&mask, &sig) != 0)
         {
             perror("Failed to wait for signal");
-            return 1;
+            return EXIT_FAILURE;
         }
 
         // Print the received signal number

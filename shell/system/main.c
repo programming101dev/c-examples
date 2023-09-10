@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
     command = NULL;
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
+    printf("Output of \"%s\":\n", command);
+
     int status = system(command);
 
     if(status == -1)

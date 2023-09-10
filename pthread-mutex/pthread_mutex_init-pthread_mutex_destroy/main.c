@@ -20,6 +20,9 @@
 #include <pthread.h>
 
 
+// TODO add printfs for feedback
+
+
 int main(void)
 {
     pthread_mutex_t mutex;

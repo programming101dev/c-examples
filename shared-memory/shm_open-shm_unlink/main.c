@@ -22,6 +22,9 @@
 #include <unistd.h>
 
 
+// TODO add printfs to say what is going on
+
+
 int main(void)
 {
     const char *shm_name = "/my_shared_memory";

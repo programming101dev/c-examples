@@ -31,6 +31,13 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void display_file(int fd, const char *message, off_t offset);
 
 
+#if defined(__APPLE__)
+#define D_OFF_FORMAT "%lld"
+#else
+#define D_OFF_FORMAT "%ld"
+#endif
+
+
 int main(int argc, char *argv[])
 {
     char *file_path;
@@ -174,7 +181,7 @@ static void display_file(int fd, const char *message, off_t offset)
 {
     char ch;
 
-    printf("%s %ld:\n\n", message, offset);
+    printf("%s " D_OFF_FORMAT ":\n\n", message, offset);
 
     while(read(fd, &ch, 1) > 0)
     {

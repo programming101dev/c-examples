@@ -17,7 +17,6 @@
 
 #include <errno.h>
 #include <getopt.h>
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -28,6 +27,9 @@ static void parse_arguments(int argc, char *argv[], char **speed);
 static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed);
 static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+
+
+// TODO the speed is always invalid
 
 
 int main(int argc, char *argv[])
@@ -166,12 +168,13 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
     }
 
     // Ensure parsed_speed is non-negative and can be safely cast to speed_t
-    if(parsed_speed < 0 || parsed_speed > (long long int)ULONG_MAX)
+    if(parsed_speed < 0 || parsed_speed > (long long int)B38400)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
     }
 
     int valid_baud_rate = 0;
+
     for(size_t i = 0; i < sizeof(baud_rates) / sizeof(baud_rates[0]); i++)
     {
         if((speed_t)parsed_speed == baud_rates[i])

@@ -94,7 +94,7 @@ static void parse_arguments(int argc, char *argv[], char **user_id, char **euser
 
     if(optind < argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments\n");
+        usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments");
     }
 }
 
@@ -161,4 +161,3 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-// TODO: linux has an error

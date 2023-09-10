@@ -21,6 +21,9 @@
 #include <unistd.h>
 
 
+// TODO does this demonstrate tcdrain?
+
+
 int main(void)
 {
     struct termios options;

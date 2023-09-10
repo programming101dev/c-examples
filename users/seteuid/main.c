@@ -144,3 +144,4 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
+

@@ -32,6 +32,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 
 // TODO: use address instead of ANY
+// TODO: take the message to send back from the command line
 
 
 int main(int argc, char *argv[])

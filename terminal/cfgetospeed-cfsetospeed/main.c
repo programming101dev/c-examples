@@ -30,6 +30,9 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+// TODO the speed is always invalid
+
+
 int main(int argc, char *argv[])
 {
     char *speed_str;
@@ -174,7 +177,7 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
     }
 
     // Ensure parsed_speed is non-negative and can be safely cast to speed_t
-    if(parsed_speed < 0 || parsed_speed > (long long int)ULONG_MAX)
+    if(parsed_speed < 0 || parsed_speed > B38400)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
     }

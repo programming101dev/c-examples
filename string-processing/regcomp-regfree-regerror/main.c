@@ -27,8 +27,8 @@ static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: what are some valid vs invalid regexs?
-
+// TODO what are some valid vs invalid regexs?
+// TODO take several strings on the command line and match them all in turn
 
 int main(int argc, char *argv[])
 {
@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
 
     printf("Regular expression compiled successfully\n");
     regfree(&regex);
-    free(pattern);
 
     return EXIT_SUCCESS;
 }
@@ -87,7 +86,17 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
         }
     }
 
-    *pattern = strdup(argv[optind]);
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *pattern = argv[optind];
 }
 
 

@@ -19,6 +19,9 @@
 #include <stdlib.h>
 
 
+// TODO take in a string on the command like and print that instead of hard coding
+
+
 int main(void)
 {
     int age;

@@ -88,15 +88,18 @@ static void parse_arguments(int argc, char *argv[], char **string)
         }
     }
 
-    if(argc - optind > 1)
+
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Too many unnamed arguments.");
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
-    if(argc - optind == 1)
+    if(optind < argc - 1)
     {
-        *string = strdup(optarg);
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
+    *string = argv[optind];
 }
 
 

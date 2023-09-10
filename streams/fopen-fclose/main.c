@@ -51,6 +51,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    printf("Successfully closed file: %s\n", file_path);
+
     return EXIT_SUCCESS;
 }
 

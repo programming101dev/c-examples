@@ -28,6 +28,7 @@ int main(void)
     size_t bytesRead;
 
     buffer[0] = '\0';
+    printf("Enter some text (press Ctrl+D to stop):\n");
 
     // Read up to BUFFER_SIZE - 1 bytes from stdin, leaving room for a null terminator
     // NOTE: it will not return when \n is presed, you have to reach the size or end of file

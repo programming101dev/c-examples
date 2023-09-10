@@ -20,6 +20,9 @@
 #include <string.h>
 
 
+// TODO: take the stirng on the comnand line, also take the length
+
+
 int main(void)
 {
     const char *source = "Hello, World!";

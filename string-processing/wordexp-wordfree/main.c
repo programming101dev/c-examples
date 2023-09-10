@@ -92,7 +92,7 @@ static void parse_arguments(int argc, char *argv[], char **string)
 
     if(argc - optind == 1)
     {
-        *string = strdup(argv[optind]);
+        *string = argv[optind];
     }
 }
 

@@ -20,6 +20,9 @@
 #include <string.h>
 
 
+// TODO take the 2 strings to compare in on the command line
+
+
 int main(void)
 {
     const char *str1 = "Hello, World!";

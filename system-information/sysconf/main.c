@@ -29,6 +29,10 @@ struct sc_value_name_pair
     const char *name;
 };
 
+
+// TODO it doesn't say what ones are Invalid Arguments
+
+
 int main(void)
 {
     struct sc_value_name_pair pairs[] =

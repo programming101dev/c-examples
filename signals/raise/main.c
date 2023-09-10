@@ -24,9 +24,6 @@
 static void signal_handler(int signal_number);
 
 
-// TODO: doesn't seem to get all the signals on Linux?
-
-
 int main(void)
 {
     const int signals_to_handle[] =

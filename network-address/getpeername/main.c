@@ -30,9 +30,6 @@ static void handle_arguments(const char *binary_name, const char *server_address
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: this doesn't call getpeername
-// TODO: also add getservbyname functions & notes
-
 
 int main(int argc, char *argv[])
 {
@@ -43,9 +40,10 @@ int main(int argc, char *argv[])
     service = NULL;
     parse_arguments(argc, argv, &server_address, &service);
     handle_arguments(argv[0], server_address, service);
+
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if(sockfd == -1)
+    if (sockfd == -1)
     {
         perror("socket");
         return EXIT_FAILURE;
@@ -58,24 +56,20 @@ int main(int argc, char *argv[])
 
     int status = getaddrinfo(server_address, service, &hints, &result);
 
-    if(status != 0)
-    {
+    if (status != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         close(sockfd);
         return EXIT_FAILURE;
     }
 
     // Attempt to connect to the server using the available address info
-    for(rp = result; rp != NULL; rp = rp->ai_next)
-    {
-        if(connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0)
-        {
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        if (connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0) {
             break; // Connected successfully
         }
     }
 
-    if(rp == NULL)
-    {
+    if (rp == NULL) {
         perror("connect");
         close(sockfd);
         freeaddrinfo(result);
@@ -83,10 +77,20 @@ int main(int argc, char *argv[])
     }
 
     // Get the peer address and port number associated with the socket
-    struct sockaddr_in *peer_addr = (struct sockaddr_in *) rp->ai_addr;
+    struct sockaddr_in peer_addr;
+    socklen_t peer_addr_len = sizeof(peer_addr);
+
+    if (getpeername(sockfd, (struct sockaddr *)&peer_addr, &peer_addr_len) == -1) {
+        perror("getpeername");
+        close(sockfd);
+        freeaddrinfo(result);
+        return EXIT_FAILURE;
+    }
+
     char ipstr[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(peer_addr->sin_addr), ipstr, INET_ADDRSTRLEN);
+    inet_ntop(AF_INET, &(peer_addr.sin_addr), ipstr, INET_ADDRSTRLEN);
     printf("Connected to: %s:%s\n", ipstr, service);
+
     close(sockfd);
     freeaddrinfo(result);
 
@@ -163,4 +167,3 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h         Display this help message\n", stderr);
     exit(exit_code);
 }
-

@@ -23,20 +23,16 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
-_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static size_t get_page_size(void);
-
-
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"
 #define SERVER_SEM_NAME "/server_semaphore"
 
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+static _Noreturn void usage(const char *program_name, int exit_code, const char *message);
+static size_t get_page_size(void);
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     char *file_path;
     int shm_fd;
     char *shm_ptr;
@@ -48,68 +44,68 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
 
+    // Open and read the file
+    FILE *file = fopen(file_path, "r");
+    if (!file) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
     // Open the shared memory
     const char *shm_name = "/my_shared_memory";
 
     // Open the shared memory
     shm_fd = shm_open(shm_name, O_RDWR, S_IRUSR | S_IWUSR);
-    if(shm_fd == -1)
-    {
+    if (shm_fd == -1) {
         perror("shm_open");
         exit(EXIT_FAILURE);
     }
 
     // Map the shared memory into the process address space
-    shm_ptr = (char *) mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if(shm_ptr == MAP_FAILED)
-    {
+    shm_ptr = (char *)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    if (shm_ptr == MAP_FAILED) {
         perror("mmap");
         exit(EXIT_FAILURE);
     }
 
     // Open the client semaphore
     client_sem = sem_open(CLIENT_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if(client_sem == SEM_FAILED)
-    {
+    if (client_sem == SEM_FAILED) {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
 
     // Open the server semaphore
     server_sem = sem_open(SERVER_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if(server_sem == SEM_FAILED)
-    {
+    if (server_sem == SEM_FAILED) {
         perror("sem_open");
-        exit(EXIT_FAILURE);
-    }
-
-    // Open and read the file
-    FILE *file = fopen(file_path, "r");
-    if(!file)
-    {
-        perror("fopen");
         exit(EXIT_FAILURE);
     }
 
     char buffer[100];
 
-    while(fgets(buffer, sizeof(buffer), file))
+    while (fgets(buffer, sizeof(buffer), file))
     {
         char *word;
         char *saveptr;
         word = strtok_r(buffer, " \t\n", &saveptr);
 
-        while(word != NULL)
+        while (word != NULL)
         {
+            if (strlen(word) >= SHM_SIZE)
+            {
+                fprintf(stderr, "Word too long for shared memory: %s\n", word);
+                exit(EXIT_FAILURE);
+            }
+
             // Copy the word into shared memory
-            // TODO: this crashes on Linux
             strcpy(shm_ptr, word);
 
-            printf("Posting to client_sem\n");
+            printf("Client is copying \"%s\" to shared memory\n", word);
+
             // Signal the server that a word is ready
             sem_post(client_sem);
 
-            printf("Waiting for server_sem\n");
             // Wait for the server to acknowledge
             sem_wait(server_sem);
 

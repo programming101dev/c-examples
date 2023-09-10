@@ -20,16 +20,30 @@
 #include <unistd.h>
 
 
-// TODO: pass filename in as an argumnent
-// TODO: print more detials about what is going on
+static void parse_arguments(int argc, char *argv[], char **file_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-int main(void)
+// TODO: print more details about what is going on
+
+
+int main(int argc, char *argv[])
 {
-    const char *filename = "example.txt";
+    char *file_path;
     FILE *file;
 
-    file = fopen(filename, "w");
+    file_path = NULL;
+    parse_arguments(argc, argv, &file_path);
+    handle_arguments(argv[0], file_path);
+
+    if(access(file_path, F_OK) == 0)
+    {
+        fprintf(stderr, "%s already exists, please us a file that does not exist\n", file_path);
+        return EXIT_FAILURE;
+    }
+
+    file = fopen(file_path, "w");
 
     if(file == NULL)
     {
@@ -37,34 +51,98 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    // TODO: print that the file was created
+    printf("Created file %s\n", file_path);
 
     fprintf(file, "This is a sample file.\n");
     fclose(file);
 
     // Check if the file exists before deletion
-    if(access(filename, F_OK) == -1)
+    if(access(file_path, F_OK) == -1)
     {
-        printf("File '%s' does not exist.\n", filename);
+        printf("File '%s' does not exist.\n", file_path);
         return EXIT_FAILURE;
     }
 
     // Delete the file using unlink
-    if(unlink(filename) == -1)
+    if(unlink(file_path) == -1)
     {
         perror("Error deleting file");
         return EXIT_FAILURE;
     }
 
-    // Check if the file still exists after deletion
-    if(access(filename, F_OK) == -1)
+    if(access(file_path, F_OK) == -1)
     {
-        printf("File '%s' successfully deleted.\n", filename);
+        printf("File '%s' successfully deleted.\n", file_path);
     }
     else
     {
-        printf("File '%s' was not deleted.\n", filename);
+        printf("File '%s' was not deleted.\n", file_path);
     }
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **file_path)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *file_path = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *file_path)
+{
+    if(file_path == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The file path is required.");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
 }

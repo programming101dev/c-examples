@@ -20,9 +20,6 @@
 #include <pthread.h>
 
 
-// TODO add printfs for feedback
-
-
 int main(void)
 {
     pthread_mutex_t mutex;
@@ -34,10 +31,11 @@ int main(void)
         return 1;
     }
 
-    // Use the mutex here (not shown in this example)
+    printf("mutex created\n");
 
     // Destroy the mutex after it is no longer needed
     pthread_mutex_destroy(&mutex);
+    printf("mutex destroyed\n");
 
     return EXIT_SUCCESS;
 }

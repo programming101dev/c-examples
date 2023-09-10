@@ -26,9 +26,6 @@ static void handle_arguments(const char *binary_name, const char *path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO the Original and Directory are the same on Linux
-
-
 int main(int argc, char *argv[])
 {
     char *path;
@@ -37,8 +34,9 @@ int main(int argc, char *argv[])
     path = NULL;
     parse_arguments(argc, argv, &path);
     handle_arguments(argv[0], path);
-    dir_name = dirname(path);
     printf("Original Path: %s\n", path);
+    dir_name = dirname(path);
+    printf("Original Path after dirname: %s\n", path);
     printf("Directory Name: %s\n", dir_name);
 
     return EXIT_SUCCESS;

@@ -15,9 +15,11 @@
  */
 
 
-#include <unistd.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 
 static long get_sysconf_value(int name, const char *name_str);
@@ -28,9 +30,6 @@ struct sc_value_name_pair
     int value;
     const char *name;
 };
-
-
-// TODO it doesn't say what ones are Invalid Arguments
 
 
 int main(void)
@@ -190,18 +189,17 @@ static long get_sysconf_value(int name, const char *name_str)
 {
     long value;
 
+    errno = 0;
     value = sysconf(name);
 
-    if(value == -1)
+    if(errno != 0)
     {
-        perror("sysconf ()");
-        return -1;
+        printf("%s: %s\n", name_str, strerror(errno));
     }
-
-    printf("%s: %ld\n", name_str, value);
+    else
+    {
+        printf("%s: %ld\n", name_str, value);
+    }
 
     return value;
 }
-
-
-// TODO: Linux prints odd for some

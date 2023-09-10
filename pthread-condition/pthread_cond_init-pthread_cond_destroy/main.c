@@ -20,9 +20,6 @@
 #include <pthread.h>
 
 
-// TODO: add some prints to say what is going on
-
-
 int main(void)
 {
     pthread_cond_t condition;
@@ -36,7 +33,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    // Do some main thread work here (not relevant for this example)
+    printf("condition created\n");
 
     // Destroy the condition variable
     int destroy_result = pthread_cond_destroy(&condition);
@@ -46,6 +43,8 @@ int main(void)
         fprintf(stderr, "Error destroying condition variable. Error code: %d\n", destroy_result);
         return EXIT_FAILURE;
     }
+
+    printf("condition destroyed\n");
 
     return EXIT_SUCCESS;
 }

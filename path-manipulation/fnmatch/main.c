@@ -80,11 +80,9 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
         }
     }
 
-    // TODO test this with no files, just a pattern - needs to be fixed
-
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Pattern is required.\n");
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
     *pattern = argv[optind];

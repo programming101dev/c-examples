@@ -57,7 +57,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    // TODO: use the offset that was passed in
     display_file(fd, "File contents", 0);
     lseek(fd, 0L, SEEK_SET);
     display_file(fd, "\n\nFile contents after SEEK_SET", 0);

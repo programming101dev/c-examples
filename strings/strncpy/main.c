@@ -20,7 +20,7 @@
 #include <string.h>
 
 
-// TODO: take the stirng on the comnand line, also take the length
+// TODO: take the string on the comnand line, also take the length
 
 
 int main(void)

@@ -33,8 +33,6 @@ int main(void)
 
     printf("Temp file created\n");
 
-    // TODO: can I get the path?
-
     // The temporary file will be automatically deleted when the program terminates
     // or when you explicitly close the file using fclose:
     if(fclose(tempFile) == EOF)

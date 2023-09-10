@@ -23,9 +23,6 @@
 #include <unistd.h>
 
 
-// TODO: maybe the sleep seconds should be a parameter?
-
-
 static void parse_arguments(int argc, char *argv[], char **seconds);
 static void handle_arguments(const char *binary_name, char *seconds_str, unsigned int *seconds);
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str);

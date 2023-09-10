@@ -55,7 +55,7 @@ int main(void)
         {
             perror("Error creating a new session for the child process");
             close(terminal_fd);
-            return 1;
+            return EXIT_FAILURE;
         }
 
         printf("Child Process Group ID (PGID) after creating a new session: %d\n", getpid());
@@ -65,7 +65,7 @@ int main(void)
         {
             perror("Error setting PGID for the child process");
             close(terminal_fd);
-            return 1;
+            return EXIT_FAILURE;
         }
 
         printf("Child Process Group ID (PGID) after change: %d\n", new_pgid);

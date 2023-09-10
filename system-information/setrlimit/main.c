@@ -37,7 +37,8 @@ int main(void)
     SET_LIMIT(RLIMIT_FSIZE, 1048576, 1048576);
     SET_LIMIT(RLIMIT_NOFILE, 1024, 2048);
     SET_LIMIT(RLIMIT_STACK, 8388608, 16777216);
-    SET_LIMIT(RLIMIT_AS, 67108864, 67108864);
+    // TODO - this is problematic
+    SET_LIMIT(RLIMIT_AS, 6710886, 6710886);
 
     return EXIT_SUCCESS;
 }
@@ -60,6 +61,3 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
         printf("  Hard limit set to: %lld\n", (long long) rlim.rlim_max);
     }
 }
-
-
-// TODO - linux has a crash with this

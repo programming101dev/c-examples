@@ -22,7 +22,7 @@
 #include <unistd.h>
 
 
-// TODO add printfs to say what is going on
+// TODO pass the shared memory name in
 
 
 int main(void)
@@ -31,11 +31,16 @@ int main(void)
 
     // Create a shared memory object
     int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+
     if(shm_fd == -1)
     {
         perror("shm_open");
         exit(1);
     }
+
+    printf("Opened %s\n", shm_name);
+    close(shm_fd);
+    printf("Closed %s\n", shm_name);
 
     // Unlink the shared memory object
     if(shm_unlink(shm_name) == -1)
@@ -45,6 +50,7 @@ int main(void)
         exit(1);
     }
 
-    close(shm_fd);
+    printf("Unlinked %s\n", shm_name);
+
     return 0;
 }

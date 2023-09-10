@@ -24,9 +24,6 @@
 static int create_socket(void);
 
 
-// TODO: there should be some sort of print out
-
-
 int main(void)
 {
     int sock_fd;
@@ -38,13 +35,15 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    // Perform other operations on the socket, if needed
+    printf("Socket created\n");
 
     if(close(sock_fd) < 0)
     {
         perror("Failed to close socket");
         return EXIT_FAILURE;
     }
+
+    printf("Socket closed\n");
 
     return EXIT_SUCCESS;
 }

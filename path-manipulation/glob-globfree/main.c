@@ -24,9 +24,7 @@
 static void parse_arguments(int argc, char *argv[], char **pattern);
 static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
-
-// TODO: what are the parameters for the glob function?
+int custom_error_handler(const char *epath, int err);
 
 
 int main(int argc, char *argv[])
@@ -38,9 +36,24 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &pattern);
     handle_arguments(argv[0], pattern);
 
-    if(glob(pattern, 0, NULL, &glob_result) != 0)
+    // Use glob with a custom error handler
+    int glob_status = glob(pattern, GLOB_ERR, custom_error_handler, &glob_result);
+
+    if(glob_status != 0)
     {
-        fprintf(stderr, "Error matching files.\n");
+        if(glob_status == GLOB_NOMATCH)
+        {
+            fprintf(stderr, "No matching files found.\n");
+        }
+        else if (glob_status == GLOB_NOSPACE)
+        {
+            fprintf(stderr, "Memory allocation error.\n");
+        }
+        else
+        {
+            fprintf(stderr, "Error matching files.\n");
+        }
+
         return EXIT_FAILURE;
     }
 
@@ -61,9 +74,9 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "h")) != -1)
+    while ((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'h':
             {
@@ -83,12 +96,12 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
         }
     }
 
-    if(optind >= argc)
+    if (optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
-    if(optind < argc - 1)
+    if (optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
@@ -99,7 +112,7 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
 
 static void handle_arguments(const char *binary_name, const char *pattern)
 {
-    if(pattern == NULL)
+    if (pattern == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The pattern is required.");
     }
@@ -108,7 +121,7 @@ static void handle_arguments(const char *binary_name, const char *pattern)
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if(message)
+    if (message)
     {
         fprintf(stderr, "%s\n", message);
     }
@@ -117,4 +130,11 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
+}
+
+
+int custom_error_handler(const char *epath, int err)
+{
+    fprintf(stderr, "Custom Error: Failed to process path '%s' with error code %d\n", epath, err);
+    return 0; // Return 0 to continue processing
 }

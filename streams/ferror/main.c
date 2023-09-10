@@ -28,18 +28,12 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *file_path;
+    FILE *file;
+    const char buffer[] = "This is an attempt to write.";
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    const char buffer[] = "This is an attempt to write.";
-    FILE *file;
-
-    if(file_path == NULL)
-    {
-        usage(argv[0], EXIT_FAILURE, "");
-    }
-
     file = fopen(file_path, "r");
 
     if(file == NULL)
@@ -114,7 +108,7 @@ static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
 

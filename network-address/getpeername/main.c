@@ -141,12 +141,12 @@ static void handle_arguments(const char *binary_name, const char *server_address
 {
     if(server_address == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The server address is required.");
     }
 
     if(service == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The service is required.");
     }
 }
 

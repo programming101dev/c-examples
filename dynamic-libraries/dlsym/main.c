@@ -138,12 +138,12 @@ static void handle_arguments(const char *binary_name, const char *library_path, 
 {
     if(library_path == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The library path is required.");
     }
 
     if(function_name == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The function name is required.");
     }
 }
 

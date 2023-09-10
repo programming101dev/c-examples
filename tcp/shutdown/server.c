@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(8080);
+    addr.sin_port = htons(port);
     addr.sin_addr.s_addr = INADDR_ANY;
 
     if(bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) == -1)
@@ -171,12 +171,12 @@ static void handle_arguments(const char *binary_name, const char *ip_address, ch
 {
     if(ip_address == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The ip address is required.");
     }
 
     if(port_str == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
 
     *port = parse_port(binary_name, port_str);

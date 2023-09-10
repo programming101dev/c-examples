@@ -106,12 +106,17 @@ static void handle_arguments(const char *binary_name, const char *needle, char *
 {
     if(needle == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The needle is required.");
     }
 
     if(haystack == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The haystack is required.");
+    }
+
+    if(strlen(needle) == 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "The needle must have at least one character.");
     }
 }
 

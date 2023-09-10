@@ -98,12 +98,12 @@ static void handle_arguments(const char *binary_name, const char *group_id, cons
 {
     if(group_id == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The group id is required.");
     }
 
     if(egroup_id == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The effective group id is required.");
     }
 
     *gid = parse_gid(binary_name, group_id);

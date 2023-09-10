@@ -137,7 +137,7 @@ static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
 

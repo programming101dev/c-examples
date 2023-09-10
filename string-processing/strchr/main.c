@@ -90,17 +90,17 @@ static void handle_arguments(const char *binary_name, const char *needle_str, co
 {
     if(needle_str == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The needle is required.");
     }
 
     if(haystack == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The haystack is required.");
     }
 
     if(strlen(needle_str) != 1)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The needle must be a single character.");
     }
 
     *needle = needle_str[0];

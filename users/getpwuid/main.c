@@ -98,7 +98,7 @@ static void handle_arguments(const char *binary_name, const char *user_id, uid_t
 {
     if(user_id == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The user id are required.");
     }
 
     *uid = parse_uid(binary_name, user_id);

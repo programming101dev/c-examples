@@ -118,7 +118,7 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, u
 {
     if(seconds_str == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The seconds are required.");
     }
 
     *seconds = parse_unsigned_int(binary_name, seconds_str);

@@ -95,7 +95,7 @@ static void handle_arguments(const char *binary_name, const char *user_name)
 {
     if(user_name == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The user name are required.");
     }
 }
 

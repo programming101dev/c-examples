@@ -26,7 +26,7 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-void child_process(int sockfd, const char *file_name);
+void child_process(int sockfd, const char *file_path);
 void parent_process(int sockfd);
 void send_word(int sockfd, const char *word, uint8_t length);
 void error_exit(const char *msg);
@@ -117,7 +117,7 @@ static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
 
@@ -167,14 +167,14 @@ void error_exit(const char *msg)
 }
 
 
-void child_process(int sockfd, const char *file_name)
+void child_process(int sockfd, const char *file_path)
 {
     FILE *file;
     char ch;
     char word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
-    file = fopen(file_name, "r");
+    file = fopen(file_path, "r");
 
     if(file == NULL)
     {

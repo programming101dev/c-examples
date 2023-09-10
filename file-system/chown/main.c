@@ -111,17 +111,17 @@ static void handle_arguments(const char *binary_name, const char *path, const ch
 {
     if(path == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The path is required.");
     }
 
     if(user_id == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The user id is required.");
     }
 
     if(group_id == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The group id is required.");
     }
 
     *uid = parse_uid(binary_name, user_id);

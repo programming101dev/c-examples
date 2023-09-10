@@ -96,7 +96,7 @@ static void handle_arguments(const char *binary_name, const char *string)
 {
     if(string == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The string is required.");
     }
 }
 

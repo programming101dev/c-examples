@@ -138,7 +138,7 @@ static void handle_arguments(const char *binary_name, char *port_str, in_port_t 
 {
     if(port_str == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The port are required.");
     }
 
     *port = parse_port(binary_name, port_str);

@@ -119,12 +119,12 @@ static void handle_arguments(const char *binary_name, const char *pattern, char 
 {
     if(pattern == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The pattern is required.");
     }
 
     if(test_string == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "");
+        usage(binary_name, EXIT_FAILURE, "The test string is required.");
     }
 }
 

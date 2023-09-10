@@ -80,6 +80,8 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
         }
     }
 
+    // TODO test this with no files, just a pattern
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Pattern is required.\n");

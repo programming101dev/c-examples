@@ -158,10 +158,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] [-p <port>] <server address>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] [-p <port>] <server address> <service>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h         Display this help message\n", stderr);
-    fputs("  -p <port>  THe port to connect to\n", stderr);
     exit(exit_code);
 }
 

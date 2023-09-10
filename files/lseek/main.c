@@ -171,7 +171,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -h  Display this help message\n", stderr);
+    fputs("  -h           Display this help message\n", stderr);
     fputs("  -o <offset>  The offset to move from the start of the file\n", stderr);
     exit(exit_code);
 }

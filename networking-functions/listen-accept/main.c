@@ -197,11 +197,11 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -p <port> -b <backlog>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
-    fputs("  -p <port> \n", stderr);
-    fputs("  -b <backlog> \n", stderr);
+    fputs("  -p <port> the port to listen on\n", stderr);
+    fputs("  -b <backlog> the backlog\n", stderr);
     exit(exit_code);
 }
 

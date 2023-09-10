@@ -33,6 +33,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str);
 
 
+// TODO pass in the ip address to use
+
+
 int main(int argc, char *argv[])
 {
     char *port_str;

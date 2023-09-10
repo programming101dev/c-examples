@@ -25,13 +25,13 @@
 #include <netinet/in.h>
 
 
-// TODO: don't use ANY for the ip address?
-
-
 static void parse_arguments(int argc, char *argv[], char **port);
 static void handle_arguments(const char *binary_name, const char *port_str, in_port_t *port);
 static in_port_t parse_port(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+
+
+// TODO pass in the ip address to use
 
 
 int main(int argc, char *argv[])
@@ -191,7 +191,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <port>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);

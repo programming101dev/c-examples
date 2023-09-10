@@ -21,25 +21,25 @@
 #include <dlfcn.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **library_name, char **function_name);
-static void handle_arguments(const char *binary_name, const char *library_name, const char *function_name);
+static void parse_arguments(int argc, char *argv[], char **library_path, char **function_name);
+static void handle_arguments(const char *binary_name, const char *library_path, const char *function_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
-    char *library_name;
+    char *library_path;
     char *function_name;
     void *handle;
     void (*func)(const char *);
 
-    library_name = NULL;
+    library_path = NULL;
     function_name = NULL;
-    parse_arguments(argc, argv, &library_name, &function_name);
-    handle_arguments(argv[0], library_name, function_name);
+    parse_arguments(argc, argv, &library_path, &function_name);
+    handle_arguments(argv[0], library_path, function_name);
 
     // Load the shared library dynamically
-    handle = dlopen(library_name, RTLD_LAZY);
+    handle = dlopen(library_path, RTLD_LAZY);
 
     if(!handle)
     {
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **library_name, char **function_name)
+static void parse_arguments(int argc, char *argv[], char **library_path, char **function_name)
 {
     int opt;
 
@@ -106,7 +106,7 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
         {
             case 'l':
             {
-                *library_name = optarg;
+                *library_path = optarg;
                 break;
             }
             case 'f':
@@ -134,9 +134,9 @@ static void parse_arguments(int argc, char *argv[], char **library_name, char **
 }
 
 
-static void handle_arguments(const char *binary_name, const char *library_name, const char *function_name)
+static void handle_arguments(const char *binary_name, const char *library_path, const char *function_name)
 {
-    if(library_name == NULL)
+    if(library_path == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "");
     }
@@ -155,10 +155,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] -l <library name> -f <function name>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -l <library path> -f <function name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
-    fputs("  -l <library name>  Path to the shared library to load\n", stderr);
+    fputs("  -l <library path>  Path to the shared library to load\n", stderr);
     fputs("  -f <function name> Function to call from the library (must be (void))\n", stderr);
     exit(exit_code);
 }

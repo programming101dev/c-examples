@@ -113,6 +113,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <library name>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <library path>\n", program_name);
     exit(exit_code);
 }

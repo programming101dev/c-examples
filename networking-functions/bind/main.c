@@ -33,6 +33,9 @@ static int create_socket(void);
 static void bind_socket(int server_fd, in_port_t port);
 
 
+// TODO pass in the ip address to use
+
+
 int main(int argc, char *argv[])
 {
     char *port_str;
@@ -144,7 +147,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <port>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);

@@ -136,10 +136,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] -p pattern <test string>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] pattern <test string>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h            Display this help message\n", stderr);
-    fputs("  -p <pattern>  Specify the regular expression pattern\n", stderr);
     exit(exit_code);
 }
 

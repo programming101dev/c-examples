@@ -151,10 +151,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] [-s]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <seconds>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
-    fputs("  -s  Sleep for 2 seconds (only applicable for the parent process)\n", stderr);
     exit(exit_code);
 }
 

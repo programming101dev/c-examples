@@ -59,7 +59,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // Read and parse words from the file
     while(fgets(line, sizeof(line), file) != NULL)
     {
         char *word;

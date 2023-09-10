@@ -23,8 +23,8 @@
 #include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **file_path, char **user_id, char **group_id);
-static void handle_arguments(const char *binary_name, const char *file_path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
+static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id);
+static void handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
 static uid_t parse_uid(const char *binary_name, const char *uid_str);
 static gid_t parse_gid(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
@@ -32,19 +32,19 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
+    char *path;
     char *user_id;
     char *group_id;
     uid_t uid;
     gid_t gid;
 
-    file_path = NULL;
+    path = NULL;
     user_id = NULL;
     group_id = NULL;
-    parse_arguments(argc, argv, &file_path, &user_id, &group_id);
-    handle_arguments(argv[0], file_path, user_id, group_id, &uid, &gid);
+    parse_arguments(argc, argv, &path, &user_id, &group_id);
+    handle_arguments(argv[0], path, user_id, group_id, &uid, &gid);
 
-    if(chown(file_path, uid, gid) == -1)
+    if(chown(path, uid, gid) == -1)
     {
         perror("chown");
         exit(EXIT_FAILURE);
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **file_path, char **user_id, char **group_id)
+static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id)
 {
     int opt;
 
@@ -103,13 +103,13 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **use
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *file_path = argv[optind];
+    *path = argv[optind];
 }
 
 
-static void handle_arguments(const char *binary_name, const char *file_path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid)
+static void handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid)
 {
-    if(file_path == NULL)
+    if(path == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "");
     }
@@ -194,7 +194,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] -u <user id> -g <group id> <file path>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -u <user id> -g <group id> <path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h              Display this help message\n", stderr);
     fputs("  -u <user id>    User ID\n", stderr);

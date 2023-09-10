@@ -26,6 +26,9 @@ static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+// TODO: what are the parameters for the glob function?
+
+
 int main(int argc, char *argv[])
 {
     char *pattern;
@@ -110,7 +113,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <pattern>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);

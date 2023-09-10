@@ -59,6 +59,8 @@ int create_server_socket(void)
         exit(EXIT_FAILURE);
     }
 
+    unlink(SOCKET_PATH);
+
     // Set server address parameters
     struct sockaddr_un address;
     memset(&address, 0, sizeof(address));

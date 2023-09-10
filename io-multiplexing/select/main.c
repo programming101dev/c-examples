@@ -50,6 +50,8 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    unlink(SOCKET_PATH);
+
     // Set server address parameters
     memset(&address, 0, sizeof(address));
     address.sun_family = AF_UNIX;

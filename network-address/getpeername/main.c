@@ -122,17 +122,18 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
         }
     }
 
-    if(optind >= argc)
+    if(optind + 1 >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The server address is required");
+        usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-    else if(optind < argc - 1)
+
+    if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
     *server_address = argv[optind];
-    *service = argv[optind +1];
+    *service = argv[optind + 1];
 }
 
 

@@ -37,6 +37,7 @@ static void start_listening(int server_fd, int backlog);
 static int accept_connection(int server_fd);
 
 
+// TODO pass in the ip address to listen on
 // TODO print out what we are listening on for ip address
 
 
@@ -110,16 +111,6 @@ static void parse_arguments(int argc, char *argv[], char **port, char **backlog)
                 usage(argv[0], EXIT_FAILURE, NULL);
             }
         }
-    }
-
-    if(optind >= argc)
-    {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
-    }
-
-    if(optind < argc - 1)
-    {
-        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 }
 
@@ -210,7 +201,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     fputs("  -p <port> \n", stderr);
-    fputs("  -b <baclkog> \n", stderr);
+    fputs("  -b <backlog> \n", stderr);
     exit(exit_code);
 }
 

@@ -24,6 +24,9 @@
 static int create_socket(void);
 
 
+// TODO: there should be some sort of print out
+
+
 int main(void)
 {
     int sock_fd;

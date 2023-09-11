@@ -25,30 +25,30 @@
 #include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **port);
-static void handle_arguments(const char *binary_name, char *port_str, in_port_t *port);
+static void parse_arguments(int argc, char *argv[], char **port, char **msg);
+static void handle_arguments(const char *binary_name, char *port_str, const char *message, in_port_t *port);
 static in_port_t parse_port(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 // TODO: use address instead of ANY
-// TODO: take the message to send back from the command line
 
 
 int main(int argc, char *argv[])
 {
     char *port_str;
+    char *message;
     in_port_t port;
 
     port_str = NULL;
-    parse_arguments(argc, argv, &port_str);
-    handle_arguments(argv[0], port_str, &port);
-
+    parse_arguments(argc, argv, &port_str, &message);
+    handle_arguments(argv[0], port_str, message, &port);
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
     if(sockfd == -1)
     {
         perror("socket");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     struct sockaddr_in server_addr, client_addr;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     {
         perror("bind");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     printf("Server listening on port %d...\n", port);
@@ -79,8 +79,7 @@ int main(int argc, char *argv[])
     buffer[bytes_received] = '\0';
     printf("Received from client: %s\n", buffer);
 
-    char response[] = "Hello, client!";
-    int bytes_sent = sendto(sockfd, response, strlen(response), 0, (struct sockaddr *) &client_addr, client_addr_len);
+    int bytes_sent = sendto(sockfd, message, strlen(message), 0, (struct sockaddr *) &client_addr, client_addr_len);
     if(bytes_sent == -1)
     {
         perror("sendto");
@@ -89,6 +88,7 @@ int main(int argc, char *argv[])
     }
 
     close(sockfd);
+
     return EXIT_SUCCESS;
 }
 
@@ -126,20 +126,26 @@ static void parse_arguments(int argc, char *argv[], char **port)
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
-    if(optind < argc - 1)
+    if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
     *port = argv[optind];
+    *message = argv[optind + 1];
 }
 
 
-static void handle_arguments(const char *binary_name, char *port_str, in_port_t *port)
+static void handle_arguments(const char *binary_name, char *port_str, const char *message, in_port_t *port)
 {
     if(port_str == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "The port are required.");
+        usage(binary_name, EXIT_FAILURE, "The port is required.");
+    }
+
+    if(message == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The message is required.");
     }
 
     *port = parse_port(binary_name, port_str);

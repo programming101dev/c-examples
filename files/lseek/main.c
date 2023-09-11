@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     display_file(fd, "\n\nFile contents after SEEK_CUR", offset);
 
     close(fd);
+
     return EXIT_SUCCESS;
 }
 

@@ -21,7 +21,6 @@
 
 int main(void)
 {
-    // TODO: make this a command line argument with a default
     unsigned long network_value = 0x78563412; // Hex value of 0x12345678 in network byte order
     unsigned long host_value = ntohl(network_value);
 

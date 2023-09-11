@@ -25,9 +25,6 @@ static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: print more details about what is going on
-
-
 int main(int argc, char *argv[])
 {
     char *file_path;

@@ -15,28 +15,32 @@
  */
 
 
-#include <getopt.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void parse_arguments(int argc, char *argv[], char **file_path, char **offset);
+static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, long *offset);
+static long parse_long(const char *binary_name, const char *offset_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void display_file(FILE *file, const char *message);
-
-
-// TODO make this work like the other seek - take the offset on the command line
+static void display_file(FILE *file, const char *message, long offset);
 
 
 int main(int argc, char *argv[])
 {
     char *file_path;
+    char *offset_str;
+    long offset;
     FILE *file;
 
     file_path = NULL;
-    parse_arguments(argc, argv, &file_path);
-    handle_arguments(argv[0], file_path);
+    offset_str = NULL;
+    parse_arguments(argc, argv, &file_path, &offset_str);
+    handle_arguments(argv[0], file_path, offset_str, &offset);
     file = fopen(file_path, "r");
 
     if(file == NULL)
@@ -45,26 +49,34 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    display_file(file, "File contents:\n\n");
+    display_file(file, "File contents", 0);
     fseek(file, 0L, SEEK_SET);
-    display_file(file, "\n\nFile contents after SEEK_SET:\n\n");
-    fseek(file, -10L, SEEK_CUR);
-    display_file(file, "\n\nFile contents after SEEK_CUR -10:\n\n");
+    display_file(file, "\n\nFile contents after SEEK_SET", 0);
+    fseek(file, 0L, SEEK_SET);
+    fseek(file, offset, SEEK_CUR);
+    display_file(file, "\n\nFile contents after SEEK_CUR", offset);
+
     fclose(file);
+
     return EXIT_SUCCESS;
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **file_path)
+static void parse_arguments(int argc, char *argv[], char **file_path, char **offset)
 {
     int opt;
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "h")) != -1)
+    while((opt = getopt(argc, argv, "ho:")) != -1)
     {
         switch(opt)
         {
+            case 'o':
+            {
+                *offset = optarg;
+                break;
+            }
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
@@ -97,12 +109,42 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
 }
 
 
-static void handle_arguments(const char *binary_name, const char *file_path)
+static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, long *offset)
 {
     if(file_path == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
+
+    if(offset_str == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The offset is required.");
+    }
+
+    *offset = parse_long(binary_name, offset_str);
+}
+
+
+static long parse_long(const char *binary_name, const char *str)
+{
+    char *endptr;
+    long parsed_value;
+
+    errno = 0;
+    parsed_value = strtol(str, &endptr, 10);
+
+    if (errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing long.");
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    return parsed_value;
 }
 
 
@@ -115,19 +157,20 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
-    fputs("  -h  Display this help message\n", stderr);
+    fputs("  -h           Display this help message\n", stderr);
+    fputs("  -o <offset>  The offset to move from the start of the file\n", stderr);
     exit(exit_code);
 }
 
 
-static void display_file(FILE *file, const char *message)
+static void display_file(FILE *file, const char *message, long offset)
 {
     char ch;
 
-    fputs(message, stdout);
+    printf("%s %ld:\n\n", message, offset);
 
-    while((ch = fgetc(file)) != EOF)
+    while(fread(&ch, sizeof(ch), 1, file) > 0)
     {
-        putchar(ch);
+        printf("%c", ch);
     }
 }

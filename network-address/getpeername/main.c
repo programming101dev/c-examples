@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
 
     struct addrinfo hints, *result, *rp;
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;        // IPv4
-    hints.ai_socktype = SOCK_STREAM;  // TCP
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
 
     int status = getaddrinfo(server_address, service, &hints, &result);
 
@@ -80,7 +80,8 @@ int main(int argc, char *argv[])
     struct sockaddr_in peer_addr;
     socklen_t peer_addr_len = sizeof(peer_addr);
 
-    if (getpeername(sockfd, (struct sockaddr *)&peer_addr, &peer_addr_len) == -1) {
+    if (getpeername(sockfd, (struct sockaddr *)&peer_addr, &peer_addr_len) == -1)
+    {
         perror("getpeername");
         close(sockfd);
         freeaddrinfo(result);

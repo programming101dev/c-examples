@@ -15,6 +15,7 @@
  */
 
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -25,8 +26,8 @@
 #include <netinet/in.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **port);
-static void handle_arguments(const char *binary_name, const char *port_str, in_port_t *port);
+static void parse_arguments(int argc, char *argv[], char **ip_address, char **port);
+static void handle_arguments(const char *binary_name, const char *ip_address,const char *port_str, in_port_t *port);
 static in_port_t parse_port(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
@@ -37,12 +38,14 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
+    char *ip_address;
     char *port_str;
     in_port_t port;
 
+    ip_address = NULL;
     port_str = NULL;
-    parse_arguments(argc, argv, &port_str);
-    handle_arguments(argv[0], port_str, &port);
+    parse_arguments(argc, argv, &ip_address, &port_str);
+    handle_arguments(argv[0], ip_address, port_str, &port);
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
@@ -63,7 +66,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, ip_address, &(server_addr.sin_addr));
     server_addr.sin_port = htons(port);
 
     // Bind the server socket to the specified address and port
@@ -105,7 +108,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **port)
+static void parse_arguments(int argc, char *argv[], char **ip_address, char **port)
 {
     int opt;
 
@@ -138,17 +141,23 @@ static void parse_arguments(int argc, char *argv[], char **port)
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
-    if(optind < argc - 1)
+    if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *port = argv[optind];
+    *ip_address = argv[optind];
+    *port = argv[optind + 1];
 }
 
 
-static void handle_arguments(const char *binary_name, const char *port_str, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port)
 {
+    if(ip_address == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The ip address is required.");
+    }
+
     if(port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The port is required.");
@@ -194,7 +203,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <port>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <ip address> <port>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);

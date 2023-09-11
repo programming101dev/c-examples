@@ -15,6 +15,7 @@
  */
 
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <getopt.h>
 #include <netinet/in.h>
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, ip_address, &(addr.sin_addr));
 
     if(bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) == -1)
     {
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
     // Close the sockets
     close(client_sockfd);
     close(sockfd);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 
@@ -152,9 +153,9 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
         }
     }
 
-    if(optind + 1 >= argc)
+    if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "Too few arguments.");
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
     if(optind < argc - 2)

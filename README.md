@@ -9,8 +9,8 @@ Welcome to the `c-examples` repository. This guide will help you set up and run 
 3. [Running the `generate-build.sh` Script](#running-the-generate-buildsh-script)
 4. [Executing the Generated `build.sh` Script](#executing-the-generated-buildsh-script)
 5. [Conclusion](#conclusion)
-5. [Cleanup](#cleaning-up-the-repository)
-3. [Running the `cleanup.sh` Script](#running-the-cleanupsh-script)
+6. [Cleanup](#cleaning-up-the-repository)
+7. [Running the `cleanup.sh` Script](#running-the-cleanupsh-script)
 
 ## **Prerequisites**
 

@@ -62,9 +62,6 @@ int main(int argc, char *argv[])
 
     printf("Current output baud rate: %lu\n", (unsigned long) output_baud_rate);
 
-    // Set a new output baud rate
-    // TODO: B9600; // 9600 baud
-
     if(cfsetospeed(&term, new_output_baud_rate) == -1)
     {
         perror("cfsetospeed");

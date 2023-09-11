@@ -45,8 +45,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    // TODO:  make a string with a different value and larger size and then strcpy into it, print before and after
-
     strcpy(destination, string);
     printf("Copied string: %s\n", destination);
     free(destination);

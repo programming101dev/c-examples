@@ -33,9 +33,6 @@ static int create_socket(void);
 static void bind_socket(int server_fd, const char *ip_address, in_port_t port);
 
 
-// TODO pass in the ip address to use
-
-
 int main(int argc, char *argv[])
 {
     char *ip_address;

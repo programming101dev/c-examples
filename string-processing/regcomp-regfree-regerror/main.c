@@ -27,10 +27,6 @@ static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO what are some valid vs invalid regexs?
-// TODO take several strings on the command line and match them all in turn
-
-
 int main(int argc, char *argv[])
 {
     char *pattern;

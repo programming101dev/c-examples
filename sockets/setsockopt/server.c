@@ -32,7 +32,6 @@ static in_port_t parse_port(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO pass in the ip address to use
 // TODO do we nee to do anything past the setsockopt?
 
 

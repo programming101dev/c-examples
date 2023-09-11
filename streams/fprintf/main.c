@@ -15,22 +15,86 @@
  */
 
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 
-// TODO take in a string on the command like and print that instead of hard coding
+static void parse_arguments(int argc, char *argv[], char **msg);
+static void handle_arguments(const char *binary_name, const char *message);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    int age;
-    double height;
+    char *message;
 
-    age = 30;
-    height = 1.75;
-    fprintf(stdout, "My age is %d and my height is %.2f meters.\n", age, height);
-    fprintf(stderr, "Error: Invalid input. Expected an integer, but got '%s'.\n", "xyz");
+    message = NULL;
+    parse_arguments(argc, argv, &message);
+    handle_arguments(argv[0], message);
+    fprintf(stdout, "The message is: %s\n", message);
 
     return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **msg)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h:")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The library name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *msg = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *message)
+{
+    if(message == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The message is required.");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <shared memory name>\n", program_name);
+    exit(exit_code);
 }

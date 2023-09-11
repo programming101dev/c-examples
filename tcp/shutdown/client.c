@@ -32,9 +32,6 @@ static in_port_t parse_port(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: check ip address
-
-
 int main(int argc, char *argv[])
 {
     char *ip_address;

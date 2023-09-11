@@ -25,7 +25,7 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void child_process(int pipefd[2], const char *file_path);
+static void child_process(int pipefd[2], FILE *file);
 static void parent_process(int pipefd[2]);
 static void send_word(int pipefd, const char *word, uint8_t length);
 static void error_exit(const char *msg);
@@ -38,11 +38,18 @@ int main(int argc, char *argv[])
 {
     char *file_path;
     int pipefd[2];
+    FILE *file;
     pid_t pid;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
+    file = fopen(file_path, "r");
+
+    if(file == NULL)
+    {
+        error_exit("Error opening file");
+    }
 
     if(pipe(pipefd) == -1)
     {
@@ -58,10 +65,11 @@ int main(int argc, char *argv[])
 
     if(pid == 0)
     {
-        child_process(pipefd, file_path);
+        child_process(pipefd, file);
     }
     else
     {
+        fclose(file);
         parent_process(pipefd);
     }
 
@@ -165,20 +173,13 @@ static void error_exit(const char *msg)
 }
 
 
-static void child_process(int pipefd[2], const char *file_path)
+static void child_process(int pipefd[2], FILE *file)
 {
-    FILE *file;
     char ch;
     char word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
     close(pipefd[0]);
-
-    file = fopen(file_path, "r");
-    if(file == NULL)
-    {
-        error_exit("Error opening file");
-    }
 
     while((ch = fgetc(file)) != EOF)
     {

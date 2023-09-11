@@ -26,9 +26,6 @@
 static long long performCalculation(size_t size, size_t iterations);
 
 
-// TODO: make a function
-
-
 int main(void)
 {
     const size_t MAX_NUMBERS = 100000;

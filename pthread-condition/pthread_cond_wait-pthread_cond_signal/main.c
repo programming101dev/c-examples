@@ -41,9 +41,6 @@ int word_ready = 0;
 char *shared_word = NULL;
 
 
-// TODO: this doesn't work properly - send_word(NULL) crashes
-
-
 int main(int argc, char *argv[])
 {
     char *file_path;

@@ -29,7 +29,7 @@
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog);
 static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog);
 static in_port_t parse_port(const char *binary_name, const char *port_str);
-static int parse_non_negative_integer(const char *binary_name, const char *str);
+static int parse_positive_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int create_socket(void);
 static void bind_socket(int server_fd, const char *ip_address, in_port_t port);
@@ -37,7 +37,6 @@ static void start_listening(int server_fd, int backlog);
 static int accept_connection(int server_fd);
 
 
-// TODO pass in the ip address to listen on
 // TODO print out what we are listening on for ip address
 
 
@@ -143,7 +142,7 @@ static void handle_arguments(const char *binary_name, const char *ip_address, co
     }
 
     *port = parse_port(binary_name, port_str);
-    *backlog = parse_non_negative_integer(binary_name, backlog_str);
+    *backlog = parse_positive_int(binary_name, backlog_str);
 }
 
 
@@ -176,7 +175,7 @@ static in_port_t parse_port(const char *binary_name, const char *port_str)
 }
 
 
-static int parse_non_negative_integer(const char *binary_name, const char *str)
+static int parse_positive_int(const char *binary_name, const char *str)
 {
     char *endptr;
     long long int parsed_value;

@@ -15,19 +15,101 @@
  */
 
 
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <syslog.h>
 #include <unistd.h>
 
 
-// TODO: make log-demo a command line argument with a default if not present
+static void parse_arguments(int argc, char *argv[], char **log_name);
+static void handle_arguments(const char *binary_name, const char *log_name);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+void logMessages(void);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    openlog("log-demo", LOG_PID, LOG_USER);
+    char *log_name;
+
+    log_name = NULL;
+    parse_arguments(argc, argv, &log_name);
+    handle_arguments(argv[0], log_name);
+    openlog(log_name, LOG_PID, LOG_USER);
     printf("Logging PID %d\n", getpid());
+    logMessages();
+
+    closelog();
+
+    return EXIT_SUCCESS;
+}
+static void parse_arguments(int argc, char *argv[], char **log_name)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_FAILURE, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The group id is required");
+    }
+
+    if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *log_name = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *log_name)
+{
+    if(log_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The log name is required.");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <log name>\n", program_name);
+    fputs("Options:\n", stderr);
+    fputs("  -h  Display this help message\n", stderr);
+    exit(exit_code);
+}
+
+
+void logMessages(void)
+{
     syslog(LOG_EMERG, "This is an emergency message.");
     syslog(LOG_ALERT, "This is an alert message.");
     syslog(LOG_CRIT, "This is a critical message.");
@@ -36,7 +118,4 @@ int main(void)
     syslog(LOG_NOTICE, "This is a notice message.");
     syslog(LOG_INFO, "This is an informational message.");
     syslog(LOG_DEBUG, "This is a debug message.");
-    closelog();
-
-    return EXIT_SUCCESS;
 }

@@ -15,27 +15,32 @@
  */
 
 
+#include <getopt.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
 
-// TODO pass the shared memory name in
+static void parse_arguments(int argc, char *argv[], char **shm_name);
+static void handle_arguments(const char *binary_name, const char *shm_name);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    const char *shm_name = "/my_shared_memory";
+    char *shm_name;
 
-    // Create a shared memory object
+    shm_name = NULL;
+    parse_arguments(argc, argv, &shm_name);
+    handle_arguments(argv[0], shm_name);
     int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
     if(shm_fd == -1)
     {
         perror("shm_open");
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     printf("Opened %s\n", shm_name);
@@ -47,10 +52,72 @@ int main(void)
     {
         perror("shm_unlink");
         close(shm_fd);
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     printf("Unlinked %s\n", shm_name);
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+
+static void parse_arguments(int argc, char *argv[], char **shm_name)
+{
+    int opt;
+
+    opterr = 0;
+
+    while((opt = getopt(argc, argv, "h:")) != -1)
+    {
+        switch(opt)
+        {
+            case 'h':
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+            case '?':
+            {
+                char message[24];
+
+                snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
+                usage(argv[0], EXIT_FAILURE, message);
+            }
+            default:
+            {
+                usage(argv[0], EXIT_SUCCESS, NULL);
+            }
+        }
+    }
+
+    if(optind >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The library name is required");
+    }
+    else if(optind < argc - 1)
+    {
+        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+    }
+
+    *shm_name = argv[optind];
+}
+
+
+static void handle_arguments(const char *binary_name, const char *shm_name)
+{
+    if(shm_name == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The shared memory name is required.");
+    }
+}
+
+
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
+{
+    if(message)
+    {
+        fprintf(stderr, "%s\n", message);
+    }
+
+    fprintf(stderr, "Usage: %s [-h] <shared memory name>\n", program_name);
+    exit(exit_code);
 }

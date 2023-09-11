@@ -25,9 +25,10 @@
 
 static void parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds);
 static void handle_arguments(const char *binary_name, const char *seconds_str, const char *nanoseconds_str, time_t *seconds, long *nanoseconds);
-long long detect_time_t_size(void);
 static time_t parse_time_t(const char *binary_name, const char *str);
+long long detect_time_t_size(void);
 static long parse_long(const char *binary_name, const char *str);
+static long long parse_long_long(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -156,8 +157,7 @@ long long detect_time_t_size(void)
 
 time_t parse_time_t(const char *binary_name, const char *str)
 {
-    long long parsed_value = parse_long(binary_name, str);
-
+    long long parsed_value = parse_long_long(binary_name, str);
     long long time_t_min, time_t_max;
     long long time_t_bits = detect_time_t_size();
 
@@ -180,7 +180,8 @@ time_t parse_time_t(const char *binary_name, const char *str)
     {
         time_t_min = INT64_MIN;
         time_t_max = INT64_MAX;
-    }    else
+    }
+    else
     {
         fprintf(stderr, "Unknown size of time_t\n");
         exit(EXIT_FAILURE);
@@ -194,6 +195,29 @@ time_t parse_time_t(const char *binary_name, const char *str)
     }
 
     return (time_t)parsed_value;
+}
+
+
+static long long parse_long_long(const char *binary_name, const char *str)
+{
+    char *endptr;
+    long long parsed_value;
+
+    errno = 0;
+    parsed_value = strtoll(str, &endptr, 10);
+
+    if (errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing long.");
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    return parsed_value;
 }
 
 

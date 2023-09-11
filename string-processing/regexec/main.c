@@ -22,23 +22,21 @@
 #include <string.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **pattern, char **test_string);
-static void handle_arguments(const char *binary_name, const char *pattern, char *test_string);
+static void parse_arguments(int argc, char *argv[], char **pattern);
+static void handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
 int main(int argc, char *argv[])
 {
     char *pattern;
-    char *test_string;
     regex_t regex;
     int ret;
     char error_buffer[100];
 
     pattern = NULL;
-    test_string = NULL;
-    parse_arguments(argc, argv, &pattern, &test_string);
-    handle_arguments(argv[0], pattern, test_string);
+    parse_arguments(argc, argv, &pattern);
+    handle_arguments(argv[0], pattern);
     ret = regcomp(&regex, pattern, 0);
 
     if(ret != 0)
@@ -49,21 +47,24 @@ int main(int argc, char *argv[])
 
     printf("Regular expression compiled successfully\n");
 
-    // Check if the test string matches the pattern
-    ret = regexec(&regex, test_string, 0, NULL, 0);
 
-    if(ret == 0)
+    for(int i = optind + 1; i < argc; i++)
     {
-        printf("Pattern matched the test string\n");
-    }
-    else if(ret == REG_NOMATCH)
-    {
-        printf("Pattern did not match the test string\n");
-    }
-    else
-    {
-        regerror(ret, &regex, error_buffer, sizeof(error_buffer));
-        printf("Error executing regex: %s\n", error_buffer);
+        ret = regexec(&regex, argv[i], 0, NULL, 0);
+
+        if(ret == 0)
+        {
+            printf("The string \"%s\" matches the regex: \"%s\"\n", argv[i], pattern);
+        }
+        else if(ret == REG_NOMATCH)
+        {
+            printf("The string \"%s\" does not match the regex: \"%s\"\n", argv[i], pattern);
+        }
+        else
+        {
+            regerror(ret, &regex, error_buffer, sizeof(error_buffer));
+            printf("Error executing regex: %s on the string \"%s\"\n", error_buffer, argv[i]);
+        }
     }
 
     regfree(&regex);
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **pattern, char **test_string)
+static void parse_arguments(int argc, char *argv[], char **pattern)
 {
     int opt;
 
@@ -105,26 +106,15 @@ static void parse_arguments(int argc, char *argv[], char **pattern, char **test_
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
 
-    if(optind < argc - 2)
-    {
-        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
-    }
-
     *pattern = argv[optind];
-    *test_string = argv[optind + 1];
 }
 
 
-static void handle_arguments(const char *binary_name, const char *pattern, char *test_string)
+static void handle_arguments(const char *binary_name, const char *pattern)
 {
     if(pattern == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The pattern is required.");
-    }
-
-    if(test_string == NULL)
-    {
-        usage(binary_name, EXIT_FAILURE, "The test string is required.");
     }
 }
 

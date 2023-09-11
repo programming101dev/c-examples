@@ -54,8 +54,6 @@ int main(int argc, char *argv[])
     input_baud_rate = cfgetispeed(&term);
     printf("Current input baud rate: %d\n", (int) input_baud_rate);
 
-    // Set input baud rate to 9600
-    // TODO: B9600
     if(cfsetispeed(&term, new_input_baud_rate) != 0)
     {
         perror("cfsetispeed failed");

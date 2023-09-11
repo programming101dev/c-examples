@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +26,8 @@
 
 static void parse_arguments(int argc, char *argv[], char **user_id);
 static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid);
-static uid_t parse_uid(const char *binary_name, const char *uid_str);
+static uintmax_t get_uid_t_max(void);
+static uid_t parse_uid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -99,36 +101,71 @@ static void handle_arguments(const char *binary_name, const char *user_id, uid_t
         usage(binary_name, EXIT_FAILURE, "The user id are required.");
     }
 
-    *uid = parse_uid(binary_name, user_id);
+    *uid = parse_uid_t(binary_name, user_id);
 }
 
 
-static uid_t parse_uid(const char *binary_name, const char *uid_str)
+static uintmax_t get_uid_t_max(void)
 {
+    uintmax_t value;
+
+    if (sizeof(uid_t) == sizeof(char))
+    {
+        value = UCHAR_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(short))
+    {
+        value = USHRT_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(int))
+    {
+        value = UINT_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(long))
+    {
+        value = ULONG_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(long long))
+    {
+        value = ULLONG_MAX;
+    }
+    else
+    {
+        // Handle other sizes or display an error message
+        fprintf(stderr, "Unsupported size of uid_t\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return value;
+}
+
+
+static uid_t parse_uid_t(const char *binary_name, const char *str)
+{
+    uintmax_t max = get_uid_t_max();
     char *endptr;
-    long int parsed_uid;
+    uintmax_t parsed_value;
 
     errno = 0;
-    parsed_uid = strtol(uid_str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, 10);
 
     if(errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing UID.");
+        usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");
     }
 
-    // Check if there are any non-numeric characters in uid_str
+    // Check if there are any non-numeric characters in the input string
     if(*endptr != '\0')
     {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in UID.");
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    // Check if the UID is within the valid range
-    if (parsed_uid < 0 || parsed_uid > UINT_MAX)
+    if(parsed_value > max)
     {
-        usage(binary_name, EXIT_FAILURE, "UID out of range.");
+        usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
     }
 
-    return (uid_t)parsed_uid;
+    return (uid_t)parsed_value;
 }
 
 

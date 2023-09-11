@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -126,18 +127,17 @@ static void handle_arguments(const char *binary_name, char *n_str, const char *s
 }
 
 
-static size_t parse_size_t(const char *binary_name, const char *str)
+size_t parse_size_t(const char *binary_name, const char *str)
 {
     char *endptr;
-    unsigned long long parsed_value;
+    uintmax_t parsed_value;
 
     errno = 0;
-    parsed_value = strtoull(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, 10);
 
     if (errno != 0)
     {
-        perror("strtoull");
-        exit(EXIT_FAILURE);
+        usage(binary_name, EXIT_FAILURE, "Error parsing size_t.");
     }
 
     // Check if there are any non-numeric characters in the input string
@@ -149,12 +149,11 @@ static size_t parse_size_t(const char *binary_name, const char *str)
     // Check if the parsed value is within the valid range for size_t
     if (parsed_value > SIZE_MAX)
     {
-        usage(binary_name, EXIT_FAILURE, "Value out of range for size_t.");
+        usage(binary_name, EXIT_FAILURE, "size_t value out of range.");
     }
 
     return (size_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

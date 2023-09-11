@@ -17,6 +17,8 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <inttypes.h>
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,10 +27,10 @@
 
 static void parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds);
 static void handle_arguments(const char *binary_name, const char *seconds_str, const char *nanoseconds_str, time_t *seconds, long *nanoseconds);
-static time_t parse_time_t(const char *binary_name, const char *str);
-long long detect_time_t_size(void);
+time_t get_time_t_min(void);
+time_t get_time_t_max(void);
+time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
 static long parse_long(const char *binary_name, const char *str);
-static long long parse_long_long(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -124,7 +126,12 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
 
     if(seconds_str)
     {
-        *seconds = parse_time_t(binary_name, seconds_str);
+        time_t min;
+        time_t max;
+
+        min = get_time_t_min();
+        max = get_time_t_max();
+        *seconds = parse_time_t(binary_name, min, max, seconds_str);
     }
     else
     {
@@ -142,96 +149,106 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
 }
 
 
-long long detect_time_t_size(void)
+time_t get_time_t_min(void)
 {
-    switch (sizeof(time_t))
+    if(sizeof(time_t) == sizeof(char))
     {
-        case 1: return 8;   // 8 bits
-        case 2: return 16;  // 16 bits
-        case 4: return 32;  // 32 bits
-        case 8: return 64;  // 64 bits
-        default: return -1; // Unknown size
+        return CHAR_MIN;
+    }
+    else if(sizeof(time_t) == sizeof(short))
+    {
+        return SHRT_MIN;
+    }
+    else if(sizeof(time_t) == sizeof(int))
+    {
+        return INT_MIN;
+    }
+    else if(sizeof(time_t) == sizeof(long))
+    {
+        return LONG_MIN;
+    }
+    else if(sizeof(time_t) == sizeof(long long))
+    {
+        return LLONG_MIN;
+    }
+    else
+    {
+        // Handle other sizes or display an error message
+        fprintf(stderr, "Unsupported size of time_t\n");
+        exit(EXIT_FAILURE);
     }
 }
 
 
-time_t parse_time_t(const char *binary_name, const char *str)
+time_t get_time_t_max(void)
 {
-    long long parsed_value = parse_long_long(binary_name, str);
-    long long time_t_min, time_t_max;
-    long long time_t_bits = detect_time_t_size();
-
-    if (time_t_bits == 8)
+    if (sizeof(time_t) == sizeof(char))
     {
-        time_t_min = INT8_MIN;
-        time_t_max = INT8_MAX;
+        return CHAR_MAX;
     }
-    else if (time_t_bits == 16)
+    else if (sizeof(time_t) == sizeof(short))
     {
-        time_t_min = INT16_MIN;
-        time_t_max = INT16_MAX;
+        return SHRT_MAX;
     }
-    else if (time_t_bits == 32)
+    else if (sizeof(time_t) == sizeof(int))
     {
-        time_t_min = INT32_MIN;
-        time_t_max = INT32_MAX;
+        return INT_MAX;
     }
-    else if (time_t_bits == 64)
+    else if (sizeof(time_t) == sizeof(long))
     {
-        time_t_min = INT64_MIN;
-        time_t_max = INT64_MAX;
+        return LONG_MAX;
+    }
+    else if (sizeof(time_t) == sizeof(long long))
+    {
+        return LLONG_MAX;
     }
     else
     {
-        fprintf(stderr, "Unknown size of time_t\n");
+        fprintf(stderr, "Unsupported size of time_t\n");
         exit(EXIT_FAILURE);
     }
+}
 
-    // Check if the parsed value is within the valid range for time_t
-    if (parsed_value < time_t_min || parsed_value > time_t_max)
+
+time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str)
+{
+    char *endptr;
+    intmax_t parsed_value;
+
+    errno = 0;
+    parsed_value = strtoimax(str, &endptr, 10);
+
+    if(errno != 0)
     {
-        fprintf(stderr, "time_t value out of range: %lld\n", parsed_value);
-        exit(EXIT_FAILURE);
+        usage(binary_name, EXIT_FAILURE, "Error parsing time.");
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    if(parsed_value < min || parsed_value > max)
+    {
+        usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for time.");
     }
 
     return (time_t)parsed_value;
 }
 
 
-static long long parse_long_long(const char *binary_name, const char *str)
-{
-    char *endptr;
-    long long parsed_value;
-
-    errno = 0;
-    parsed_value = strtoll(str, &endptr, 10);
-
-    if (errno != 0)
-    {
-        usage(binary_name, EXIT_FAILURE, "Error parsing long.");
-    }
-
-    // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
-    {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
-    }
-
-    return parsed_value;
-}
-
-
 static long parse_long(const char *binary_name, const char *str)
 {
     char *endptr;
-    long parsed_value;
+    intmax_t parsed_value;
 
     errno = 0;
-    parsed_value = strtol(str, &endptr, 10);
+    parsed_value = strtoimax(str, &endptr, 10);
 
     if (errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing long.");
+        usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
     }
 
     // Check if there are any non-numeric characters in the input string
@@ -240,7 +257,13 @@ static long parse_long(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    return parsed_value;
+    // Check if the parsed value is within the valid range for signed long
+    if (parsed_value < LONG_MIN || parsed_value > LONG_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for signed long.");
+    }
+
+    return (long)parsed_value;
 }
 
 

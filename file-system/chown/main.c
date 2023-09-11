@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,8 +26,10 @@
 
 static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id);
 static void handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
-static uid_t parse_uid(const char *binary_name, const char *uid_str);
-static gid_t parse_gid(const char *binary_name, const char *gid_str);
+static uintmax_t get_uid_t_max(void);
+static uid_t parse_uid_t(const char *binary_name, const char *str);
+static uintmax_t get_gid_t_max(void);
+static gid_t parse_gid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -124,66 +127,134 @@ static void handle_arguments(const char *binary_name, const char *path, const ch
         usage(binary_name, EXIT_FAILURE, "The group id is required.");
     }
 
-    *uid = parse_uid(binary_name, user_id);
-    *gid = parse_gid(binary_name, group_id);
+    *uid = parse_uid_t(binary_name, user_id);
+    *gid = parse_gid_t(binary_name, group_id);
 }
 
 
-static uid_t parse_uid(const char *binary_name, const char *uid_str)
+static uintmax_t get_uid_t_max(void)
 {
-    char *endptr;
-    long int parsed_uid;
+    uintmax_t value;
 
-    errno = 0;
-    parsed_uid = strtol(uid_str, &endptr, 10);
-
-    if(errno != 0)
+    if (sizeof(uid_t) == sizeof(char))
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing UID.");
+        value = UCHAR_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(short))
+    {
+        value = USHRT_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(int))
+    {
+        value = UINT_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(long))
+    {
+        value = ULONG_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(long long))
+    {
+        value = ULLONG_MAX;
+    }
+    else
+    {
+        // Handle other sizes or display an error message
+        fprintf(stderr, "Unsupported size of uid_t\n");
+        exit(EXIT_FAILURE);
     }
 
-    // Check if there are any non-numeric characters in uid_str
-    if(*endptr != '\0')
-    {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in UID.");
-    }
-
-    // Check if the UID is within the valid range
-    if (parsed_uid < 0 || parsed_uid > UINT_MAX)
-    {
-        usage(binary_name, EXIT_FAILURE, "UID out of range.");
-    }
-
-    return (uid_t)parsed_uid;
+    return value;
 }
 
 
-static gid_t parse_gid(const char *binary_name, const char *gid_str)
+static uid_t parse_uid_t(const char *binary_name, const char *str)
 {
+    uintmax_t max = get_uid_t_max();
     char *endptr;
-    long int parsed_gid;
+    uintmax_t parsed_value;
 
     errno = 0;
-    parsed_gid = strtol(gid_str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, 10);
 
     if(errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing GID.");
+        usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");
     }
 
-    // Check if there are any non-numeric characters in uid_str
+    // Check if there are any non-numeric characters in the input string
     if(*endptr != '\0')
     {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in GID.");
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    // Check if the UID is within the valid range
-    if (parsed_gid < 0 || parsed_gid > UINT_MAX)
+    if(parsed_value > max)
     {
-        usage(binary_name, EXIT_FAILURE, "GID out of range.");
+        usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
     }
 
-    return (gid_t)parsed_gid;
+    return (uid_t)parsed_value;
+}
+
+
+static uintmax_t get_gid_t_max(void)
+{
+    uintmax_t value;
+
+    if (sizeof(gid_t) == sizeof(char))
+    {
+        value = UCHAR_MAX;
+    }
+    else if (sizeof(gid_t) == sizeof(short))
+    {
+        value = USHRT_MAX;
+    }
+    else if (sizeof(gid_t) == sizeof(int))
+    {
+        return UINT_MAX;
+    }
+    else if (sizeof(gid_t) == sizeof(long))
+    {
+        value = ULONG_MAX;
+    }
+    else if (sizeof(gid_t) == sizeof(long long))
+    {
+        value = ULLONG_MAX;
+    }
+    else
+    {
+        fprintf(stderr, "Unsupported size of gid_t\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return value;
+}
+
+static gid_t parse_gid_t(const char *binary_name, const char *str)
+{
+    gid_t max = get_gid_t_max();
+    char *endptr;
+    uintmax_t parsed_value;
+
+    errno = 0;
+    parsed_value = strtoumax(str, &endptr, 10);
+
+    if(errno != 0)
+    {
+        usage(binary_name, EXIT_FAILURE, "Error parsing gid_t.");
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    if(parsed_value > max)
+    {
+        usage(binary_name, EXIT_FAILURE, "gid_t value out of range.");
+    }
+
+    return (gid_t)parsed_value;
 }
 
 

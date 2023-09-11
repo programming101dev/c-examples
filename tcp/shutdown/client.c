@@ -18,6 +18,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include <netinet/in.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -28,7 +29,7 @@
 
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port);
 static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port);
-static in_port_t parse_port(const char *binary_name, const char *port_str);
+static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -150,38 +151,38 @@ static void handle_arguments(const char *binary_name, const char *ip_address, ch
         usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
 
-    *port = parse_port(binary_name, port_str);
+    *port = parse_in_port_t(binary_name, port_str);
 }
 
 
-static in_port_t parse_port(const char *binary_name, const char *port_str)
+in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
     char *endptr;
-    long int parsed_port;
+    uintmax_t parsed_value;
 
     errno = 0;
-    parsed_port = strtol(port_str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, 10);
 
-    if (errno != 0)
+    if(errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing port number.");
+        perror("Error parsing in_port_t");
+        exit(EXIT_FAILURE);
     }
 
-    // Check if there are any non-numeric characters in port_str
-    if(*endptr != '\0')
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
     {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in port number.");
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    // Check if the port is within the valid range
-    if(parsed_port < 0 || parsed_port > UINT16_MAX)
+    // Check if the parsed value is within the valid range for in_port_t
+    if (parsed_value > UINT16_MAX)
     {
-        usage(binary_name, EXIT_FAILURE, "Port number out of range.");
+        usage(binary_name, EXIT_FAILURE, "in_port_t value out of range.");
     }
 
-    return (in_port_t)parsed_port;
+    return (in_port_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

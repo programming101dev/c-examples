@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +27,9 @@
 
 static void parse_arguments(int argc, char *argv[], char **file_path, char **offset);
 static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset);
-static off_t parse_offset(const char *binary_name, const char *offset_str);
+off_t get_off_t_min(void);
+off_t get_off_t_max(void);
+off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void display_file(int fd, const char *message, off_t offset);
 
@@ -119,6 +122,9 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **off
 
 static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset)
 {
+    off_t min;
+    off_t max;
+
     if(file_path == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
@@ -129,36 +135,96 @@ static void handle_arguments(const char *binary_name, const char *file_path, con
         usage(binary_name, EXIT_FAILURE, "The offset is required.");
     }
 
-    *offset = parse_offset(binary_name, offset_str);
+    min = get_off_t_min();
+    max = get_off_t_max();
+    *offset = parse_off_t(binary_name, min, max, offset_str);
 }
 
 
-static off_t parse_offset(const char *binary_name, const char *offset_str)
+off_t get_off_t_min(void)
+{
+    if (sizeof(off_t) == sizeof(char))
+    {
+        return SCHAR_MIN;
+    }
+    else if (sizeof(off_t) == sizeof(short))
+    {
+        return SHRT_MIN;
+    }
+    else if (sizeof(off_t) == sizeof(int))
+    {
+        return INT_MIN;
+    }
+    else if (sizeof(off_t) == sizeof(long))
+    {
+        return LONG_MIN;
+    }
+    else if (sizeof(off_t) == sizeof(long long))
+    {
+        return LLONG_MIN;
+    }
+    else
+    {
+        // Handle other sizes or display an error message
+        fprintf(stderr, "Unsupported size of off_t\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+off_t get_off_t_max(void)
+{
+    if (sizeof(off_t) == sizeof(char))
+    {
+        return SCHAR_MAX;
+    }
+    else if (sizeof(off_t) == sizeof(short))
+    {
+        return SHRT_MAX;
+    }
+    else if (sizeof(off_t) == sizeof(int))
+    {
+        return INT_MAX;
+    }
+    else if (sizeof(off_t) == sizeof(long))
+    {
+        return LONG_MAX;
+    }
+    else if (sizeof(off_t) == sizeof(long long))
+    {
+        return LLONG_MAX;
+    }
+    else
+    {
+        fprintf(stderr, "Unsupported size of off_t\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str)
 {
     char *endptr;
-    long long int parsed_offset;
+    intmax_t parsed_value;
 
     errno = 0;
-    parsed_offset = strtoll(offset_str, &endptr, 10);
+    parsed_value = strtoimax(str, &endptr, 10);
 
     if(errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing offset.");
+        usage(binary_name, EXIT_FAILURE, "Error parsing off_t.");
     }
 
-    // Check if there are any non-numeric characters in offset_str
-    if(*endptr != '\0')
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
     {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in offset.");
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    // Check if the offset is within the valid range
-    if(parsed_offset < LONG_MIN || parsed_offset > LONG_MAX)
+    if(parsed_value < min || parsed_value > max)
     {
-        usage(binary_name, EXIT_FAILURE, "Offset out of range.");
+        usage(binary_name, EXIT_FAILURE, "off_t value out of range.");
     }
 
-    return (off_t)parsed_offset;
+    return (off_t)parsed_value;
 }
 
 

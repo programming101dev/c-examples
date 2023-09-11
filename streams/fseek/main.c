@@ -16,11 +16,12 @@
 
 
 #include <errno.h>
-#include <fcntl.h>
+#include <getopt.h>
+#include <inttypes.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **file_path, char **offset);
@@ -128,14 +129,14 @@ static void handle_arguments(const char *binary_name, const char *file_path, con
 static long parse_long(const char *binary_name, const char *str)
 {
     char *endptr;
-    long parsed_value;
+    intmax_t parsed_value;
 
     errno = 0;
-    parsed_value = strtol(str, &endptr, 10);
+    parsed_value = strtoimax(str, &endptr, 10);
 
     if (errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing long.");
+        usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
     }
 
     // Check if there are any non-numeric characters in the input string
@@ -144,7 +145,13 @@ static long parse_long(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    return parsed_value;
+    // Check if the parsed value is within the valid range for signed long
+    if (parsed_value < LONG_MIN || parsed_value > LONG_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for signed long.");
+    }
+
+    return (long)parsed_value;
 }
 
 

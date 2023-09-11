@@ -17,6 +17,8 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <inttypes.h>
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,9 +28,8 @@
 
 static void parse_arguments(int argc, char *argv[], char **limit);
 static void handle_arguments(const char *binary_name, const char *limit_str, rlim_t *limit);
-rlim_t parse_rlim_t(const char *binary_name, const char *str);
-long long detect_rlim_t_size(void);
-static long long parse_long_long(const char *binary_name, const char *str);
+static uintmax_t get_rlim_t_max(void);
+static rlim_t parse_rlim_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void abort_handler(void);
 static void set_core_dump_limit(rlim_t limit);
@@ -108,82 +109,67 @@ static void handle_arguments(const char *binary_name, const char *limit_str, rli
 }
 
 
-rlim_t parse_rlim_t(const char *binary_name, const char *str)
+static uintmax_t get_rlim_t_max(void)
 {
-    long long parsed_value = parse_long_long(binary_name, str);
-    long long rlim_min, rlim_max;
-    long long rlim_bits = detect_rlim_t_size();
+    uintmax_t value;
 
-    if (rlim_bits == 8)
+    if (sizeof(uid_t) == sizeof(char))
     {
-        rlim_min = INT8_MIN;
-        rlim_max = INT8_MAX;
+        value = UCHAR_MAX;
     }
-    else if (rlim_bits == 16)
+    else if (sizeof(uid_t) == sizeof(short))
     {
-        rlim_min = INT16_MIN;
-        rlim_max = INT16_MAX;
+        value = USHRT_MAX;
     }
-    else if (rlim_bits == 32)
+    else if (sizeof(uid_t) == sizeof(int))
     {
-        rlim_min = INT32_MIN;
-        rlim_max = INT32_MAX;
+        value = UINT_MAX;
     }
-    else if (rlim_bits == 64)
+    else if (sizeof(uid_t) == sizeof(long))
     {
-        rlim_min = INT64_MIN;
-        rlim_max = INT64_MAX;
+        value = ULONG_MAX;
+    }
+    else if (sizeof(uid_t) == sizeof(long long))
+    {
+        value = ULLONG_MAX;
     }
     else
     {
-        fprintf(stderr, "Unknown size of rlim_t\n");
+        // Handle other sizes or display an error message
+        fprintf(stderr, "Unsupported size of uid_t\n");
         exit(EXIT_FAILURE);
     }
 
-    // Check if the parsed value is within the valid range for rlim_t
-    if (parsed_value < rlim_min || parsed_value > rlim_max)
-    {
-        fprintf(stderr, "rlim_t value out of range: %lld\n", parsed_value);
-        exit(EXIT_FAILURE);
-    }
-
-    return (rlim_t)parsed_value;
+    return value;
 }
 
 
-long long detect_rlim_t_size(void)
+static rlim_t parse_rlim_t(const char *binary_name, const char *str)
 {
-    switch (sizeof(rlim_t))
-    {
-        case 1: return 8;   // 8 bits
-        case 2: return 16;  // 16 bits
-        case 4: return 32;  // 32 bits
-        case 8: return 64;  // 64 bits
-        default: return -1; // Unknown size
-    }
-}
-
-
-static long long parse_long_long(const char *binary_name, const char *str)
-{
+    uintmax_t max = get_rlim_t_max();
     char *endptr;
-    long long parsed_value;
+    uintmax_t parsed_value;
 
     errno = 0;
-    parsed_value = strtoll(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, 10);
 
-    if (errno != 0)
+    if(errno != 0)
     {
-        usage(binary_name, EXIT_FAILURE, "Error parsing long.");
+        usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");
     }
 
     // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
+    if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    return parsed_value;
+    if(parsed_value > max)
+    {
+        usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
+    }
+
+    return (rlim_t)parsed_value;
 }
 
 

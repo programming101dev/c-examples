@@ -18,6 +18,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **command);
@@ -27,15 +28,20 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
+    const char * const redirect = " 2>&1";
     char *command;
+    char *redirected_command;
     char buffer[128];
 
     command = NULL;
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
 
-    // TODO: append "[ls -l] 2>&1" to the command
-    FILE *fp = popen(command, "r");
+    redirected_command = malloc(strlen(command) + strlen(redirect) +1);
+    strcpy(redirected_command, command);
+    strcat(redirected_command, redirect);
+    FILE *fp = popen(redirected_command, "r");
+    free(redirected_command);
 
     if(fp == NULL)
     {

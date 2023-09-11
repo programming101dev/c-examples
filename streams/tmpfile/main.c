@@ -42,7 +42,6 @@ int main(void)
     }
 
     printf("Temp file closed\n");
-    // TODO: verify it gets deleted
 
     return EXIT_SUCCESS;
 }

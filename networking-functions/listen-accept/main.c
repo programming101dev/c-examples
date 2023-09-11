@@ -17,6 +17,7 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -28,16 +29,13 @@
 
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog);
 static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog);
-static in_port_t parse_port(const char *binary_name, const char *port_str);
+static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 static int parse_positive_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int create_socket(void);
 static void bind_socket(int server_fd, const char *ip_address, in_port_t port);
 static void start_listening(int server_fd, int backlog);
 static int accept_connection(int server_fd);
-
-
-// TODO print out what we are listening on for ip address
 
 
 int main(int argc, char *argv[])
@@ -141,61 +139,61 @@ static void handle_arguments(const char *binary_name, const char *ip_address, co
         usage(binary_name, EXIT_FAILURE, "The backlog is required.");
     }
 
-    *port = parse_port(binary_name, port_str);
+    *port = parse_in_port_t(binary_name, port_str);
     *backlog = parse_positive_int(binary_name, backlog_str);
 }
 
 
-static in_port_t parse_port(const char *binary_name, const char *port_str)
+in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
     char *endptr;
-    long int parsed_port;
+    uintmax_t parsed_value;
 
     errno = 0;
-    parsed_port = strtol(port_str, &endptr, 10);
-
-    if (errno != 0)
-    {
-        usage(binary_name, EXIT_FAILURE, "Error parsing port number.");
-    }
-
-    // Check if there are any non-numeric characters in port_str
-    if(*endptr != '\0')
-    {
-        usage(binary_name, EXIT_FAILURE, "Invalid characters in port number.");
-    }
-
-    // Check if the port is within the valid range
-    if(parsed_port < 0 || parsed_port > UINT16_MAX)
-    {
-        usage(binary_name, EXIT_FAILURE, "Port number out of range.");
-    }
-
-    return (in_port_t)parsed_port;
-}
-
-
-static int parse_positive_int(const char *binary_name, const char *str)
-{
-    char *endptr;
-    long long int parsed_value;
-
-    errno = 0;
-    parsed_value = strtoll(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, 10);
 
     if(errno != 0)
+    {
+        perror("Error parsing in_port_t");
+        exit(EXIT_FAILURE);
+    }
+
+    // Check if there are any non-numeric characters in the input string
+    if (*endptr != '\0')
+    {
+        usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
+    }
+
+    // Check if the parsed value is within the valid range for in_port_t
+    if (parsed_value > UINT16_MAX)
+    {
+        usage(binary_name, EXIT_FAILURE, "in_port_t value out of range.");
+    }
+
+    return (in_port_t)parsed_value;
+}
+
+int parse_positive_int(const char *binary_name, const char *str)
+{
+    char *endptr;
+    intmax_t parsed_value;
+
+    errno = 0;
+    parsed_value = strtoimax(str, &endptr, 10);
+
+    if (errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing integer.");
     }
 
     // Check if there are any non-numeric characters in the input string
-    if(*endptr != '\0')
+    if (*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
     // Check if the parsed value is non-negative
-    if(parsed_value < 0 || parsed_value > INT_MAX)
+    if (parsed_value < 0 || parsed_value > INT_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "Integer out of range or negative.");
     }
@@ -251,7 +249,7 @@ static void bind_socket(int server_fd, const char *ip_address, in_port_t port)
         exit(EXIT_FAILURE);
     }
 
-    printf("Socket bound to port %d\n", port);
+    printf("Socket bound to %s:%d\n", ip_address, port);
 }
 
 

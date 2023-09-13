@@ -21,7 +21,9 @@
 #include <string.h>
 #include <semaphore.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
 
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"

@@ -156,6 +156,11 @@ done
 cat <<EOL > build.sh
 #!/usr/bin/env bash
 
+if [ -z "\$CC" ]; then
+  echo "Error: CC environment variable is not defined. Please set CC to your C compiler (e.g., 'export CC=gcc', 'setenv CC clang', or 'set -x CC gcc')."
+  exit 1
+fi
+
 set -e
 
 WARNING_FLAGS="$SUPPORTED_WARNING_FLAGS"
@@ -169,12 +174,12 @@ find . -name "*.c" -exec dirname {} \; | sort -u | while read -r dir; do
   find "\$dir" -maxdepth 1 -name "*.c" -type f | sort | while read -r file; do
     if [[ "\$file" == *"testlib-1.c" || "\$file" == *"testlib-2.c" ]]; then
       if [[ "\$(uname)" == "Darwin" ]]; then
-        \$CC -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.dylib"
+        \$CC -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.dylib"
       else
-        \$CC -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.so"
+        \$CC -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -shared -fPIC \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.so"
       fi
     else
-      \$CC -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.out"
+      \$CC -std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE \$WARNING_FLAGS \$SANITIZER_FLAGS \$ANALYZER_FLAGS \$DEBUG_FLAGS "\$file" -o "\${file%.c}.out"
     fi
 
     if [ \$? -ne 0 ]; then

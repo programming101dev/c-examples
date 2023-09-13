@@ -177,18 +177,26 @@ static void print_extended_type(const struct stat *fileStat)
     // compiler trick - on macOS these all return 0 so fileStat is unused
     (void) fileStat;
 
+#ifdef S_TYPEISMQ
     if(S_TYPEISMQ(fileStat))
     {
         printf("Type: Message Queue\n");
     }
-    else if(S_TYPEISSEM(fileStat))
+#endif
+
+#ifdef S_TYPEISSEM
+    if(S_TYPEISSEM(fileStat))
     {
         printf("Type: Semaphore\n");
     }
-    else if(S_TYPEISSHM(fileStat))
+#endif
+
+#ifdef S_TYPEISSHM
+    if(S_TYPEISSHM(fileStat))
     {
         printf("Type: Shared Memory\n");
     }
+#endif
 }
 
 

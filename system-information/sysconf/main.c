@@ -103,7 +103,9 @@ int main(void)
                     {_SC_SPAWN, "_SC_SPAWN"},
                     {_SC_SPIN_LOCKS, "_SC_SPIN_LOCKS"},
                     {_SC_SPORADIC_SERVER, "_SC_SPORADIC_SERVER"},
-                    {_SC_SS_REPL_MAX, "_SC_SS_REPL_MAX"},
+#ifdef _SC_SS_REPL_MAX
+        {_SC_SS_REPL_MAX, "_SC_SS_REPL_MAX"},
+#endif
                     {_SC_SYNCHRONIZED_IO, "_SC_SYNCHRONIZED_IO"},
                     {_SC_THREAD_ATTR_STACKADDR, "_SC_THREAD_ATTR_STACKADDR"},
                     {_SC_THREAD_ATTR_STACKSIZE, "_SC_THREAD_ATTR_STACKSIZE"},
@@ -125,12 +127,20 @@ int main(void)
                     {_SC_TIMERS, "_SC_TIMERS"},
                     {_SC_TRACE, "_SC_TRACE"},
                     {_SC_TRACE_EVENT_FILTER, "_SC_TRACE_EVENT_FILTER"},
+#ifdef _SC_TRACE_EVENT_NAME_MAX
                     {_SC_TRACE_EVENT_NAME_MAX, "_SC_TRACE_EVENT_NAME_MAX"},
+#endif
                     {_SC_TRACE_INHERIT, "_SC_TRACE_INHERIT"},
                     {_SC_TRACE_LOG, "_SC_TRACE_LOG"},
+#ifdef _SC_TRACE_NAME_MAX
                     {_SC_TRACE_NAME_MAX, "_SC_TRACE_NAME_MAX"},
+#endif
+#ifdef _SC_TRACE_SYS_MAX
                     {_SC_TRACE_SYS_MAX, "_SC_TRACE_SYS_MAX"},
+#endif
+#ifdef _SC_TRACE_USER_EVENT_MAX
                     {_SC_TRACE_USER_EVENT_MAX, "_SC_TRACE_USER_EVENT_MAX"},
+#endif
                     {_SC_TYPED_MEMORY_OBJECTS, "_SC_TYPED_MEMORY_OBJECTS"},
                     {_SC_VERSION, "_SC_VERSION"},
 #ifdef _SC_V7_ILP32_OFF32

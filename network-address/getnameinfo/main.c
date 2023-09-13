@@ -20,6 +20,7 @@
 #include <getopt.h>
 #include <inttypes.h>
 #include <netdb.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>

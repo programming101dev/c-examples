@@ -6,11 +6,12 @@ Welcome to the `c-examples` repository. This guide will help you set up and run 
 
 1. [Prerequisites](#prerequisites)
 2. [Cloning the Repository](#cloning-the-repository)
-3. [Running the `generate-build.sh` Script](#running-the-generate-buildsh-script)
-4. [Executing the Generated `build.sh` Script](#executing-the-generated-buildsh-script)
-5. [Conclusion](#conclusion)
-6. [Cleanup](#cleaning-up-the-repository)
-7. [Running the `cleanup.sh` Script](#running-the-cleanupsh-script)
+3. [Setting Up the `CC` Environment Variable](#setting-up-the-cc-environment-variable)
+4. [Running the `generate-build.sh` Script](#running-the-generate-buildsh-script)
+5. [Executing the Generated `build.sh` Script](#executing-the-generated-buildsh-script)
+6. [Conclusion](#conclusion)
+7. [Cleanup](#cleaning-up-the-repository)
+8. [Running the `cleanup.sh` Script](#running-the-cleanupsh-script)
 
 ## **Prerequisites**
 
@@ -28,6 +29,34 @@ Navigate to the cloned directory:
 ```bash
 cd c-examples
 ```
+
+## **Setting up the CC Environment Variable**
+
+To permanently set the CC environment variable for your user, you should modify your shell's configuration file. Depending on the shell you're using, you should edit the appropriate configuration file:
+
+For Bash, edit the ~/.bashrc file to include ```export CC=gcc``` or ```export CC=clang```.
+```bash
+nano ~/.bashrc
+```
+For Zsh, edit the .zshrc file to include ```export CC=gcc``` or ```export CC=clang```.
+```bash
+nano ~/.zshrc
+```
+For Csh, edit the ~/.cshrc file to include ```setenv CC gcc``` or ```setenv CC clang```.
+```bash
+nano ~/.bashrc
+```
+Save and close the file. Then, reload your shell configuration to apply the changes:
+```bash
+source ~/.bashrc
+```
+```bash
+source ~/.zshrc
+```
+```bash
+source ~/.cshrc
+```
+Now, the CC environment variable is permanently set to your chosen C compiler.
 
 ## **Running the generate-build.sh Script**
 First, ensure the script is executable:

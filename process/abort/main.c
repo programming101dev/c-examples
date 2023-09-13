@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
+#include <sys/types.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **limit);

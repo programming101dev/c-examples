@@ -1,4 +1,4 @@
-/*
+ /*
  * This code is licensed under the Attribution-NonCommercial-NoDerivatives 4.0 International license.
  *
  * Author: D'Arcy Smith (ds@programming101.dev)
@@ -15,11 +15,12 @@
  */
 
 
+#include <arpa/inet.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 

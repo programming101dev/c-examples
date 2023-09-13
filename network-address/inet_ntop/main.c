@@ -15,8 +15,9 @@
  */
 
 
-#include <stdio.h>
 #include <arpa/inet.h>
+#include <stdio.h>
+#include <sys/socket.h>
 
 
 int main(void)

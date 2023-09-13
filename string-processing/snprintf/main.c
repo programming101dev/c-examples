@@ -15,11 +15,12 @@
  */
 
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
+#include <sys/types.h>
 
 
 // Character Types
@@ -84,9 +85,9 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined(__FreeBSD__)
 #pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif __linux__
+#elif defined(__linux__)
 #pragma GCC diagnostic ignored "-Woverflow"
 #endif
     convertInt8(128, bad_buffer, sizeof(bad_buffer));

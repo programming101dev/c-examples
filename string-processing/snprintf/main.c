@@ -101,9 +101,9 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined(__FreeBSD__)
 #pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif __linux__
+#elif defined(__linux__)
 #pragma GCC diagnostic ignored "-Woverflow"
 #endif
     printf("\tBad Buffer: %s\n", bad_buffer);
@@ -124,9 +124,9 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined(__FreeBSD__)
 #pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif __linux__
+#elif defined(__linux__)
 #pragma GCC diagnostic ignored "-Woverflow"
 #endif
     printf("\tBad Buffer: %s\n", bad_buffer);
@@ -147,9 +147,9 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
 
 #pragma GCC diagnostic push
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined(__FreeBSD__)
 #pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif __linux__
+#elif defined(__linux__)
 #pragma GCC diagnostic ignored "-Woverflow"
 #endif
     printf("\tBad Buffer: %s\n", bad_buffer);

@@ -61,14 +61,28 @@ int main(void)
     print_flags("OCRNL", term_attr.c_oflag, OCRNL);
     print_flags("ONOCR", term_attr.c_oflag, ONOCR);
     print_flags("ONLRET", term_attr.c_oflag, ONLRET);
+#ifdef OFDEL
     print_flags("OFDEL", term_attr.c_oflag, OFDEL);
+#endif
+#ifdef OFILL
     print_flags("OFILL", term_attr.c_oflag, OFILL);
+#endif
+#ifdef NLDLY
     print_flags("NLDLY", term_attr.c_oflag, NLDLY);
+#endif
+#ifdef CRDLY
     print_flags("CRDLY", term_attr.c_oflag, CRDLY);
+#endif
     print_flags("TABDLY", term_attr.c_oflag, TABDLY);
+#ifdef BSDLY
     print_flags("BSDLY", term_attr.c_oflag, BSDLY);
+#endif
+#ifdef VTDLY
     print_flags("VTDLY", term_attr.c_oflag, VTDLY);
+#endif
+#ifdef FFDLY
     print_flags("FFDLY", term_attr.c_oflag, FFDLY);
+#endif
     printf("\n");
 
     // Control flags

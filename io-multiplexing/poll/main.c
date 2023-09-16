@@ -42,7 +42,7 @@ static volatile int running = 1;
 int main(void)
 {
     int server_socket, *client_sockets = NULL;
-    size_t max_clients = 0;
+    nfds_t max_clients = 0;
     int num_ready;
     struct pollfd *fds = NULL;
 

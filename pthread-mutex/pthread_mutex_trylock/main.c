@@ -15,9 +15,10 @@
  */
 
 
+#include <inttypes.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 
 #define NUM_THREADS 10
@@ -31,7 +32,7 @@ struct thread_data
 };
 
 
-static void *threadFunction(void *arg);
+static void *thread_function(void *arg);
 
 
 // TODO: is there a way to make it so that trylock doesn't succeed?
@@ -60,7 +61,7 @@ int main(void)
 
     for(i = 0; i < NUM_THREADS; i++)
     {
-        if(pthread_create(&threads[i], NULL, threadFunction, (void *) &data) != 0)
+        if(pthread_create(&threads[i], NULL, thread_function, (void *) &data) != 0)
         {
             fprintf(stderr, "Error: Thread creation failed.\n");
             return EXIT_FAILURE;
@@ -80,8 +81,9 @@ int main(void)
 }
 
 
-static void *threadFunction(void *arg)
+static void *thread_function(void *arg)
 {
+    uintptr_t tid_val;
     struct thread_data *data = (struct thread_data *) arg;
 
     // Attempt to lock the mutex before accessing the shared variable
@@ -93,11 +95,15 @@ static void *threadFunction(void *arg)
 
     // Critical section: Accessing and modifying the shared variable
     (*(data->sharedVariable))++;
-    printf("Thread %ld: Shared variable value: %d\n", (long) pthread_self(), *(data->sharedVariable));
+
+    // Print the thread ID and shared variable value
+    tid_val = (uintptr_t)(void *)pthread_self();
+    printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t) tid_val, *(data->sharedVariable));
 
     // Unlock the mutex after finishing the critical section
     pthread_mutex_unlock(data->mutex);
 
     // Exit the thread
     pthread_exit(NULL);
+    return NULL; // Added for completeness, pthread_exit doesn't return
 }

@@ -15,11 +15,12 @@
  */
 
 
-#include <stdio.h>
+#include <getopt.h>
+#include <inttypes.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
 
 
 #define NUM_THREADS 10
@@ -138,27 +139,28 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static void *thread_function(void *arg)
-{
-    struct thread_data *data = (struct thread_data *) arg;
+static void *thread_function(void *arg) {
+    uintptr_t tid_val;
+    struct thread_data *data = (struct thread_data *)arg;
 
-    if(data->use_mutex)
-    {
+    if (data->use_mutex) {
         // Lock the mutex before accessing the shared variable
         pthread_mutex_lock(data->mutex);
     }
 
     // Critical section: Accessing and modifying the shared variable
     (*(data->sharedVariable))++;
-    printf("Thread %ld: Shared variable value: %d\n", (long) pthread_self(), *(data->sharedVariable));
-    // sleep(1); // Introduce a 1-second delay
 
-    if(data->use_mutex)
-    {
+    // Print the thread ID and shared variable value
+    tid_val = (uintptr_t)(void*)pthread_self();
+    printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t)tid_val, *(data->sharedVariable));
+
+    if (data->use_mutex) {
         // Unlock the mutex after finishing the critical section
         pthread_mutex_unlock(data->mutex);
     }
 
     // Exit the thread
     pthread_exit(NULL);
+    return NULL; // Added for completeness, pthread_exit doesn't return
 }

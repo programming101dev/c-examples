@@ -163,7 +163,7 @@ static rlim_t parse_rlim_t(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
-    if(parsed_value > (rlim_t)max)
+    if(parsed_value > (uintmax_t)max)
     {
         usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
     }

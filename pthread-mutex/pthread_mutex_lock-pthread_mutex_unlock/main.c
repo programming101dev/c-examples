@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #define NUM_THREADS 10
@@ -139,11 +140,14 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static void *thread_function(void *arg) {
+static void *thread_function(void *arg)
+{
+    pthread_t tid;
     uintptr_t tid_val;
     struct thread_data *data = (struct thread_data *)arg;
 
-    if (data->use_mutex) {
+    if (data->use_mutex)
+    {
         // Lock the mutex before accessing the shared variable
         pthread_mutex_lock(data->mutex);
     }
@@ -152,10 +156,12 @@ static void *thread_function(void *arg) {
     (*(data->sharedVariable))++;
 
     // Print the thread ID and shared variable value
-    tid_val = (uintptr_t)(void*)pthread_self();
+    tid = pthread_self();
+    memcpy(&tid_val, &tid, sizeof(uintptr_t));
     printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t)tid_val, *(data->sharedVariable));
 
-    if (data->use_mutex) {
+    if (data->use_mutex)
+    {
         // Unlock the mutex after finishing the critical section
         pthread_mutex_unlock(data->mutex);
     }

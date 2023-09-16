@@ -233,7 +233,7 @@ populate_supported_flags() {
       "-Wundef"
       "-Wuninitialized"
       "-Wunknown-pragmas"
-      "-Wunsuffixed-float-constants"
+#      "-Wunsuffixed-float-constants"
       "-Wunused"
       "-Wunused-but-set-parameter"
       "-Wunused-but-set-variable"

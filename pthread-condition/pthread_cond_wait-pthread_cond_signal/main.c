@@ -157,6 +157,11 @@ static void send_word(const char *word)
         }
     }
 
+    if(shared_word != NULL)
+    {
+        free(shared_word);
+    }
+
     // TODO word is NULL on Linux (passing example.txt)
     shared_word = strdup(word);
 
@@ -246,7 +251,6 @@ static void *parent_process(void *arg)
         }
 
         pthread_mutex_unlock(&mutex);
-
         word = shared_word;
 
         if(word == NULL)
@@ -255,7 +259,6 @@ static void *parent_process(void *arg)
         }
 
         printf("Parent: received word: %s\n", word);
-        free(word); // Free the allocated memory for each word
     }
 
     pthread_exit(NULL);

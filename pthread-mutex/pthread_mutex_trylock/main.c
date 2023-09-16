@@ -19,6 +19,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #define NUM_THREADS 10
@@ -45,7 +46,6 @@ int main(void)
     int sharedVariable;
     int i;
     struct thread_data data;
-
 
     if(pthread_mutex_init(&mutex, NULL) != 0)
     {
@@ -83,6 +83,7 @@ int main(void)
 
 static void *thread_function(void *arg)
 {
+    pthread_t tid;
     uintptr_t tid_val;
     struct thread_data *data = (struct thread_data *) arg;
 
@@ -97,7 +98,8 @@ static void *thread_function(void *arg)
     (*(data->sharedVariable))++;
 
     // Print the thread ID and shared variable value
-    tid_val = (uintptr_t)(void *)pthread_self();
+    tid = pthread_self();
+    memcpy(&tid_val, &tid, sizeof(uintptr_t));
     printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t) tid_val, *(data->sharedVariable));
 
     // Unlock the mutex after finishing the critical section

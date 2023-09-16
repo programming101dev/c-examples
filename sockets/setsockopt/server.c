@@ -39,12 +39,18 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
+    int sockfd;
+    int optval;
+    struct sockaddr_in server_addr;
+    struct sockaddr_in client_addr;
+    socklen_t client_addr_len;
+    int client_sockfd;
 
     ip_address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
     {
@@ -52,7 +58,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    int optval = 1;
+    optval = 1;
 
     if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1)
     {
@@ -61,7 +67,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     inet_pton(AF_INET, ip_address, &(server_addr.sin_addr));
@@ -86,9 +91,8 @@ int main(int argc, char *argv[])
     printf("Server is listening on port 8888...\n");
 
     // Accept incoming connections
-    struct sockaddr_in client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-    int client_sockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_addr_len);
+    client_addr_len = sizeof(client_addr);
+    client_sockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_addr_len);
 
     if(client_sockfd == -1)
     {

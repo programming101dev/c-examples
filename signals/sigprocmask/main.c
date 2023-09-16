@@ -28,6 +28,8 @@ int main(void)
 {
     // Set up the signal handler
     struct sigaction sa;
+    sigset_t new_mask, old_mask;
+
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
@@ -39,7 +41,6 @@ int main(void)
     }
 
     // Block SIGUSR1 signal
-    sigset_t new_mask, old_mask;
     sigemptyset(&new_mask);
     sigaddset(&new_mask, SIGUSR1);
 

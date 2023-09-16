@@ -60,7 +60,7 @@ static void print_entries(void)
 static void print_entry(const struct group *entry)
 {
     printf("Group name: %s\n", entry->gr_name);
-    printf("Group ID (GID): %d\n", entry->gr_gid);
+    printf("Group ID (GID): %u\n", entry->gr_gid);
     printf("Group Members:\n");
 
     if(entry->gr_mem != NULL)

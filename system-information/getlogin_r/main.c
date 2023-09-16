@@ -22,25 +22,25 @@
 
 int main(void)
 {
-    long max_login_length;
+    long length;
+    size_t max_login_length;
     char *login_name;
     int result;
 
-    max_login_length = sysconf(_SC_LOGIN_NAME_MAX);
+    length = sysconf(_SC_LOGIN_NAME_MAX);
 
-    if(max_login_length <= 0)
+    if(length <= 0)
     {
         perror("sysconf");
-
         return EXIT_FAILURE;
     }
 
-    login_name = malloc(max_login_length + 1);
+    max_login_length = (size_t)length;
+    login_name = (char *)malloc(max_login_length + 1);
 
     if(login_name == NULL)
     {
         perror("malloc");
-
         return EXIT_FAILURE;
     }
 

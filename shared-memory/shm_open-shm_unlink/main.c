@@ -32,11 +32,12 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *shm_name;
+    int shm_fd;
 
     shm_name = NULL;
     parse_arguments(argc, argv, &shm_name);
     handle_arguments(argv[0], shm_name);
-    int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+    shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
     if(shm_fd == -1)
     {

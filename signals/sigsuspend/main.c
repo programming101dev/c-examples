@@ -29,6 +29,7 @@ int main(void)
 {
     sigset_t block_set;
     struct sigaction sa;
+    pid_t pid;
 
     // Set up signal handler for SIGINT
     sa.sa_handler = signal_handler;
@@ -38,7 +39,7 @@ int main(void)
     if(sigaction(SIGINT, &sa, NULL) < 0)
     {
         perror("Failed to set signal handler for SIGINT");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Block SIGINT temporarily
@@ -47,10 +48,10 @@ int main(void)
     if(sigprocmask(SIG_BLOCK, &block_set, NULL) < 0)
     {
         perror("Failed to block SIGINT");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    pid_t pid = fork();
+    pid = fork();
 
     if(pid < 0)
     {
@@ -67,17 +68,18 @@ int main(void)
     }
     else
     {
+        sigset_t empty_set;
+        int status;
+
         // Parent process
         printf("Parent waiting for SIGINT...\n");
 
         // TODO: should I put something in the set?
-        sigset_t empty_set;
         sigemptyset(&empty_set);
         sigsuspend(&empty_set);
         printf("Parent received SIGINT.\n");
 
         // Wait for the child process to complete
-        int status;
         waitpid(pid, &status, 0);
     }
 
@@ -85,7 +87,7 @@ int main(void)
     if(sigprocmask(SIG_UNBLOCK, &block_set, NULL) < 0)
     {
         perror("Failed to unblock SIGINT");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;

@@ -25,7 +25,7 @@ int main(void)
     gid_t gid;
 
     gid = getgid();
-    printf("Real GID: %d\n", gid);
+    printf("Real GID: %u\n", gid);
 
     return EXIT_SUCCESS;
 }

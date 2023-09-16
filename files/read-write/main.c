@@ -34,9 +34,11 @@ int main(void)
 
     while((bytesRead = read(STDIN_FILENO, buffer, sizeof(buffer))) > 0)
     {
+        size_t bytes_to_write;
         ssize_t bytesWritten;
 
-        bytesWritten = write(STDOUT_FILENO, buffer, bytesRead);
+        bytes_to_write = (size_t)bytesRead;
+        bytesWritten = write(STDOUT_FILENO, buffer, bytes_to_write);
 
         if(bytesWritten != bytesRead)
         {

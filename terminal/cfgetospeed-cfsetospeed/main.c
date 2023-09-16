@@ -158,6 +158,7 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
             };
     char *endptr;
     long long int parsed_speed;
+    int valid_baud_rate;
 
     errno = 0;
     parsed_speed = strtoll(baud_rate_str, &endptr, 10);
@@ -178,7 +179,7 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
         usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
     }
 
-    int valid_baud_rate = 0;
+    valid_baud_rate = 0;
     for(size_t i = 0; i < sizeof(baud_rates) / sizeof(baud_rates[0]); i++)
     {
         if((speed_t)parsed_speed == baud_rates[i])

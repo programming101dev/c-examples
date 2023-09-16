@@ -178,8 +178,6 @@ static void send_word(const char *word)
 }
 
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 static void *child_process(void *arg)
 {
     FILE *file;
@@ -187,9 +185,9 @@ static void *child_process(void *arg)
     char line[MAX_WORD_LENGTH];
     const char *file_path;
 
-    file_path = arg;
-
+    file_path = (const char *)arg;
     file = fopen(file_path, "r");
+
     if(file == NULL)
     {
         perror("Error opening file");
@@ -218,7 +216,6 @@ static void *child_process(void *arg)
 
     pthread_exit(NULL);
 }
-#pragma GCC diagnostic pop
 
 
 #pragma GCC diagnostic push

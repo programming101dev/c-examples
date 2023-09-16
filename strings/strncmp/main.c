@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
 
     if(result == 0)
     {
-        printf("\"%s\" and \"%s\" are identical to %ld.\n", string1, string2, n);
+        printf("\"%s\" and \"%s\" are identical to %zu.\n", string1, string2, n);
     }
     else
     {
-        printf("\"%s\" and \"%s\" are different to %ld (%d).\n", string1, string2, n, result);
+        printf("\"%s\" and \"%s\" are different to %zu (%d).\n", string1, string2, n, result);
     }
 
     return EXIT_SUCCESS;

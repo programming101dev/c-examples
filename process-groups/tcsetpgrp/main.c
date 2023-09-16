@@ -24,6 +24,8 @@
 
 int main(void)
 {
+    pid_t new_pgid;
+    pid_t child_pid;
     int terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
 
     if(terminal_fd == -1)
@@ -32,11 +34,11 @@ int main(void)
         return 1;
     }
 
-    pid_t new_pgid = getpid();
+    new_pgid = getpid();
     printf("Original Process ID (PID): %d\n", new_pgid);
 
     // Fork a new child process
-    pid_t child_pid = fork();
+    child_pid = fork();
 
     if(child_pid < 0)
     {

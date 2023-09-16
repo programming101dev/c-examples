@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     string = NULL;
     parse_arguments(argc, argv, &n_str, &string);
     handle_arguments(argv[0], n_str, string, &n);
-    destination = malloc(n + 1);
+    destination = (char *)malloc(n + 1);
 
     if(destination == NULL)
     {

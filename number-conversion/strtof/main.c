@@ -43,13 +43,14 @@ static void convert(const char *str)
 {
     float result;
     char *endptr;
+    float tolerance;
 
     result = 0;
     errno = 0;
     result = strtof(str, &endptr);
 
     // Check for conversion errors
-    float tolerance = 1e-6f; // Define your desired tolerance for float
+    tolerance = 1e-6f; // Define your desired tolerance for float
     if((errno == ERANGE && (fabsf(result - HUGE_VALF) < tolerance || fabsf(result + HUGE_VALF) < tolerance)) ||
        (errno != 0 && fabsf(result) < tolerance))
     {

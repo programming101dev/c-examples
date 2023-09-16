@@ -39,12 +39,14 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
+    int sockfd;
+    struct sockaddr_in server_addr;
 
     ip_address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
     {
@@ -52,7 +54,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);

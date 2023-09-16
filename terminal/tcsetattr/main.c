@@ -25,19 +25,20 @@ int main(void)
 {
     struct termios term;
     struct termios original_term;
+    int ch;
 
     // Get the current terminal settings
     if(tcgetattr(STDIN_FILENO, &term) != 0)
     {
         perror("tcgetattr");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Save the original terminal settings
     original_term = term;
 
     // Modify the terminal attributes to turn off ECHO and enable non-canonical mode
-    term.c_lflag &= ~(ICANON | ECHO);
+    term.c_lflag &= ~(tcflag_t)(ICANON | ECHO);
 
     // Set the minimum number of bytes to read for non-canonical mode (1 byte at a time)
     term.c_cc[VMIN] = 1;
@@ -47,10 +48,8 @@ int main(void)
     if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0)
     {
         perror("tcsetattr");
-        return 1;
+        return EXIT_FAILURE;
     }
-
-    char ch;
 
     // Read the first character without echoing
     printf("Type the first character: ");
@@ -66,7 +65,7 @@ int main(void)
     if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0)
     {
         perror("tcsetattr");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Read the rest of the characters with echoing
@@ -81,10 +80,12 @@ int main(void)
             {
                 break;
             }
-            printf("%c", ch);
+
+            printf("%c",(char)ch);
             fflush(stdout); // Force printing without newline
         }
     }
+
     printf("\n");
 
     return EXIT_SUCCESS;

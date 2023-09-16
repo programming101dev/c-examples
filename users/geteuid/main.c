@@ -25,7 +25,7 @@ int main(void)
     uid_t euid;
 
     euid = geteuid();
-    printf("Effective UID: %d\n", euid);
+    printf("Effective UID: %u\n", euid);
 
     return EXIT_SUCCESS;
 }

@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     sigset_t mask;
     int sig;
     struct sigaction sa;
+    pid_t pid;
 
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
     }
 
     // Fork the process
-    pid_t pid = fork();
+    pid = fork();
 
     if(pid < 0)
     {
@@ -75,7 +76,8 @@ int main(int argc, char *argv[])
         // Child process
         sleep(seconds); // Sleep for 3 seconds
         kill(getppid(), SIGINT); // Send SIGINT to the parent
-        exit(0);
+
+        return EXIT_SUCCESS;
     }
     else
     {

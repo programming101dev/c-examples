@@ -51,7 +51,7 @@ int main(void)
 static void *thread_function(void *arg)
 {
     int thread_id;
-
+    int *result;
     thread_id = *(int *) arg;
 
     printf("Thread %d is executing.\n", thread_id);
@@ -61,7 +61,7 @@ static void *thread_function(void *arg)
     printf("Thread %d is done.\n", thread_id);
 
     // Exit the thread and return a value (optional)
-    int *result = malloc(sizeof(int));
+    result = (int *)malloc(sizeof(int));
     *result = thread_id * 2;
     pthread_exit(result);
 }

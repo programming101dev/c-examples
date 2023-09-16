@@ -31,13 +31,14 @@ int main(int argc, char *argv[])
 {
     char *pattern;
     glob_t glob_result;
+    int glob_status;
 
     pattern = NULL;
     parse_arguments(argc, argv, &pattern);
     handle_arguments(argv[0], pattern);
 
     // Use glob with a custom error handler
-    int glob_status = glob(pattern, GLOB_ERR, custom_error_handler, &glob_result);
+    glob_status = glob(pattern, GLOB_ERR, custom_error_handler, &glob_result);
 
     if(glob_status != 0)
     {

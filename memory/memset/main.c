@@ -21,16 +21,16 @@
 #include <time.h>
 
 
-static void print_array(const int *arr, int size);
-static void fill_with_random_ints(int *arr, int size);
+static void print_array(const int *arr, size_t size);
+static void fill_with_random_ints(int *arr, size_t size);
 
 
 int main(void)
 {
-    const int num_elements = 5;
+    const size_t num_elements = 5;
     int *dynamic_array;
 
-    dynamic_array = malloc(num_elements * sizeof(dynamic_array[0]));
+    dynamic_array = (int *)malloc(num_elements * sizeof(dynamic_array[0]));
 
     if(dynamic_array == NULL)
     {
@@ -55,9 +55,9 @@ int main(void)
 }
 
 
-static void print_array(const int *arr, int size)
+static void print_array(const int *arr, size_t size)
 {
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
@@ -66,11 +66,11 @@ static void print_array(const int *arr, int size)
 }
 
 
-static void fill_with_random_ints(int *arr, int size)
+static void fill_with_random_ints(int *arr, size_t size)
 {
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         arr[i] = rand();
     }

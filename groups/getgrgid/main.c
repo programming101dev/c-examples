@@ -26,7 +26,7 @@
 
 static void parse_arguments(int argc, char *argv[], char **group_id);
 static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
-static uintmax_t get_gid_t_max(void);
+static gid_t get_gid_t_max(void);
 static gid_t parse_gid_t(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct group *entry);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
     if(group_info == NULL)
     {
-        printf("Group with GID %d not found.\n", gid);
+        printf("Group with GID %u not found.\n", gid);
     }
     else
     {
@@ -110,9 +110,9 @@ static void handle_arguments(const char *binary_name, const char *group_id, gid_
 }
 
 
-static uintmax_t get_gid_t_max(void)
+static gid_t get_gid_t_max(void)
 {
-    uintmax_t value;
+    gid_t value;
 
     if (sizeof(gid_t) == sizeof(char))
     {
@@ -146,10 +146,11 @@ static uintmax_t get_gid_t_max(void)
 
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
-    gid_t max = get_gid_t_max();
+    gid_t max;
     char *endptr;
     uintmax_t parsed_value;
 
+    max = get_gid_t_max();
     errno = 0;
     parsed_value = strtoumax(str, &endptr, 10);
 
@@ -189,7 +190,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void print_entry(const struct group *entry)
 {
     printf("Group name: %s\n", entry->gr_name);
-    printf("Group ID (GID): %d\n", entry->gr_gid);
+    printf("Group ID (GID): %u\n", entry->gr_gid);
     printf("Group Members:\n");
 
     if(entry->gr_mem != NULL)

@@ -34,22 +34,25 @@ int main(int argc, char *argv[])
 {
     char *increment_str;
     int increment;
+    pid_t pid;
+    int current_priority;
+    int new_priority;
 
     parse_arguments(argc, argv, &increment_str);
     handle_arguments(argv[0], increment_str, &increment);
 
     // Get the current process ID
-    pid_t pid = getpid();
+    pid = getpid();
 
     // Get the current priority of the process
-    int current_priority = nice(0);
+    current_priority = nice(0);
 
     printf("Process ID: %d\n", pid);
     printf("Current Priority: %d\n", current_priority);
 
     // Try to increase the priority by 1 (less favorable)
     errno = 0;
-    int new_priority = nice( increment);
+    new_priority = nice( increment);
 
     if(new_priority == -1 && errno != 0)
     {

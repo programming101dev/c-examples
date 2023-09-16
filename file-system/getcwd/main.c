@@ -37,12 +37,12 @@ int main(void)
     }
 
     buffer = NULL;
-    size = path_max;
+    size = (size_t)path_max;
 
     while(1)
     {
         // Allocate memory for the buffer (or resize the existing buffer)
-        buffer = realloc(buffer, size);
+        buffer = (char *)realloc(buffer, size);
 
         if(buffer == NULL)
         {

@@ -44,7 +44,10 @@ static void show_limit(int resource, const char *name)
 {
     struct rlimit rlim;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
     if(getrlimit(resource, &rlim) == 0)
+#pragma GCC diagnostic pop
     {
         printf("%s:\n", name);
         printf("\tCurrent soft limit: ");
@@ -74,4 +77,3 @@ static void show_limit(int resource, const char *name)
         perror("Error getting resource limit");
     }
 }
-

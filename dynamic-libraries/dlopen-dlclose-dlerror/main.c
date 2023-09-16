@@ -29,12 +29,13 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *library_path;
+    void *handle;
 
     library_path = NULL;
     parse_arguments(argc, argv, &library_path);
     handle_arguments(argv[0], library_path);
 
-    void *handle = dlopen(library_path, RTLD_LAZY);
+    handle = dlopen(library_path, RTLD_LAZY);
 
     if(!handle)
     {

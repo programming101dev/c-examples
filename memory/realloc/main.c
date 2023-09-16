@@ -19,18 +19,18 @@
 #include <stdlib.h>
 
 
-static void initialize_array(int *array, int num_elements);
-static void print_array(const char *message, const int *array, int num_elements);
-static int *resize_array(int *array, int new_num_elements);
+static void initialize_array(int *array, size_t num_elements);
+static void print_array(const char *message, const int *array, size_t num_elements);
+static int *resize_array(int *array, size_t new_num_elements);
 
 
 int main(void)
 {
     int *dynamic_array;
-    int num_elements;
+    size_t num_elements;
 
     num_elements = 5;
-    dynamic_array = malloc(num_elements * sizeof(int));
+    dynamic_array = (int *)malloc(num_elements * sizeof(int));
 
     if(dynamic_array == NULL)
     {
@@ -52,20 +52,20 @@ int main(void)
 }
 
 
-static void initialize_array(int *array, int num_elements)
+static void initialize_array(int *array, size_t num_elements)
 {
-    for(int i = 0; i < num_elements; i++)
+    for(size_t i = 0; i < num_elements; i++)
     {
-        array[i] = i + 1;
+        array[i] = (int)i + 1;
     }
 }
 
 
-static void print_array(const char *message, const int *array, int num_elements)
+static void print_array(const char *message, const int *array, size_t num_elements)
 {
     printf("%s", message);
 
-    for(int i = 0; i < num_elements; i++)
+    for(size_t i = 0; i < num_elements; i++)
     {
         printf("%d ", array[i]);
     }
@@ -74,11 +74,11 @@ static void print_array(const char *message, const int *array, int num_elements)
 }
 
 
-static int *resize_array(int *array, int new_num_elements)
+static int *resize_array(int *array, size_t new_num_elements)
 {
     int *resized_array;
 
-    resized_array = realloc(array, new_num_elements * sizeof(int));
+    resized_array = (int *)realloc(array, new_num_elements * sizeof(int));
 
     if(resized_array == NULL)
     {

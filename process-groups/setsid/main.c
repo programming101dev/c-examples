@@ -28,6 +28,7 @@ int main(void)
 {
     pid_t pid;
     pid_t pgid;
+    pid_t child_pid;
 
     pid = getpid(); // Get the PID of the current process
     pgid = getpgid(pid);
@@ -35,7 +36,7 @@ int main(void)
     printf("Original Process Group ID (PGID): %d\n", pgid);
 
     // Fork a new child process
-    pid_t child_pid = fork();
+    child_pid = fork();
 
     if(child_pid < 0)
     {
@@ -64,6 +65,7 @@ static void handle_child(void)
     pid_t child_pid;
     pid_t child_pgid;
     pid_t new_pgid;
+    pid_t sid;
 
     child_pid = getpid();
     child_pgid = getpgid(child_pid);
@@ -71,7 +73,8 @@ static void handle_child(void)
     printf("Child Process Group ID (PGID): %d\n", child_pgid);
 
     // Create a new session for the child process
-    pid_t sid = setsid();
+    sid = setsid();
+
     if(sid == -1)
     {
         perror("Error creating a new session for the child process");

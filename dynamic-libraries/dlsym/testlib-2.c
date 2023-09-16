@@ -35,7 +35,7 @@ void display(const char *msg)
     // Convert the message to uppercase
     for(int i = 0; uppercase_msg[i]; i++)
     {
-        uppercase_msg[i] = toupper(uppercase_msg[i]);
+        uppercase_msg[i] = (char)toupper(uppercase_msg[i]);
     }
 
     printf("testlib-2: display: %s\n", uppercase_msg);

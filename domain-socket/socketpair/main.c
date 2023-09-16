@@ -26,10 +26,10 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-void child_process(int sockfd, const char *file_path);
-void parent_process(int sockfd);
-void send_word(int sockfd, const char *word, uint8_t length);
-void error_exit(const char *msg);
+static void child_process(int sockfd, const char *file_path);
+static void parent_process(int sockfd);
+static void send_word(int sockfd, const char *word, uint8_t length);
+_Noreturn static void error_exit(const char *msg);
 
 
 #define MAX_WORD_LENGTH 255
@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
 {
     char *file_path;
     int sockfd[2];
+    pid_t pid;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
         error_exit("Error creating socket pair");
     }
 
-    pid_t pid = fork();
+    pid = fork();
 
     if(pid == -1)
     {
@@ -136,7 +137,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-void send_word(int sockfd, const char *word, uint8_t length)
+static void send_word(int sockfd, const char *word, uint8_t length)
 {
     ssize_t written_bytes;
 
@@ -160,17 +161,17 @@ void send_word(int sockfd, const char *word, uint8_t length)
 }
 
 
-void error_exit(const char *msg)
+_Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
 
-void child_process(int sockfd, const char *file_path)
+static void child_process(int sockfd, const char *file_path)
 {
     FILE *file;
-    char ch;
+    int ch;
     char word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
@@ -199,7 +200,7 @@ void child_process(int sockfd, const char *file_path)
                 error_exit("Encountered a word longer than the maximum allowed length");
             }
 
-            word[length++] = ch;
+            word[length++] = (char)ch;
         }
     }
 
@@ -221,7 +222,7 @@ void child_process(int sockfd, const char *file_path)
 }
 
 
-void parent_process(int sockfd)
+static void parent_process(int sockfd)
 {
     uint8_t length;
     char word[MAX_WORD_LENGTH];

@@ -34,12 +34,18 @@ int main(int argc, char *argv[])
 {
     char *host_name;
     char *service;
+    int sockfd;
+    struct sockaddr_in local_addr;
+    socklen_t addrlen;
+    struct addrinfo hints, *result, *rp;
+    int status;
+    char ipstr[INET_ADDRSTRLEN];
 
     host_name = NULL;
     service = NULL;
     parse_arguments(argc, argv, &host_name, &service);
     handle_arguments(argv[0], host_name, service);
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
     {
@@ -47,12 +53,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    struct addrinfo hints, *result, *rp;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    int status = getaddrinfo(host_name, service, &hints, &result);
+    status = getaddrinfo(host_name, service, &hints, &result);
     if(status != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
@@ -78,8 +83,7 @@ int main(int argc, char *argv[])
     }
 
     // Get the local address and port number associated with the socket
-    struct sockaddr_in local_addr;
-    socklen_t addrlen = sizeof(local_addr);
+    addrlen = sizeof(local_addr);
 
     if(getsockname(sockfd, (struct sockaddr *) &local_addr, &addrlen) == -1)
     {
@@ -89,7 +93,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    char ipstr[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET_ADDRSTRLEN);
     printf("Local Address: %s:%d\n", ipstr, ntohs(local_addr.sin_port));
     close(sockfd);

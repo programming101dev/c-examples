@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
     printf("Starting program...\n");
-    printf("Sleeping for %d seconds...\n", seconds);
+    printf("Sleeping for %u seconds...\n", seconds);
     sleep(seconds);
     printf("Program woke up!\n");
 

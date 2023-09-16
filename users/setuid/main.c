@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    printf("Real UID: %d\n", getuid());
-    printf("Effective UID: %d\n", geteuid());
+    printf("Real UID: %u\n", getuid());
+    printf("Effective UID: %u\n", geteuid());
 
     return EXIT_SUCCESS;
 }

@@ -21,8 +21,8 @@
 
 int main(void)
 {
-    unsigned short host_value = 12345;
-    unsigned short network_value = htons(host_value);
+    uint16_t host_value = 12345;
+    uint16_t network_value = htons(host_value);
 
     printf("Host value: %hu\n", host_value);
     printf("Network value: %hu\n", network_value);

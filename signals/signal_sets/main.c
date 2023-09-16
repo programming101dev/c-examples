@@ -27,6 +27,9 @@ int main(void)
 {
     // Create an empty signal set
     sigset_t signal_set;
+    int signal_to_check;
+    int signal_to_add;
+    int signal_to_remove;
 
     if(sigemptyset(&signal_set) != 0)
     {
@@ -38,7 +41,7 @@ int main(void)
     print_signal_set(&signal_set);
 
     // Check if a specific signal is in the set
-    int signal_to_check = SIGINT;
+    signal_to_check = SIGINT;
 
     if(sigismember(&signal_set, signal_to_check))
     {
@@ -50,7 +53,7 @@ int main(void)
     }
 
     // Add a signal to the set
-    int signal_to_add = SIGINT;
+    signal_to_add = SIGINT;
 
     if(sigaddset(&signal_set, signal_to_add) != 0)
     {
@@ -72,7 +75,7 @@ int main(void)
     }
 
     // Remove a signal from the set
-    int signal_to_remove = SIGINT;
+    signal_to_remove = SIGINT;
 
     if(sigdelset(&signal_set, signal_to_remove) != 0)
     {

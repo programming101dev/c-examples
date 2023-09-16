@@ -72,12 +72,14 @@ int main(void)
     }
     else
     {
+        int try_count;
+
         sleep(1);
         // Parent process (consumer)
         printf("Parent process (PID %d): Waiting for the child to complete...\n", getpid());
 
         // Wait for the semaphore signal from the child with timeout
-        int try_count = 5;
+        try_count = 5;
         while(try_count > 0)
         {
             int ret = sem_trywait(semaphore);

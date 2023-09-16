@@ -118,7 +118,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static void display_file(FILE *file, const char *message)
 {
-    char ch;
+    int ch;
 
     fputs(message, stdout);
 

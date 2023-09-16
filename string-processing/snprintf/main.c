@@ -15,12 +15,12 @@
  */
 
 
+#include <float.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 
 
 // Character Types
@@ -66,6 +66,7 @@ int main(void)
 {
     char good_buffer[50];
     char bad_buffer[2];
+    int value;
 
     // Character Types
     printf("Character Types\n");
@@ -84,30 +85,10 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
-#pragma GCC diagnostic push
-#if defined (__APPLE__) || defined(__FreeBSD__)
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif defined(__linux__)
-#pragma GCC diagnostic ignored "-Woverflow"
-#endif
-    convertInt8(128, bad_buffer, sizeof(bad_buffer));
-#pragma GCC diagnostic pop
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("uint8_t\n");
     convertUInt8(255, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
-#pragma GCC diagnostic push
-#if defined (__APPLE__) || defined(__FreeBSD__)
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif defined(__linux__)
-#pragma GCC diagnostic ignored "-Woverflow"
-#endif
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
 
     printf("int16_t\n");
     convertInt16(-12345, good_buffer, sizeof(good_buffer));
@@ -123,15 +104,6 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
-#pragma GCC diagnostic push
-#if defined (__APPLE__) || defined(__FreeBSD__)
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif defined(__linux__)
-#pragma GCC diagnostic ignored "-Woverflow"
-#endif
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("int32_t\n");
     convertInt32(-2147483647 - 1, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
@@ -145,15 +117,6 @@ int main(void)
     convertUInt32(4294967295U, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
-#pragma GCC diagnostic push
-#if defined (__APPLE__) || defined(__FreeBSD__)
-#pragma GCC diagnostic ignored "-Wconstant-conversion"
-#elif defined(__linux__)
-#pragma GCC diagnostic ignored "-Woverflow"
-#endif
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
 
     printf("int\n");
     convertInt(-2147483647 - 1, good_buffer, sizeof(good_buffer));
@@ -215,18 +178,14 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
-    convertFloat(1234567890.9876543210f, bad_buffer, sizeof(bad_buffer));
+    convertFloat(FLT_MAX, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
 
     printf("double\n");
-    convertDouble(3.14159265358979, good_buffer, sizeof(good_buffer));
+    convertDouble(DBL_MAX, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
-    convertDouble(9876543210.9876543210, bad_buffer, sizeof(bad_buffer));
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
 
     printf("long double\n");
     convertLongDouble(3.141592653589793238462643383279502884L, good_buffer, sizeof(good_buffer));
@@ -249,7 +208,7 @@ int main(void)
 
     // Pointer Types
     printf("\nPointer Types\n");
-    int value = 42;
+    value = 42;
     printf("type*\n");
     convertPointer(&value, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
@@ -264,10 +223,6 @@ int main(void)
     convertSize(sizeof(int), good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
-    convertSize(-1, bad_buffer, sizeof(bad_buffer));
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
 
     printf("ssize_t\n");
     convertSSize(-42, good_buffer, sizeof(good_buffer));
@@ -302,18 +257,10 @@ int main(void)
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
 
-    convertUid(-1, bad_buffer, sizeof(bad_buffer));
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("gid_t\n");
     convertGid(100, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
-    convertGid(-1, bad_buffer, sizeof(bad_buffer));
-    printf("\tBad Buffer: %s\n", bad_buffer);
-    memset(bad_buffer, 0, sizeof(bad_buffer));
 
     return EXIT_SUCCESS;
 }

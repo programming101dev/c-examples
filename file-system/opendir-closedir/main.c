@@ -29,11 +29,12 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *directory_path;
+    DIR *dir;
 
     directory_path = NULL;
     parse_arguments(argc, argv, &directory_path);
     handle_arguments(argv[0], directory_path);
-    DIR *dir = opendir(directory_path);
+    dir = opendir(directory_path);
 
     if(dir == NULL)
     {

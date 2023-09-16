@@ -62,8 +62,8 @@ static void print_entries(void)
 static void print_entry(const struct passwd *entry)
 {
     printf("Username: %s\n", entry->pw_name);
-    printf("User ID (UID): %d\n", entry->pw_uid);
-    printf("Group ID (GID): %d\n", entry->pw_gid);
+    printf("User ID (UID): %u\n", entry->pw_uid);
+    printf("Group ID (GID): %u\n", entry->pw_gid);
     printf("Home directory: %s\n", entry->pw_dir);
     printf("Login shell: %s\n", entry->pw_shell);
     printf("-------------------------\n");

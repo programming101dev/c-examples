@@ -38,20 +38,26 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
+    int sockfd;
+    struct sockaddr_in addr;
+    int client_sockfd;
+    char buffer[1024];
+    ssize_t bytes_received;
+    char temp_buffer[1];
+    ssize_t status;
 
     ip_address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
     {
         perror("socket");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     inet_pton(AF_INET, ip_address, &(addr.sin_addr));
@@ -60,35 +66,34 @@ int main(int argc, char *argv[])
     {
         perror("bind");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if(listen(sockfd, 1) == -1)
     {
         perror("listen");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     printf("Server listening on port 8080...\n");
 
-    int client_sockfd = accept(sockfd, NULL, NULL);
+    client_sockfd = accept(sockfd, NULL, NULL);
     if(client_sockfd == -1)
     {
         perror("accept");
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Receive data from the client
-    char buffer[1024];
-    int bytes_received = recv(client_sockfd, buffer, sizeof(buffer), 0);
+    bytes_received = recv(client_sockfd, buffer, sizeof(buffer), 0);
     if(bytes_received == -1)
     {
         perror("recv");
         close(client_sockfd);
         close(sockfd);
-        return 1;
+        return EXIT_FAILURE;
     }
     else if(bytes_received == 0)
     {
@@ -104,8 +109,7 @@ int main(int argc, char *argv[])
     shutdown(client_sockfd, SHUT_RD);
 
     // Wait for the client to close its sending part of the socket
-    char temp_buffer[1];
-    int status = recv(client_sockfd, temp_buffer, sizeof(temp_buffer), 0);
+    status = recv(client_sockfd, temp_buffer, sizeof(temp_buffer), 0);
     if(status == 0)
     {
         printf("Client closed the sending part of the socket.\n");

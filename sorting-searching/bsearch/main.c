@@ -22,13 +22,19 @@
 static int intcmp(const void *a, const void *b);
 
 
+// TODO take the number to to find and the numbers to search on the command line
+
+
 int main(void)
 {
     int arr[] = {5, 2, 8, 1, 3};
-    int size = sizeof(arr) / sizeof(arr[0]);
+    size_t size = sizeof(arr) / sizeof(arr[0]);
+    int *result;
+    int target;
+
 
     printf("Unsorted array: ");
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
@@ -40,16 +46,16 @@ int main(void)
 
     printf("Sorted array: ");
 
-    for(int i = 0; i < size; i++)
+    for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
-    printf("\n");
 
-    int target = 3;
+    printf("\n");
+    target = 3;
 
     // Using bsearch to search for the target element
-    int *result = bsearch(&target, arr, size, sizeof(int), intcmp);
+    result = (int *)bsearch(&target, arr, size, sizeof(int), intcmp);
 
     if(result != NULL)
     {

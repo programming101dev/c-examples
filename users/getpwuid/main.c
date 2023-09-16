@@ -36,11 +36,12 @@ int main(int argc, char *argv[])
 {
     char *user_id;
     uid_t uid;
+    struct passwd *user_info;
 
     user_id = NULL;
     parse_arguments(argc, argv, &user_id);
     handle_arguments(argv[0], user_id, &uid);
-    struct passwd *user_info = getpwuid(uid);
+    user_info = getpwuid(uid);
 
     if(user_info != NULL)
     {
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("User with UID %d not found.\n", uid);
+        printf("User with UID %u not found.\n", uid);
     }
 
     return EXIT_SUCCESS;
@@ -188,8 +189,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void print_entry(const struct passwd *entry)
 {
     printf("Username: %s\n", entry->pw_name);
-    printf("User ID (UID): %d\n", entry->pw_uid);
-    printf("Group ID (GID): %d\n", entry->pw_gid);
+    printf("User ID (UID): %u\n", entry->pw_uid);
+    printf("Group ID (GID): %u\n", entry->pw_gid);
     printf("Home directory: %s\n", entry->pw_dir);
     printf("Login shell: %s\n", entry->pw_shell);
     printf("-------------------------\n");

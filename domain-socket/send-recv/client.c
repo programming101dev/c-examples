@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     FILE *file;
     int sockfd;
     struct sockaddr_un server_addr;
+    char line[1024]; // Adjust the buffer size as needed
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -74,13 +75,13 @@ int main(int argc, char *argv[])
     }
 
     // Read and parse words from the file
-    char line[1024]; // Adjust the buffer size as needed
     while(fgets(line, sizeof(line), file) != NULL)
     {
         char *word;
         word = strtok(line, " \t\n");
         while(word != NULL)
         {
+            uint8_t size;
             size_t word_len = strlen(word);
             if(word_len > UINT8_MAX)
             {
@@ -91,12 +92,11 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            uint8_t size = (uint8_t) word_len;
+            size = (uint8_t) word_len;
             send(sockfd, &size, sizeof(uint8_t), 0);
 
             // Write the word
             send(sockfd, word, word_len, 0);
-
             word = strtok(NULL, " \t\n");
         }
     }

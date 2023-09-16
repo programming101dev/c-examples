@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
     FILE *file;
     int sockfd;
     struct sockaddr_un server_addr;
+    char line[1024]; // Adjust the buffer size as needed
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -80,13 +81,13 @@ int main(int argc, char *argv[])
     }
 
     // Read and parse words from the file
-    char line[1024]; // Adjust the buffer size as needed
     while(fgets(line, sizeof(line), file) != NULL)
     {
         char *word;
         word = strtok(line, " \t\n");
         while(word != NULL)
         {
+            uint8_t size;
             size_t word_len = strlen(word);
             if(word_len > UINT8_MAX)
             {
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            uint8_t size = (uint8_t) word_len;
+            size = (uint8_t) word_len;
             send_word(sockfd, word, size);
 
             word = strtok(NULL, " \t\n");
@@ -179,6 +180,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void send_word(int sockfd, const char *word, uint8_t length)
 {
     ssize_t written_bytes;
+    struct timespec delay;
 
     printf("Client: sending word of length %u: %s\n", length, word);
     written_bytes = send(sockfd, &length, sizeof(uint8_t), 0);
@@ -199,7 +201,6 @@ static void send_word(int sockfd, const char *word, uint8_t length)
     }
 
     // Add random delay between 500ms and 1500ms
-    struct timespec delay;
     delay.tv_sec = 0;
     delay.tv_nsec = 500000000 + (rand() % 1000000000); // 500ms + random nanoseconds
     nanosleep(&delay, NULL);

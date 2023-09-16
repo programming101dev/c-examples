@@ -46,15 +46,19 @@ int main(void)
             continue;
         }
 
-        if(ifaddr->ifa_addr->sa_family == AF_INET)
+        if (ifaddr->ifa_addr->sa_family == AF_INET)
         {
-            struct sockaddr_in *s4 = (struct sockaddr_in *) ifaddr->ifa_addr;
-            inet_ntop(AF_INET, &s4->sin_addr, host, NI_MAXHOST);
+            struct sockaddr_in ipv4;
+
+            memcpy(&ipv4, ifaddr->ifa_addr, sizeof(struct sockaddr_in));
+            inet_ntop(AF_INET, &(ipv4.sin_addr), host, NI_MAXHOST);
         }
-        else if(ifaddr->ifa_addr->sa_family == AF_INET6)
+        else if (ifaddr->ifa_addr->sa_family == AF_INET6)
         {
-            struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) ifaddr->ifa_addr;
-            inet_ntop(AF_INET6, &s6->sin6_addr, host, NI_MAXHOST);
+            struct sockaddr_in6 ipv6;
+
+            memcpy(&ipv6, ifaddr->ifa_addr, sizeof(struct sockaddr_in6));
+            inet_ntop(AF_INET6, &(ipv6.sin6_addr), host, NI_MAXHOST);
         }
         else
         {

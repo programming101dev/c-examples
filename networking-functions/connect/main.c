@@ -32,7 +32,7 @@ static void handle_arguments(const char *binary_name, const char *ip_address, co
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int create_socket(void);
-static struct sockaddr_in prepare_server_address(int client_fd, const char *ip_address, in_port_t port);
+static void prepare_server_address(int client_fd, const char *ip_address, in_port_t port, struct sockaddr_in *server_addr, size_t server_addr_size);
 static void connect_to_server(int client_fd, struct sockaddr_in server_addr);
 static void do_communication(int client_fd);
 static void close_socket(int client_fd);
@@ -43,13 +43,15 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
+    int client_fd;
+    struct sockaddr_in server_addr;
 
     ip_address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
-    int client_fd = create_socket();
-    struct sockaddr_in server_addr = prepare_server_address(client_fd, ip_address, port);
+    client_fd = create_socket();
+    prepare_server_address(client_fd, ip_address, port, &server_addr, sizeof(server_addr));
     connect_to_server(client_fd, server_addr);
     printf("Connected to the server\n");
     do_communication(client_fd);
@@ -175,22 +177,18 @@ static int create_socket(void)
 }
 
 
-static struct sockaddr_in prepare_server_address(int client_fd, const char *ip_address, in_port_t port)
+static void prepare_server_address(int client_fd, const char *ip_address, in_port_t port, struct sockaddr_in *server_addr, size_t server_addr_size)
 {
-    struct sockaddr_in server_addr;
+    memset(server_addr, 0, server_addr_size);
+    server_addr->sin_family = AF_INET;
+    server_addr->sin_port = htons(port);
 
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
-
-    if(inet_pton(AF_INET, ip_address, &server_addr.sin_addr) <= 0)
+    if(inet_pton(AF_INET, ip_address, &server_addr->sin_addr) <= 0)
     {
         perror("Invalid address/Address not supported");
         close_socket(client_fd);
         exit(EXIT_FAILURE);
     }
-
-    return server_addr;
 }
 
 

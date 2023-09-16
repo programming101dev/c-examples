@@ -295,7 +295,7 @@ static void *thread_function(void *arg)
 {
     unsigned sleep_time = *(unsigned int *)arg;
 
-    printf("Thread will sleep for %d seconds.\n", sleep_time);
+    printf("Thread will sleep for %u seconds.\n", sleep_time);
     sleep(sleep_time);
 
     // Signal the condition variable

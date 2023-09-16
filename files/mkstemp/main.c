@@ -22,11 +22,11 @@
 
 int main(void)
 {
-    char template[] = "/tmp/temp_file_XXXXXX";
+    char templ[] = "/tmp/temp_file_XXXXXX";
     int fd;
 
     // Create a temporary file using mkstemp
-    fd = mkstemp(template);
+    fd = mkstemp(templ);
 
     if(fd == -1)
     {
@@ -34,10 +34,10 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    printf("Created temporary file %s\n", template);
+    printf("Created temporary file %s\n", templ);
 
     // Delete the temporary file using unlink
-    if(unlink(template) == -1)
+    if(unlink(templ) == -1)
     {
         perror("Error deleting temporary file");
         return EXIT_FAILURE;

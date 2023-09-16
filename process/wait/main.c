@@ -30,6 +30,7 @@ int main(void)
 {
     pid_t pid1;
     pid_t pid2;
+    int status1, status2;
 
     pid1 = fork();
 
@@ -63,7 +64,6 @@ int main(void)
     print_process_info("Parent");
 
     // Wait for the child processes to finish
-    int status1, status2;
     if(waitpid(pid1, &status1, 0) == -1)
     {
         perror("Error waiting for child process 1");
@@ -96,9 +96,11 @@ static void print_process_info(const char *name)
 
 static void child_process(const char *name)
 {
-    srand(time(NULL) ^ getpid());
+    unsigned int sleep_time;
+
+    srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
     print_process_info(name);
-    int sleep_time = rand() % 5;
+    sleep_time = (unsigned int)rand() % 5;
     sleep(sleep_time);
-    printf("%s process finished after sleeping %d seconds.\n", name, sleep_time);
+    printf("%s process finished after sleeping %u seconds.\n", name, sleep_time);
 }

@@ -22,17 +22,20 @@
 
 int main(void)
 {
-    long max_name_length;
+    long length;
+    size_t max_name_length;
+    char *ttyname_buf;
 
-    max_name_length = sysconf(_SC_TTY_NAME_MAX);
+    length = sysconf(_SC_TTY_NAME_MAX);
 
-    if(max_name_length == -1)
+    if(length == -1)
     {
         perror("Error getting maximum terminal name length");
         return 1;
     }
 
-    char *ttyname_buf = (char *) malloc(max_name_length + 1);
+    max_name_length = (size_t)length;
+    ttyname_buf = (char *)malloc(max_name_length + 1);
 
     if(ttyname_buf == NULL)
     {

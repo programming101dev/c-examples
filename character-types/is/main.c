@@ -65,7 +65,7 @@ int main(void)
     {
         printf("%c    | ", isprint(ch) ? ch : ' ');
         print_binary(ch);
-        printf(" | %3o | %3d | %3X | ", ch, ch, ch);
+        printf(" | %3o | %3u | %3X | ", (unsigned int)ch, (unsigned int)ch, (unsigned int)ch);
 
         for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
         {

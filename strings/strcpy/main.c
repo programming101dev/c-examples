@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &string);
     handle_arguments(argv[0], string);
     destination_size = strlen(string) + 1;
-    destination = malloc(destination_size);
+    destination = (char *)malloc(destination_size);
 
     if(destination == NULL)
     {

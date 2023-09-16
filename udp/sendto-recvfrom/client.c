@@ -40,13 +40,19 @@ int main(int argc, char *argv[])
     char *port_str;
     char *message;
     in_port_t port;
+    int sockfd;
+    struct sockaddr_in server_addr;
+    ssize_t bytes_sent;
+    char buffer[1024];
+    ssize_t bytes_received;
+    socklen_t server_addr_len;
 
     ip_address = NULL;
     port_str = NULL;
     message = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str, &message);
     handle_arguments(argv[0], ip_address, port_str, message, &port);
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
     if(sockfd == -1)
     {
@@ -54,12 +60,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
     inet_pton(AF_INET, ip_address, &server_addr.sin_addr);
+    bytes_sent = sendto(sockfd, message, strlen(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr));
 
-    int bytes_sent = sendto(sockfd, message, strlen(message), 0, (struct sockaddr *) &server_addr, sizeof(server_addr));
     if(bytes_sent == -1)
     {
         perror("sendto");
@@ -67,10 +72,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    char buffer[1024];
-    socklen_t server_addr_len = sizeof(server_addr);
+    server_addr_len = sizeof(server_addr);
+    bytes_received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *) &server_addr, &server_addr_len);
 
-    int bytes_received = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *) &server_addr, &server_addr_len);
     if(bytes_received == -1)
     {
         perror("recvfrom");

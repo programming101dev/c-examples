@@ -169,24 +169,26 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static void write_fully(int fd, const void *buf, size_t count)
 {
-    const char *ptr = buf;
+    const char *ptr = (const char *)buf;
+
     while(count > 0)
     {
         ssize_t written_bytes = write(fd, ptr, count);
+
         if(written_bytes < 0)
         {
             error_exit("Error writing fully to pipe");
         }
 
         ptr += written_bytes;
-        count -= written_bytes;
+        count -= (size_t)written_bytes;
     }
 }
 
 
 static void read_fully(int fd, void *buf, size_t count)
 {
-    char *ptr = buf;
+    char *ptr = (char *)buf;
     while(count > 0)
     {
         ssize_t read_bytes = read(fd, ptr, count);
@@ -195,7 +197,7 @@ static void read_fully(int fd, void *buf, size_t count)
             error_exit("Error reading fully from pipe");
         }
         ptr += read_bytes;
-        count -= read_bytes;
+        count -= (size_t)read_bytes;
     }
 }
 
@@ -234,7 +236,7 @@ static void error_exit(const char *msg)
 
 static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
 {
-    char ch;
+    int ch;
     char word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
@@ -257,7 +259,8 @@ static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *s
             {
                 error_exit("Encountered a word longer than the maximum allowed length");
             }
-            word[length++] = ch;
+
+            word[length++] = (char)ch;
         }
     }
 

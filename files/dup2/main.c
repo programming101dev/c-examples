@@ -23,12 +23,12 @@
 
 int main(void)
 {
-    char template[] = "/tmp/tempfileXXXXXX";
+    char templ[] = "/tmp/tempfileXXXXXX";
     int original_fd;
     struct stat file_stat;
 
     // Create a temporary file and obtain a unique filename
-    original_fd = mkstemp(template);
+    original_fd = mkstemp(templ);
 
     if(original_fd == -1)
     {
@@ -37,7 +37,7 @@ int main(void)
     }
 
     // Get the size of the temporary file before writing
-    if(stat(template, &file_stat) == -1)
+    if(stat(templ, &file_stat) == -1)
     {
         perror("Error getting file stats");
         close(original_fd); // Close the file descriptor before exiting
@@ -78,16 +78,16 @@ int main(void)
     }
 
     // Get the size of the temporary file after writing
-    if(stat(template, &file_stat) == -1)
+    if(stat(templ, &file_stat) == -1)
     {
         perror("Error getting file stats");
         return EXIT_FAILURE;
     }
 
-    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
+// XXXXXX    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
 
     // Cleanup: remove the temporary file
-    if(unlink(template) == -1)
+    if(unlink(templ) == -1)
     {
         perror("Error removing temporary file");
         return EXIT_FAILURE;

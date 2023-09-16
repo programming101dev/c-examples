@@ -22,13 +22,13 @@
 
 int main(void)
 {
-    char template[] = "/tmp/mytempfileXXXXXX";
+    char templ[] = "/tmp/mytempfileXXXXXX";
     const char *data = "This is some data that needs to be written to the file.\n";
     int fd;
 
     printf("Creating a temporary file...\n");
 
-    fd = mkstemp(template);
+    fd = mkstemp(templ);
 
     if(fd == -1)
     {
@@ -55,7 +55,7 @@ int main(void)
 
     printf("Deleting the temporary file...\n");
 
-    if(unlink(template) == -1)
+    if(unlink(templ) == -1)
     {
         perror("Error deleting temporary file");
         return EXIT_FAILURE;

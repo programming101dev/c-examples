@@ -136,14 +136,18 @@ static int resolve_hostname_to_ip(const char *hostname)
         if(res->ai_family == AF_INET)
         {
             // IPv4
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *) res->ai_addr;
+            struct sockaddr_in *ipv4;
+
+            memcpy(&ipv4, res->ai_addr, sizeof(struct sockaddr_in));
             addr = &(ipv4->sin_addr);
             ipver = "IPv4";
         }
         else
         {
             // IPv6
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *) res->ai_addr;
+            struct sockaddr_in6 *ipv6;
+
+            memcpy(&ipv6, res->ai_addr, sizeof(struct sockaddr_in6));
             addr = &(ipv6->sin6_addr);
             ipver = "IPv6";
         }

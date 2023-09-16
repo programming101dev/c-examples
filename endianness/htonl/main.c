@@ -21,11 +21,11 @@
 
 int main(void)
 {
-    unsigned long host_value = 0x12345678;
-    unsigned long network_value = htonl(host_value);
+    uint32_t host_value = 0x12345678;
+    uint32_t network_value = htonl(host_value);
 
-    printf("Host value: %lu\n", host_value);
-    printf("Network value: %lu\n", network_value);
+    printf("Host value: %u\n", host_value);
+    printf("Network value: %u\n", network_value);
 
     return 0;
 }

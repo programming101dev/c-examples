@@ -61,22 +61,22 @@ Now, the CC environment variable is permanently set to your chosen C compiler.
 ## **Running the generate-build.sh Script**
 First, ensure the script is executable:
 ```bash
-chmod +x generate-build.sh
+chmod +x generate-makefiles.sh
 ```
 Now, execute the script:
 ```bash
-./generate-build.sh
+./generate-makefiles.sh
 ```
 This will check which compiler flags are supported on your system and subsequently generate a build.sh script tailored to your system.
 ## **Executing the Generated build.sh Script**
 
 Before running the generated script, make sure it's executable:
 ```bash
-chmod +x build.sh
+chmod +x run-makefiles.sh
 ```
 Run the build.sh script:
 ```bash
-./build.sh
+./run-makefiles.sh
 ```
 This script will compile the C files in the repository using the supported flags from the generate-build.sh script.
 ## **Conclusion**

@@ -127,8 +127,8 @@ static void print_file_info(const struct stat *fileStat)
     printf("File inode: %lld\n", (long long) fileStat->st_ino);
     printf("Device ID: %lld\n", (long long) fileStat->st_dev);
     printf("Number of hard links: %lld\n", (long long) fileStat->st_nlink);
-    printf("File Owner UID: %d\n", fileStat->st_uid);
-    printf("File Group GID: %d\n", fileStat->st_gid);
+    printf("File Owner UID: %u\n", fileStat->st_uid);
+    printf("File Group GID: %u\n", fileStat->st_gid);
     print_time("Last access time", fileStat->st_atime);
     print_time("Last modification time", fileStat->st_mtime);
     print_time("Last status change time", fileStat->st_ctime);

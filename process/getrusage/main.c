@@ -70,8 +70,9 @@ int main(void)
 static long long performCalculation(size_t size, size_t iterations)
 {
     int *numbers;
+    long long sum;
 
-    numbers = malloc(size * sizeof(int));
+    numbers = (int *)malloc(size * sizeof(int));
 
     if(numbers == NULL)
     {
@@ -79,9 +80,9 @@ static long long performCalculation(size_t size, size_t iterations)
         exit(EXIT_FAILURE);
     }
 
-    long long sum = 0;
+    sum = 0;
 
-    srand(time(NULL) ^ getpid());
+    srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
 
     for(size_t i = 0; i < size; i++)
     {

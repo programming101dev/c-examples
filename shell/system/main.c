@@ -28,18 +28,19 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *command;
+    int status;
 
     command = NULL;
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
     printf("Output of \"%s\":\n", command);
 
-    int status = system(command);
+    status = system(command);
 
     if(status == -1)
     {
         perror("Error executing command");
-        return 1;
+        return EXIT_FAILURE;
     }
     else
     {

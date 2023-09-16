@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
     int fd;
     char buffer[1024];
     ssize_t bytesRead;
+    int flags;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
     }
 
     // Set the file descriptor to non-blocking mode
-    int flags = fcntl(fd, F_GETFL);
+    flags = fcntl(fd, F_GETFL);
 
     if(flags == -1)
     {

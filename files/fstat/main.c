@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
     printf("File inode: %lld\n", (long long) fileStat.st_ino);
     printf("Device ID: %lld\n", (long long) fileStat.st_dev);
     printf("Number of hard links: %lld\n", (long long) fileStat.st_nlink);
-    printf("File Owner UID: %d\n", fileStat.st_uid);
-    printf("File Group GID: %d\n", fileStat.st_gid);
+    printf("File Owner UID: %u\n", fileStat.st_uid);
+    printf("File Group GID: %u\n", fileStat.st_gid);
     printf("Last access time: %ld\n", fileStat.st_atime);
     printf("Last modification time: %ld\n", fileStat.st_mtime);
     printf("Last status change time: %ld\n", fileStat.st_ctime);

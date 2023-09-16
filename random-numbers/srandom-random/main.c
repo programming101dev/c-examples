@@ -28,7 +28,7 @@ int main(void)
     unsigned int seed;
 
     // Set a seed value for random number generation based on the current time.
-    seed = time(NULL);
+    seed = (unsigned int)time(NULL);
     srandom(seed);
     printf("First sequence\n");
     print_random_numbers(5);

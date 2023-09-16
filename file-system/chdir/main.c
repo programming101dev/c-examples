@@ -133,7 +133,7 @@ char *getCurrentWorkingDirectory(long path_max)
 
     while(1)
     {
-        buffer = realloc(buffer, size);
+        buffer = (char *)realloc(buffer, size);
 
         if(buffer == NULL)
         {

@@ -29,7 +29,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 #if defined(__APPLE__)
     #define D_INO_FORMAT "%lld"
 #else
-    #define D_INO_FORMAT "%ld"
+    #define D_INO_FORMAT "%lu"
 #endif
 
 

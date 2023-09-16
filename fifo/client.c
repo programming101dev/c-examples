@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     char *file_path;
     int fd;
     char line[1024];
+    FILE *file;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    FILE *file = fopen(file_path, "r");
+    file  = fopen(file_path, "r");
     if(file == NULL)
     {
         perror("fopen");
@@ -66,6 +67,8 @@ int main(int argc, char *argv[])
         while(word != NULL)
         {
             size_t word_len = strlen(word);
+            uint8_t size;
+
             if(word_len > UINT8_MAX)
             {
                 fprintf(stderr, "Word exceeds maximum length\n");
@@ -75,7 +78,7 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            uint8_t size = (uint8_t) word_len;
+            size = (uint8_t) word_len;
             write(fd, &size, sizeof(uint8_t));
 
             // Write the word

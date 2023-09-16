@@ -40,13 +40,15 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
+    int listen_sockfd;
+    struct sockaddr_in server_addr;
 
     ip_address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
     printf("Port: %d\n", port);
-    int listen_sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    listen_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(listen_sockfd == -1)
     {
@@ -55,7 +57,6 @@ int main(int argc, char *argv[])
     }
 
     // Bind the socket to the specified port
-    struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     inet_pton(AF_INET, ip_address, &(server_addr.sin_addr));

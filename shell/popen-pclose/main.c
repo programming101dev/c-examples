@@ -32,15 +32,22 @@ int main(int argc, char *argv[])
     char *command;
     char *redirected_command;
     char buffer[128];
+    FILE *fp;
 
     command = NULL;
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
+    redirected_command = (char *)malloc(strlen(command) + strlen(redirect) +1);
 
-    redirected_command = malloc(strlen(command) + strlen(redirect) +1);
+    if(redirected_command == NULL)
+    {
+        perror("malloc");
+        return EXIT_FAILURE;
+    }
+
     strcpy(redirected_command, command);
     strcat(redirected_command, redirect);
-    FILE *fp = popen(redirected_command, "r");
+    fp = popen(redirected_command, "r");
     free(redirected_command);
 
     if(fp == NULL)

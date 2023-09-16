@@ -43,13 +43,14 @@ static void convert(const char *str)
 {
     long double result;
     char *endptr;
+    long double tolerance;
 
     result = 0;
     errno = 0;
     result = strtold(str, &endptr);
 
     // Define your desired tolerance
-    long double tolerance = 1e-6L;
+    tolerance = 1e-6L;
 
     // Check for conversion errors
     if((errno == ERANGE && (fabsl(result - HUGE_VALL) < tolerance)) || (errno != 0 && fabsl(result) < tolerance))

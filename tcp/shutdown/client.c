@@ -38,12 +38,17 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
+    int sockfd;
+    struct sockaddr_in addr;
+    char message[] = "Hello, server!";
+    char buffer[1024];
+    ssize_t bytes_received;
 
     ip_address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sockfd == -1)
     {
@@ -51,7 +56,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     inet_pton(AF_INET, ip_address, &(addr.sin_addr));
@@ -64,15 +68,13 @@ int main(int argc, char *argv[])
     }
 
     // Send data over the socket
-    char message[] = "Hello, server!";
     send(sockfd, message, sizeof(message), 0);
 
     // Perform a shutdown on the sending part of the socket
     shutdown(sockfd, SHUT_WR);
 
     // Receive data from the server
-    char buffer[1024];
-    int bytes_received = recv(sockfd, buffer, sizeof(buffer), 0);
+    bytes_received = recv(sockfd, buffer, sizeof(buffer), 0);
     if(bytes_received == -1)
     {
         perror("recv");

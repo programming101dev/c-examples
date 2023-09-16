@@ -22,19 +22,21 @@
 
 int main(void)
 {
-    long max_hostname_length;
+    size_t max_hostname_length;
+    long length;
     char *hostname;
     int result;
 
-    max_hostname_length = sysconf(_SC_HOST_NAME_MAX);
+    length = sysconf(_SC_HOST_NAME_MAX);
 
-    if(max_hostname_length <= 0)
+    if(length <= 0)
     {
         perror("sysconf");
         return EXIT_FAILURE;
     }
 
-    hostname = malloc(max_hostname_length + 1);
+    max_hostname_length = (size_t)length;
+    hostname = (char *)malloc(max_hostname_length + 1);
 
     if(hostname == NULL)
     {

@@ -23,6 +23,7 @@
 
 int main(void)
 {
+    pid_t foreground_pgid;
     int terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
 
     if(terminal_fd == -1)
@@ -31,7 +32,7 @@ int main(void)
         return 1;
     }
 
-    pid_t foreground_pgid = tcgetpgrp(terminal_fd);
+    foreground_pgid = tcgetpgrp(terminal_fd);
 
     if(foreground_pgid == -1)
     {

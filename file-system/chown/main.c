@@ -26,9 +26,9 @@
 
 static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id);
 static void handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
-static uintmax_t get_uid_t_max(void);
+static uid_t get_uid_t_max(void);
 static uid_t parse_uid_t(const char *binary_name, const char *str);
-static uintmax_t get_gid_t_max(void);
+static gid_t get_gid_t_max(void);
 static gid_t parse_gid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
@@ -132,9 +132,9 @@ static void handle_arguments(const char *binary_name, const char *path, const ch
 }
 
 
-static uintmax_t get_uid_t_max(void)
+static uid_t get_uid_t_max(void)
 {
-    uintmax_t value;
+    uid_t value;
 
     if (sizeof(uid_t) == sizeof(char))
     {
@@ -196,9 +196,9 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
 }
 
 
-static uintmax_t get_gid_t_max(void)
+static gid_t get_gid_t_max(void)
 {
-    uintmax_t value;
+    gid_t value;
 
     if (sizeof(gid_t) == sizeof(char))
     {

@@ -37,11 +37,12 @@ volatile int running = 1;
 int main(void)
 {
     int server_socket, *client_sockets = NULL;
-    int max_clients = 0;
-    int max_fd, activity, i, valread, new_socket, sd;
+    size_t max_clients = 0;
+    int max_fd, activity, new_socket, sd;
     int addrlen;
     struct sockaddr_un address;
     fd_set readfds;
+    int opt;
 
     // Create server socket
     if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
@@ -58,7 +59,7 @@ int main(void)
     strncpy(address.sun_path, SOCKET_PATH, sizeof(address.sun_path) - 1);
 
     // Enable address reuse
-    int opt = 1;
+    opt = 1;
     if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
     {
         perror("Setsockopt error");
@@ -94,7 +95,7 @@ int main(void)
         max_fd = server_socket;
 
         // Add the client sockets to the set
-        for(i = 0; i < max_clients; i++)
+        for(size_t i = 0; i < max_clients; i++)
         {
             sd = client_sockets[i];
 
@@ -131,12 +132,12 @@ int main(void)
 
             // Increase the size of the client_sockets array
             max_clients++;
-            client_sockets = realloc(client_sockets, sizeof(int) * max_clients);
+            client_sockets = (int *)realloc(client_sockets, sizeof(int) * max_clients);
             client_sockets[max_clients - 1] = new_socket;
         }
 
         // Handle incoming data from existing clients
-        for(i = 0; i < max_clients; i++)
+        for(size_t i = 0; i < max_clients; i++)
         {
             sd = client_sockets[i];
 
@@ -144,6 +145,7 @@ int main(void)
             {
                 char word_length;
                 char word[256];
+                ssize_t valread;
 
                 // Receive the word length (uint8_t)
                 valread = read(sd, &word_length, sizeof(word_length));
@@ -179,7 +181,7 @@ int main(void)
     }
 
     // Cleanup and close all client sockets
-    for(i = 0; i < max_clients; i++)
+    for(size_t i = 0; i < max_clients; i++)
     {
         sd = client_sockets[i];
         if(sd > 0)

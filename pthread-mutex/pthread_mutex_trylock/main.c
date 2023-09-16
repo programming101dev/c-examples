@@ -39,21 +39,22 @@ static void *threadFunction(void *arg);
 
 int main(void)
 {
-    // Initialize the mutex
     pthread_mutex_t mutex;
+    pthread_t threads[NUM_THREADS];
+    int sharedVariable;
+    int i;
+    struct thread_data data;
+
+
     if(pthread_mutex_init(&mutex, NULL) != 0)
     {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    // Create an array of threads
-    pthread_t threads[NUM_THREADS];
-    int sharedVariable = 0; // Local shared variable for main thread
-    int i;
+    sharedVariable = 0; // Local shared variable for main thread
 
     // Create multiple threads
-    struct thread_data data;
     data.sharedVariable = &sharedVariable;
     data.mutex = &mutex;
 
@@ -62,7 +63,7 @@ int main(void)
         if(pthread_create(&threads[i], NULL, threadFunction, (void *) &data) != 0)
         {
             fprintf(stderr, "Error: Thread creation failed.\n");
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 

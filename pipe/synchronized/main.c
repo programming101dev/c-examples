@@ -207,7 +207,7 @@ static void error_exit(const char *msg)
 
 static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
 {
-    char ch;
+    int ch;
     char word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
@@ -230,7 +230,8 @@ static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *s
             {
                 error_exit("Encountered a word longer than the maximum allowed length");
             }
-            word[length++] = ch;
+
+            word[length++] = (char)ch;
         }
     }
 

@@ -23,6 +23,7 @@
 int main(void)
 {
     pthread_cond_t condition;
+    int destroy_result;
 
     // Initialize the condition variable
     int init_result = pthread_cond_init(&condition, NULL);
@@ -36,7 +37,7 @@ int main(void)
     printf("condition created\n");
 
     // Destroy the condition variable
-    int destroy_result = pthread_cond_destroy(&condition);
+    destroy_result = pthread_cond_destroy(&condition);
 
     if(destroy_result != 0)
     {

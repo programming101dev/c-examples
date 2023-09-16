@@ -26,7 +26,7 @@
 
 static void parse_arguments(int argc, char *argv[], char **group_id);
 static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
-static uintmax_t get_gid_t_max(void);
+static gid_t get_gid_t_max(void);
 static gid_t parse_gid_t(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    printf("Real GID: %d\n", getgid());
-    printf("Effective GID: %d\n", getegid());
+    printf("Real GID: %u\n", getgid());
+    printf("Effective GID: %u\n", getegid());
 
     return EXIT_SUCCESS;
 }
@@ -106,9 +106,9 @@ static void handle_arguments(const char *binary_name, const char *group_id, gid_
 }
 
 
-static uintmax_t get_gid_t_max(void)
+static gid_t get_gid_t_max(void)
 {
-    uintmax_t value;
+    gid_t value;
 
     if (sizeof(gid_t) == sizeof(char))
     {

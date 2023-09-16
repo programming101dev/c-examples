@@ -27,9 +27,9 @@
 
 struct thread_data
 {
-    int *sharedVariable;
-    pthread_mutex_t *mutex;
     bool use_mutex;
+    pthread_mutex_t *mutex;
+    int *sharedVariable;
 };
 
 
@@ -42,6 +42,11 @@ int main(int argc, char *argv[])
 {
     bool use_mutex = false;
     pthread_mutex_t mutex;
+    pthread_t threads[NUM_THREADS];
+    int sharedVariable;
+    int i;
+    struct thread_data data;
+
 
     parse_arguments(argc, argv, &use_mutex);
 
@@ -51,13 +56,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    // Create an array of threads
-    pthread_t threads[NUM_THREADS];
-    int sharedVariable = 0; // Local shared variable for main thread
-    int i;
+    sharedVariable = 0; // Local shared variable for main thread
 
     // Create multiple threads
-    struct thread_data data;
     data.sharedVariable = &sharedVariable;
     data.mutex = &mutex;
     data.use_mutex = use_mutex;

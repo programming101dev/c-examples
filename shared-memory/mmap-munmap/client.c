@@ -39,6 +39,9 @@ int main(int argc, char *argv[]) {
     int shm_fd;
     char *shm_ptr;
     sem_t *client_sem, *server_sem;
+    FILE *file;
+    char buffer[100];
+    const char *shm_name = "/my_shared_memory";
     size_t page_size = get_page_size();
     size_t shm_size = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
 
@@ -47,14 +50,11 @@ int main(int argc, char *argv[]) {
     handle_arguments(argv[0], file_path);
 
     // Open and read the file
-    FILE *file = fopen(file_path, "r");
+    file = fopen(file_path, "r");
     if (!file) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
-
-    // Open the shared memory
-    const char *shm_name = "/my_shared_memory";
 
     // Open the shared memory
     shm_fd = shm_open(shm_name, O_RDWR, S_IRUSR | S_IWUSR);
@@ -83,8 +83,6 @@ int main(int argc, char *argv[]) {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
-
-    char buffer[100];
 
     while (fgets(buffer, sizeof(buffer), file))
     {

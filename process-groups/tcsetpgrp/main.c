@@ -62,7 +62,6 @@ int main(void)
 
         printf("Child Process Group ID (PGID) after creating a new session: %d\n", getpid());
 
-        // TODO: linux always fails?
         if(setpgid(getpid(), new_pgid) == -1)
         {
             perror("Error setting PGID for the child process");

@@ -162,13 +162,19 @@ static void send_word(const char *word)
         free(shared_word);
     }
 
-    // TODO word is NULL on Linux (passing example.txt)
-    shared_word = strdup(word);
-
-    if(shared_word == NULL)
+    if(word == NULL)
     {
-        perror("Error duplicating word");
-        exit(EXIT_FAILURE);
+        shared_word = NULL;
+    }
+    else
+    {
+        shared_word = strdup(word);
+
+        if(shared_word == NULL)
+        {
+            perror("Error duplicating word");
+            exit(EXIT_FAILURE);
+        }
     }
 
     word_ready = 1;

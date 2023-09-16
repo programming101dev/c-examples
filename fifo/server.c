@@ -23,9 +23,6 @@
 #include <unistd.h>
 
 
-// TODO: this isn't working on Linux
-
-
 #define FIFO_FILE "./fifo_example"
 
 

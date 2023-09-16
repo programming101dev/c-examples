@@ -29,7 +29,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *group_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void send_word(int sockfd, const char *word, uint8_t length);
-static void error_exit(const char *msg);
+_Noreturn static void error_exit(const char *msg);
 
 
 #define SOCKET_PATH "/tmp/example_socket"
@@ -207,7 +207,7 @@ static void send_word(int sockfd, const char *word, uint8_t length)
 }
 
 
-static void error_exit(const char *msg)
+_Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);

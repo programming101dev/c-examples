@@ -26,7 +26,7 @@
 
 static void parse_arguments(int argc, char *argv[], char **user_id);
 static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid);
-static uintmax_t get_uid_t_max(void);
+static uid_t get_uid_t_max(void);
 static uid_t parse_uid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
@@ -105,29 +105,29 @@ static void handle_arguments(const char *binary_name, const char *user_id, uid_t
 }
 
 
-static uintmax_t get_uid_t_max(void)
+static uid_t get_uid_t_max(void)
 {
-    uintmax_t value;
+    uid_t value;
 
-    if (sizeof(uid_t) == sizeof(char))
+    if (sizeof(uid_t) == sizeof(unsigned char))
     {
-        value = UCHAR_MAX;
+        value = (uid_t)UCHAR_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(short))
+    else if (sizeof(uid_t) == sizeof(unsigned short))
     {
-        value = USHRT_MAX;
+        value = (uid_t)USHRT_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(int))
+    else if (sizeof(uid_t) == sizeof(unsigned int))
     {
-        value = UINT_MAX;
+        value = (uid_t)UINT_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(long))
+    else if (sizeof(uid_t) == sizeof(unsigned long))
     {
-        value = ULONG_MAX;
+        value = (uid_t)ULONG_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(long long))
+    else if (sizeof(uid_t) == sizeof(unsigned long long))
     {
-        value = ULLONG_MAX;
+        value = (uid_t)ULLONG_MAX;
     }
     else
     {

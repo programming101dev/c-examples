@@ -31,7 +31,7 @@ static void signal_handler(int signum);
 #define SOCKET_PATH "/tmp/example_socket" // Replace with your desired socket path
 
 
-volatile int running = 1;
+static volatile int running = 1;
 
 
 int main(void)

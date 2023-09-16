@@ -50,7 +50,7 @@ static void convert(const char *str)
     result = strtod(str, &endptr);
 
     // Check for conversion errors
-    tolerance = 1e-6f; // Define your desired tolerance
+    tolerance = 1e-6; // Define your desired tolerance
     if((errno == ERANGE && (fabs(result - HUGE_VAL) < tolerance || fabs(result + HUGE_VAL) < tolerance)) ||
        (errno != 0 && fabs(result) < tolerance))
     {

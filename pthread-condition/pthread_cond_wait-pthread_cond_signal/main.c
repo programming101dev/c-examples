@@ -35,10 +35,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 #define MAX_WORD_LENGTH 255
 
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-int word_ready = 0;
-char *shared_word = NULL;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+static int word_ready = 0;
+static char *shared_word = NULL;
 
 
 int main(int argc, char *argv[])

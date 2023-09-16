@@ -44,10 +44,22 @@ static void show_limit(int resource, const char *name)
 {
     struct rlimit rlim;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wc++-compat"
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wc++-compat"
+#elif defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
     if(getrlimit(resource, &rlim) == 0)
-#pragma GCC diagnostic pop
+
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+#elif defined(__clang__)
+    #pragma clang diagnostic pop
+#endif
+
     {
         printf("%s:\n", name);
         printf("\tCurrent soft limit: ");

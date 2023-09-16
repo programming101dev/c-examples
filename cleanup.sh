@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Function to run make clean all in directories with Makefile
 run_make() {

@@ -29,7 +29,7 @@
 
 
 // Global flag to indicate if Ctrl+C signal is received
-volatile sig_atomic_t exit_flag = 0;
+static volatile sig_atomic_t exit_flag = 0;
 
 // Signal handler function for SIGINT (Ctrl+C)
 static void sigint_handler(int signum);

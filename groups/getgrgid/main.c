@@ -114,25 +114,25 @@ static gid_t get_gid_t_max(void)
 {
     gid_t value;
 
-    if (sizeof(gid_t) == sizeof(char))
+    if (sizeof(gid_t) == sizeof(unsigned char))
     {
-        value = UCHAR_MAX;
+        value = (gid_t)UCHAR_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(short))
+    else if (sizeof(gid_t) == sizeof(unsigned short))
     {
-        value = USHRT_MAX;
+        value = (gid_t)USHRT_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(int))
+    else if (sizeof(gid_t) == sizeof(unsigned int))
     {
-        return UINT_MAX;
+        return (gid_t)UINT_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(long))
+    else if (sizeof(gid_t) == sizeof(unsigned long))
     {
-        value = ULONG_MAX;
+        value = (gid_t)ULONG_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(long long))
+    else if (sizeof(gid_t) == sizeof(unsigned long long))
     {
-        value = ULLONG_MAX;
+        value = (gid_t)ULLONG_MAX;
     }
     else
     {

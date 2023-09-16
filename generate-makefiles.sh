@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Function to determine the platform and set the shared library extension accordingly
 get_shared_lib_extension() {
@@ -1102,7 +1102,6 @@ generate_makefile() {
     echo "SUPPORTED_FLAGS=${SUPPORTED_FLAGS[@]}" >> Makefile
     echo "PROGRAMS=" >> Makefile
     echo "LIBS=" >> Makefile
-    echo "LIBRARIES=-lubsan" >> Makefile
 
     # Loop through each .c file in the current directory
     for file in *.c; do

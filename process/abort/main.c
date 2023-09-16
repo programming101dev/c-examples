@@ -22,12 +22,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
-#include <sys/types.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **limit);
 static void handle_arguments(const char *binary_name, const char *limit_str, rlim_t *limit);
-static uintmax_t get_rlim_t_max(void);
+static rlim_t get_rlim_t_max(void);
 static rlim_t parse_rlim_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void abort_handler(void);
@@ -108,27 +107,27 @@ static void handle_arguments(const char *binary_name, const char *limit_str, rli
 }
 
 
-static uintmax_t get_rlim_t_max(void)
+static rlim_t get_rlim_t_max(void)
 {
-    uintmax_t value;
+    rlim_t value;
 
-    if (sizeof(uid_t) == sizeof(char))
+    if (sizeof(uid_t) == sizeof(unsigned char))
     {
         value = UCHAR_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(short))
+    else if (sizeof(uid_t) == sizeof(unsigned short))
     {
         value = USHRT_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(int))
+    else if (sizeof(uid_t) == sizeof(unsigned int))
     {
         value = UINT_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(long))
+    else if (sizeof(uid_t) == sizeof(unsigned long))
     {
         value = ULONG_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(long long))
+    else if (sizeof(uid_t) == sizeof(unsigned long long))
     {
         value = ULLONG_MAX;
     }
@@ -145,7 +144,7 @@ static uintmax_t get_rlim_t_max(void)
 
 static rlim_t parse_rlim_t(const char *binary_name, const char *str)
 {
-    uintmax_t max = get_rlim_t_max();
+    rlim_t max = get_rlim_t_max();
     char *endptr;
     uintmax_t parsed_value;
 

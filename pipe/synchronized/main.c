@@ -27,10 +27,10 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
-static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
+_Noreturn static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
+_Noreturn static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
 static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
-static void error_exit(const char *msg);
+_Noreturn static void error_exit(const char *msg);
 
 
 #define MAX_WORD_LENGTH 255
@@ -198,14 +198,14 @@ static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_p
 }
 
 
-static void error_exit(const char *msg)
+_Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
 
-static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
+_Noreturn static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
 {
     int ch;
     char word[MAX_WORD_LENGTH];
@@ -257,7 +257,7 @@ static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *s
 }
 
 
-static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
+_Noreturn static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 {
     uint8_t length;
     char word[MAX_WORD_LENGTH];

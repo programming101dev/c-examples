@@ -26,9 +26,9 @@ static void *thread_function(void *thread_id);
 #define NUM_THREADS 3
 
 
-pthread_mutex_t mutex;
-pthread_cond_t cond_var;
-int shared_data = 0;
+static pthread_mutex_t mutex;
+static pthread_cond_t cond_var;
+static int shared_data = 0;
 
 
 int main(void)

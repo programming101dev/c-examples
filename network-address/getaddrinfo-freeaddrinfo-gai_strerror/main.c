@@ -133,21 +133,20 @@ static int resolve_hostname_to_ip(const char *hostname)
         void *addr;
         const char *ipver;
 
-        if(res->ai_family == AF_INET)
-        {
+        if (res->ai_family == AF_INET) {
             // IPv4
+            struct sockaddr_storage temp;
             struct sockaddr_in *ipv4;
-
-            memcpy(&ipv4, res->ai_addr, sizeof(struct sockaddr_in));
+            memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_storage));
+            ipv4= (struct sockaddr_in *)&temp;
             addr = &(ipv4->sin_addr);
             ipver = "IPv4";
-        }
-        else
-        {
+        } else {
             // IPv6
+            struct sockaddr_storage temp;
             struct sockaddr_in6 *ipv6;
-
-            memcpy(&ipv6, res->ai_addr, sizeof(struct sockaddr_in6));
+            memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_storage));
+            ipv6 = (struct sockaddr_in6 *)&temp;
             addr = &(ipv6->sin6_addr);
             ipver = "IPv6";
         }

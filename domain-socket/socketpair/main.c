@@ -26,8 +26,8 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void child_process(int sockfd, const char *file_path);
-static void parent_process(int sockfd);
+_Noreturn static void child_process(int sockfd, const char *file_path);
+_Noreturn static void parent_process(int sockfd);
 static void send_word(int sockfd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
 
@@ -168,7 +168,7 @@ _Noreturn static void error_exit(const char *msg)
 }
 
 
-static void child_process(int sockfd, const char *file_path)
+_Noreturn static void child_process(int sockfd, const char *file_path)
 {
     FILE *file;
     int ch;
@@ -222,7 +222,7 @@ static void child_process(int sockfd, const char *file_path)
 }
 
 
-static void parent_process(int sockfd)
+_Noreturn static void parent_process(int sockfd)
 {
     uint8_t length;
     char word[MAX_WORD_LENGTH];

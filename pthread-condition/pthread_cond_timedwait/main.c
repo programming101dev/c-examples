@@ -37,8 +37,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void *thread_function(void *arg);
 
 
-pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond_var = PTHREAD_COND_INITIALIZER;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 int main(int argc, char *argv[])

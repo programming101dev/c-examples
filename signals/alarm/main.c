@@ -34,7 +34,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void alarm_handler(int signal_number);
 
 
-volatile sig_atomic_t alarm_received = 0;
+static volatile sig_atomic_t alarm_received = 0;
 
 
 int main(int argc, char *argv[])

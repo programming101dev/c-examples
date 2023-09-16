@@ -460,3 +460,8 @@ tags
 # Ignore all Mmakefiles
 makefile
 *.mk
+
+# Ignore binary files
+main
+client
+server

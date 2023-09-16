@@ -112,25 +112,25 @@ static rlim_t get_rlim_t_max(void)
 {
     rlim_t value;
 
-    if (sizeof(uid_t) == sizeof(unsigned char))
+    if (sizeof(rlim_t) == sizeof(unsigned char))
     {
-        value = UCHAR_MAX;
+        value = (rlim_t)UCHAR_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(unsigned short))
+    else if (sizeof(rlim_t) == sizeof(unsigned short))
     {
-        value = USHRT_MAX;
+        value = (rlim_t)USHRT_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(unsigned int))
+    else if (sizeof(rlim_t) == sizeof(unsigned int))
     {
-        value = UINT_MAX;
+        value = (rlim_t)UINT_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(unsigned long))
+    else if (sizeof(rlim_t) == sizeof(unsigned long))
     {
-        value = ULONG_MAX;
+        value = (rlim_t)ULONG_MAX;
     }
-    else if (sizeof(uid_t) == sizeof(unsigned long long))
+    else if (sizeof(rlim_t) == sizeof(unsigned long long))
     {
-        value = ULLONG_MAX;
+        value = (rlim_t)ULLONG_MAX;
     }
     else
     {

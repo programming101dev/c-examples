@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     printf("File information for: %s\n", file_path);
     printf("File size: %lld bytes\n", (long long) file_stat.st_size);
-    printf("File permissions: %o\n", (unsigned int)file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO);
+    printf("File permissions: %o\n", (unsigned int)file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 
     return EXIT_SUCCESS;
 }

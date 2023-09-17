@@ -1102,7 +1102,14 @@ generate_makefile() {
       case "$(uname -s)" in
           Linux) LIBRARIES="" ;;
           Darwin) LIBRARIES="" ;;
-          FreeBSD) LIBRARIES="" ;;
+          FreeBSD)
+              # Check if the directory name starts with "pthread"
+              if [[ "$(basename "$(pwd)")" == pthread* ]]; then
+                  LIBRARIES="-lpthread"
+              else
+                  LIBRARIES=""
+              fi
+              ;;
           *)
               echo "Unsupported platform"
               exit 1

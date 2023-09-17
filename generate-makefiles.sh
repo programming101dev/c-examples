@@ -1097,9 +1097,22 @@ populate_supported_flags() {
 
 # Function to generate the Makefile in the current directory
 generate_makefile() {
+  # Determine the library names based on the platform
+      # Define LIBRARIES based on the platform
+      case "$(uname -s)" in
+          Linux) LIBRARIES="" ;;
+          Darwin) LIBRARIES="" ;;
+          FreeBSD) LIBRARIES="" ;;
+          *)
+              echo "Unsupported platform"
+              exit 1
+              ;;
+      esac
+
     # Initialize the Makefile
     echo "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE" > Makefile
     echo "SUPPORTED_FLAGS=${SUPPORTED_FLAGS[@]}" >> Makefile
+    echo "LIBRARIES=${LIBRARIES}" >> Makefile
     echo "PROGRAMS=" >> Makefile
     echo "LIBS=" >> Makefile
 

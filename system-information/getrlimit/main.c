@@ -54,7 +54,6 @@ static void show_limit(int resource, const char *name)
 
     if(getrlimit(resource, &rlim) == 0)
 
-#if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic pop
 #elif defined(__clang__)
     #pragma clang diagnostic pop

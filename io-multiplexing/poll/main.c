@@ -26,7 +26,7 @@
 #include <errno.h>
 
 
-static void handle_new_client(int server_socket, int **client_sockets, size_t *max_clients);
+static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients);
 static void handle_client_data(int sd, int **client_sockets, nfds_t *max_clients);
 static void setup_signal_handler(void);
 static void signal_handler(int signum);

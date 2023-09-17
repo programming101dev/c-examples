@@ -269,11 +269,9 @@ int main(void)
 
 static void convertChar(char value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "char: %c", value);
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if (bufferSize >= 7)  // Ensure enough space for "char: X\0"
     {
-        buffer[result] = '\0';
+        snprintf(buffer, bufferSize, "char: %c", value);
     }
     else
     {

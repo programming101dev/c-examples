@@ -353,8 +353,10 @@ static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 
 static void convertInt32(int32_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "int32_t: %"
-    PRId32, value);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "int32_t: %" PRId32, value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {

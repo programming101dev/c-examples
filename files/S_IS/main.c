@@ -202,7 +202,7 @@ static void print_extended_type(const struct stat *fileStat)
 
 static void print_permissions(mode_t mode)
 {
-    printf("File Permissions: %o\n", mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+    printf("File Permissions: %o\n", (unsigned int)mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 }
 
 

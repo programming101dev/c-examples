@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     }
 
     fclose(file);
-    close(sockfd);
+    socket_close(sockfd);
 
     return EXIT_SUCCESS;
 }

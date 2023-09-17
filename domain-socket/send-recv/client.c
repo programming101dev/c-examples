@@ -81,7 +81,6 @@ int main(int argc, char *argv[])
 
             // Write the word
             send(sockfd, word, word_len, 0);
-
             word = strtok(NULL, " \t\n");
         }
     }

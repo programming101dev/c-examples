@@ -25,10 +25,14 @@ int main(void)
     char str1[50] = "Hello, ";
     const char *str2 = "World!";
 
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
     strncat(str1, str2, 3);
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
+#endif
 
     printf("Concatenated string: \"%s\"\n", str1);
 

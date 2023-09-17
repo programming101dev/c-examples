@@ -57,11 +57,11 @@ int main(int argc, char *argv[])
 
     printf("Symbolic link information for: %s\n", symlink_name);
     printf("Link size: %lld bytes\n", (long long) link_stat.st_size);
-    printf("Link permissions: %o\n", link_stat.st_mode & 0777);
+    printf("Link permissions: %o\n", (unsigned int)link_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 
     printf("\nTarget file information (follows the symbolic link):\n");
     printf("Target size: %lld bytes\n", (long long) target_stat.st_size);
-    printf("Target permissions: %o\n", target_stat.st_mode & 0777);
+    printf("Target permissions: %o\n", (unsigned int)target_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 
     // Remove the symbolic link
     if(unlink(symlink_name) == -1)

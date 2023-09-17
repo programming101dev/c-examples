@@ -19,7 +19,9 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <limits.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,48 +30,80 @@
 #include <unistd.h>
 
 
+static void sigint_handler(int signum);
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog);
 static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 static int parse_positive_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int create_socket(void);
-static void bind_socket(int server_fd, const char *ip_address, in_port_t port);
+static int get_address_domain(const char *ip);
+static int socket_create(int domain, int type, int protocol);
+static void socket_bind(int sockfd, const char *address, int domain, in_port_t port);
 static void start_listening(int server_fd, int backlog);
-static int accept_connection(int server_fd);
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len);
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
+static void socket_close(int sockfd);
+
+
+static volatile sig_atomic_t exit_flag = 0;
 
 
 int main(int argc, char *argv[])
 {
-    char *ip_address;
+    char *address;
     char *port_str;
     char *backlog_str;
     in_port_t port;
     int backlog;
-    int server_fd;
-    int client_fd;
+    int sockfd;
+    int domain;
+    struct sigaction sa;
 
-    ip_address = NULL;
+    address = NULL;
     port_str = NULL;
     backlog_str = NULL;
-    parse_arguments(argc, argv, &ip_address, &port_str, &backlog_str);
-    handle_arguments(argv[0], ip_address, port_str, backlog_str, &port, &backlog);
-    server_fd = create_socket();
-    bind_socket(server_fd, ip_address, port);
-    start_listening(server_fd, backlog);
-    client_fd = accept_connection(server_fd);
+    parse_arguments(argc, argv, &address, &port_str, &backlog_str);
+    handle_arguments(argv[0], address, port_str, backlog_str, &port, &backlog);
+    domain = get_address_domain(address);
+    sockfd = socket_create(domain, SOCK_STREAM, 0);
+    socket_bind(sockfd, address, domain, port);
+    start_listening(sockfd, backlog);
 
-    if(close(client_fd) < 0)
+    // Register the SIGINT (Ctrl+C) signal handler
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
     {
-        perror("Failed to close client socket");
-        return EXIT_FAILURE;
+        perror("sigaction");
+        exit(EXIT_FAILURE);
     }
 
-    if(close(server_fd) < 0)
+    while(!exit_flag)
     {
-        perror("Failed to close server socket");
-        return EXIT_FAILURE;
+        int client_sockfd;
+        struct sockaddr_storage client_addr;
+        socklen_t client_addr_len;
+
+        client_addr_len = sizeof(client_addr);
+        client_sockfd = socket_accept_connection(sockfd, &client_addr, &client_addr_len);
+
+        if(client_sockfd == -1)
+        {
+            if(exit_flag)
+            {
+                break;
+            }
+
+            continue;
+        }
+
+        handle_connection(client_sockfd, &client_addr);
+        socket_close(client_sockfd);
     }
+
+    socket_close(sockfd);
 
     return EXIT_SUCCESS;
 }
@@ -81,9 +115,9 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "hp:b:")) != -1)
+    while ((opt = getopt(argc, argv, "hb:")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'b':
             {
@@ -108,12 +142,12 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
         }
     }
 
-    if(optind >= argc)
+    if (optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
-    if(optind < argc - 2)
+    if (optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
@@ -125,17 +159,17 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
 
 static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog)
 {
-    if(ip_address == NULL)
+    if (ip_address == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The ip address is required.");
     }
 
-    if(port_str == NULL)
+    if (port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
 
-    if(backlog_str == NULL)
+    if (backlog_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The backlog is required.");
     }
@@ -153,7 +187,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     errno = 0;
     parsed_value = strtoumax(str, &endptr, 10);
 
-    if(errno != 0)
+    if (errno != 0)
     {
         perror("Error parsing in_port_t");
         exit(EXIT_FAILURE);
@@ -173,6 +207,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
 
     return (in_port_t)parsed_value;
 }
+
 
 int parse_positive_int(const char *binary_name, const char *str)
 {
@@ -205,7 +240,7 @@ int parse_positive_int(const char *binary_name, const char *str)
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if(message)
+    if (message)
     {
         fprintf(stderr, "%s\n", message);
     }
@@ -218,45 +253,95 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static int create_socket(void)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void sigint_handler(int signum)
 {
-    int server_fd;
+    exit_flag = 1;
+}
+#pragma GCC diagnostic pop
 
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if(server_fd == -1)
+static int get_address_domain(const char *address)
+{
+    int domain;
+
+    if(strstr(address, ":"))
     {
-        perror("socket creation failed");
+        domain = AF_INET6;
+    }
+    else if (strstr(address, "."))
+    {
+        domain = AF_INET;
+    }
+    else
+    {
+        fprintf(stderr, "Invalid IP address \"%s\"\n", address);
         exit(EXIT_FAILURE);
     }
 
-    return server_fd;
+    return domain;
 }
 
 
-static void bind_socket(int server_fd, const char *ip_address, in_port_t port)
+static int socket_create(int domain, int type, int protocol)
 {
-    struct sockaddr_in server_addr;
+    int sockfd;
 
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    inet_pton(AF_INET, ip_address, &(server_addr.sin_addr));
-    server_addr.sin_port = htons(port);
+    sockfd = socket(domain, type, protocol);
 
-    if(bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
+    if(sockfd == -1)
     {
-        perror("bind failed");
-        close(server_fd);
+        perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
 
-    printf("Socket bound to %s:%d\n", ip_address, port);
+    return sockfd;
+}
+
+
+static void socket_bind(int sockfd, const char *address, int domain, in_port_t port)
+{
+    struct sockaddr_storage addr;
+
+    memset(&addr, 0, sizeof(addr));
+
+    if(inet_pton(domain, address, &addr) != 1)
+    {
+        perror("Invalid IP address");
+        exit(EXIT_FAILURE);
+    }
+
+    if(domain == AF_INET6)
+    {
+        struct sockaddr_in6 *ipv6_addr;
+
+        ipv6_addr = (struct sockaddr_in6 *)&addr;
+        ipv6_addr->sin6_family = AF_INET6;
+        ipv6_addr->sin6_port = htons(port);
+    }
+    else if(domain == AF_INET)
+    {
+        struct sockaddr_in *ipv4_addr;
+
+        ipv4_addr = (struct sockaddr_in *)&addr;
+        ipv4_addr->sin_family = AF_INET;
+        ipv4_addr->sin_port = htons(port);
+    }
+
+    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    {
+        perror("Binding failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Bound to socket: %s:%u\n", address, port);
 }
 
 
 static void start_listening(int server_fd, int backlog)
 {
-    if(listen(server_fd, backlog) == -1)
+    if (listen(server_fd, backlog) == -1)
     {
         perror("listen failed");
         close(server_fd);
@@ -267,20 +352,51 @@ static void start_listening(int server_fd, int backlog)
 }
 
 
-static int accept_connection(int server_fd)
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len)
 {
-    struct sockaddr_in client_addr;
-    socklen_t client_len = sizeof(client_addr);
+    int client_fd;
+    char client_host[NI_MAXHOST];
+    char client_service[NI_MAXSERV];
 
-    int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, &client_len);
+    errno = 0;
+    client_fd = accept(server_fd, (struct sockaddr *)client_addr, client_addr_len);
+
     if(client_fd == -1)
     {
-        perror("accept failed");
-        close(server_fd);
-        exit(EXIT_FAILURE);
+        if(errno != EINTR)
+        {
+            perror("accept failed");
+        }
+
+        return -1;
     }
 
-    printf("Accepted a new connection\n");
+    if(getnameinfo((struct sockaddr *)client_addr, *client_addr_len, client_host, NI_MAXHOST, client_service, NI_MAXSERV, 0) == 0)
+    {
+        printf("Accepted a new connection from %s:%s\n", client_host, client_service);
+    }
+    else
+    {
+        printf("Unable to get client information\n");
+    }
 
     return client_fd;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
+{
+}
+#pragma GCC diagnostic pop
+
+
+static void socket_close(int client_fd)
+{
+    if (close(client_fd) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
+    }
 }

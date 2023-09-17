@@ -30,7 +30,6 @@ static void handle_arguments(const char *binary_name, const char *server_address
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-
 int main(int argc, char *argv[])
 {
     char *server_address;
@@ -46,7 +45,6 @@ int main(int argc, char *argv[])
     service = NULL;
     parse_arguments(argc, argv, &server_address, &service);
     handle_arguments(argv[0], server_address, service);
-
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sockfd == -1)
@@ -56,25 +54,29 @@ int main(int argc, char *argv[])
     }
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
+    hints.ai_family = AF_UNSPEC;  // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
 
     status = getaddrinfo(server_address, service, &hints, &result);
 
-    if (status != 0) {
+    if (status != 0)
+    {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
         close(sockfd);
         return EXIT_FAILURE;
     }
 
     // Attempt to connect to the server using the available address info
-    for (rp = result; rp != NULL; rp = rp->ai_next) {
-        if (connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0) {
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
+        if (connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0)
+        {
             break; // Connected successfully
         }
     }
 
-    if (rp == NULL) {
+    if (rp == NULL)
+    {
         perror("connect");
         close(sockfd);
         freeaddrinfo(result);
@@ -102,15 +104,14 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **server_address, char **service)
-{
+static void parse_arguments(int argc, char *argv[], char **server_address, char **service) {
     int opt;
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "h")) != -1)
+    while ((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'h':
             {
@@ -130,12 +131,12 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
         }
     }
 
-    if(optind + 1 >= argc)
+    if (optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
 
-    if(optind < argc - 2)
+    if (optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
@@ -147,22 +148,20 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
 
 static void handle_arguments(const char *binary_name, const char *server_address, const char *service)
 {
-    if(server_address == NULL)
+    if (server_address == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The server address is required.");
     }
 
-    if(service == NULL)
+    if (service == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The service is required.");
     }
 }
 
 
-_Noreturn static void usage(const char *program_name, int exit_code, const char *message)
-{
-    if(message)
-    {
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message) {
+    if (message) {
         fprintf(stderr, "%s\n", message);
     }
 

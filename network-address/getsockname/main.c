@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     socklen_t addrlen;
     struct addrinfo hints, *result, *rp;
     int status;
-    char ipstr[INET_ADDRSTRLEN];
+    char ipstr[INET6_ADDRSTRLEN]; // Use a larger buffer for IPv6
 
     host_name = NULL;
     service = NULL;
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     }
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
+    hints.ai_family = AF_UNSPEC; // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
 
     status = getaddrinfo(host_name, service, &hints, &result);
@@ -93,13 +93,23 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET_ADDRSTRLEN);
-    printf("Local Address: %s:%d\n", ipstr, ntohs(local_addr.sin_port));
+    if(rp->ai_family == AF_INET)
+    {
+        inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET6_ADDRSTRLEN);
+        printf("Local Address (IPv4): %s:%d\n", ipstr, ntohs(local_addr.sin_port));
+    }
+    else if (rp->ai_family == AF_INET6)
+    {
+        inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)&local_addr)->sin6_addr), ipstr, INET6_ADDRSTRLEN);
+        printf("Local Address (IPv6): %s:%d\n", ipstr, ntohs(local_addr.sin_port));
+    }
+
     close(sockfd);
     freeaddrinfo(result);
 
     return EXIT_SUCCESS;
 }
+
 
 
 static void parse_arguments(int argc, char *argv[], char **host_name, char **service)

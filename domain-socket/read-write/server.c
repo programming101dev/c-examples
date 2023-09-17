@@ -15,6 +15,8 @@
  */
 
 
+#include <errno.h>
+#include <netdb.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,26 +27,32 @@
 #include <unistd.h>
 
 
+static void sigint_handler(int signum);
+static int socket_create(void);
+static void socket_bind(int sockfd, const char *path);
+static void start_listening(int server_fd, int backlog);
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len);
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
+static void socket_close(int sockfd);
+
+
 #define SOCKET_PATH "/tmp/example_socket"
 
 
-// Global flag to indicate if Ctrl+C signal is received
 static volatile sig_atomic_t exit_flag = 0;
-
-// Signal handler function for SIGINT (Ctrl+C)
-static void sigint_handler(int signum);
 
 
 int main(void)
 {
-    int sockfd, client_sockfd;
-    struct sockaddr_un server_addr, client_addr;
-    socklen_t client_addr_len;
-    uint8_t size;
-    char word[UINT8_MAX + 1];
+    int sockfd;
+    struct sigaction sa;
+
+    unlink(SOCKET_PATH);
+    sockfd = socket_create();
+    socket_bind(sockfd, SOCKET_PATH);
+    start_listening(sockfd, SOMAXCONN);
 
     // Register the SIGINT (Ctrl+C) signal handler
-    struct sigaction sa;
     sa.sa_handler = sigint_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
@@ -55,68 +63,30 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    // Create a socket
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if(sockfd == -1)
-    {
-        perror("socket");
-        exit(EXIT_FAILURE);
-    }
-
-    // Set up the server address
-    memset(&server_addr, 0, sizeof(struct sockaddr_un));
-    server_addr.sun_family = AF_UNIX;
-    strcpy(server_addr.sun_path, SOCKET_PATH);
-
-    // Bind the socket to a path
-    unlink(SOCKET_PATH); // Remove the existing socket file if it exists
-    if(bind(sockfd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr_un)) == -1)
-    {
-        perror("bind");
-        close(sockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    // Listen for incoming connections
-    if(listen(sockfd, 5) == -1)
-    {
-        perror("listen");
-        close(sockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Server listening...\n");
-
     while(!exit_flag)
     {
-        // Accept a client connection
-        client_addr_len = sizeof(struct sockaddr_un);
-        client_sockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_addr_len);
+        int client_sockfd;
+        struct sockaddr_storage client_addr;
+        socklen_t client_addr_len;
+
+        client_addr_len = sizeof(client_addr);
+        client_sockfd = socket_accept_connection(sockfd, &client_addr, &client_addr_len);
+
         if(client_sockfd == -1)
         {
             if(exit_flag)
             {
-                // Ignore errors when the server is shutting down
                 break;
             }
-            perror("accept");
+
             continue;
         }
 
-        // Read and print words from the client
-        while(read(client_sockfd, &size, sizeof(uint8_t)) > 0)
-        {
-            read(client_sockfd, word, size);
-            word[size] = '\0'; // Null-terminate the string
-            printf("Word Size: %u, Word: %s\n", size, word);
-        }
-
-        close(client_sockfd);
+        handle_connection(client_sockfd, &client_addr);
+        socket_close(client_sockfd);
     }
 
-    close(sockfd);
-
-    // Clean up the socket file before exiting
+    socket_close(sockfd);
     unlink(SOCKET_PATH);
 
     return EXIT_SUCCESS;
@@ -125,10 +95,116 @@ int main(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
-
 #pragma GCC diagnostic pop
+
+
+static int socket_create(void)
+{
+    int sockfd;
+
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    if(sockfd == -1)
+    {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return sockfd;
+}
+
+
+static void socket_bind(int sockfd, const char *path)
+{
+    struct sockaddr_un addr;
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
+    addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
+
+    if(bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+    {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Bound to domain socket: %s\n", path);
+}
+
+
+
+static void start_listening(int server_fd, int backlog)
+{
+    if (listen(server_fd, backlog) == -1)
+    {
+        perror("listen failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Listening for incoming connections...\n");
+}
+
+
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len)
+{
+    int client_fd;
+    char client_host[NI_MAXHOST];
+
+    errno = 0;
+    client_fd = accept(server_fd, (struct sockaddr *)client_addr, client_addr_len);
+
+    if(client_fd == -1)
+    {
+        if(errno != EINTR)
+        {
+            perror("accept failed");
+        }
+
+        return -1;
+    }
+
+    if(getnameinfo((struct sockaddr *)client_addr, *client_addr_len, client_host, NI_MAXHOST, NULL, 0, 0) == 0)
+    {
+        printf("Accepted a new connection from %s\n", client_host);
+    }
+    else
+    {
+        printf("Unable to get client information\n");
+    }
+
+    return client_fd;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
+{
+    uint8_t size;
+
+    while(read(client_sockfd, &size, sizeof(uint8_t)) > 0)
+    {
+        char word[UINT8_MAX + 1];
+
+        read(client_sockfd, word, size);
+        word[size] = '\0';
+        printf("Word Size: %u, Word: %s\n", size, word);
+    }
+}
+#pragma GCC diagnostic pop
+
+
+static void socket_close(int client_fd)
+{
+    if (close(client_fd) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
+    }
+}

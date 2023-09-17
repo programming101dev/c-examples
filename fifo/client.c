@@ -28,9 +28,6 @@ static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
-// TODO: this isn't working on Linux
-
-
 #define FIFO_FILE "./fifo_example"
 
 

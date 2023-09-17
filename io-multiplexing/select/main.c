@@ -25,7 +25,11 @@
 #include <unistd.h>
 
 
+static void setup_signal_handler(void);
 static void signal_handler(int signum);
+static int socket_create(void);
+static void socket_bind(int sockfd, const char *path);
+static void socket_close(int sockfd);
 
 
 #define SOCKET_PATH "/tmp/example_socket" // Replace with your desired socket path
@@ -36,45 +40,21 @@ static volatile int running = 1;
 
 int main(void)
 {
-    int server_socket, *client_sockets = NULL;
+    int sockfd;
+    int *client_sockets = NULL;
     size_t max_clients = 0;
     int max_fd, activity, new_socket, sd;
     int addrlen;
     struct sockaddr_un address;
     fd_set readfds;
-    int opt;
 
-    // Create server socket
-    if((server_socket = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
-    {
-        perror("Socket creation error");
-        exit(EXIT_FAILURE);
-    }
-
-    unlink(SOCKET_PATH);
-
-    // Set server address parameters
-    memset(&address, 0, sizeof(address));
-    address.sun_family = AF_UNIX;
-    strncpy(address.sun_path, SOCKET_PATH, sizeof(address.sun_path) - 1);
-
-    // Enable address reuse
-    opt = 1;
-    if(setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-    {
-        perror("Setsockopt error");
-        exit(EXIT_FAILURE);
-    }
-
-    // Bind the socket to the address
-    if(bind(server_socket, (struct sockaddr *) &address, sizeof(address)) == -1)
-    {
-        perror("Bind error");
-        exit(EXIT_FAILURE);
-    }
+    setup_signal_handler();
+    unlink(SOCKET_PATH); // Remove the existing socket file if it exists
+    sockfd = socket_create();
+    socket_bind(sockfd, SOCKET_PATH);
 
     // Listen for incoming connections
-    if(listen(server_socket, SOMAXCONN) == -1)
+    if(listen(sockfd, SOMAXCONN) == -1)
     {
         perror("Listen error");
         exit(EXIT_FAILURE);
@@ -82,17 +62,14 @@ int main(void)
 
     printf("Server listening for incoming connections...\n");
 
-    // Set up the signal handler for SIGINT (Ctrl+C)
-    signal(SIGINT, signal_handler);
-
     while(running)
     {
         // Clear the socket set
         FD_ZERO(&readfds);
 
         // Add the server socket to the set
-        FD_SET(server_socket, &readfds);
-        max_fd = server_socket;
+        FD_SET(sockfd, &readfds);
+        max_fd = sockfd;
 
         // Add the client sockets to the set
         for(size_t i = 0; i < max_clients; i++)
@@ -120,9 +97,9 @@ int main(void)
         }
 
         // Handle new client connections
-        if(FD_ISSET(server_socket, &readfds))
+        if(FD_ISSET(sockfd, &readfds))
         {
-            if((new_socket = accept(server_socket, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
+            if((new_socket = accept(sockfd, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
             {
                 perror("Accept error");
                 exit(EXIT_FAILURE);
@@ -186,7 +163,7 @@ int main(void)
         sd = client_sockets[i];
         if(sd > 0)
         {
-            close(sd);
+            socket_close(sd);
         }
     }
 
@@ -194,7 +171,7 @@ int main(void)
     free(client_sockets);
 
     // Close the server socket
-    close(server_socket);
+    socket_close(sockfd);
 
     // Remove the socket file
     unlink(SOCKET_PATH);
@@ -204,10 +181,64 @@ int main(void)
 }
 
 
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = signal_handler;
+    sigaction(SIGINT, &sa, NULL);
+}
+
+
 static void signal_handler(int signum)
 {
     if(signum == SIGINT)
     {
         running = 0;
+    }
+}
+
+
+static int socket_create(void)
+{
+    int sockfd;
+
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    if(sockfd == -1)
+    {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return sockfd;
+}
+
+
+static void socket_bind(int sockfd, const char *path)
+{
+    struct sockaddr_un addr;
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
+    addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
+
+    if(bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+    {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Bound to domain socket: %s\n", path);
+}
+
+
+static void socket_close(int client_fd)
+{
+    if (close(client_fd) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
     }
 }

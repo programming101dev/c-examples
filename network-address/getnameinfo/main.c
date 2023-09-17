@@ -15,12 +15,10 @@
  */
 
 
-#include <arpa/inet.h>
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
 #include <netdb.h>
-#include <netinet/in.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -32,7 +30,7 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
 static void handle_arguments(const char *binary_name, const char *server_address, const char *port_str, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void display_address(struct sockaddr_in addr, socklen_t addrlen);
+static void display_address(struct sockaddr_storage *addr, socklen_t addrlen);
 
 
 int main(int argc, char *argv[])
@@ -40,22 +38,39 @@ int main(int argc, char *argv[])
     char *ip_address;
     char *port_str;
     in_port_t port;
-    struct sockaddr_in addr;
-    socklen_t addrlen = sizeof(addr);
+    struct sockaddr_storage addr;
+    socklen_t addrlen;
+    struct addrinfo hints, *result;
+    int error;
 
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC; // Allow both IPv4 and IPv6
+    hints.ai_socktype = SOCK_STREAM;
+    error = getaddrinfo(ip_address, port_str, &hints, &result);
 
-    if(inet_pton(AF_INET, ip_address, &(addr.sin_addr)) <= 0)
+    if(error != 0)
     {
-        perror("inet_pton");
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
         return EXIT_FAILURE;
     }
 
-    addr.sin_port = htons(port);
-    display_address(addr, addrlen);
+    if (result == NULL) {
+        fprintf(stderr, "getaddrinfo returned no address information\n");
+        return EXIT_FAILURE;
+    }
+
+    if (result->ai_addrlen > sizeof(addr))
+    {
+        fprintf(stderr, "Address size exceeds sockaddr_storage capacity\n");
+        return EXIT_FAILURE;
+    }
+
+    memcpy(&addr, result->ai_addr, result->ai_addrlen);
+    addrlen = result->ai_addrlen;
+    display_address(&addr, addrlen);
+    freeaddrinfo(result);
 
     return EXIT_SUCCESS;
 }
@@ -149,6 +164,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
+
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -164,21 +180,27 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static void display_address(struct sockaddr_in addr, socklen_t addrlen)
+static void display_address(struct sockaddr_storage *addr, socklen_t addrlen)
 {
-    char hostname[NI_MAXHOST];
-    char port[NI_MAXSERV];
-
-    // Get the hostname and port number associated with the address
-    int result = getnameinfo((struct sockaddr *) &addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
-
-    if(result == 0)
+    if(addr->ss_family == AF_INET || addr->ss_family == AF_INET6)
     {
-        printf("Address: %s:%s\n", hostname, port);
+        char hostname[NI_MAXHOST];
+        char port[NI_MAXSERV];
+        int result = getnameinfo((struct sockaddr *)addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
+
+        if(result == 0)
+        {
+            printf("Address: %s:%s\n", hostname, port);
+        }
+        else
+        {
+            fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(result));
+            exit(EXIT_FAILURE);
+        }
     }
     else
     {
-        fprintf(stderr, "getnameinfo error: %s\n", gai_strerror(result));
+        fprintf(stderr, "Unsupported address family: %d\n", addr->ss_family);
         exit(EXIT_FAILURE);
     }
 }

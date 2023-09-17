@@ -17,9 +17,8 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <getopt.h>
 #include <inttypes.h>
-#include <netinet/in.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,47 +26,46 @@
 #include <unistd.h>
 
 
-static void parse_arguments(int argc, char *argv[], char **ip_address, char **port);
-static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port);
+static void parse_arguments(int argc, char *argv[], char **address, char **port);
+static void handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int create_socket(void);
-static void bind_socket(int server_fd, const char *ip_address, in_port_t port);
+static int get_address_domain(const char *ip);
+static int socket_create(int domain, int type, int protocol);
+static void socket_bind(int sockfd, const char *address, int domain, in_port_t port);
+static void socket_close(int sockfd);
 
 
 int main(int argc, char *argv[])
 {
-    char *ip_address;
+    char *address;
     char *port_str;
     in_port_t port;
-    int server_fd;
+    int domain;
+    int sockfd;
 
-    ip_address = NULL;
+    address = NULL;
     port_str = NULL;
-    parse_arguments(argc, argv, &ip_address, &port_str);
-    handle_arguments(argv[0], ip_address, port_str, &port);
-    server_fd = create_socket();
-    bind_socket(server_fd, ip_address, port);
-
-    if(close(server_fd) < 0)
-    {
-        perror("Failed to close socket");
-        return EXIT_FAILURE;
-    }
+    parse_arguments(argc, argv, &address, &port_str);
+    handle_arguments(argv[0], address, port_str, &port);
+    domain = get_address_domain(address);
+    sockfd = socket_create(domain, SOCK_STREAM, 0);
+    socket_bind(sockfd, address, domain, port);
+    socket_close(sockfd);
 
     return EXIT_SUCCESS;
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **ip_address, char **port)
+static void parse_arguments(int argc, char *argv[], char **address, char **port)
 {
     int opt;
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "h")) != -1)
+    while ((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'h':
             {
@@ -87,29 +85,29 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
         }
     }
 
-    if(optind >= argc)
+    if (optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The IP address or hostname is required.");
     }
 
-    if(optind < argc - 2)
+    if (optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *ip_address = argv[optind];
+    *address = argv[optind];
     *port = argv[optind + 1];
 }
 
 
-static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port)
 {
-    if(ip_address == NULL)
+    if (address == NULL)
     {
-        usage(binary_name, EXIT_FAILURE, "The ip address is required.");
+        usage(binary_name, EXIT_FAILURE, "The IP address or hostname is required.");
     }
 
-    if(port_str == NULL)
+    if (port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "Port argument is missing.");
     }
@@ -147,51 +145,108 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
+
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if(message)
+    if (message)
     {
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] <ip address> <port>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <IP address or hostname> <port>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
 
 
-static int create_socket(void)
+static int get_address_domain(const char *address)
 {
-    int server_fd;
+    int domain;
 
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-    if(server_fd == -1)
+    if(strstr(address, ":"))
     {
-        perror("socket creation failed");
+        domain = AF_INET6;
+    }
+    else if (strstr(address, "."))
+    {
+        domain = AF_INET;
+    }
+    else
+    {
+        fprintf(stderr, "Invalid IP address \"%s\"\n", address);
         exit(EXIT_FAILURE);
     }
 
-    return server_fd;
+    return domain;
 }
 
 
-static void bind_socket(int server_fd, const char *ip_address, in_port_t port)
+static int socket_create(int domain, int type, int protocol)
 {
-    struct sockaddr_in server_addr;
+    int sockfd;
 
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = AF_INET;
-    inet_pton(AF_INET, ip_address, &(server_addr.sin_addr));
-    server_addr.sin_port = htons(port);
+    sockfd = socket(domain, type, protocol);
 
-    if(bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
+    if(sockfd == -1)
     {
-        perror("bind failed");
-        close(server_fd);
+        perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
 
-    printf("Socket bound to port %d\n", port);
+    return sockfd;
+}
+
+
+static void socket_bind(int sockfd, const char *address, int domain, in_port_t port)
+{
+    struct sockaddr_storage addr;
+
+    memset(&addr, 0, sizeof(addr));
+
+    if(inet_pton(domain, address, &addr) != 1)
+    {
+        perror("Invalid IP address");
+        exit(EXIT_FAILURE);
+    }
+
+    if(domain == AF_INET)
+    {
+        struct sockaddr_in *ipv4_addr;
+
+        ipv4_addr = (struct sockaddr_in *)&addr;
+        ipv4_addr->sin_family = AF_INET;
+        ipv4_addr->sin_port = htons(port);
+    }
+    else if(domain == AF_INET6)
+    {
+        struct sockaddr_in6 *ipv6_addr;
+
+        ipv6_addr = (struct sockaddr_in6 *)&addr;
+        ipv6_addr->sin6_family = AF_INET6;
+        ipv6_addr->sin6_port = htons(port);
+    }
+    else
+    {
+        fprintf(stderr, "Invalid domain: %d\n", domain);
+        exit(EXIT_FAILURE);
+    }
+
+    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    {
+        perror("Binding failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Bound to socket: %s:%u\n", address, port);
+}
+
+
+static void socket_close(int client_fd)
+{
+    if (close(client_fd) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
+    }
 }

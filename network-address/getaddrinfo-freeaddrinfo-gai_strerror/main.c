@@ -130,29 +130,41 @@ static int resolve_hostname_to_ip(const char *hostname)
     // Print all IP addresses associated with the hostname
     for(res = result; res != NULL; res = res->ai_next)
     {
+        struct sockaddr_in *ipv4;
+        struct sockaddr_in6 *ipv6;
         void *addr;
         const char *ipver;
+        struct sockaddr_storage temp;
 
-        if (res->ai_family == AF_INET) {
-            // IPv4
-            struct sockaddr_storage temp;
-            struct sockaddr_in *ipv4;
-            memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_storage));
-            ipv4= (struct sockaddr_in *)&temp;
+        if (res->ai_family == AF_INET)
+        {
+            memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_in));
+            ipv4 = (struct sockaddr_in *)&temp;
             addr = &(ipv4->sin_addr);
             ipver = "IPv4";
-        } else {
-            // IPv6
-            struct sockaddr_storage temp;
-            struct sockaddr_in6 *ipv6;
-            memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_storage));
+        }
+        else if (res->ai_family == AF_INET6)
+        {
+            memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_in6));
             ipv6 = (struct sockaddr_in6 *)&temp;
             addr = &(ipv6->sin6_addr);
             ipver = "IPv6";
         }
+        else
+        {
+            addr  = NULL;
+            ipver = NULL;
+        }
 
-        inet_ntop(res->ai_family, addr, ipstr, sizeof(ipstr));
-        printf("Hostname: %s, IP Address (%s): %s\n", hostname, ipver, ipstr);
+        if(addr)
+        {
+            inet_ntop(res->ai_family, addr, ipstr, sizeof(ipstr));
+            printf("Hostname: %s, IP Address (%s): %s\n", hostname, ipver, ipstr);
+        }
+        else
+        {
+            fprintf(stderr, "Unsupported address family: %d\n", res->ai_family);
+        }
     }
 
     freeaddrinfo(result);

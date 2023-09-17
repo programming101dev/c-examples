@@ -18,7 +18,9 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <inttypes.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,101 +29,80 @@
 #include <unistd.h>
 
 
+static void sigint_handler(int signum);
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port);
 static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+static int get_address_domain(const char *ip);
+static int socket_create(int domain, int type, int protocol);
+static void socket_bind(int sockfd, const char *address, int domain, in_port_t port);
+static void start_listening(int server_fd, int backlog);
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len);
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
+static void shutdown_socket(int sockfd, int how);
+static void socket_close(int sockfd);
+
+
+static volatile sig_atomic_t exit_flag = 0;
 
 
 int main(int argc, char *argv[])
 {
-    char *ip_address;
+    char *address;
     char *port_str;
     in_port_t port;
     int sockfd;
-    struct sockaddr_in addr;
-    int client_sockfd;
-    char buffer[1024];
-    ssize_t bytes_received;
-    char temp_buffer[1];
-    ssize_t status;
+    int domain;
+    struct sigaction sa;
 
-    ip_address = NULL;
+    address = NULL;
     port_str = NULL;
-    parse_arguments(argc, argv, &ip_address, &port_str);
-    handle_arguments(argv[0], ip_address, port_str, &port);
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    parse_arguments(argc, argv, &address, &port_str);
+    handle_arguments(argv[0], address, port_str, &port);
+    domain = get_address_domain(address);
+    sockfd = socket_create(domain, SOCK_STREAM, 0);
+    socket_bind(sockfd, address, domain, port);
+    start_listening(sockfd, SOMAXCONN);
 
-    if(sockfd == -1)
+    // Register the SIGINT (Ctrl+C) signal handler
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
     {
-        perror("socket");
-        return EXIT_FAILURE;
+        perror("sigaction");
+        exit(EXIT_FAILURE);
     }
 
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    inet_pton(AF_INET, ip_address, &(addr.sin_addr));
-
-    if(bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) == -1)
+    while(!exit_flag)
     {
-        perror("bind");
-        close(sockfd);
-        return EXIT_FAILURE;
+        int client_sockfd;
+        struct sockaddr_storage client_addr;
+        socklen_t client_addr_len;
+
+        client_addr_len = sizeof(client_addr);
+        client_sockfd = socket_accept_connection(sockfd, &client_addr, &client_addr_len);
+
+        if(client_sockfd == -1)
+        {
+            if(exit_flag)
+            {
+                break;
+            }
+
+            continue;
+        }
+
+        handle_connection(client_sockfd, &client_addr);
+        shutdown_socket(client_sockfd, SHUT_RD);
+        socket_close(client_sockfd);
     }
 
-    if(listen(sockfd, 1) == -1)
-    {
-        perror("listen");
-        close(sockfd);
-        return EXIT_FAILURE;
-    }
+    shutdown_socket(sockfd, SHUT_RDWR);
+    socket_close(sockfd);
 
-    printf("Server listening on port 8080...\n");
-
-    client_sockfd = accept(sockfd, NULL, NULL);
-    if(client_sockfd == -1)
-    {
-        perror("accept");
-        close(sockfd);
-        return EXIT_FAILURE;
-    }
-
-    // Receive data from the client
-    bytes_received = recv(client_sockfd, buffer, sizeof(buffer), 0);
-    if(bytes_received == -1)
-    {
-        perror("recv");
-        close(client_sockfd);
-        close(sockfd);
-        return EXIT_FAILURE;
-    }
-    else if(bytes_received == 0)
-    {
-        printf("Client closed the connection.\n");
-    }
-    else
-    {
-        buffer[bytes_received] = '\0';
-        printf("Received from client: %s\n", buffer);
-    }
-
-    // Perform a shutdown on the receiving part of the socket
-    shutdown(client_sockfd, SHUT_RD);
-
-    // Wait for the client to close its sending part of the socket
-    status = recv(client_sockfd, temp_buffer, sizeof(temp_buffer), 0);
-    if(status == 0)
-    {
-        printf("Client closed the sending part of the socket.\n");
-    }
-    else
-    {
-        perror("recv");
-    }
-
-    // Close the sockets
-    close(client_sockfd);
-    close(sockfd);
     return EXIT_SUCCESS;
 }
 
@@ -132,9 +113,9 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
 
     opterr = 0;
 
-    while((opt = getopt(argc, argv, "h")) != -1)
+    while ((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch(opt)
+        switch (opt)
         {
             case 'h':
             {
@@ -154,12 +135,12 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
         }
     }
 
-    if(optind >= argc)
+    if (optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
 
-    if(optind < argc - 2)
+    if (optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
@@ -171,12 +152,12 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
 
 static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port)
 {
-    if(ip_address == NULL)
+    if (ip_address == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The ip address is required.");
     }
 
-    if(port_str == NULL)
+    if (port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
@@ -193,7 +174,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     errno = 0;
     parsed_value = strtoumax(str, &endptr, 10);
 
-    if(errno != 0)
+    if (errno != 0)
     {
         perror("Error parsing in_port_t");
         exit(EXIT_FAILURE);
@@ -216,7 +197,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if(message)
+    if (message)
     {
         fprintf(stderr, "%s\n", message);
     }
@@ -225,4 +206,163 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void sigint_handler(int signum)
+{
+    exit_flag = 1;
+}
+#pragma GCC diagnostic pop
+
+
+static int get_address_domain(const char *address)
+{
+    int domain;
+
+    if(strstr(address, ":"))
+    {
+        domain = AF_INET6;
+    }
+    else if (strstr(address, "."))
+    {
+        domain = AF_INET;
+    }
+    else
+    {
+        fprintf(stderr, "Invalid IP address \"%s\"\n", address);
+        exit(EXIT_FAILURE);
+    }
+
+    return domain;
+}
+
+
+static int socket_create(int domain, int type, int protocol)
+{
+    int sockfd;
+
+    sockfd = socket(domain, type, protocol);
+
+    if(sockfd == -1)
+    {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return sockfd;
+}
+
+
+static void socket_bind(int sockfd, const char *address, int domain, in_port_t port)
+{
+    struct sockaddr_storage addr;
+
+    memset(&addr, 0, sizeof(addr));
+
+    if(inet_pton(domain, address, &addr) != 1)
+    {
+        perror("Invalid IP address");
+        exit(EXIT_FAILURE);
+    }
+
+    if(domain == AF_INET6)
+    {
+        struct sockaddr_in6 *ipv6_addr;
+
+        ipv6_addr = (struct sockaddr_in6 *)&addr;
+        ipv6_addr->sin6_family = AF_INET6;
+        ipv6_addr->sin6_port = htons(port);
+    }
+    else if(domain == AF_INET)
+    {
+        struct sockaddr_in *ipv4_addr;
+
+        ipv4_addr = (struct sockaddr_in *)&addr;
+        ipv4_addr->sin_family = AF_INET;
+        ipv4_addr->sin_port = htons(port);
+    }
+
+    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    {
+        perror("Binding failed");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Bound to socket: %s:%u\n", address, port);
+}
+
+
+static void start_listening(int server_fd, int backlog)
+{
+    if (listen(server_fd, backlog) == -1)
+    {
+        perror("listen failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Listening for incoming connections...\n");
+}
+
+
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len)
+{
+    int client_fd;
+    char client_host[NI_MAXHOST];
+    char client_service[NI_MAXSERV];
+
+    errno = 0;
+    client_fd = accept(server_fd, (struct sockaddr *)client_addr, client_addr_len);
+
+    if(client_fd == -1)
+    {
+        if(errno != EINTR)
+        {
+            perror("accept failed");
+        }
+
+        return -1;
+    }
+
+    if(getnameinfo((struct sockaddr *)client_addr, *client_addr_len, client_host, NI_MAXHOST, client_service, NI_MAXSERV, 0) == 0)
+    {
+        printf("Accepted a new connection from %s:%s\n", client_host, client_service);
+    }
+    else
+    {
+        printf("Unable to get client information\n");
+    }
+
+    return client_fd;
+}
+
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
+{
+}
+#pragma GCC diagnostic pop
+
+
+static void shutdown_socket(int client_fd, int how)
+{
+    if (shutdown(client_fd, how) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+static void socket_close(int client_fd)
+{
+    if (close(client_fd) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
+    }
 }

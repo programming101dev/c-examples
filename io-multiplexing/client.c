@@ -30,6 +30,10 @@ static void handle_arguments(const char *binary_name, const char *group_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void send_word(int sockfd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
+static int connect_to_server(const char *path);
+static int socket_create(void);
+static void setup_socket_address(struct sockaddr_un *addr, const char *path);
+static void socket_close(int sockfd);
 
 
 #define SOCKET_PATH "/tmp/example_socket"
@@ -43,7 +47,6 @@ int main(int argc, char *argv[])
     char *file_path;
     FILE *file;
     int sockfd;
-    struct sockaddr_un server_addr;
     char line[1024]; // Adjust the buffer size as needed
 
     file_path = NULL;
@@ -58,37 +61,20 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
-
-    if(sockfd == -1)
-    {
-        perror("socket");
-        fclose(file);
-        exit(EXIT_FAILURE);
-    }
-
-    // Set up the server address
-    memset(&server_addr, 0, sizeof(struct sockaddr_un));
-    server_addr.sun_family = AF_UNIX;
-    strcpy(server_addr.sun_path, SOCKET_PATH);
-
-    // Connect to the server
-    if(connect(sockfd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr_un)) == -1)
-    {
-        perror("connect");
-        close(sockfd);
-        exit(EXIT_FAILURE);
-    }
+    sockfd = connect_to_server(SOCKET_PATH);
 
     // Read and parse words from the file
     while(fgets(line, sizeof(line), file) != NULL)
     {
         char *word;
+
         word = strtok(line, " \t\n");
+
         while(word != NULL)
         {
             uint8_t size;
             size_t word_len = strlen(word);
+
             if(word_len > UINT8_MAX)
             {
                 fprintf(stderr, "Word exceeds maximum length\n");
@@ -106,7 +92,7 @@ int main(int argc, char *argv[])
     }
 
     fclose(file);
-    close(sockfd);
+    socket_close(sockfd);
 
     return EXIT_SUCCESS;
 }
@@ -211,4 +197,60 @@ _Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
+}
+
+
+static int connect_to_server(const char *path)
+{
+    int sockfd;
+    struct sockaddr_un addr;
+
+    sockfd = socket_create();
+    setup_socket_address(&addr, path);
+
+    if(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    {
+        perror("Connection failed");
+        close(sockfd);
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Connected to %s\n", path);
+
+    return sockfd;
+}
+
+
+static int socket_create(void)
+{
+    int sockfd;
+
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    if(sockfd == -1)
+    {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return sockfd;
+}
+
+
+static void setup_socket_address(struct sockaddr_un *addr, const char *path)
+{
+    memset(addr, 0, sizeof(*addr));
+    addr->sun_family = AF_UNIX;
+    strncpy(addr->sun_path, path, sizeof(addr->sun_path) - 1);
+    addr->sun_path[sizeof(addr->sun_path) - 1] = '\0';
+}
+
+
+static void socket_close(int client_fd)
+{
+    if (close(client_fd) == -1)
+    {
+        perror("Error closing socket");
+        exit(EXIT_FAILURE);
+    }
 }

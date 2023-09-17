@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     // Display file information
     printf("File Information:\n");
     printf("File Size: %lld bytes\n", (long long) fileStat.st_size);
-    printf("File Permissions: %o\n", fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+    printf("File Permissions: %o\n", (unsigned int)fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
     printf("File inode: %lld\n", (long long) fileStat.st_ino);
     printf("Device ID: %lld\n", (long long) fileStat.st_dev);
     printf("Number of hard links: %lld\n", (long long) fileStat.st_nlink);

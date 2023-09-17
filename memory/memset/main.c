@@ -39,7 +39,10 @@ int main(void)
     }
 
     printf("Array after malloc:\n");
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     print_array(dynamic_array, num_elements);
+#pragma GCC diagnostic pop
 
     fill_with_random_ints(dynamic_array, num_elements);
     printf("Array after filling with random integers:\n");

@@ -405,7 +405,10 @@ static void convertInt(int value, char *buffer, size_t bufferSize)
 
 static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "uint: %u", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -420,7 +423,10 @@ static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 
 static void convertLong(long value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "long: %ld", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -435,7 +441,10 @@ static void convertLong(long value, char *buffer, size_t bufferSize)
 
 static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "ulong: %lu", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -450,7 +459,10 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 
 static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "long long: %lld", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -465,7 +477,10 @@ static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 
 static void convertULongLong(unsigned long long value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "ulonglong: %llu", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -480,7 +495,10 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 
 static void convertFloat(float value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "float: %.5f", (double) value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -495,7 +513,10 @@ static void convertFloat(float value, char *buffer, size_t bufferSize)
 
 static void convertDouble(double value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "double: %.10lf", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -510,7 +531,10 @@ static void convertDouble(double value, char *buffer, size_t bufferSize)
 
 static void convertLongDouble(long double value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "long double: %.15Lf", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {

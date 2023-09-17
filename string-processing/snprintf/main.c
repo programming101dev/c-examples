@@ -549,7 +549,10 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 
 static void convertBool(bool value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "bool: %s", value ? "true" : "false");
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -564,7 +567,10 @@ static void convertBool(bool value, char *buffer, size_t bufferSize)
 
 static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "pointer: %p", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -579,7 +585,10 @@ static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 
 static void convertSize(size_t value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "size_t: %zu", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -594,7 +603,10 @@ static void convertSize(size_t value, char *buffer, size_t bufferSize)
 
 static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "ssize_t: %zd", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -609,8 +621,10 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 
 static void convertOff(off_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "off_t: %"
-    PRId64, (int64_t) value);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "off_t: %" PRId64, (int64_t) value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -625,8 +639,10 @@ static void convertOff(off_t value, char *buffer, size_t bufferSize)
 
 static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "pid_t: %"
-    PRIdMAX, (intmax_t) value);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "pid_t: %" PRIdMAX, (intmax_t) value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -641,8 +657,10 @@ static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 
 static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uid_t: %"
-    PRIdMAX, (intmax_t) value);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "uid_t: %"PRIdMAX, (intmax_t) value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -657,8 +675,10 @@ static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 
 static void convertGid(gid_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "gid_t: %"
-    PRIdMAX, (intmax_t) value);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "gid_t: %" PRIdMAX, (intmax_t) value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {
@@ -669,4 +689,3 @@ static void convertGid(gid_t value, char *buffer, size_t bufferSize)
         snprintf(buffer, bufferSize, "E");
     }
 }
-

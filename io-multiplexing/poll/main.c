@@ -186,7 +186,7 @@ static void handle_new_client(int server_socket, int **client_sockets, nfds_t *m
     (*client_sockets)[(*max_clients) - 1] = new_socket;
 }
 
-static void handle_client_data(int sd, int **client_sockets, size_t *max_clients)
+static void handle_client_data(int sd, int **client_sockets, nfds_t *max_clients)
 {
     char word_length;
     char word[256];

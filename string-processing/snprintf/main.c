@@ -387,7 +387,10 @@ static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize)
 
 static void convertInt(int value, char *buffer, size_t bufferSize)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
     int result = snprintf(buffer, bufferSize, "int: %d", value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {

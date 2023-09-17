@@ -25,7 +25,11 @@ int main(void)
     char str1[50] = "Hello, ";
     const char *str2 = "World!";
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
     strncat(str1, str2, 3);
+#pragma GCC diagnostic pop
+
     printf("Concatenated string: \"%s\"\n", str1);
 
     return EXIT_SUCCESS;

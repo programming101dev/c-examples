@@ -269,9 +269,14 @@ int main(void)
 
 static void convertChar(char value, char *buffer, size_t bufferSize)
 {
-    if (bufferSize >= 7)  // Ensure enough space for "char: X\0"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "char: %c", value);
+#pragma GCC diagnostic pop
+
+    if(result >= 0 && (size_t) result < bufferSize)
     {
-        snprintf(buffer, bufferSize, "char: %c", value);
+        buffer[result] = '\0';
     }
     else
     {
@@ -314,8 +319,10 @@ static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 
 static void convertInt16(int16_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "int16_t: %"
-    PRId16, value);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation="
+    int result = snprintf(buffer, bufferSize, "int16_t: %" PRId16, value);
+#pragma GCC diagnostic pop
 
     if(result >= 0 && (size_t) result < bufferSize)
     {

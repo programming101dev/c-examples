@@ -85,7 +85,7 @@ static void print_file_permissions(const char *filename)
     }
 
     printf("File: %s\n", filename);
-    printf("Permissions: %o\n", fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
+    printf("Permissions: %o\n", (unsigned int)fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 }
 
 

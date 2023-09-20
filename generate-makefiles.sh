@@ -941,7 +941,8 @@ populate_supported_flags() {
     )
 
     ANALYZER_FLAGS=(
-        "--analyze"
+# this needs to be handled better        "--analyze"
+        "--analyzer"
         "-fanalyzer"
         "-fanalyzer-transitivity"
         "-fanalyzer-verbosity=3"
@@ -1051,7 +1052,7 @@ generate_makefile() {
 
                 # Generate a traceable version rule
                 echo "$filename-traceable: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) -o $filename-traceable $file -DTRACE_ENABLED \$(LIBRARIES)" >> Makefile
+                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
                 echo "PROGRAMS += $filename-traceable" >> Makefile
             fi
         fi

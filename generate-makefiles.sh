@@ -197,8 +197,8 @@ populate_supported_flags() {
       "-Wbidi-chars=unpaired,ucn"
       "-Wc++-compat"
       "-W"
-      "-W#pragma-messages"
-      "-W#warnings"
+# these need special support for the makefile      "-W#pragma-messages"
+# these need special support for the makefile      "-W#warnings"
       "-Wabi"
       "-Wabsolute-value"
       "-Waddress-of-packed-member"
@@ -1038,11 +1038,21 @@ generate_makefile() {
                 echo -e "lib$filename$SHARED_EXT: $file" >> Makefile
                 echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo "LIBS += lib$filename$SHARED_EXT" >> Makefile
+
+                # Generate a shared library rule with the appropriate extension
+                echo -e "lib$filename-traceaable$SHARED_EXT: $file" >> Makefile
+                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo "LIBS += lib$filename-traceaable$SHARED_EXT" >> Makefile
             else
                 # Generate an executable rule with the supported warning flags
                 echo "$filename: $file" >> Makefile
                 echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -o $filename $file \$(LIBRARIES)" >> Makefile
                 echo "PROGRAMS += $filename" >> Makefile
+
+                # Generate a traceable version rule
+                echo "$filename-traceable: $file" >> Makefile
+                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) -o $filename-traceable $file -DTRACE_ENABLED \$(LIBRARIES)" >> Makefile
+                echo "PROGRAMS += $filename-traceable" >> Makefile
             fi
         fi
     done

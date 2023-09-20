@@ -957,7 +957,7 @@ populate_supported_flags() {
     )
 
     # Loop through each flag group and check if the flags are supported
-    for flag in "${WARNING_FLAGS[@]}" "${SANITIZER_FLAGS[@]}" "${ANALYZER_FLAGS[@]}" "${DEBUG_FLAGS[@]}"; do
+    for flag in "${WARNING_FLAGS[@]}" "${ANALYZER_FLAGS[@]}" "${DEBUG_FLAGS[@]}"; do
         if [[ "$flag" == "-fsanitize=pointer-compare" || "$flag" == "-fsanitize=pointer-subtract" ]]; then
             # Include -fsanitize=address as a dependency for pointer-compare and pointer-subtract
             if is_flag_supported "$flag -fsanitize=address"; then
@@ -972,6 +972,26 @@ populate_supported_flags() {
             # For other flags, check support without address
             if is_flag_supported "$flag"; then
                 SUPPORTED_FLAGS+=("$flag")
+            fi
+        fi
+    done
+
+    # Loop through each flag group and check if the flags are supported
+    for flag in "${SANITIZER_FLAGS[@]}"; do
+        if [[ "$flag" == "-fsanitize=pointer-compare" || "$flag" == "-fsanitize=pointer-subtract" ]]; then
+            # Include -fsanitize=address as a dependency for pointer-compare and pointer-subtract
+            if is_flag_supported "$flag -fsanitize=address"; then
+                SUPPORTED_SANITIZER_FLAGS+=("$flag")
+            fi
+        elif [[ "$flag" == "-fvar-trackinge" ]]; then
+            # Include --g as a dependency for pfvar-trackinge
+            if is_flag_supported "$flag --g"; then
+                SUPPORTED_SANITIZER_FLAGS+=("$flag")
+            fi
+        else
+            # For other flags, check support without address
+            if is_flag_supported "$flag"; then
+                SUPPORTED_SANITIZER_FLAGS+=("$flag")
             fi
         fi
     done
@@ -1001,6 +1021,7 @@ generate_makefile() {
     # Initialize the Makefile
     echo "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE" > Makefile
     echo "SUPPORTED_FLAGS=${SUPPORTED_FLAGS[@]}" >> Makefile
+    echo "SUPPORTED_FLAGS=${SUPPORTED_SANITIZER_FLAGS[@]}" >> Makefile
     echo "LIBRARIES=${LIBRARIES}" >> Makefile
     echo "PROGRAMS=" >> Makefile
     echo "LIBS=" >> Makefile
@@ -1015,12 +1036,12 @@ generate_makefile() {
             if [[ "$filename" == "testlib-1" || "$filename" == "testlib-2" ]]; then
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename$SHARED_EXT: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) -shared -fPIC -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo "LIBS += lib$filename$SHARED_EXT" >> Makefile
             else
                 # Generate an executable rule with the supported warning flags
                 echo "$filename: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) -o $filename $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -o $filename $file \$(LIBRARIES)" >> Makefile
                 echo "PROGRAMS += $filename" >> Makefile
             fi
         fi

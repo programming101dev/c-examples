@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 
+static void setup_signal_handler(void);
 static void sigint_handler(int signum);
 static int socket_create(void);
 static void socket_bind(int sockfd, const char *path);
@@ -45,23 +46,12 @@ static volatile sig_atomic_t exit_flag = 0;
 int main(void)
 {
     int sockfd;
-    struct sigaction sa;
 
     unlink(SOCKET_PATH);
     sockfd = socket_create();
     socket_bind(sockfd, SOCKET_PATH);
     start_listening(sockfd, SOMAXCONN);
-
-    // Register the SIGINT (Ctrl+C) signal handler
-    sa.sa_handler = sigint_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if(sigaction(SIGINT, &sa, NULL) == -1)
-    {
-        perror("sigaction");
-        exit(EXIT_FAILURE);
-    }
+    setup_signal_handler();
 
     while(!exit_flag)
     {
@@ -90,6 +80,23 @@ int main(void)
     unlink(SOCKET_PATH);
 
     return EXIT_SUCCESS;
+}
+
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 }
 
 

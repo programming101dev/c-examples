@@ -70,7 +70,6 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
 
     opterr = 0;
 
-    // Parse command-line options
     while((opt = getopt(argc, argv, "hs:")) != -1)
     {
         switch(opt)
@@ -136,12 +135,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     if (parsed_value > UINT_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
-    }
-
-    // Now we will verify that the parsed_value fits within an unsigned int.
-    if (parsed_value > (uintmax_t)UINT_MAX)
-    {
-        usage(binary_name, EXIT_FAILURE, "Unsigned integer does not fit within an unsigned int.");
     }
 
     return (unsigned int)parsed_value;

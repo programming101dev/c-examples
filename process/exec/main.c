@@ -22,7 +22,9 @@
 
 int main(void)
 {
-    pid_t pid = getpid();
+    pid_t pid;
+
+    pid = getpid();
     printf("Current Process ID: %d\n", pid);
 
     // Execute the "ls -l" command using execl

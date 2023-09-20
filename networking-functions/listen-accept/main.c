@@ -30,6 +30,7 @@
 #include <unistd.h>
 
 
+static void setup_signal_handler(void);
 static void sigint_handler(int signum);
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog);
 static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog);
@@ -68,17 +69,7 @@ int main(int argc, char *argv[])
     sockfd = socket_create(domain, SOCK_STREAM, 0);
     socket_bind(sockfd, address, domain, port);
     start_listening(sockfd, backlog);
-
-    // Register the SIGINT (Ctrl+C) signal handler
-    sa.sa_handler = sigint_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if(sigaction(SIGINT, &sa, NULL) == -1)
-    {
-        perror("sigaction");
-        exit(EXIT_FAILURE);
-    }
+    setup_signal_handler();
 
     while(!exit_flag)
     {
@@ -381,6 +372,23 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
     }
 
     return client_fd;
+}
+
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 }
 
 

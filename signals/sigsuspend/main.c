@@ -22,6 +22,7 @@
 #include <sys/wait.h>
 
 
+static void setup_signal_handler(void);
 static void signal_handler(int signal_number);
 
 
@@ -31,16 +32,7 @@ int main(void)
     struct sigaction sa;
     pid_t pid;
 
-    // Set up signal handler for SIGINT
-    sa.sa_handler = signal_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if(sigaction(SIGINT, &sa, NULL) < 0)
-    {
-        perror("Failed to set signal handler for SIGINT");
-        return EXIT_FAILURE;
-    }
+    setup_signal_handler();
 
     // Block SIGINT temporarily
     sigemptyset(&block_set);
@@ -92,6 +84,23 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
+}
+
 
 static void signal_handler(int signal_number)
 {

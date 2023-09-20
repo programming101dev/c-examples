@@ -31,6 +31,7 @@ static void parse_arguments(int argc, char *argv[], char **seconds);
 static void handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds);
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+static void setup_signal_handler(void);
 static void alarm_handler(int signal_number);
 
 
@@ -46,12 +47,7 @@ int main(int argc, char *argv[])
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
-
-    // Set up signal handler for SIGALRM
-    sa.sa_handler = alarm_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGALRM, &sa, NULL);
+    setup_signal_handler();
 
     // Set the alarm to trigger after 2 seconds
     alarm(seconds);
@@ -169,6 +165,23 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
+}
+
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGALRM, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 }
 
 

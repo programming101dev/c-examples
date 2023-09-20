@@ -20,6 +20,7 @@
 #include <signal.h>
 
 
+static void setup_signal_handler(void);
 static void signal_handler(int signal_number);
 static int check_pending_signal(void);
 static int block_signal(int signal_num, sigset_t *block_set);
@@ -31,16 +32,7 @@ int main(void)
     sigset_t block_set;
     struct sigaction sa;
 
-    // Set up signal handler for SIGINT
-    sa.sa_handler = signal_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if(sigaction(SIGINT, &sa, NULL) < 0)
-    {
-        perror("Failed to set signal handler for SIGINT");
-        return 1;
-    }
+    setup_signal_handler();
 
     // Check for pending signals before blocking
     printf("SIGINT is %s before blocking.\n", check_pending_signal() ? "pending" : "not pending");
@@ -48,7 +40,7 @@ int main(void)
     // Block SIGINT temporarily
     if(block_signal(SIGINT, &block_set) != 0)
     {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     printf("Sending SIGINT\n");
@@ -70,6 +62,23 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
+}
+
 
 static void signal_handler(int signal_number)
 {

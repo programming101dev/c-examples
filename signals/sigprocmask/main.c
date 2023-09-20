@@ -21,6 +21,7 @@
 #include <signal.h>
 
 
+static void setup_signal_handler(void);
 static void signal_handler(int signal_number);
 
 
@@ -30,15 +31,7 @@ int main(void)
     struct sigaction sa;
     sigset_t new_mask, old_mask;
 
-    sa.sa_handler = signal_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if(sigaction(SIGUSR1, &sa, NULL) < 0)
-    {
-        perror("Failed to set signal handler");
-        return EXIT_FAILURE;
-    }
+    setup_signal_handler();
 
     // Block SIGUSR1 signal
     sigemptyset(&new_mask);
@@ -70,6 +63,23 @@ int main(void)
     sleep(3);
 
     return EXIT_SUCCESS;
+}
+
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    if(sigaction(SIGUSR1, &sa, NULL) == -1)
+    {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
 }
 
 

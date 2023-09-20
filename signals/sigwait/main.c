@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -31,7 +32,7 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, u
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void setup_signal_handler(void);
-static void signal_handler(int signal_number);
+static void sigint_handler(int signal_number);
 
 
 int main(int argc, char *argv[])
@@ -40,18 +41,12 @@ int main(int argc, char *argv[])
     unsigned int seconds;
     sigset_t mask;
     int sig;
-    struct sigaction sa;
     pid_t pid;
 
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
-
-    // Set up signal handler for SIGINT (empty, not used in this example)
-    sa.sa_handler = signal_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGINT, &sa, NULL);
+    setup_signal_handler();
 
     // Create a signal mask containing SIGINT
     sigemptyset(&mask);
@@ -224,7 +219,7 @@ static void setup_signal_handler(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-static void signal_handler(int signal_number)
+static void sigint_handler(int signal_number)
 {
 }
 #pragma GCC diagnostic pop

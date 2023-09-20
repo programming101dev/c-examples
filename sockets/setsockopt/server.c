@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
     int sockfd;
     int domain;
     int enable;
-    struct sigaction sa;
 
     address = NULL;
     port_str = NULL;

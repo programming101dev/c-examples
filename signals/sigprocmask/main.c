@@ -15,10 +15,11 @@
  */
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <signal.h>
 
 
 static void setup_signal_handler(void);
@@ -27,8 +28,6 @@ static void signal_handler(int signal_number);
 
 int main(void)
 {
-    // Set up the signal handler
-    struct sigaction sa;
     sigset_t new_mask, old_mask;
 
     setup_signal_handler();
@@ -71,7 +70,7 @@ static void setup_signal_handler(void)
     struct sigaction sa;
 
     memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = sigint_handler;
+    sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 

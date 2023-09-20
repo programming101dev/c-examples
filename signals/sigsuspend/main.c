@@ -15,21 +15,21 @@
  */
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
+#include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 
 static void setup_signal_handler(void);
-static void signal_handler(int signal_number);
+static void sigint_handler(int signal_number);
 
 
 int main(void)
 {
     sigset_t block_set;
-    struct sigaction sa;
     pid_t pid;
 
     setup_signal_handler();
@@ -102,7 +102,7 @@ static void setup_signal_handler(void)
 }
 
 
-static void signal_handler(int signal_number)
+static void sigint_handler(int signal_number)
 {
     printf("Received signal: %d\n", signal_number);
 }

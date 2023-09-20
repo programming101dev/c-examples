@@ -42,7 +42,6 @@ int main(int argc, char *argv[])
 {
     char *seconds_str;
     unsigned int seconds;
-    struct sigaction sa;
 
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
@@ -144,12 +143,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
     }
 
-    // Now we will verify that the parsed_value fits within an unsigned int.
-    if (parsed_value > (uintmax_t)UINT_MAX)
-    {
-        usage(binary_name, EXIT_FAILURE, "Unsigned integer does not fit within an unsigned int.");
-    }
-
     return (unsigned int)parsed_value;
 }
 
@@ -173,7 +166,7 @@ static void setup_signal_handler(void)
     struct sigaction sa;
 
     memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = sigint_handler;
+    sa.sa_handler = alarm_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 

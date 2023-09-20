@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
     int backlog;
     int sockfd;
     int domain;
-    struct sigaction sa;
 
     address = NULL;
     port_str = NULL;

@@ -28,14 +28,27 @@
 #include <unistd.h>
 
 
+
+struct socket_option
+{
+    int level;
+    int option;
+    const char *name;
+    void (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
+};
+
+
 static void parse_arguments(int argc, char *argv[], char **address, char **port);
 static void handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int get_address_domain(const char *ip);
+static void convert_address(const char *address, struct sockaddr_storage *addr);;
 static int socket_create(int domain, int type, int protocol);
-static void socket_bind(int sockfd, const char *address, int domain, in_port_t port);
-static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
+static void print_socket_opt_bool(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void print_socket_opt_int(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void print_socket_opt_timeval(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
 static void socket_close(int sockfd);
 
 
@@ -46,31 +59,39 @@ int main(int argc, char *argv[])
     in_port_t port;
     int sockfd;
     int domain;
+    struct sockaddr_storage addr;
+    struct socket_option options[] =
+    {
+            { IPPROTO_TCP, SO_ACCEPTCONN, "SO_ACCEPTCONN", print_socket_opt_bool },
+            { SOL_SOCKET, SO_BROADCAST, "SO_BROADCAST", print_socket_opt_bool },
+            { SOL_SOCKET, SO_DEBUG, "SO_DEBUG", print_socket_opt_bool },
+            { SOL_SOCKET, SO_DONTROUTE, "SO_DONTROUTE", print_socket_opt_bool },
+            { SOL_SOCKET, SO_ERROR, "SO_ERROR", print_socket_opt_int },
+            { SOL_SOCKET, SO_KEEPALIVE, "SO_KEEPALIVE", print_socket_opt_bool },
+            { SOL_SOCKET, SO_LINGER, "SO_LINGER", print_socket_opt_linger },
+            { SOL_SOCKET, SO_OOBINLINE, "SO_OOBINLINE", print_socket_opt_bool },
+            { SOL_SOCKET, SO_RCVBUF, "SO_RCVBUF", print_socket_opt_int },
+            { SOL_SOCKET, SO_RCVLOWAT, "SO_RCVLOWAT", print_socket_opt_int },
+            { SOL_SOCKET, SO_RCVTIMEO, "SO_RCVTIMEO", print_socket_opt_timeval },
+            { SOL_SOCKET, SO_REUSEADDR, "SO_REUSEADDR", print_socket_opt_bool },
+            { SOL_SOCKET, SO_SNDBUF, "SO_SNDBUF", print_socket_opt_int },
+            { SOL_SOCKET, SO_SNDLOWAT, "SO_SNDLOWAT", print_socket_opt_int },
+            { SOL_SOCKET, SO_SNDTIMEO, "SO_SNDTIMEO", print_socket_opt_timeval },
+            { SOL_SOCKET, SO_TYPE, "SO_TYPE", print_socket_opt_int },
+    };
 
     address = NULL;
     port_str = NULL;
     parse_arguments(argc, argv, &address, &port_str);
     handle_arguments(argv[0], address, port_str, &port);
-    domain = get_address_domain(address);
-    sockfd = socket_create(domain, SOCK_STREAM, 0);
-    socket_bind(sockfd, address, domain, port);
-    print_socket_opt(sockfd, IPPROTO_TCP, SO_ACCEPTCONN, "SO_BROADCAST");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_BROADCAST, "SO_BROADCAST");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_DEBUG, "SO_DEBUG");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_DONTROUTE, "SO_DONTROUTE");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_ERROR, "SO_ERROR");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_KEEPALIVE, "SO_KEEPALIVE");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_LINGER, "SO_LINGER");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_OOBINLINE, "SO_OOBINLINE");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_RCVBUF, "SO_RCVBUF");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_RCVLOWAT, "SO_RCVLOWAT");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_RCVTIMEO, "SO_RCVTIMEO");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_REUSEADDR, "SO_REUSEADDR");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_SNDBUF, "SO_SNDBUF");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_SNDLOWAT, "SO_SNDLOWAT");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_SNDTIMEO, "SO_SNDTIMEO");
-    print_socket_opt(sockfd, SOL_SOCKET, SO_TYPE, "SO_TYPE");
-    socket_close(sockfd);
+    convert_address(address, &addr);
+    sockfd = socket_create(addr.ss_family, SOCK_STREAM, 0);
+    socket_bind(sockfd,  &addr, port);
+
+    for(size_t i = 0; i < sizeof(options) / sizeof(options[0]); i++)
+    {
+        options[i].print(sockfd, options[i].level, options[i].option, options[i].name);
+    }
 
     return EXIT_SUCCESS;
 }
@@ -179,26 +200,22 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static int get_address_domain(const char *address)
+static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
-    int domain;
+    memset(addr, 0, sizeof(*addr));
 
-    if(strstr(address, ":"))
+    if (inet_pton(AF_INET, address, &(((struct sockaddr_in*)addr)->sin_addr)) == 1)
     {
-        domain = AF_INET6;
+        // IPv4 address
+        addr->ss_family = AF_INET;
     }
-    else if (strstr(address, "."))
+    else if (inet_pton(AF_INET6, address, &(((struct sockaddr_in6*)addr)->sin6_addr)) == 1)
     {
-        domain = AF_INET;
+        // IPv6 address
+        addr->ss_family = AF_INET6;
     }
-    else
-    {
-        fprintf(stderr, "Invalid IP address \"%s\"\n", address);
-        exit(EXIT_FAILURE);
-    }
-
-    return domain;
 }
+
 
 
 static int socket_create(int domain, int type, int protocol)
@@ -217,63 +234,121 @@ static int socket_create(int domain, int type, int protocol)
 }
 
 
-static void socket_bind(int sockfd, const char *address, int domain, in_port_t port)
+static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port)
 {
-    struct sockaddr_storage addr;
+    char addr_str[INET6_ADDRSTRLEN];
+    in_port_t net_port;
 
-    memset(&addr, 0, sizeof(addr));
-
-    if(inet_pton(domain, address, &addr) != 1)
+    if (inet_ntop(addr->ss_family,
+                  addr->ss_family == AF_INET ?
+                  (void*)&(((struct sockaddr_in *)addr)->sin_addr) :
+                  (void*)&(((struct sockaddr_in6 *)addr)->sin6_addr),
+                  addr_str, sizeof(addr_str)) == NULL)
     {
-        perror("Invalid IP address");
+        perror("inet_ntop");
         exit(EXIT_FAILURE);
     }
 
-    if(domain == AF_INET)
+    printf("Binding to: %s:%u\n", addr_str, port);
+    net_port = htons(port);
+
+    if(addr->ss_family == AF_INET)
     {
         struct sockaddr_in *ipv4_addr;
 
-        ipv4_addr = (struct sockaddr_in *)&addr;
-        ipv4_addr->sin_family = AF_INET;
-        ipv4_addr->sin_port = htons(port);
+        ipv4_addr = (struct sockaddr_in *)addr;
+        ipv4_addr->sin_port = net_port;
     }
-    else if(domain == AF_INET6)
+    else if(addr->ss_family == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
 
-        ipv6_addr = (struct sockaddr_in6 *)&addr;
-        ipv6_addr->sin6_family = AF_INET6;
-        ipv6_addr->sin6_port = htons(port);
+        ipv6_addr = (struct sockaddr_in6 *)addr;
+        ipv6_addr->sin6_port = net_port;
     }
     else
     {
-        fprintf(stderr, "Invalid domain: %d\n", domain);
+        fprintf(stderr, "Invalid address family: %d\n", addr->ss_family);
         exit(EXIT_FAILURE);
     }
 
-    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    if(bind(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
     {
         perror("Binding failed");
         exit(EXIT_FAILURE);
     }
 
-    printf("Bound to socket: %s:%u\n", address, port);
+    printf("Bound to socket: %s:%u\n", addr_str, port);
 }
 
 
-
-static void print_socket_opt(int sockfd, int option_level, int option_name, const char *option_name_str)
+static void print_socket_opt_bool(int sockfd, int option_level, int option_name, const char *option_name_str)
 {
-    socklen_t optlen;
     int optval;
-    int ret;
-
-    optlen = sizeof(optval);
-    ret = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
+    socklen_t optlen = sizeof(optval);
+    int ret = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
 
     if (ret == 0)
     {
-        printf("%s: %s\n", option_name_str, optval ? "Enabled" : "Disabled");
+        fprintf(stderr, "%s: %s\n", option_name_str, optval ? "Enabled" : "Disabled");
+    }
+    else if (errno == ENOPROTOOPT || errno == EINVAL)
+    {
+        fprintf(stderr, "%s: Option not supported on this socket.\n", option_name_str);
+    }
+    else
+    {
+        fprintf(stderr, "Error getting %s: %s\n", option_name_str, strerror(errno));
+    }
+}
+
+
+static void print_socket_opt_int(int sockfd, int option_level, int option_name, const char *option_name_str)
+{
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    int ret = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
+
+    if (ret == 0)
+    {
+        fprintf(stderr, "%s: %d\n", option_name_str, optval);
+    }
+    else if (errno == ENOPROTOOPT || errno == EINVAL)
+    {
+        fprintf(stderr, "%s: Option not supported on this socket.\n", option_name_str);
+    }
+    else
+    {
+        fprintf(stderr, "Error getting %s: %s\n", option_name_str, strerror(errno));
+    }
+}
+
+
+static void print_socket_opt_timeval(int sockfd, int option_level, int option_name, const char *option_name_str)
+{
+    struct timeval optval;
+    socklen_t optlen = sizeof(optval);
+    int ret = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
+
+    if(ret == 0)
+    {
+        printf("%s: %ld seconds %ld microseconds\n", option_name_str, optval.tv_sec, optval.tv_usec);
+    }
+    else
+    {
+        perror("getsockopt");
+    }
+}
+
+static void print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str)
+{
+    struct linger optval;
+    socklen_t optlen = sizeof(optval);
+    int ret = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
+
+    if(ret == 0)
+    {
+        printf("%s: Linger: %s, Time: %d\n", option_name_str, optval.l_onoff ? "Enabled" : "Disabled", optval.l_linger);
     }
     else
     {

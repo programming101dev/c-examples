@@ -32,7 +32,7 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
 static void handle_arguments(const char *binary_name, const char *address, char *port_str, char *message, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int get_address_domain(const char *ip);
+static void convert_address(const char *address, struct sockaddr_storage *addr);
 static int socket_create(int domain, int type, int protocol);
 static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port);
 static void socket_close(int sockfd);
@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
     message = NULL;
     parse_arguments(argc, argv, &address, &port_str, &message);
     handle_arguments(argv[0], address, port_str, message, &port);
-    domain = get_address_domain(address);
-    sockfd = socket_create(domain, SOCK_DGRAM, 0);
+    convert_address(address, &addr);
+    sockfd = socket_create(addr.ss_family, SOCK_DGRAM, 0);
     get_address_to_server(&addr, sizeof(addr), address, domain, port);
     bytes_sent = sendto(sockfd, message, strlen(message) + 1, 0, (struct sockaddr *)&addr, sizeof(addr));
     printf("Sent %zu bytes: \"%s\"\n", (size_t)bytes_sent, message);
@@ -173,25 +173,20 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static int get_address_domain(const char *address)
+static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
-    int domain;
+    memset(addr, 0, sizeof(*addr));
 
-    if(strstr(address, ":"))
+    if (inet_pton(AF_INET, address, &(((struct sockaddr_in*)addr)->sin_addr)) == 1)
     {
-        domain = AF_INET6;
+        // IPv4 address
+        addr->ss_family = AF_INET;
     }
-    else if (strstr(address, "."))
+    else if (inet_pton(AF_INET6, address, &(((struct sockaddr_in6*)addr)->sin6_addr)) == 1)
     {
-        domain = AF_INET;
+        // IPv6 address
+        addr->ss_family = AF_INET6;
     }
-    else
-    {
-        fprintf(stderr, "Invalid IP address \"%s\"\n", address);
-        exit(EXIT_FAILURE);
-    }
-
-    return domain;
 }
 
 

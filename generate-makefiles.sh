@@ -934,7 +934,7 @@ populate_supported_flags() {
         "-fharden-conditional-branches"
         "-fstack-protector-all"
         "-fstack-clash-protection"
-        "-finstrument-functions"
+#        "-finstrument-functions"
         "-fharden-control-flow-redundancy"
         "-fno-delete-null-pointer-checks"
         "-fno-omit-frame-pointer"

@@ -245,7 +245,7 @@ static void *parent_process(void *arg)
     while(1)
     {
 #if defined(__clang__)
-        #pragma clang diagnostic push
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
         pthread_mutex_lock(&mutex);

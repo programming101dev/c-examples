@@ -914,7 +914,8 @@ populate_supported_flags() {
         "-fanalyzer"
         "-fanalyzer-transitivity"
         "-fanalyzer-verbosity=3"
-#        "-Wanalyzer-too-complex"
+        "-Wno-analyzer-too-complex"
+        "-Wno-analyzer-fd-leak"
     )
 
     DEBUG_FLAGS=(

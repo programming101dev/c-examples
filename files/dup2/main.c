@@ -47,14 +47,7 @@ int main(void)
     fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long) file_stat.st_size);
 
     // Redirect stdout (file descriptor 1) to the temporary file
-#if defined(__clang__)
-    #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wanalyzer-fd-leak"
-#endif
     if(dup2(original_fd, STDOUT_FILENO) == -1)
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
     {
         perror("Error redirecting stdout");
         close(original_fd);

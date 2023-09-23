@@ -30,7 +30,7 @@
 static void parse_arguments(int argc, char *argv[], char **main_seconds, char **thread_seconds);
 static void handle_arguments(const char *binary_name, const char *main_seconds_str, const char *thread_seconds_str, time_t *main_seconds, unsigned int *thread_seconds);
 static time_t parse_time_t(const char *binary_name, const char *str);
-long long detect_time_t_size(void);
+long long detect_time_t_size(void) __attribute__((const));
 static long long parse_long_long(const char *binary_name, const char *str);
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);

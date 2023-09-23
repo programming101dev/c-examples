@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
     unsigned int seconds;
     pid_t pid;
 
+    seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
     pid = fork();

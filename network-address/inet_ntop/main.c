@@ -24,10 +24,32 @@
 int main(void)
 {
     // Hard-coded binary representations of an IPv4 address and an IPv6 address
-    unsigned char ipv4_bytes[4] = {192, 168, 0, 1};
-    unsigned char ipv6_bytes[16] = {32, 1, 13, 184, 133, 163, 0, 0, 0, 0, 138, 46, 3, 112, 115, 52};
-    char ipv4_str[INET_ADDRSTRLEN];
-    char ipv6_str[INET6_ADDRSTRLEN];
+    unsigned char ipv4_bytes[4] = {
+            192,
+            168,
+            0,
+            1
+    };
+    unsigned char ipv6_bytes[16] = {
+            32,
+            1,
+            13,
+            184,
+            133,
+            163,
+            0,
+            0,
+            0,
+            0,
+            138,
+            46,
+            3,
+            112,
+            115,
+            52
+    };
+    char          ipv4_str[INET_ADDRSTRLEN];
+    char          ipv6_str[INET6_ADDRSTRLEN];
 
     // Convert IPv4 address from binary format to presentation format (string)
     inet_ntop(AF_INET, ipv4_bytes, ipv4_str, sizeof(ipv4_str));
@@ -36,6 +58,5 @@ int main(void)
     // Convert IPv6 address from binary format to presentation format (string)
     inet_ntop(AF_INET6, ipv6_bytes, ipv6_str, sizeof(ipv6_str));
     printf("IPv6 Address: %s\n", ipv6_str);
-
     return EXIT_SUCCESS;
 }

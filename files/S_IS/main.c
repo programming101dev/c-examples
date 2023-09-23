@@ -34,22 +34,18 @@ static void print_time(const char *label, time_t timeValue);
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
+    char        *file_path;
     struct stat fileStat;
-
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-
     if(stat(file_path, &fileStat) == -1)
     {
         perror("Error getting file stats");
         return EXIT_FAILURE;
     }
-
     printf("File Information for '%s':\n\n", file_path);
     print_file_info(&fileStat);
-
     return EXIT_SUCCESS;
 }
 
@@ -57,9 +53,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **filename)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -71,7 +65,6 @@ static void parse_arguments(int argc, char *argv[], char **filename)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -81,7 +74,6 @@ static void parse_arguments(int argc, char *argv[], char **filename)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The file name is required");
@@ -90,7 +82,6 @@ static void parse_arguments(int argc, char *argv[], char **filename)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *filename = argv[optind];
 }
 
@@ -110,7 +101,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <file name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -122,11 +112,11 @@ static void print_file_info(const struct stat *fileStat)
 {
     print_special_type(fileStat);
     print_extended_type(fileStat);
-    printf("File Size: %lld bytes\n", (long long) fileStat->st_size);
+    printf("File Size: %lld bytes\n", (long long)fileStat->st_size);
     print_permissions(fileStat->st_mode);
-    printf("File inode: %lld\n", (long long) fileStat->st_ino);
-    printf("Device ID: %lld\n", (long long) fileStat->st_dev);
-    printf("Number of hard links: %lld\n", (long long) fileStat->st_nlink);
+    printf("File inode: %lld\n", (long long)fileStat->st_ino);
+    printf("Device ID: %lld\n", (long long)fileStat->st_dev);
+    printf("Number of hard links: %lld\n", (long long)fileStat->st_nlink);
     printf("File Owner UID: %u\n", fileStat->st_uid);
     printf("File Group GID: %u\n", fileStat->st_gid);
     print_time("Last access time", fileStat->st_atime);
@@ -174,32 +164,28 @@ static void print_special_type(const struct stat *fileStat)
 
 static void print_extended_type(const struct stat *fileStat)
 {
-    (void) fileStat; // Compiler trick
+    (void)fileStat; // Compiler trick
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
-
 #if defined(S_TYPEISMQ) && S_TYPEISMQ != 0
     if (S_TYPEISMQ(fileStat))
         {
             printf("Type: Message Queue\n");
         }
 #endif
-
 #if defined(S_TYPEISSEM) && S_TYPEISSEM != 0
     if (S_TYPEISSEM(fileStat))
         {
             printf("Type: Semaphore\n");
         }
 #endif
-
 #if defined(S_TYPEISSHM) && S_TYPEISSHM != 0
     if (S_TYPEISSHM(fileStat))
         {
             printf("Type: Shared Memory\n");
         }
 #endif
-
 #pragma GCC diagnostic pop
 }
 

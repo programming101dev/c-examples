@@ -26,37 +26,35 @@ static void signal_handler(int signal_number);
 
 int main(void)
 {
-    const int signals_to_handle[] =
-    {
-        SIGABRT,
-        SIGALRM,
-        SIGCHLD,
-        SIGCONT,
-        SIGFPE,
-        SIGHUP,
-        SIGILL,
-        SIGINT,
-        SIGKILL,
-        SIGPIPE,
-        SIGQUIT,
-        SIGSEGV,
-        SIGSTOP,
-        SIGSYS,
-        SIGTERM,
-        SIGTRAP,
-        SIGTSTP,
-        SIGTTIN,
-        SIGTTOU,
-        SIGURG,
-        SIGUSR1,
-        SIGUSR2,
-        SIGVTALRM,
-        SIGXCPU,
-        SIGXFSZ
+    const int        signals_to_handle[] = {
+            SIGABRT,
+            SIGALRM,
+            SIGCHLD,
+            SIGCONT,
+            SIGFPE,
+            SIGHUP,
+            SIGILL,
+            SIGINT,
+            SIGKILL,
+            SIGPIPE,
+            SIGQUIT,
+            SIGSEGV,
+            SIGSTOP,
+            SIGSYS,
+            SIGTERM,
+            SIGTRAP,
+            SIGTSTP,
+            SIGTTIN,
+            SIGTTOU,
+            SIGURG,
+            SIGUSR1,
+            SIGUSR2,
+            SIGVTALRM,
+            SIGXCPU,
+            SIGXFSZ
     };
-    pid_t pid;
+    pid_t            pid;
     struct sigaction sa;
-
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -67,7 +65,6 @@ int main(void)
 #endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-
     for(size_t i = 0; i < sizeof(signals_to_handle) / sizeof(signals_to_handle[0]); i++)
     {
         if(sigaction(signals_to_handle[i], &sa, NULL) < 0)
@@ -79,7 +76,6 @@ int main(void)
             printf("Set signal handler for signal %d\n", signals_to_handle[i]);
         }
     }
-
     pid = getpid();
     printf("My process ID is: %d\n", pid);
     printf("Sending SIGUSR1 signal to my own process...\n");
@@ -122,7 +118,6 @@ int main(void)
     while(1)
     {
     }
-
     return EXIT_SUCCESS;
 }
 

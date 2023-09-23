@@ -40,9 +40,8 @@ static volatile sig_atomic_t alarm_received = 0;
 
 int main(int argc, char *argv[])
 {
-    char *seconds_str;
+    char         *seconds_str;
     unsigned int seconds;
-
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
@@ -50,7 +49,6 @@ int main(int argc, char *argv[])
 
     // Set the alarm to trigger after 2 seconds
     alarm(seconds);
-
     printf("Waiting for the alarm...\n");
 
     // Wait until the alarm is received
@@ -58,9 +56,7 @@ int main(int argc, char *argv[])
     {
         // Put any other processing you want here.
     }
-
     printf("Exiting.\n");
-
     return EXIT_SUCCESS;
 }
 
@@ -68,9 +64,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -82,7 +76,6 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -92,17 +85,14 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *seconds = argv[optind];
 }
 
@@ -113,36 +103,32 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, u
     {
         usage(binary_name, EXIT_FAILURE, "The seconds are required.");
     }
-
     *seconds = parse_unsigned_int(binary_name, seconds_str);
 }
 
 
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
-    char *endptr;
+    char      *endptr;
     uintmax_t parsed_value;
-
-    errno = 0;
+    errno        = 0;
     parsed_value = strtoumax(str, &endptr, 10);
-
-    if (errno != 0)
+    if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
     }
 
     // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
+    if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
     // Check if the parsed value is within the valid range for unsigned int
-    if (parsed_value > UINT_MAX)
+    if(parsed_value > UINT_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
     }
-
     return (unsigned int)parsed_value;
 }
 
@@ -153,7 +139,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <seconds>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -164,7 +149,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
-
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -176,7 +160,6 @@ static void setup_signal_handler(void)
 #endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-
     if(sigaction(SIGALRM, &sa, NULL) == -1)
     {
         perror("sigaction");
@@ -187,10 +170,14 @@ static void setup_signal_handler(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
+
 static void alarm_handler(int signal_number)
 {
     const char *message = "Alarm received!\n";
     write(STDERR_FILENO, message, strlen(message));
     alarm_received = 1;
 }
+
+
 #pragma GCC diagnostic pop

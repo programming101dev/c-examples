@@ -27,14 +27,12 @@ static void convert(const char *str);
 
 int main(void)
 {
-    const char goodNumber[] = "123.456";
+    const char goodNumber[]     = "123.456";
     const char leftoverNumber[] = "42.14234hello";
-    const char badNumber[] = "abcde";
-
+    const char badNumber[]      = "abcde";
     convert(goodNumber);
     convert(leftoverNumber);
     convert(badNumber);
-
     return EXIT_SUCCESS;
 }
 
@@ -42,17 +40,15 @@ int main(void)
 static void convert(const char *str)
 {
     float result;
-    char *endptr;
+    char  *endptr;
     float tolerance;
-
-    result = 0;
-    errno = 0;
-    result = strtof(str, &endptr);
+    result    = 0;
+    errno     = 0;
+    result    = strtof(str, &endptr);
 
     // Check for conversion errors
     tolerance = 1e-6f; // Define your desired tolerance for float
-    if((errno == ERANGE && (fabsf(result - HUGE_VALF) < tolerance || fabsf(result + HUGE_VALF) < tolerance)) ||
-       (errno != 0 && fabsf(result) < tolerance))
+    if((errno == ERANGE && (fabsf(result - HUGE_VALF) < tolerance || fabsf(result + HUGE_VALF) < tolerance)) || (errno != 0 && fabsf(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }
@@ -68,6 +64,5 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
-
-    printf("Result: %f\n", (double) result);
+    printf("Result: %f\n", (double)result);
 }

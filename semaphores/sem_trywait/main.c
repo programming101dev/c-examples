@@ -27,12 +27,11 @@
 int main(void)
 {
     const char *sem_name = "/example_semaphore";
-    sem_t *semaphore;
-    pid_t pid;
+    sem_t      *semaphore;
+    pid_t      pid;
 
     // Create a named semaphore with initial value 1 (available)
     semaphore = sem_open(sem_name, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1);
-
     if(semaphore == SEM_FAILED)
     {
         perror("Semaphore creation failed");
@@ -41,7 +40,6 @@ int main(void)
 
     // Fork a child process
     pid = fork();
-
     if(pid < 0)
     {
         perror("Fork failed");
@@ -62,7 +60,6 @@ int main(void)
             sem_unlink(sem_name);
             exit(EXIT_FAILURE);
         }
-
         sleep(3);
 
         // Release the semaphore (post)
@@ -73,7 +70,6 @@ int main(void)
     else
     {
         int try_count;
-
         sleep(1);
         // Parent process (consumer)
         printf("Parent process (PID %d): Waiting for the child to complete...\n", getpid());
@@ -83,14 +79,12 @@ int main(void)
         while(try_count > 0)
         {
             int ret = sem_trywait(semaphore);
-
             if(ret == 0)
             {
                 printf("Parent process (PID %d): Done waiting\n", getpid());
 
                 // Release the semaphore (post)
                 sem_post(semaphore);
-
                 printf("Parent process (PID %d): Child signaled. Continue processing...\n", getpid());
                 break;
             }
@@ -120,7 +114,6 @@ int main(void)
             sem_unlink(sem_name);
             exit(EXIT_FAILURE);
         }
-
         printf("Parent process (PID %d): Child completed.\n", getpid());
 
         // Unlink the semaphore after use
@@ -130,6 +123,5 @@ int main(void)
             exit(EXIT_FAILURE);
         }
     }
-
     return EXIT_SUCCESS;
 }

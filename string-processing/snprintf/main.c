@@ -26,7 +26,6 @@
 
 // Character Types
 static void convertChar(char c, char *buffer, size_t bufferSize);
-
 // Integer Types
 static void convertInt8(int8_t num, char *buffer, size_t bufferSize);
 static void convertUInt8(uint8_t num, char *buffer, size_t bufferSize);
@@ -40,23 +39,18 @@ static void convertLong(long num, char *buffer, size_t bufferSize);
 static void convertULong(unsigned long num, char *buffer, size_t bufferSize);
 static void convertLongLong(long long num, char *buffer, size_t bufferSize);
 static void convertULongLong(unsigned long long num, char *buffer, size_t bufferSize);
-
 // Floating-Point Types
 static void convertFloat(float num, char *buffer, size_t bufferSize);
 static void convertDouble(double num, char *buffer, size_t bufferSize);
 static void convertLongDouble(long double num, char *buffer, size_t bufferSize);
-
 // Pointer Types
 static void convertPointer(const void *ptr, char *buffer, size_t bufferSize);
-
 // Size and Offset Types
 static void convertSize(size_t num, char *buffer, size_t bufferSize);
 static void convertSSize(ssize_t num, char *buffer, size_t bufferSize);
 static void convertOff(off_t num, char *buffer, size_t bufferSize);
-
 // Boolean Type
 static void convertBool(bool value, char *buffer, size_t bufferSize);
-
 // Process and User ID Types (POSIX-specific)
 static void convertPid(pid_t num, char *buffer, size_t bufferSize);
 static void convertUid(uid_t num, char *buffer, size_t bufferSize);
@@ -67,7 +61,7 @@ int main(void)
 {
     char good_buffer[50];
     char bad_buffer[2];
-    int value;
+    int  value;
 
     // Character Types
     printf("Character Types\n");
@@ -75,7 +69,6 @@ int main(void)
     convertChar('A', good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertChar('\0', bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
@@ -85,90 +78,71 @@ int main(void)
     convertInt8(-42, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("uint8_t\n");
     convertUInt8(255, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("int16_t\n");
     convertInt16(-12345, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertInt16(32767, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("uint16_t\n");
     convertUInt16(65535, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("int32_t\n");
     convertInt32(-2147483647 - 1, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertInt32(2147483647, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("uint32_t\n");
     convertUInt32(4294967295U, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("int\n");
     convertInt(-2147483647 - 1, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertInt(2147483647, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("unsigned int\n");
     convertUInt(12345, good_buffer, sizeof(good_buffer)); // Using the function
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertUInt(2147483647, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("long\n");
     convertLong(4294967295L, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertLong(5000000000L, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("unsigned long\n");
     convertULong(4294967295UL, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertULong(5000000000UL, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("long long\n");
     convertLongLong(-9223372036854775807LL - 1LL, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertLongLong(9223372036854775807LL, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("unsigned long long\n");
     convertULongLong(18446744073709551615ULL, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertULongLong(18446744073709551615ULL, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
@@ -178,21 +152,17 @@ int main(void)
     convertFloat(3.14159f, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertFloat(FLT_MAX, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("double\n");
     convertDouble(DBL_MAX, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("long double\n");
     convertLongDouble(3.141592653589793238462643383279502884L, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertLongDouble(9876543210.9876543210L, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
@@ -202,7 +172,6 @@ int main(void)
     convertBool(true, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertBool(false, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
@@ -214,7 +183,6 @@ int main(void)
     convertPointer(&value, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertPointer(NULL, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
@@ -224,21 +192,17 @@ int main(void)
     convertSize(sizeof(int), good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("ssize_t\n");
     convertSSize(-42, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertSSize(12345, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("off_t\n");
     convertOff(9876543210, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertOff(-1, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
@@ -248,21 +212,17 @@ int main(void)
     convertPid(12345, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     convertPid(-1, bad_buffer, sizeof(bad_buffer));
     printf("\tBad Buffer: %s\n", bad_buffer);
     memset(bad_buffer, 0, sizeof(bad_buffer));
-
     printf("uid_t\n");
     convertUid(1000, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     printf("gid_t\n");
     convertGid(100, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
-
     return EXIT_SUCCESS;
 }
 
@@ -270,7 +230,6 @@ int main(void)
 static void convertChar(char value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -279,8 +238,7 @@ static void convertChar(char value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -295,8 +253,7 @@ static void convertInt8(int8_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "int8_t: %"
     PRId8, value);
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -311,8 +268,7 @@ static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "uint8_t: %"
     PRIu8, value);
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -326,17 +282,16 @@ static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 static void convertInt16(int16_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "int16_t: %" PRId16, value);
+    result = snprintf(buffer, bufferSize, "int16_t: %"
+    PRId16, value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -351,8 +306,7 @@ static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "uint16_t: %"
     PRIu16, value);
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -366,17 +320,16 @@ static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 static void convertInt32(int32_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "int32_t: %" PRId32, value);
+    result = snprintf(buffer, bufferSize, "int32_t: %"
+    PRId32, value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -391,8 +344,7 @@ static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize)
 {
     int result = snprintf(buffer, bufferSize, "uint32_t: %"
     PRIu32, value);
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -406,7 +358,6 @@ static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize)
 static void convertInt(int value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -415,8 +366,7 @@ static void convertInt(int value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -430,7 +380,6 @@ static void convertInt(int value, char *buffer, size_t bufferSize)
 static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -439,8 +388,7 @@ static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -454,7 +402,6 @@ static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 static void convertLong(long value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -463,8 +410,7 @@ static void convertLong(long value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -478,7 +424,6 @@ static void convertLong(long value, char *buffer, size_t bufferSize)
 static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -487,8 +432,7 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -502,7 +446,6 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -511,8 +454,7 @@ static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -526,7 +468,6 @@ static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 static void convertULongLong(unsigned long long value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -535,8 +476,7 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -550,17 +490,15 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 static void convertFloat(float value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "float: %.5f", (double) value);
+    result = snprintf(buffer, bufferSize, "float: %.5f", (double)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -574,7 +512,6 @@ static void convertFloat(float value, char *buffer, size_t bufferSize)
 static void convertDouble(double value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -583,8 +520,7 @@ static void convertDouble(double value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -598,7 +534,6 @@ static void convertDouble(double value, char *buffer, size_t bufferSize)
 static void convertLongDouble(long double value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -607,8 +542,7 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -622,7 +556,6 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 static void convertBool(bool value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -631,8 +564,7 @@ static void convertBool(bool value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -646,7 +578,6 @@ static void convertBool(bool value, char *buffer, size_t bufferSize)
 static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -655,8 +586,7 @@ static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -670,7 +600,6 @@ static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 static void convertSize(size_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -679,8 +608,7 @@ static void convertSize(size_t value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -694,7 +622,6 @@ static void convertSize(size_t value, char *buffer, size_t bufferSize)
 static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -703,8 +630,7 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -718,17 +644,16 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 static void convertOff(off_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "off_t: %" PRId64, (int64_t) value);
+    result = snprintf(buffer, bufferSize, "off_t: %"
+    PRId64, (int64_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -742,17 +667,16 @@ static void convertOff(off_t value, char *buffer, size_t bufferSize)
 static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "pid_t: %" PRIdMAX, (intmax_t) value);
+    result = snprintf(buffer, bufferSize, "pid_t: %"
+    PRIdMAX, (intmax_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -766,17 +690,16 @@ static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "uid_t: %"PRIdMAX, (intmax_t) value);
+    result = snprintf(buffer, bufferSize, "uid_t: %"
+    PRIdMAX, (intmax_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }
@@ -790,17 +713,16 @@ static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 static void convertGid(gid_t value, char *buffer, size_t bufferSize)
 {
     int result;
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "gid_t: %" PRIdMAX, (intmax_t) value);
+    result = snprintf(buffer, bufferSize, "gid_t: %"
+    PRIdMAX, (intmax_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-    if(result >= 0 && (size_t) result < bufferSize)
+    if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
     }

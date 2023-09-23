@@ -31,7 +31,6 @@ static int unblock_signal(sigset_t *block_set);
 int main(void)
 {
     sigset_t block_set;
-
     setup_signal_handler();
 
     // Check for pending signals before blocking
@@ -42,13 +41,11 @@ int main(void)
     {
         return EXIT_FAILURE;
     }
-
     printf("Sending SIGINT\n");
     raise(SIGINT);
 
     // Check for pending signals after raising
     printf("SIGINT is %s and blocked.\n", check_pending_signal() ? "pending" : "not pending");
-
     printf("Unblocking SIGINT\n");
 
     // Unblock SIGINT
@@ -59,14 +56,13 @@ int main(void)
 
     // Check for pending signals after unblocking
     printf("SIGINT is %s after unblocking.\n", check_pending_signal() ? "pending" : "not pending");
-
     return EXIT_SUCCESS;
 }
+
 
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
-
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -78,7 +74,6 @@ static void setup_signal_handler(void)
 #endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-
     if(sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");
@@ -92,6 +87,7 @@ static void sigint_handler(int signal_number)
     printf("Received signal: %d\n", signal_number);
 }
 
+
 static int check_pending_signal(void)
 {
     sigset_t pending_set;
@@ -100,23 +96,22 @@ static int check_pending_signal(void)
         perror("Failed to get pending signals");
         return EXIT_FAILURE;
     }
-
     return sigismember(&pending_set, SIGINT);
 }
+
 
 static int block_signal(int signal_num, sigset_t *block_set)
 {
     sigemptyset(block_set);
     sigaddset(block_set, signal_num);
-
     if(sigprocmask(SIG_BLOCK, block_set, NULL) < 0)
     {
         perror("Failed to block signal");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
+
 
 static int unblock_signal(sigset_t *block_set)
 {
@@ -125,6 +120,5 @@ static int unblock_signal(sigset_t *block_set)
         perror("Failed to unblock signal");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }

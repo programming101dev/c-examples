@@ -29,40 +29,32 @@ _Noreturn static void child_process(int pipefd[2], FILE *file);
 _Noreturn static void parent_process(int pipefd[2]);
 static void send_word(int pipefd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
-
-
 #define MAX_WORD_LENGTH 255
 
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
-    int pipefd[2];
-    FILE *file;
+    char  *file_path;
+    int   pipefd[2];
+    FILE  *file;
     pid_t pid;
-
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     file = fopen(file_path, "r");
-
     if(file == NULL)
     {
         error_exit("Error opening file");
     }
-
     if(pipe(pipefd) == -1)
     {
         error_exit("Error creating pipe");
     }
-
     pid = fork();
-
     if(pid == -1)
     {
         error_exit("Error creating child process");
     }
-
     if(pid == 0)
     {
         child_process(pipefd, file);
@@ -72,7 +64,6 @@ int main(int argc, char *argv[])
         fclose(file);
         parent_process(pipefd);
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -80,9 +71,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -94,7 +83,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -104,17 +92,14 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *file_path = argv[optind];
 }
 
@@ -134,7 +119,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -145,19 +129,15 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void send_word(int pipefd, const char *word, uint8_t length)
 {
     ssize_t written_bytes;
-
     printf("Child: sending word of length %u: %s\n", length, word);
     written_bytes = write(pipefd, &length, sizeof(length));
-
     if(written_bytes < 0)
     {
         error_exit("Error writing word length to pipe");
     }
-
     if(length > 0)
     {
         written_bytes = write(pipefd, word, length);
-
         if(written_bytes < 0)
         {
             error_exit("Error writing word to pipe");
@@ -175,12 +155,10 @@ _Noreturn static void error_exit(const char *msg)
 
 _Noreturn static void child_process(int pipefd[2], FILE *file)
 {
-    int ch;
-    char word[MAX_WORD_LENGTH];
+    int     ch;
+    char    word[MAX_WORD_LENGTH];
     uint8_t length = 0;
-
     close(pipefd[0]);
-
     while((ch = fgetc(file)) != EOF)
     {
         if(ch == ' ' || ch == '\n' || ch == '\t')
@@ -198,29 +176,23 @@ _Noreturn static void child_process(int pipefd[2], FILE *file)
             {
                 error_exit("Encountered a word longer than the maximum allowed length");
             }
-
             word[length++] = (char)ch;
         }
     }
-
     if(length > 0)
     {
         word[length] = '\0';
         send_word(pipefd[1], word, length);
     }
-
     send_word(pipefd[1], NULL, 0);
-
     if(fclose(file) != 0)
     {
         error_exit("Error closing file");
     }
-
     if(close(pipefd[1]) != 0)
     {
         error_exit("Error closing pipe");
     }
-
     exit(EXIT_SUCCESS);
 }
 
@@ -228,40 +200,31 @@ _Noreturn static void child_process(int pipefd[2], FILE *file)
 _Noreturn static void parent_process(int pipefd[2])
 {
     uint8_t length;
-    char word[MAX_WORD_LENGTH];
+    char    word[MAX_WORD_LENGTH];
     ssize_t read_bytes;
-
     close(pipefd[1]);
-
     while(1)
     {
         read_bytes = read(pipefd[0], &length, sizeof(length));
-
         if(read_bytes < 0)
         {
             error_exit("Error reading word length from pipe");
         }
-
         if(length == 0)
         {
             break;
         }
-
         read_bytes = read(pipefd[0], word, length);
-
         if(read_bytes < 0)
         {
             error_exit("Error reading word from pipe");
         }
-
         word[length] = '\0';
         printf("Parent: received word of length %u: %s\n", length, word);
     }
-
     if(close(pipefd[0]) != 0)
     {
         error_exit("Error closing pipe");
     }
-
     exit(EXIT_SUCCESS);
 }

@@ -23,29 +23,23 @@
 int main(void)
 {
     size_t max_hostname_length;
-    long length;
-    char *hostname;
-    int result;
-
+    long   length;
+    char   *hostname;
+    int    result;
     length = sysconf(_SC_HOST_NAME_MAX);
-
     if(length <= 0)
     {
         perror("sysconf");
         return EXIT_FAILURE;
     }
-
     max_hostname_length = (size_t)length;
-    hostname = (char *)malloc(max_hostname_length + 1);
-
+    hostname            = (char *)malloc(max_hostname_length + 1);
     if(hostname == NULL)
     {
         perror("malloc");
         return EXIT_FAILURE;
     }
-
     result = gethostname(hostname, max_hostname_length);
-
     if(result == 0)
     {
         printf("Hostname: %s\n", hostname);
@@ -56,8 +50,6 @@ int main(void)
         free(hostname);
         return EXIT_FAILURE;
     }
-
     free(hostname);
-
     return EXIT_SUCCESS;
 }

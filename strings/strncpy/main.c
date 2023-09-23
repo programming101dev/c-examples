@@ -32,28 +32,24 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char *n_str;
-    char *string;
+    char   *n_str;
+    char   *string;
     size_t n;
-    char *destination;
-
-    n_str = NULL;
+    char   *destination;
+    n_str  = NULL;
     string = NULL;
     parse_arguments(argc, argv, &n_str, &string);
     handle_arguments(argv[0], n_str, string, &n);
     destination = (char *)malloc(n + 1);
-
     if(destination == NULL)
     {
         perror("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
-
     strncpy(destination, string, n);
     printf("Source string: %s\n", string);
     printf("Copied string: %s\n", destination);
     free(destination);
-
     return EXIT_SUCCESS;
 }
 
@@ -61,9 +57,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **n, char **string)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "hn:")) != -1)
     {
         switch(opt)
@@ -80,7 +74,6 @@ static void parse_arguments(int argc, char *argv[], char **n, char **string)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -90,17 +83,14 @@ static void parse_arguments(int argc, char *argv[], char **n, char **string)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *string = argv[optind];
 }
 
@@ -111,43 +101,39 @@ static void handle_arguments(const char *binary_name, const char *n_str, const c
     {
         usage(binary_name, EXIT_FAILURE, "n is required.");
     }
-
     if(string == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The string is required.");
     }
-
     *n = parse_size_t(binary_name, n_str);
 }
 
 
 size_t parse_size_t(const char *binary_name, const char *str)
 {
-    char *endptr;
+    char      *endptr;
     uintmax_t parsed_value;
-
-    errno = 0;
+    errno        = 0;
     parsed_value = strtoumax(str, &endptr, 10);
-
-    if (errno != 0)
+    if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing size_t.");
     }
 
     // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
+    if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
     // Check if the parsed value is within the valid range for size_t
-    if (parsed_value > SIZE_MAX)
+    if(parsed_value > SIZE_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "size_t value out of range.");
     }
-
     return (size_t)parsed_value;
 }
+
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -155,7 +141,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] -n <length> <string>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h           Display this help message\n", stderr);

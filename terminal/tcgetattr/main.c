@@ -26,7 +26,7 @@ static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_
 
 int main(void)
 {
-    int fd = STDIN_FILENO; // Use stdin file descriptor for this example
+    int            fd = STDIN_FILENO; // Use stdin file descriptor for this example
     struct termios term_attr;
 
     // Get the current terminal attributes
@@ -35,11 +35,10 @@ int main(void)
         perror("tcgetattr");
         return 1;
     }
-
     printf("Terminal attributes:\n");
 
     // Input flags
-    printf("Input flags:  %lX\n", (unsigned long) term_attr.c_iflag);
+    printf("Input flags:  %lX\n", (unsigned long)term_attr.c_iflag);
     print_flags("BRKINT", term_attr.c_iflag, BRKINT);
     print_flags("ICRNL", term_attr.c_iflag, ICRNL);
     print_flags("IGNBRK", term_attr.c_iflag, IGNBRK);
@@ -55,7 +54,7 @@ int main(void)
     printf("\n");
 
     // Output flags
-    printf("Output flags: %lX\n", (unsigned long) term_attr.c_oflag);
+    printf("Output flags: %lX\n", (unsigned long)term_attr.c_oflag);
     print_flags("OPOST", term_attr.c_oflag, OPOST);
     print_flags("ONLCR", term_attr.c_oflag, ONLCR);
     print_flags("OCRNL", term_attr.c_oflag, OCRNL);
@@ -86,7 +85,7 @@ int main(void)
     printf("\n");
 
     // Control flags
-    printf("Control flags: %lX\n", (unsigned long) term_attr.c_cflag);
+    printf("Control flags: %lX\n", (unsigned long)term_attr.c_cflag);
     print_flags("CSIZE CS5", term_attr.c_cflag, CS5);
     print_flags("CSIZE CS6", term_attr.c_cflag, CS6);
     print_flags("CSIZE CS7", term_attr.c_cflag, CS7);
@@ -100,7 +99,7 @@ int main(void)
     printf("\n");
 
     // Local flags
-    printf("Local flags: %lX\n", (unsigned long) term_attr.c_lflag);
+    printf("Local flags: %lX\n", (unsigned long)term_attr.c_lflag);
     print_flags("ECHO", term_attr.c_lflag, ECHO);
     print_flags("ECHOE", term_attr.c_lflag, ECHOE);
     print_flags("ECHOK", term_attr.c_lflag, ECHOK);
@@ -125,7 +124,6 @@ int main(void)
     printf("VSTOP:   %d\n", term_attr.c_cc[VSTOP]);
     printf("VSUSP:   %d\n", term_attr.c_cc[VSUSP]);
     printf("VTIME:   %d\n", term_attr.c_cc[VTIME]);
-
     return EXIT_SUCCESS;
 }
 

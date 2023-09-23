@@ -24,13 +24,11 @@
 int main(void)
 {
     const char *tempdir_template = "example_dir";
-
     if(mkdir(tempdir_template, 0700) == -1)
     {
         perror("Error creating temporary directory");
         return 1;
     }
-
     printf("Directory created: %s\n", tempdir_template);
 
     // Remove the temporary directory
@@ -39,7 +37,6 @@ int main(void)
         perror("Error removing temporary directory");
         return EXIT_FAILURE;
     }
-
     printf("Temporary directory removed: %s\n", tempdir_template);
     return EXIT_SUCCESS;
 }

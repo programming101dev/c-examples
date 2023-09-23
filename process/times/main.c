@@ -30,11 +30,9 @@ static void printTimes(struct tms tms_data);
 
 int main(void)
 {
-    const size_t MAX_NUMBERS = 100000;
+    const size_t MAX_NUMBERS    = 100000;
     const size_t NUM_ITERATIONS = 20000;
-
-    pid_t pid = fork();
-
+    pid_t        pid            = fork();
     if(pid < 0)
     {
         fprintf(stderr, "Fork failed\n");
@@ -43,7 +41,6 @@ int main(void)
     else if(pid == 0)
     {
         long long sum;
-
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
         printf("Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
         exit(EXIT_SUCCESS);
@@ -52,8 +49,7 @@ int main(void)
     {
         struct tms start_tms;
         struct tms end_tms;
-        long long sum;
-
+        long long  sum;
         times(&start_tms);
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
         wait(NULL);
@@ -63,32 +59,26 @@ int main(void)
         times(&end_tms);
         printTimes(end_tms);
     }
-
     return EXIT_SUCCESS;
 }
 
 
 static long long performCalculation(size_t size, size_t iterations)
 {
-    int *numbers;
+    int       *numbers;
     long long sum;
-
     numbers = (int *)malloc(size * sizeof(int));
-
     if(numbers == NULL)
     {
         perror("Failed to allocate memory");
         exit(EXIT_FAILURE);
     }
-
     sum = 0;
     srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
-
     for(size_t i = 0; i < size; i++)
     {
         numbers[i] = rand() % 100;
     }
-
     for(size_t i = 0; i < iterations; i++)
     {
         for(size_t j = 0; j < size; j++)
@@ -96,17 +86,16 @@ static long long performCalculation(size_t size, size_t iterations)
             sum += numbers[j];
         }
     }
-
     free(numbers);
-
     return sum;
 }
 
+
 static void printTimes(struct tms tms_data)
 {
-    printf("User time: %jd clock ticks\n", (intmax_t) tms_data.tms_utime);
-    printf("System time: %jd clock ticks\n", (intmax_t) tms_data.tms_stime);
-    printf("Children's user time: %jd clock ticks\n", (intmax_t) tms_data.tms_cutime);
-    printf("Children's system time: %jd clock ticks\n", (intmax_t) tms_data.tms_cstime);
+    printf("User time: %jd clock ticks\n", (intmax_t)tms_data.tms_utime);
+    printf("System time: %jd clock ticks\n", (intmax_t)tms_data.tms_stime);
+    printf("Children's user time: %jd clock ticks\n", (intmax_t)tms_data.tms_cutime);
+    printf("Children's system time: %jd clock ticks\n", (intmax_t)tms_data.tms_cstime);
 }
 

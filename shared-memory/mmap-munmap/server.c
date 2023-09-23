@@ -26,8 +26,6 @@
 
 
 static size_t get_page_size(void);
-
-
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"
 #define SERVER_SEM_NAME "/server_semaphore"
@@ -35,11 +33,11 @@ static size_t get_page_size(void);
 
 int main(void)
 {
-    int shm_fd;
-    char *shm_ptr;
-    sem_t *client_sem, *server_sem;
-    size_t page_size = get_page_size();
-    size_t shm_size = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
+    int        shm_fd;
+    char       *shm_ptr;
+    sem_t      *client_sem, *server_sem;
+    size_t     page_size = get_page_size();
+    size_t     shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
 
     // Open the shared memory
     const char *shm_name = "/my_shared_memory";
@@ -53,7 +51,7 @@ int main(void)
     }
 
     // Map the shared memory into the process address space
-    shm_ptr = (char *) mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    shm_ptr = (char *)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     if(shm_ptr == MAP_FAILED)
     {
         perror("mmap");
@@ -75,13 +73,11 @@ int main(void)
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
-
     while(1)
     {
         // Wait for the client to signal a word
         printf("Waiting for client_sem\n");
         sem_wait(client_sem);
-
         if(shm_ptr == NULL)
         {
             sem_post(server_sem);
@@ -112,19 +108,17 @@ int main(void)
     sem_close(server_sem);
     munmap(shm_ptr, shm_size);
     close(shm_fd);
-
     return 0;
 }
+
 
 static size_t get_page_size(void)
 {
     long page_size = sysconf(_SC_PAGESIZE);
-
     if(page_size == -1)
     {
         perror("sysconf");
         exit(EXIT_FAILURE);
     }
-
-    return (size_t) page_size;
+    return (size_t)page_size;
 }

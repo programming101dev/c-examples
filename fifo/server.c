@@ -28,9 +28,9 @@
 
 int main(void)
 {
-    int fd;
+    int     fd;
     uint8_t size;
-    char word[UINT8_MAX + 1];
+    char    word[UINT8_MAX + 1];
 
     // Create the FIFO if it doesn't exist
     mkfifo(FIFO_FILE, 0666);
@@ -50,7 +50,6 @@ int main(void)
         word[size] = '\0'; // Null-terminate the string
         printf("Word Size: %u, Word: %s\n", size, word);
     }
-
     close(fd);
     return EXIT_SUCCESS;
 }

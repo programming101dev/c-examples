@@ -30,14 +30,12 @@ static void check_file_access(const char *filename, int mode, const char *access
 int main(int argc, char *argv[])
 {
     char *file_path;
-
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     check_file_access(file_path, R_OK, "readable");
     check_file_access(file_path, W_OK, "writable");
     check_file_access(file_path, X_OK, "executable");
-
     return EXIT_SUCCESS;
 }
 
@@ -45,9 +43,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -59,7 +55,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -69,17 +64,14 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *file_path = argv[optind];
 }
 
@@ -99,7 +91,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -123,7 +114,6 @@ static void check_file_access(const char *filename, int mode, const char *access
         {
             perror("Error accessing file");
         }
-
         exit(EXIT_FAILURE);
     }
 }

@@ -39,17 +39,16 @@ static void socket_close(int sockfd);
 
 int main(int argc, char *argv[])
 {
-    char *address;
-    char *port_str;
-    char *message;
-    in_port_t port;
-    int sockfd;
-    ssize_t bytes_sent;
+    char                    *address;
+    char                    *port_str;
+    char                    *message;
+    in_port_t               port;
+    int                     sockfd;
+    ssize_t                 bytes_sent;
     struct sockaddr_storage addr;
-
-    address = NULL;
+    address  = NULL;
     port_str = NULL;
-    message = NULL;
+    message  = NULL;
     parse_arguments(argc, argv, &address, &port_str, &message);
     handle_arguments(argv[0], address, port_str, message, &port);
     convert_address(address, &addr);
@@ -65,12 +64,10 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **address, char **port, char **msg)
 {
     int opt;
-
-    opterr = 0;
-
-    while ((opt = getopt(argc, argv, "h")) != -1)
+    opterr     = 0;
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
             {
@@ -79,7 +76,6 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -89,81 +85,71 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
             }
         }
     }
-
-    if (optind + 1 >= argc)
+    if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-
-    if (optind < argc - 3)
+    if(optind < argc - 3)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *address = argv[optind];
-    *port = argv[optind + 1];
-    *msg = argv[optind + 2];
+    *port    = argv[optind + 1];
+    *msg     = argv[optind + 2];
 }
 
 
 static void handle_arguments(const char *binary_name, const char *address, char *port_str, char *message, in_port_t *port)
 {
-    if (address == NULL)
+    if(address == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The address is required.");
     }
-
-    if (port_str == NULL)
+    if(port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
-
-    if (message == NULL)
+    if(message == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The message is required.");
     }
-
     *port = parse_in_port_t(binary_name, port_str);
 }
 
 
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char *endptr;
+    char      *endptr;
     uintmax_t parsed_value;
-
-    errno = 0;
+    errno        = 0;
     parsed_value = strtoumax(str, &endptr, 10);
-
-    if (errno != 0)
+    if(errno != 0)
     {
         perror("Error parsing in_port_t");
         exit(EXIT_FAILURE);
     }
 
     // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
+    if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
     // Check if the parsed value is within the valid range for in_port_t
-    if (parsed_value > UINT16_MAX)
+    if(parsed_value > UINT16_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "in_port_t value out of range.");
     }
-
     return (in_port_t)parsed_value;
 }
 
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if (message)
+    if(message)
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <address> <port> <message>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -174,13 +160,12 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
     memset(addr, 0, sizeof(*addr));
-
-    if (inet_pton(AF_INET, address, &(((struct sockaddr_in*)addr)->sin_addr)) == 1)
+    if(inet_pton(AF_INET, address, &(((struct sockaddr_in *)addr)->sin_addr)) == 1)
     {
         // IPv4 address
         addr->ss_family = AF_INET;
     }
-    else if (inet_pton(AF_INET6, address, &(((struct sockaddr_in6*)addr)->sin6_addr)) == 1)
+    else if(inet_pton(AF_INET6, address, &(((struct sockaddr_in6 *)addr)->sin6_addr)) == 1)
     {
         // IPv6 address
         addr->ss_family = AF_INET6;
@@ -191,15 +176,12 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
-
     sockfd = socket(domain, type, protocol);
-
     if(sockfd == -1)
     {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
-
     return sockfd;
 }
 
@@ -207,35 +189,31 @@ static int socket_create(int domain, int type, int protocol)
 static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port)
 {
     memset(addr, 0, addr_len);
-
     if(inet_pton(domain, address, addr) != 1)
     {
         perror("Invalid IP address");
         exit(EXIT_FAILURE);
     }
-
     if(domain == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
-
         ipv6_addr = (struct sockaddr_in6 *)addr;
         ipv6_addr->sin6_family = AF_INET6;
-        ipv6_addr->sin6_port = htons(port);
+        ipv6_addr->sin6_port   = htons(port);
     }
     else if(domain == AF_INET)
     {
         struct sockaddr_in *ipv4_addr;
-
         ipv4_addr = (struct sockaddr_in *)addr;
         ipv4_addr->sin_family = AF_INET;
-        ipv4_addr->sin_port = htons(port);
+        ipv4_addr->sin_port   = htons(port);
     }
 }
 
 
 static void socket_close(int client_fd)
 {
-    if (close(client_fd) == -1)
+    if(close(client_fd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

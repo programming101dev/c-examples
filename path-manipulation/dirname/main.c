@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
 {
     char *path;
     char *dir_name;
-
     path = NULL;
     parse_arguments(argc, argv, &path);
     handle_arguments(argv[0], path);
@@ -38,7 +37,6 @@ int main(int argc, char *argv[])
     dir_name = dirname(path);
     printf("Original Path after dirname: %s\n", path);
     printf("Directory Name: %s\n", dir_name);
-
     return EXIT_SUCCESS;
 }
 
@@ -46,9 +44,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -60,7 +56,6 @@ static void parse_arguments(int argc, char *argv[], char **path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -70,17 +65,14 @@ static void parse_arguments(int argc, char *argv[], char **path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *path = argv[optind];
 }
 
@@ -100,7 +92,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 {
     char *file_path;
     FILE *file;
-    int sockfd;
+    int  sockfd;
     char line[1024];
 
     file_path = NULL;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         while(word != NULL)
         {
             uint8_t size;
-            size_t word_len = strlen(word);
+            size_t  word_len = strlen(word);
 
             if(word_len > UINT8_MAX)
             {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            size  = (uint8_t) word_len;
+            size = (uint8_t)word_len;
             send(sockfd, &size, sizeof(uint8_t), 0);
 
             // Write the word
@@ -109,7 +109,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -159,7 +158,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static int connect_to_server(const char *path)
 {
-    int sockfd;
+    int                sockfd;
     struct sockaddr_un addr;
 
     sockfd = socket_create();
@@ -205,7 +204,7 @@ static void setup_socket_address(struct sockaddr_un *addr, const char *path)
 
 static void socket_close(int client_fd)
 {
-    if (close(client_fd) == -1)
+    if(close(client_fd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

@@ -23,9 +23,7 @@
 int main(void)
 {
     uid_t uid;
-
     uid = getuid();
     printf("Real UID: %u\n", uid);
-
     return EXIT_SUCCESS;
 }

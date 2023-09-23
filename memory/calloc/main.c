@@ -25,19 +25,15 @@ static void print_array(const int *arr, size_t size);
 int main(void)
 {
     const size_t num_elements = 5;
-    int *dynamic_array;
-
-    dynamic_array =  (int *)calloc(num_elements, sizeof(dynamic_array[0]));
-
+    int          *dynamic_array;
+    dynamic_array = (int *)calloc(num_elements, sizeof(dynamic_array[0]));
     if(dynamic_array == NULL)
     {
         perror("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
-
     print_array(dynamic_array, num_elements);
     free(dynamic_array);
-
     return EXIT_SUCCESS;
 }
 
@@ -48,6 +44,5 @@ static void print_array(const int *arr, size_t size)
     {
         printf("%d ", arr[i]);
     }
-
     printf("\n");
 }

@@ -31,48 +31,37 @@ void logMessages(void);
 int main(int argc, char *argv[])
 {
     char *log_name;
-    int mask;
-
+    int  mask;
     log_name = NULL;
     parse_arguments(argc, argv, &log_name);
     handle_arguments(argv[0], log_name);
     openlog(log_name, LOG_PID, LOG_USER);
-    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) |
-           LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) |
-           LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
-
+    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) | LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
     if(setlogmask(mask) == -1)
     {
         syslog(LOG_ERR, "Failed to set log mask");
         closelog();
         return EXIT_FAILURE;
     }
-
     printf("Logging PID %d\n", getpid());
     logMessages();
     mask = LOG_MASK(LOG_EMERG);
-
     if(setlogmask(mask) == -1)
     {
         syslog(LOG_ERR, "Failed to set log mask");
         closelog();
         return EXIT_FAILURE;
     }
-
     logMessages();
     closelog();
-
     return EXIT_SUCCESS;
 }
-
 
 
 static void parse_arguments(int argc, char *argv[], char **log_name)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -84,7 +73,6 @@ static void parse_arguments(int argc, char *argv[], char **log_name)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -94,17 +82,14 @@ static void parse_arguments(int argc, char *argv[], char **log_name)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *log_name = argv[optind];
 }
 
@@ -124,7 +109,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <log name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

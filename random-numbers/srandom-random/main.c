@@ -42,9 +42,9 @@ int main(void)
     srandom(seed);
     printf("Third sequence\n");
     print_random_numbers(5);
-
     return EXIT_SUCCESS;
 }
+
 
 static void print_random_numbers(size_t count)
 {

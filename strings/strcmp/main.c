@@ -30,14 +30,12 @@ int main(int argc, char *argv[])
 {
     char *string1;
     char *string2;
-    int result;
-
+    int  result;
     string1 = NULL;
     string2 = NULL;
     parse_arguments(argc, argv, &string1, &string2);
     handle_arguments(argv[0], string1, string2);
     result = strcmp(string1, string2);
-
     if(result == 0)
     {
         printf("\"%s\" and \"%s\" are identical.\n", string1, string2);
@@ -46,7 +44,6 @@ int main(int argc, char *argv[])
     {
         printf("\"%s\" and \"%s\" are different (%d).\n", string1, string2, result);
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -54,9 +51,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **string1, char **string2)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -68,7 +63,6 @@ static void parse_arguments(int argc, char *argv[], char **string1, char **strin
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -78,17 +72,14 @@ static void parse_arguments(int argc, char *argv[], char **string1, char **strin
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *string1 = argv[optind];
     *string2 = argv[optind + 1];
 }
@@ -100,7 +91,6 @@ static void handle_arguments(const char *binary_name, const char *string1, const
     {
         usage(binary_name, EXIT_FAILURE, "string1 is required.");
     }
-
     if(string2 == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "string2 is required.");
@@ -114,7 +104,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <string1> <string2>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

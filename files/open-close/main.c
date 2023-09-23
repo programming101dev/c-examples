@@ -29,28 +29,23 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *file_path;
-    int fd;
-
+    int  fd;
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     printf("Opening %s\n", file_path);
     fd = open(file_path, O_RDONLY);
-
     if(fd == -1)
     {
         perror("Error opening file");
         return EXIT_FAILURE;
     }
-
     printf("Closing the file\n");
-
     if(close(fd) == -1)
     {
         perror("Error closing file");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -58,9 +53,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -72,7 +65,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -82,17 +74,14 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *file_path = argv[optind];
 }
 
@@ -112,7 +101,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

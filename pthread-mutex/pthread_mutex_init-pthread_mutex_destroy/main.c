@@ -30,12 +30,10 @@ int main(void)
         fprintf(stderr, "Error: Mutex initialization failed.\n");
         return 1;
     }
-
     printf("mutex created\n");
 
     // Destroy the mutex after it is no longer needed
     pthread_mutex_destroy(&mutex);
     printf("mutex destroyed\n");
-
     return EXIT_SUCCESS;
 }

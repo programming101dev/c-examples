@@ -23,33 +23,27 @@
 
 int main(void)
 {
-    const char *path = ".";
-    long path_max;
-    char *buffer = NULL;
-    size_t size;
-
+    const char *path   = ".";
+    long       path_max;
+    char       *buffer = NULL;
+    size_t     size;
     path_max = pathconf(path, _PC_PATH_MAX);
-
     if(path_max == -1)
     {
         // Error occurred
         path_max = 4096; // A common default value for the maximum path length
     }
-
-    buffer = NULL;
-    size = (size_t)path_max;
-
+    buffer   = NULL;
+    size     = (size_t)path_max;
     while(1)
     {
         // Allocate memory for the buffer (or resize the existing buffer)
         buffer = (char *)realloc(buffer, size);
-
         if(buffer == NULL)
         {
             perror("Error allocating/reallocating memory for buffer");
             return EXIT_FAILURE;
         }
-
         if(getcwd(buffer, size) != NULL)
         {
             printf("Current working directory: %s\n", buffer);
@@ -72,6 +66,5 @@ int main(void)
             }
         }
     }
-
     return EXIT_SUCCESS;
 }

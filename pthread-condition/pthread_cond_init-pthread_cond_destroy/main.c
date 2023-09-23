@@ -23,29 +23,24 @@
 int main(void)
 {
     pthread_cond_t condition;
-    int destroy_result;
+    int            destroy_result;
 
     // Initialize the condition variable
-    int init_result = pthread_cond_init(&condition, NULL);
-
+    int            init_result = pthread_cond_init(&condition, NULL);
     if(init_result != 0)
     {
         fprintf(stderr, "Error initializing condition variable. Error code: %d\n", init_result);
         return EXIT_FAILURE;
     }
-
     printf("condition created\n");
 
     // Destroy the condition variable
     destroy_result = pthread_cond_destroy(&condition);
-
     if(destroy_result != 0)
     {
         fprintf(stderr, "Error destroying condition variable. Error code: %d\n", destroy_result);
         return EXIT_FAILURE;
     }
-
     printf("condition destroyed\n");
-
     return EXIT_SUCCESS;
 }

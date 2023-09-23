@@ -1,7 +1,5 @@
 #ifndef C_EXAMPLES_TESTLIB_H
 #define C_EXAMPLES_TESTLIB_H
-
-
 /*
  * This code is licensed under the Attribution-NonCommercial-NoDerivatives 4.0 International license.
  *
@@ -20,6 +18,4 @@
 
 
 void display(const char *msg);
-
-
 #endif //C_EXAMPLES_TESTLIB_H

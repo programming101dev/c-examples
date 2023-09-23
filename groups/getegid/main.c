@@ -23,9 +23,7 @@
 int main(void)
 {
     gid_t egid;
-
     egid = getegid();
     printf("Effective GID: %u\n", egid);
-
     return EXIT_SUCCESS;
 }

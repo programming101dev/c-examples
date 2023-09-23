@@ -22,7 +22,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value);
-static void handle_arguments(const char *binary_name, bool option_a_set, bool option_b_set, const char *option_c_value);
+static void handle_arguments(const char *binary_name, const char *option_c_value);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
@@ -32,11 +32,12 @@ int main(int argc, char *argv[])
     bool option_b_set;
     char *option_c_value;
 
-    option_a_set = false;
-    option_b_set = false;
+    option_a_set   = false;
+    option_b_set   = false;
     option_c_value = NULL;
+
     parse_arguments(argc, argv, &option_a_set, &option_b_set, &option_c_value);
-    handle_arguments(argv[0], option_a_set, option_b_set, option_c_value);
+    handle_arguments(argv[0], option_c_value);
     printf("Is option 'a' set?: %d\n", option_a_set);
     printf("Is option 'b' set?: %d\n", option_b_set);
     printf("Value of option 'c': %s\n", option_c_value);
@@ -52,14 +53,11 @@ int main(int argc, char *argv[])
 
 static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value)
 {
-    static struct option long_options[] =
-            {
-                    {"alpha",   no_argument,       NULL, 'a'},
-                    {"beta",    no_argument,       NULL, 'b'},
-                    {"charlie", required_argument, NULL, 'c'},
-                    {"help",    no_argument,       NULL, 'h'},
-                    {NULL,      0,                 NULL, 0}
-            };
+    static struct option long_options[] = {{"alpha",   no_argument,       NULL, 'a'},
+                                           {"beta",    no_argument,       NULL, 'b'},
+                                           {"charlie", required_argument, NULL, 'c'},
+                                           {"help",    no_argument,       NULL, 'h'},
+                                           {NULL,      0,                 NULL, 0}};
     int opt;
 
     opterr = 0;
@@ -96,7 +94,6 @@ static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *op
                 else
                 {
                     char message[24];
-
                     snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                     usage(argv[0], EXIT_FAILURE, message);
                 }
@@ -110,16 +107,13 @@ static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *op
 }
 
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-static void handle_arguments(const char *binary_name, bool option_a_set, bool option_b_set, const char *option_c_value)
+static void handle_arguments(const char *binary_name, const char *option_c_value)
 {
     if(option_c_value == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "-c is required");
     }
 }
-#pragma GCC diagnostic pop
 
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)

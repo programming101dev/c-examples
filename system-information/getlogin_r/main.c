@@ -22,30 +22,24 @@
 
 int main(void)
 {
-    long length;
+    long   length;
     size_t max_login_length;
-    char *login_name;
-    int result;
-
+    char   *login_name;
+    int    result;
     length = sysconf(_SC_LOGIN_NAME_MAX);
-
     if(length <= 0)
     {
         perror("sysconf");
         return EXIT_FAILURE;
     }
-
     max_login_length = (size_t)length;
-    login_name = (char *)malloc(max_login_length + 1);
-
+    login_name       = (char *)malloc(max_login_length + 1);
     if(login_name == NULL)
     {
         perror("malloc");
         return EXIT_FAILURE;
     }
-
     result = getlogin_r(login_name, max_login_length);
-
     if(result == 0)
     {
         printf("Logged-in user: %s\n", login_name);
@@ -54,11 +48,8 @@ int main(void)
     {
         perror("getlogin_r");
         free(login_name);
-
         return EXIT_FAILURE;
     }
-
     free(login_name);
-
     return EXIT_SUCCESS;
 }

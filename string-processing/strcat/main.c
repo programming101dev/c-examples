@@ -22,11 +22,9 @@
 
 int main(void)
 {
-    char str1[50] = "Hello, ";
-    const char *str2 = "World!";
-
+    char       str1[50] = "Hello, ";
+    const char *str2    = "World!";
     strcat(str1, str2);
     printf("Concatenated string: \"%s\"\n", str1);
-
     return EXIT_SUCCESS;
 }

@@ -32,6 +32,5 @@ int main(void)
     {
         printf("stdin is not a terminal device.\n");
     }
-
     return EXIT_SUCCESS;
 }

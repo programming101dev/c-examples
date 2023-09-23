@@ -22,9 +22,9 @@
 
 int main(void)
 {
-    time_t rawtime;
+    time_t    rawtime;
     struct tm *timeinfo;
-    char buffer[80];
+    char      buffer[80];
 
     // Get the current time
     if(time(&rawtime) == -1)
@@ -35,7 +35,6 @@ int main(void)
 
     // Convert the time to a local time representation
     timeinfo = gmtime(&rawtime);
-
     if(timeinfo == NULL)
     {
         perror("Error converting to GMT/UTC time");
@@ -48,8 +47,6 @@ int main(void)
         perror("Error formatting time");
         return EXIT_FAILURE;
     }
-
     printf("%s", buffer);
-
     return EXIT_SUCCESS;
 }

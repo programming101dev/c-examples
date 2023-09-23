@@ -27,36 +27,35 @@ static int intcmp(const void *a, const void *b);
 
 int main(void)
 {
-    int arr[] = {5, 2, 8, 1, 3};
-    size_t size = sizeof(arr) / sizeof(arr[0]);
-    int *result;
-    int target;
-
-
+    int    arr[] = {
+            5,
+            2,
+            8,
+            1,
+            3
+    };
+    size_t size  = sizeof(arr) / sizeof(arr[0]);
+    int    *result;
+    int    target;
     printf("Unsorted array: ");
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
-
     printf("\n");
 
     // Using qsort to sort the array
     qsort(arr, size, sizeof(int), intcmp);
-
     printf("Sorted array: ");
-
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
-
     printf("\n");
     target = 3;
 
     // Using bsearch to search for the target element
     result = (int *)bsearch(&target, arr, size, sizeof(int), intcmp);
-
     if(result != NULL)
     {
         printf("Element %d found at index %ld\n", target, result - arr);
@@ -65,12 +64,11 @@ int main(void)
     {
         printf("Element %d not found\n", target);
     }
-
     return EXIT_SUCCESS;
 }
 
 
 static int intcmp(const void *a, const void *b)
 {
-    return (*(const int *) a - *(const int *) b);
+    return (*(const int *)a - *(const int *)b);
 }

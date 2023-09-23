@@ -28,7 +28,7 @@
 int main(void)
 {
     struct ifaddrs *interfaces, *ifaddr;
-    char host[NI_MAXHOST];
+    char           host[NI_MAXHOST];
 
     // Get the list of network interfaces
     if(getifaddrs(&interfaces) == -1)
@@ -36,27 +36,24 @@ int main(void)
         perror("getifaddrs");
         return 1;
     }
-
     printf("List of Network Interfaces:\n");
-
     for(ifaddr = interfaces; ifaddr != NULL; ifaddr = ifaddr->ifa_next)
     {
         if(ifaddr->ifa_addr == NULL)
         {
             continue;
         }
-
-        if (ifaddr->ifa_addr->sa_family == AF_INET)
+        if(ifaddr->ifa_addr
+                 ->sa_family == AF_INET)
         {
             struct sockaddr_in ipv4;
-
             memcpy(&ipv4, ifaddr->ifa_addr, sizeof(struct sockaddr_in));
             inet_ntop(AF_INET, &(ipv4.sin_addr), host, NI_MAXHOST);
         }
-        else if (ifaddr->ifa_addr->sa_family == AF_INET6)
+        else if(ifaddr->ifa_addr
+                      ->sa_family == AF_INET6)
         {
             struct sockaddr_in6 ipv6;
-
             memcpy(&ipv6, ifaddr->ifa_addr, sizeof(struct sockaddr_in6));
             inet_ntop(AF_INET6, &(ipv6.sin6_addr), host, NI_MAXHOST);
         }
@@ -64,11 +61,8 @@ int main(void)
         {
             continue;
         }
-
         printf("%-12s : %s\n", ifaddr->ifa_name, host);
     }
-
     freeifaddrs(interfaces);
-
     return EXIT_SUCCESS;
 }

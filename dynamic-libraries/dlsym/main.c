@@ -32,15 +32,13 @@ int main(int argc, char *argv[])
     char *function_name;
     void *handle;
     void (*func)(const char *);
-
-    library_path = NULL;
+    library_path  = NULL;
     function_name = NULL;
     parse_arguments(argc, argv, &library_path, &function_name);
     handle_arguments(argv[0], library_path, function_name);
 
     // Load the shared library dynamically
     handle = dlopen(library_path, RTLD_LAZY);
-
     if(!handle)
     {
         fprintf(stderr, "Error loading the shared library: %s\n", dlerror());
@@ -72,7 +70,6 @@ int main(int argc, char *argv[])
     */
 
     *(void **)(&func) = dlsym(handle, function_name);
-
     if(!func)
     {
         fprintf(stderr, "Error getting the symbol '%s': %s\n", function_name, dlerror());
@@ -89,7 +86,6 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Error unloading the shared library: %s\n", dlerror());
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -97,9 +93,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **library_path, char **function_name)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "hl:f:")) != -1)
     {
         switch(opt)
@@ -121,7 +115,6 @@ static void parse_arguments(int argc, char *argv[], char **library_path, char **
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -140,7 +133,6 @@ static void handle_arguments(const char *binary_name, const char *library_path, 
     {
         usage(binary_name, EXIT_FAILURE, "The library path is required.");
     }
-
     if(function_name == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The function name is required.");
@@ -154,7 +146,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] -l <library path> -f <function name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

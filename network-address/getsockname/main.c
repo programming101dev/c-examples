@@ -32,31 +32,28 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char *host_name;
-    char *service;
-    int sockfd;
+    char               *host_name;
+    char               *service;
+    int                sockfd;
     struct sockaddr_in local_addr;
-    socklen_t addrlen;
-    struct addrinfo hints, *result, *rp;
-    int status;
-    char ipstr[INET6_ADDRSTRLEN]; // Use a larger buffer for IPv6
+    socklen_t          addrlen;
+    struct addrinfo    hints, *result, *rp;
+    int                status;
+    char               ipstr[INET6_ADDRSTRLEN]; // Use a larger buffer for IPv6
 
     host_name = NULL;
-    service = NULL;
+    service   = NULL;
     parse_arguments(argc, argv, &host_name, &service);
     handle_arguments(argv[0], host_name, service);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
     if(sockfd == -1)
     {
         perror("socket");
         return EXIT_FAILURE;
     }
-
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; // Allow both IPv4 and IPv6
+    hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
-
     status = getaddrinfo(host_name, service, &hints, &result);
     if(status != 0)
     {
@@ -73,7 +70,6 @@ int main(int argc, char *argv[])
             break; // Connected successfully
         }
     }
-
     if(rp == NULL)
     {
         perror("connect");
@@ -84,40 +80,33 @@ int main(int argc, char *argv[])
 
     // Get the local address and port number associated with the socket
     addrlen = sizeof(local_addr);
-
-    if(getsockname(sockfd, (struct sockaddr *) &local_addr, &addrlen) == -1)
+    if(getsockname(sockfd, (struct sockaddr *)&local_addr, &addrlen) == -1)
     {
         perror("getsockname");
         close(sockfd);
         freeaddrinfo(result);
         return EXIT_FAILURE;
     }
-
     if(rp->ai_family == AF_INET)
     {
         inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET6_ADDRSTRLEN);
         printf("Local Address (IPv4): %s:%d\n", ipstr, ntohs(local_addr.sin_port));
     }
-    else if (rp->ai_family == AF_INET6)
+    else if(rp->ai_family == AF_INET6)
     {
         inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)&local_addr)->sin6_addr), ipstr, INET6_ADDRSTRLEN);
         printf("Local Address (IPv6): %s:%d\n", ipstr, ntohs(local_addr.sin_port));
     }
-
     close(sockfd);
     freeaddrinfo(result);
-
     return EXIT_SUCCESS;
 }
-
 
 
 static void parse_arguments(int argc, char *argv[], char **host_name, char **service)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -129,7 +118,6 @@ static void parse_arguments(int argc, char *argv[], char **host_name, char **ser
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -139,19 +127,16 @@ static void parse_arguments(int argc, char *argv[], char **host_name, char **ser
             }
         }
     }
-
     if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-
     if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *host_name = argv[optind];
-    *service = argv[optind + 1];
+    *service   = argv[optind + 1];
 }
 
 
@@ -161,7 +146,6 @@ static void handle_arguments(const char *binary_name, const char *host_name, con
     {
         usage(binary_name, EXIT_FAILURE, "X");
     }
-
     if(service == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "Y");
@@ -175,7 +159,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <host name> <service>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h         Display this help message\n", stderr);

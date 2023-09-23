@@ -38,10 +38,10 @@ static void socket_close(int sockfd);
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
-    FILE *file;
-    int sockfd;
-    char line[1024];
+    char                    *file_path;
+    FILE                    *file;
+    int                     sockfd;
+    char                    line[1024];
     struct sockaddr_storage addr;
 
     file_path = NULL;
@@ -62,12 +62,13 @@ int main(int argc, char *argv[])
     while(fgets(line, sizeof(line), file) != NULL)
     {
         char *word;
+
         word = strtok(line, " \t\n");
+
         while(word != NULL)
         {
             uint8_t size;
-            size_t word_len = strlen(word);
-
+            size_t  word_len = strlen(word);
             if(word_len > UINT8_MAX)
             {
                 fprintf(stderr, "Word exceeds maximum length\n");
@@ -77,12 +78,11 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            size  = (uint8_t) word_len;
+            size             = (uint8_t)word_len;
             send(sockfd, &size, sizeof(uint8_t), 0);
 
             // Write the word
             write(sockfd, word, word_len);
-
             word = strtok(NULL, " \t\n");
         }
     }
@@ -111,7 +111,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -204,7 +203,7 @@ static void setup_socket_address(struct sockaddr_storage *addr, const char *path
 
 static void socket_close(int client_fd)
 {
-    if (close(client_fd) == -1)
+    if(close(client_fd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

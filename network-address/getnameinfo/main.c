@@ -35,43 +35,38 @@ static void display_address(struct sockaddr_storage *addr, socklen_t addrlen);
 
 int main(int argc, char *argv[])
 {
-    char *ip_address;
-    char *port_str;
-    in_port_t port;
+    char                    *ip_address;
+    char                    *port_str;
+    in_port_t               port;
     struct sockaddr_storage addr;
-    socklen_t addrlen;
-    struct addrinfo hints, *result;
-    int error;
-
+    socklen_t               addrlen;
+    struct addrinfo         hints, *result;
+    int                     error;
     parse_arguments(argc, argv, &ip_address, &port_str);
     handle_arguments(argv[0], ip_address, port_str, &port);
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; // Allow both IPv4 and IPv6
+    hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
     error = getaddrinfo(ip_address, port_str, &hints, &result);
-
     if(error != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
         return EXIT_FAILURE;
     }
-
-    if (result == NULL) {
+    if(result == NULL)
+    {
         fprintf(stderr, "getaddrinfo returned no address information\n");
         return EXIT_FAILURE;
     }
-
-    if (result->ai_addrlen > sizeof(addr))
+    if(result->ai_addrlen > sizeof(addr))
     {
         fprintf(stderr, "Address size exceeds sockaddr_storage capacity\n");
         return EXIT_FAILURE;
     }
-
     memcpy(&addr, result->ai_addr, result->ai_addrlen);
     addrlen = result->ai_addrlen;
     display_address(&addr, addrlen);
     freeaddrinfo(result);
-
     return EXIT_SUCCESS;
 }
 
@@ -79,9 +74,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **server_address, char **port)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -93,7 +86,6 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -103,19 +95,16 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
             }
         }
     }
-
     if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
-
     if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *server_address = argv[optind];
-    *port = argv[optind + 1];
+    *port           = argv[optind + 1];
 }
 
 
@@ -125,24 +114,20 @@ static void handle_arguments(const char *binary_name, const char *ip_address, co
     {
         usage(binary_name, EXIT_FAILURE, "The ip address is required.");
     }
-
     if(port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
-
     *port = parse_in_port_t(binary_name, port_str);
 }
 
 
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char *endptr;
+    char      *endptr;
     uintmax_t parsed_value;
-
-    errno = 0;
+    errno        = 0;
     parsed_value = strtoumax(str, &endptr, 10);
-
     if(errno != 0)
     {
         perror("Error parsing in_port_t");
@@ -150,17 +135,16 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     }
 
     // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
+    if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
 
     // Check if the parsed value is within the valid range for in_port_t
-    if (parsed_value > UINT16_MAX)
+    if(parsed_value > UINT16_MAX)
     {
         usage(binary_name, EXIT_FAILURE, "in_port_t value out of range.");
     }
-
     return (in_port_t)parsed_value;
 }
 
@@ -171,7 +155,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <server address> <port>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h         Display this help message\n", stderr);
@@ -186,8 +169,7 @@ static void display_address(struct sockaddr_storage *addr, socklen_t addrlen)
     {
         char hostname[NI_MAXHOST];
         char port[NI_MAXSERV];
-        int result = getnameinfo((struct sockaddr *)addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
-
+        int  result = getnameinfo((struct sockaddr *)addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
         if(result == 0)
         {
             printf("Address: %s:%s\n", hostname, port);

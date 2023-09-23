@@ -23,13 +23,12 @@
 
 int main(void)
 {
-    char templ[] = "/tmp/tempfileXXXXXX";
-    int original_fd;
+    char        templ[] = "/tmp/tempfileXXXXXX";
+    int         original_fd;
     struct stat file_stat;
 
     // Create a temporary file and obtain a unique filename
     original_fd = mkstemp(templ);
-
     if(original_fd == -1)
     {
         perror("Error creating temporary file");
@@ -43,8 +42,7 @@ int main(void)
         close(original_fd); // Close the file descriptor before exiting
         return EXIT_FAILURE;
     }
-
-    fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long) file_stat.st_size);
+    fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long)file_stat.st_size);
 
     // Redirect stdout (file descriptor 1) to the temporary file
     if(dup2(original_fd, STDOUT_FILENO) == -1)
@@ -92,6 +90,5 @@ int main(void)
         perror("Error removing temporary file");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }

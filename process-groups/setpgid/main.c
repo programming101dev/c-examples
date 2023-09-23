@@ -29,15 +29,13 @@ int main(void)
     pid_t pid;
     pid_t pgid;
     pid_t child_pid;
-
-    pid = getpid();
+    pid  = getpid();
     pgid = getpgid(pid);
     printf("Original Process ID (PID): %d\n", pid);
     printf("Original Process Group ID (PGID): %d\n", pgid);
 
     // Fork a new child process
     child_pid = fork();
-
     if(child_pid < 0)
     {
         perror("Error forking a new process");
@@ -53,7 +51,6 @@ int main(void)
         // Parent process
         // Wait for the child process to finish
         wait(NULL);
-
         return EXIT_SUCCESS;
     }
 }
@@ -64,8 +61,7 @@ static void handle_child(void)
     // Child process
     pid_t child_pid;
     pid_t child_pgid;
-
-    child_pid = getpid();
+    child_pid  = getpid();
     child_pgid = getpgid(child_pid);
     printf("Child Process ID (PID): %d\n", child_pid);
     printf("Child Process Group ID (PGID): %d\n", child_pgid);
@@ -76,7 +72,6 @@ static void handle_child(void)
         perror("Error setting PGID for the child process");
         exit(EXIT_FAILURE);
     }
-
     child_pgid = getpgid(child_pid);
     printf("Child Process Group ID (PGID) after change: %d\n", child_pgid);
 }

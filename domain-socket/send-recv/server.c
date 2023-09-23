@@ -55,12 +55,12 @@ int main(void)
 
     while(!exit_flag)
     {
-        int client_sockfd;
+        int                     client_sockfd;
         struct sockaddr_storage client_addr;
-        socklen_t client_addr_len;
+        socklen_t               client_addr_len;
 
         client_addr_len = sizeof(client_addr);
-        client_sockfd = socket_accept_connection(sockfd, &client_addr, &client_addr_len);
+        client_sockfd   = socket_accept_connection(sockfd, &client_addr, &client_addr_len);
 
         if(client_sockfd == -1)
         {
@@ -86,16 +86,17 @@ int main(void)
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
-
     memset(&sa, 0, sizeof(sa));
+
 #if defined(__clang__)
-    #pragma clang diagnostic push
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
@@ -135,13 +136,13 @@ static int socket_create(void)
 static void socket_bind(int sockfd, const char *path)
 {
     struct sockaddr_un addr;
-
     memset(&addr, 0, sizeof(addr));
+
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
 
-    if(bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
     {
         perror("bind");
         exit(EXIT_FAILURE);
@@ -151,10 +152,9 @@ static void socket_bind(int sockfd, const char *path)
 }
 
 
-
 static void start_listening(int server_fd, int backlog)
 {
-    if (listen(server_fd, backlog) == -1)
+    if(listen(server_fd, backlog) == -1)
     {
         perror("listen failed");
         close(server_fd);
@@ -167,10 +167,9 @@ static void start_listening(int server_fd, int backlog)
 
 static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len)
 {
-    int client_fd;
+    int  client_fd;
     char client_host[NI_MAXHOST];
-
-    errno = 0;
+    errno     = 0;
     client_fd = accept(server_fd, (struct sockaddr *)client_addr, client_addr_len);
 
     if(client_fd == -1)
@@ -201,11 +200,9 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
 {
     uint8_t size;
-
     while(recv(client_sockfd, &size, sizeof(uint8_t), 0) > 0)
     {
         char word[UINT8_MAX + 1];
-
         read(client_sockfd, word, size);
         word[size] = '\0';
         printf("Word Size: %u, Word: %s\n", size, word);
@@ -216,7 +213,7 @@ static void handle_connection(int client_sockfd, struct sockaddr_storage *client
 
 static void socket_close(int client_fd)
 {
-    if (close(client_fd) == -1)
+    if(close(client_fd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

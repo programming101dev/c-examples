@@ -30,8 +30,7 @@ static void sigint_handler(int signal_number);
 int main(void)
 {
     sigset_t block_set;
-    pid_t pid;
-
+    pid_t    pid;
     setup_signal_handler();
 
     // Block SIGINT temporarily
@@ -42,9 +41,7 @@ int main(void)
         perror("Failed to block SIGINT");
         return EXIT_FAILURE;
     }
-
     pid = fork();
-
     if(pid < 0)
     {
         perror("Fork failed");
@@ -61,7 +58,7 @@ int main(void)
     else
     {
         sigset_t empty_set;
-        int status;
+        int      status;
 
         // Parent process
         printf("Parent waiting for SIGINT...\n");
@@ -81,14 +78,13 @@ int main(void)
         perror("Failed to unblock SIGINT");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
+
 
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
-
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -100,7 +96,6 @@ static void setup_signal_handler(void)
 #endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-
     if(sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");

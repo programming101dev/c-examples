@@ -28,39 +28,33 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
-    const char *symlink_name = "symlink_example.txt";
+    char        *file_path;
+    const char  *symlink_name = "symlink_example.txt";
     struct stat link_stat;
     struct stat target_stat;
-
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-
     if(symlink(file_path, symlink_name) == -1)
     {
         perror("Error creating symbolic link");
         return EXIT_FAILURE;
     }
-
     if(lstat(symlink_name, &link_stat) == -1)
     {
         perror("Error getting link information");
         return EXIT_FAILURE;
     }
-
     if(stat(symlink_name, &target_stat) == -1)
     {
         perror("Error getting target file information");
         return EXIT_FAILURE;
     }
-
     printf("Symbolic link information for: %s\n", symlink_name);
-    printf("Link size: %lld bytes\n", (long long) link_stat.st_size);
+    printf("Link size: %lld bytes\n", (long long)link_stat.st_size);
     printf("Link permissions: %o\n", (unsigned int)link_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
-
     printf("\nTarget file information (follows the symbolic link):\n");
-    printf("Target size: %lld bytes\n", (long long) target_stat.st_size);
+    printf("Target size: %lld bytes\n", (long long)target_stat.st_size);
     printf("Target permissions: %o\n", (unsigned int)target_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 
     // Remove the symbolic link
@@ -69,7 +63,6 @@ int main(int argc, char *argv[])
         perror("Error unlinking symbolic link");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -77,9 +70,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -91,7 +82,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -101,17 +91,14 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *file_path = argv[optind];
 }
 
@@ -131,7 +118,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

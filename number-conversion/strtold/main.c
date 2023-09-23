@@ -27,14 +27,12 @@ static void convert(const char *str);
 
 int main(void)
 {
-    const char goodNumber[] = "12345.6789";
+    const char goodNumber[]     = "12345.6789";
     const char leftoverNumber[] = "42.99989hello";
-    const char badNumber[] = "abcde";
-
+    const char badNumber[]      = "abcde";
     convert(goodNumber);
     convert(leftoverNumber);
     convert(badNumber);
-
     return EXIT_SUCCESS;
 }
 
@@ -42,12 +40,11 @@ int main(void)
 static void convert(const char *str)
 {
     long double result;
-    char *endptr;
+    char        *endptr;
     long double tolerance;
-
-    result = 0;
-    errno = 0;
-    result = strtold(str, &endptr);
+    result    = 0;
+    errno     = 0;
+    result    = strtold(str, &endptr);
 
     // Define your desired tolerance
     tolerance = 1e-6L;
@@ -68,6 +65,5 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
-
     printf("Result: %Lf\n", result);
 }

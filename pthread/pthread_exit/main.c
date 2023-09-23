@@ -26,24 +26,25 @@ static void *thread_function(void *arg);
 int main(void)
 {
     pthread_t threads[3];
-    int thread_args[3] = {1, 2, 3};
-
-    for(int i = 0; i < 3; i++)
+    int       thread_args[3] = {
+            1,
+            2,
+            3
+    };
+    for(int   i              = 0; i < 3; i++)
     {
         pthread_create(&threads[i], NULL, thread_function, &thread_args[i]);
     }
 
     // Wait for all threads to finish and retrieve their exit values
-    for(int i = 0; i < 3; i++)
+    for(int   i              = 0; i < 3; i++)
     {
         int *result;
-        pthread_join(threads[i], (void **) &result);
+        pthread_join(threads[i], (void **)&result);
         printf("Thread %d returned: %d\n", i + 1, *result);
         free(result); // Don't forget to free the memory returned by the thread
     }
-
     printf("Main thread is done.\n");
-
     return EXIT_SUCCESS;
 }
 
@@ -52,8 +53,7 @@ static void *thread_function(void *arg)
 {
     int thread_id;
     int *result;
-    thread_id = *(int *) arg;
-
+    thread_id = *(int *)arg;
     printf("Thread %d is executing.\n", thread_id);
 
     // Perform some work in the thread...
@@ -62,13 +62,11 @@ static void *thread_function(void *arg)
 
     // Exit the thread and return a value (optional)
     result = (int *)malloc(sizeof(int));
-
     if(result == NULL)
     {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-
     *result = thread_id * 2;
     pthread_exit(result);
 }

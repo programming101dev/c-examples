@@ -34,15 +34,13 @@ static void print_entry(const struct group *entry);
 
 int main(int argc, char *argv[])
 {
-    char *group_id;
-    gid_t gid;
+    char         *group_id;
+    gid_t        gid;
     struct group *group_info;
-
     group_id = NULL;
     parse_arguments(argc, argv, &group_id);
     handle_arguments(argv[0], group_id, &gid);
     group_info = getgrgid(gid);
-
     if(group_info == NULL)
     {
         printf("Group with GID %u not found.\n", gid);
@@ -51,7 +49,6 @@ int main(int argc, char *argv[])
     {
         print_entry(group_info);
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -59,9 +56,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **group_id)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -73,7 +68,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -83,7 +77,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
@@ -92,7 +85,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *group_id = argv[optind];
 }
 
@@ -103,7 +95,6 @@ static void handle_arguments(const char *binary_name, const char *group_id, gid_
     {
         usage(binary_name, EXIT_FAILURE, "The group id is required.");
     }
-
     *gid = parse_gid_t(binary_name, group_id);
 }
 
@@ -111,24 +102,23 @@ static void handle_arguments(const char *binary_name, const char *group_id, gid_
 static gid_t get_gid_t_max(void)
 {
     gid_t value;
-
-    if (sizeof(gid_t) == sizeof(unsigned char))
+    if(sizeof(gid_t) == sizeof(unsigned char))
     {
         value = (gid_t)UCHAR_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(unsigned short))
+    else if(sizeof(gid_t) == sizeof(unsigned short))
     {
         value = (gid_t)USHRT_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(unsigned int))
+    else if(sizeof(gid_t) == sizeof(unsigned int))
     {
         return (gid_t)UINT_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(unsigned long))
+    else if(sizeof(gid_t) == sizeof(unsigned long))
     {
         value = (gid_t)ULONG_MAX;
     }
-    else if (sizeof(gid_t) == sizeof(unsigned long long))
+    else if(sizeof(gid_t) == sizeof(unsigned long long))
     {
         value = (gid_t)ULLONG_MAX;
     }
@@ -137,39 +127,35 @@ static gid_t get_gid_t_max(void)
         fprintf(stderr, "Unsupported size of gid_t\n");
         exit(EXIT_FAILURE);
     }
-
     return value;
 }
 
 
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
-    gid_t max;
-    char *endptr;
+    gid_t     max;
+    char      *endptr;
     uintmax_t parsed_value;
-
-    max = get_gid_t_max();
-    errno = 0;
+    max          = get_gid_t_max();
+    errno        = 0;
     parsed_value = strtoumax(str, &endptr, 10);
-
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing gid_t.");
     }
 
     // Check if there are any non-numeric characters in the input string
-    if (*endptr != '\0')
+    if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
-
     if(parsed_value > max)
     {
         usage(binary_name, EXIT_FAILURE, "gid_t value out of range.");
     }
-
     return (gid_t)parsed_value;
 }
+
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -177,7 +163,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <group id>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -190,14 +175,12 @@ static void print_entry(const struct group *entry)
     printf("Group name: %s\n", entry->gr_name);
     printf("Group ID (GID): %u\n", entry->gr_gid);
     printf("Group Members:\n");
-
     if(entry->gr_mem != NULL)
     {
         for(int i = 0; entry->gr_mem[i] != NULL; i++)
         {
             printf(" - %s\n", entry->gr_mem[i]);
         }
-
         printf("-------------------------\n");
     }
     else

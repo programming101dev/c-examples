@@ -21,8 +21,6 @@
 
 
 static void show_limit(int resource, const char *name);
-
-
 #define SHOW_LIMIT(resource) \
     show_limit(resource, #resource)
 
@@ -43,53 +41,46 @@ int main(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-
     return EXIT_SUCCESS;
 }
+
 
 static void show_limit(int resource, const char *name)
 {
     struct rlimit rlim;
-
 #if defined(__GNUC__) && !defined(__clang__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wc++-compat"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
 #elif defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wsign-conversion"
-    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
-
     if(getrlimit(resource, &rlim) == 0)
-
 #if defined(__GNUC__) && !defined(__clang__)
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 #elif defined(__clang__)
-    #pragma clang diagnostic pop
+#pragma clang diagnostic pop
 #endif
-
     {
         printf("%s:\n", name);
         printf("\tCurrent soft limit: ");
-
         if(rlim.rlim_cur == RLIM_INFINITY)
         {
             printf("unlimited\n");
         }
         else
         {
-            printf("%lld bytes\n", (long long) rlim.rlim_cur);
+            printf("%lld bytes\n", (long long)rlim.rlim_cur);
         }
-
         printf("\tCurrent hard limit: ");
-
         if(rlim.rlim_max == RLIM_INFINITY)
         {
             printf("unlimited\n");
         }
         else
         {
-            printf("%lld bytes\n", (long long) rlim.rlim_max);
+            printf("%lld bytes\n", (long long)rlim.rlim_max);
         }
     }
     else

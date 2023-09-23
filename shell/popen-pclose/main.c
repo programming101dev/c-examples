@@ -28,47 +28,39 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    const char * const redirect = " 2>&1";
+    const char *const redirect = " 2>&1";
     char *command;
     char *redirected_command;
     char buffer[128];
     FILE *fp;
-
     command = NULL;
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
-    redirected_command = (char *)malloc(strlen(command) + strlen(redirect) +1);
-
+    redirected_command = (char *)malloc(strlen(command) + strlen(redirect) + 1);
     if(redirected_command == NULL)
     {
         perror("malloc");
         return EXIT_FAILURE;
     }
-
     strcpy(redirected_command, command);
     strcat(redirected_command, redirect);
     fp = popen(redirected_command, "r");
     free(redirected_command);
-
     if(fp == NULL)
     {
         perror("Error opening pipe");
         return EXIT_FAILURE;
     }
-
     printf("Output of \"%s\":\n", command);
-
     while(fgets(buffer, sizeof(buffer), fp) != NULL)
     {
         printf("%s", buffer);
     }
-
     if(pclose(fp) == -1)
     {
         perror("Error closing pipe");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -76,9 +68,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **command)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -90,7 +80,6 @@ static void parse_arguments(int argc, char *argv[], char **command)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -100,17 +89,14 @@ static void parse_arguments(int argc, char *argv[], char **command)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *command = argv[optind];
 }
 
@@ -130,7 +116,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <command>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

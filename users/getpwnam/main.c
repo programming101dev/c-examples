@@ -29,14 +29,12 @@ static void print_entry(const struct passwd *entry);
 
 int main(int argc, char *argv[])
 {
-    char *user_name;
+    char          *user_name;
     struct passwd *user_info;
-
     user_name = NULL;
     parse_arguments(argc, argv, &user_name);
     handle_arguments(argv[0], user_name);
     user_info = getpwnam(user_name);
-
     if(user_info != NULL)
     {
         print_entry(user_info);
@@ -45,7 +43,6 @@ int main(int argc, char *argv[])
     {
         printf("User '%s' not found.\n", user_name);
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -53,9 +50,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **user_name)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -67,7 +62,6 @@ static void parse_arguments(int argc, char *argv[], char **user_name)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -77,7 +71,6 @@ static void parse_arguments(int argc, char *argv[], char **user_name)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The user name is required");
@@ -86,7 +79,6 @@ static void parse_arguments(int argc, char *argv[], char **user_name)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *user_name = argv[optind];
 }
 
@@ -106,7 +98,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <user name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

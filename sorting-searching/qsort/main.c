@@ -24,35 +24,35 @@ static int intcmp(const void *a, const void *b);
 
 int main(void)
 {
-    int arr[] = {5, 2, 8, 1, 3};
-    size_t size = sizeof(arr) / sizeof(arr[0]);
-
+    int    arr[] = {
+            5,
+            2,
+            8,
+            1,
+            3
+    };
+    size_t size  = sizeof(arr) / sizeof(arr[0]);
     printf("Original array: ");
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
-
     printf("\n");
 
     // Using qsort to sort the array
     qsort(arr, size, sizeof(int), intcmp);
-
     printf("Sorted array: ");
-
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
-
     printf("\n");
-
     return EXIT_SUCCESS;
 }
 
 
 static int intcmp(const void *a, const void *b)
 {
-    return (*(const int *) a - *(const int *) b);
+    return (*(const int *)a - *(const int *)b);
 }
 

@@ -27,14 +27,12 @@ static void convert(const char *str);
 
 int main(void)
 {
-    const char goodNumber[] = "12345";
+    const char goodNumber[]     = "12345";
     const char leftoverNumber[] = "42hello";
-    const char badNumber[] = "abcde";
-
+    const char badNumber[]      = "abcde";
     convert(goodNumber);
     convert(leftoverNumber);
     convert(badNumber);
-
     return EXIT_SUCCESS;
 }
 
@@ -43,9 +41,8 @@ static void convert(const char *str)
 {
     long result;
     char *endptr;
-
     result = 0;
-    errno = 0;
+    errno  = 0;
     result = strtol(str, &endptr, 10);
 
     // Check for conversion errors
@@ -65,6 +62,5 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
-
     printf("Result: %ld\n", result);
 }

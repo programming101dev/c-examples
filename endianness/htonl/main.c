@@ -21,11 +21,9 @@
 
 int main(void)
 {
-    uint32_t host_value = 0x12345678;
+    uint32_t host_value    = 0x12345678;
     uint32_t network_value = htonl(host_value);
-
     printf("Host value: %u\n", host_value);
     printf("Network value: %u\n", network_value);
-
     return 0;
 }

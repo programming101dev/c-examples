@@ -28,16 +28,25 @@ int main(void)
     display_value(INT16_MIN);
     printf("----\n");
     display_value(INT16_MAX);
-
     return EXIT_SUCCESS;
 }
 
 
 static void display_value(int16_t value)
 {
-    printf("Using PRId16 (decimal): %" PRId16 "\n", value);
-    printf("Using PRIi16 (decimal): %" PRIi16 "\n", value);
-    printf("Using PRIu16 (unsigned): %" PRIu16 "\n", (uint16_t) value);
-    printf("Using PRIx16 (hexadecimal): %" PRIx16 "\n", (uint16_t) value);
-    printf("Using PRIX16 (uppercase hexadecimal): %" PRIX16 "\n", (uint16_t) value);
+    printf("Using PRId16 (decimal): %"
+    PRId16
+    "\n", value);
+    printf("Using PRIi16 (decimal): %"
+    PRIi16
+    "\n", value);
+    printf("Using PRIu16 (unsigned): %"
+    PRIu16
+    "\n", (uint16_t)value);
+    printf("Using PRIx16 (hexadecimal): %"
+    PRIx16
+    "\n", (uint16_t)value);
+    printf("Using PRIX16 (uppercase hexadecimal): %"
+    PRIX16
+    "\n", (uint16_t)value);
 }

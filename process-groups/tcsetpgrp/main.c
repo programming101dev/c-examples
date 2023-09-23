@@ -26,20 +26,18 @@ int main(void)
 {
     pid_t new_pgid;
     pid_t child_pid;
-    int terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
+    int   terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
 
     if(terminal_fd == -1)
     {
         perror("Error opening terminal");
         return 1;
     }
-
     new_pgid = getpid();
     printf("Original Process ID (PID): %d\n", new_pgid);
 
     // Fork a new child process
     child_pid = fork();
-
     if(child_pid < 0)
     {
         perror("Error forking a new process");
@@ -50,29 +48,22 @@ int main(void)
     {
         // Child process
         new_pgid = getpid() + 100;
-
         printf("Child Process ID (PID): %d\n", getpid());
-
         if(setsid() == -1)
         {
             perror("Error creating a new session for the child process");
             close(terminal_fd);
             return EXIT_FAILURE;
         }
-
         printf("Child Process Group ID (PGID) after creating a new session: %d\n", getpid());
-
         if(setpgid(getpid(), new_pgid) == -1)
         {
             perror("Error setting PGID for the child process");
             close(terminal_fd);
             return EXIT_FAILURE;
         }
-
         printf("Child Process Group ID (PGID) after change: %d\n", new_pgid);
-
         close(terminal_fd);
-
         return EXIT_SUCCESS;
     }
     else
@@ -80,11 +71,8 @@ int main(void)
         // Parent process
         // Wait for the child process to finish
         wait(NULL);
-
         printf("Parent Process ID (PID) after child process execution: %d\n", getpid());
-
         close(terminal_fd);
-
         return EXIT_SUCCESS;
     }
 }

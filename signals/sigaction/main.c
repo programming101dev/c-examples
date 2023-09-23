@@ -22,49 +22,42 @@
 
 
 void signal_handler(int signal_number);
-
-
 struct signal_info
 {
-    int signal_number;
+    int        signal_number;
     const char *signal_name;
 };
 
 
 int main(void)
 {
-    struct signal_info signals[] =
-            {
-                    {SIGABRT,   "SIGABRT"},
-                    {SIGALRM,   "SIGALRM"},
-                    {SIGCHLD,   "SIGCHLD"},
-                    {SIGCONT,   "SIGCONT"},
-                    {SIGFPE,    "SIGFPE"},
-                    {SIGHUP,    "SIGHUP"},
-                    {SIGILL,    "SIGILL"},
-                    {SIGINT,    "SIGINT"},
-                    {SIGPIPE,   "SIGPIPE"},
-                    {SIGQUIT,   "SIGQUIT"},
-                    {SIGSEGV,   "SIGSEGV"},
-                    {SIGSYS,    "SIGSYS"},
-                    {SIGTERM,   "SIGTERM"},
-                    {SIGTRAP,   "SIGTRAP"},
-                    {SIGTSTP,   "SIGTSTP"},
-                    {SIGTTIN,   "SIGTTIN"},
-                    {SIGTTOU,   "SIGTTOU"},
-                    {SIGURG,    "SIGURG"},
-                    {SIGUSR1,   "SIGUSR1"},
-                    {SIGUSR2,   "SIGUSR2"},
-                    {SIGVTALRM, "SIGVTALRM"},
-                    {SIGXCPU,   "SIGXCPU"},
-                    {SIGXFSZ,   "SIGXFSZ"}
-            };
-
-    int n = sizeof(signals) / sizeof(signals[0]);
-    struct sigaction sa;
-    struct sigaction new_sa;
-    pid_t pid;
-
+    struct signal_info signals[] = {{SIGABRT,   "SIGABRT"},
+                                    {SIGALRM,   "SIGALRM"},
+                                    {SIGCHLD,   "SIGCHLD"},
+                                    {SIGCONT,   "SIGCONT"},
+                                    {SIGFPE,    "SIGFPE"},
+                                    {SIGHUP,    "SIGHUP"},
+                                    {SIGILL,    "SIGILL"},
+                                    {SIGINT,    "SIGINT"},
+                                    {SIGPIPE,   "SIGPIPE"},
+                                    {SIGQUIT,   "SIGQUIT"},
+                                    {SIGSEGV,   "SIGSEGV"},
+                                    {SIGSYS,    "SIGSYS"},
+                                    {SIGTERM,   "SIGTERM"},
+                                    {SIGTRAP,   "SIGTRAP"},
+                                    {SIGTSTP,   "SIGTSTP"},
+                                    {SIGTTIN,   "SIGTTIN"},
+                                    {SIGTTOU,   "SIGTTOU"},
+                                    {SIGURG,    "SIGURG"},
+                                    {SIGUSR1,   "SIGUSR1"},
+                                    {SIGUSR2,   "SIGUSR2"},
+                                    {SIGVTALRM, "SIGVTALRM"},
+                                    {SIGXCPU,   "SIGXCPU"},
+                                    {SIGXFSZ,   "SIGXFSZ"}};
+    int                n         = sizeof(signals) / sizeof(signals[0]);
+    struct sigaction   sa;
+    struct sigaction   new_sa;
+    pid_t              pid;
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -75,7 +68,6 @@ int main(void)
 #endif
     sigemptyset(&new_sa.sa_mask);
     new_sa.sa_flags = 0;
-
     for(int i = 0; i < n; i++)
     {
         if(sigaction(signals[i].signal_number, NULL, &sa) == 0)
@@ -111,13 +103,11 @@ int main(void)
         {
             printf("Failed to retrieve signal info: %s (%d)\n", signals[i].signal_name, signals[i].signal_number);
         }
-
         if(sigaction(signals[i].signal_number, &new_sa, NULL) < 0)
         {
             printf("Failed to set signal handler: %s (%d)\n", signals[i].signal_name, signals[i].signal_number);
         }
     }
-
     pid = getpid();
     printf("My process ID is: %d\n", pid);
     printf("Sending SIGUSR1 signal to my own process...\n");
@@ -160,7 +150,6 @@ int main(void)
     while(1)
     {
     }
-
     return EXIT_SUCCESS;
 }
 

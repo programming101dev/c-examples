@@ -29,24 +29,22 @@ int custom_error_handler(const char *epath, int err);
 
 int main(int argc, char *argv[])
 {
-    char *pattern;
+    char   *pattern;
     glob_t glob_result;
-    int glob_status;
-
+    int    glob_status;
     pattern = NULL;
     parse_arguments(argc, argv, &pattern);
     handle_arguments(argv[0], pattern);
 
     // Use glob with a custom error handler
     glob_status = glob(pattern, GLOB_ERR, custom_error_handler, &glob_result);
-
     if(glob_status != 0)
     {
         if(glob_status == GLOB_NOMATCH)
         {
             fprintf(stderr, "No matching files found.\n");
         }
-        else if (glob_status == GLOB_NOSPACE)
+        else if(glob_status == GLOB_NOSPACE)
         {
             fprintf(stderr, "Memory allocation error.\n");
         }
@@ -54,17 +52,13 @@ int main(int argc, char *argv[])
         {
             fprintf(stderr, "Error matching files.\n");
         }
-
         return EXIT_FAILURE;
     }
-
     for(size_t i = 0; i < glob_result.gl_pathc; ++i)
     {
         printf("Matched file: %s\n", glob_result.gl_pathv[i]);
     }
-
     globfree(&glob_result);
-
     return EXIT_SUCCESS;
 }
 
@@ -72,12 +66,10 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **pattern)
 {
     int opt;
-
-    opterr = 0;
-
-    while ((opt = getopt(argc, argv, "h")) != -1)
+    opterr     = 0;
+    while((opt = getopt(argc, argv, "h")) != -1)
     {
-        switch (opt)
+        switch(opt)
         {
             case 'h':
             {
@@ -86,7 +78,6 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -96,24 +87,21 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
             }
         }
     }
-
-    if (optind >= argc)
+    if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
-    if (optind < argc - 1)
+    if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *pattern = argv[optind];
 }
 
 
 static void handle_arguments(const char *binary_name, const char *pattern)
 {
-    if (pattern == NULL)
+    if(pattern == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The pattern is required.");
     }
@@ -122,11 +110,10 @@ static void handle_arguments(const char *binary_name, const char *pattern)
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if (message)
+    if(message)
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <pattern>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

@@ -22,10 +22,8 @@
 int main(void)
 {
     uint16_t network_value = 0x3039; // Hex value of 12345 in network byte order
-    uint16_t host_value = ntohs(network_value);
-
+    uint16_t host_value    = ntohs(network_value);
     printf("Network value: %hu\n", network_value);
     printf("Host value: %hu\n", host_value);
-
     return 0;
 }

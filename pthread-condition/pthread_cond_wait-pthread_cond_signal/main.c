@@ -25,56 +25,52 @@
 static void *child_process(void *arg);
 static void *parent_process(void *arg);
 static void send_word(const char *word);
-
-
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
-
 #define MAX_WORD_LENGTH 255
 
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-static int word_ready = 0;
-static char *shared_word = NULL;
+static pthread_mutex_t mutex        = PTHREAD_MUTEX_INITIALIZER;
+
+
+static pthread_cond_t  cond         = PTHREAD_COND_INITIALIZER;
+
+
+static int             word_ready   = 0;
+
+
+static char            *shared_word = NULL;
 
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
+    char      *file_path;
     pthread_t child_thread;
     pthread_t parent_thread;
-
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-
     if(pthread_create(&child_thread, NULL, child_process, file_path) != 0)
     {
         perror("Error creating child thread");
         exit(EXIT_FAILURE);
     }
-
     if(pthread_create(&parent_thread, NULL, parent_process, NULL) != 0)
     {
         perror("Error creating parent thread");
         exit(EXIT_FAILURE);
     }
-
     if(pthread_join(child_thread, NULL) != 0)
     {
         perror("Error joining child thread");
         exit(EXIT_FAILURE);
     }
-
     if(pthread_join(parent_thread, NULL) != 0)
     {
         perror("Error joining parent thread");
         exit(EXIT_FAILURE);
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -82,9 +78,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -96,7 +90,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -106,17 +99,14 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
-
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *file_path = argv[optind];
 }
 
@@ -136,7 +126,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -154,7 +143,6 @@ static void send_word(const char *word)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-
     while(word_ready)
     {
         if(pthread_cond_wait(&cond, &mutex) != 0)
@@ -163,12 +151,10 @@ static void send_word(const char *word)
             exit(EXIT_FAILURE);
         }
     }
-
     if(shared_word != NULL)
     {
         free(shared_word);
     }
-
     if(word == NULL)
     {
         shared_word = NULL;
@@ -176,72 +162,62 @@ static void send_word(const char *word)
     else
     {
         shared_word = strdup(word);
-
         if(shared_word == NULL)
         {
             perror("Error duplicating word");
             exit(EXIT_FAILURE);
         }
     }
-
     word_ready = 1;
-
     if(pthread_cond_signal(&cond) != 0)
     {
         perror("Error signaling condition variable");
         exit(EXIT_FAILURE);
     }
-
     pthread_mutex_unlock(&mutex);
 }
 
 
 static void *child_process(void *arg)
 {
-    FILE *file;
-    char *token, *saveptr;
-    char line[MAX_WORD_LENGTH];
+    FILE       *file;
+    char       *token, *saveptr;
+    char       line[MAX_WORD_LENGTH];
     const char *file_path;
-
     file_path = (const char *)arg;
-    file = fopen(file_path, "r");
-
+    file      = fopen(file_path, "r");
     if(file == NULL)
     {
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
-
     while(fgets(line, sizeof(line), file) != NULL)
     {
         line[strcspn(line, "\n")] = '\0'; // Remove the newline character if present
         token = strtok_r(line, " \t", &saveptr);
-
         while(token != NULL)
         {
             send_word(token);
             token = strtok_r(NULL, " \t", &saveptr);
         }
     }
-
     send_word(NULL);
-
     if(fclose(file) != 0)
     {
         perror("Error closing file");
         exit(EXIT_FAILURE);
     }
-
     pthread_exit(NULL);
 }
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
+
 static void *parent_process(void *arg)
 {
     char *word;
-
     while(1)
     {
 #if defined(__clang__)
@@ -260,26 +236,22 @@ static void *parent_process(void *arg)
                 exit(EXIT_FAILURE);
             }
         }
-
         word_ready = 0;
-
         if(pthread_cond_signal(&cond) != 0)
         {
             perror("Error signaling condition variable");
             exit(EXIT_FAILURE);
         }
-
         pthread_mutex_unlock(&mutex);
         word = shared_word;
-
         if(word == NULL)
         {
             break;
         }
-
         printf("Parent: received word: %s\n", word);
     }
-
     pthread_exit(NULL);
 }
+
+
 #pragma GCC diagnostic pop

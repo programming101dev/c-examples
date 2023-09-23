@@ -28,30 +28,24 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char *string;
+    char      *string;
     wordexp_t result;
-    int ret;
-
+    int       ret;
     string = NULL;
     parse_arguments(argc, argv, &string);
     handle_arguments(argv[0], string);
     ret = wordexp(string, &result, 0);
-
     if(ret != 0)
     {
         printf("Error expanding command: %d\n", ret);
         return EXIT_FAILURE;
     }
-
     printf("Expanded words:\n");
-
     for(size_t i = 0; i < result.we_wordc; ++i)
     {
         printf("Word %zu: %s\n", i, result.we_wordv[i]);
     }
-
     wordfree(&result);
-
     return EXIT_SUCCESS;
 }
 
@@ -59,9 +53,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **string)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -73,7 +65,6 @@ static void parse_arguments(int argc, char *argv[], char **string)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -83,12 +74,10 @@ static void parse_arguments(int argc, char *argv[], char **string)
             }
         }
     }
-
     if(argc - optind > 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many unnamed arguments.");
     }
-
     if(argc - optind == 1)
     {
         *string = argv[optind];
@@ -111,7 +100,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <string>>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h            Display this help message\n", stderr);

@@ -35,7 +35,6 @@ int main(void)
     // Rewind the user database
     setpwent();
     entry = getpwent();
-
     if(entry != NULL)
     {
         print_entry(entry);
@@ -43,7 +42,6 @@ int main(void)
 
     // Close the user database after usage
     endpwent();
-
     return EXIT_SUCCESS;
 }
 
@@ -51,7 +49,6 @@ int main(void)
 static void print_entries(void)
 {
     struct passwd *entry;
-
     while((entry = getpwent()) != NULL)
     {
         print_entry(entry);

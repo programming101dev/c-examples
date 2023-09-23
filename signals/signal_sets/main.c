@@ -27,10 +27,9 @@ int main(void)
 {
     // Create an empty signal set
     sigset_t signal_set;
-    int signal_to_check;
-    int signal_to_add;
-    int signal_to_remove;
-
+    int      signal_to_check;
+    int      signal_to_add;
+    int      signal_to_remove;
 #ifdef __APPLE__
     sigemptyset(&signal_set);  // On macOS, this call is guaranteed to succeed
 #else
@@ -40,13 +39,11 @@ int main(void)
         return EXIT_FAILURE;
     }
 #endif
-
     printf("Empty signal set:\n");
     print_signal_set(&signal_set);
 
     // Check if a specific signal is in the set
     signal_to_check = SIGINT;
-
     if(sigismember(&signal_set, signal_to_check))
     {
         printf("Signal %d is in the set.\n", signal_to_check);
@@ -58,7 +55,6 @@ int main(void)
 
     // Add a signal to the set
     signal_to_add = SIGINT;
-
 #ifdef __APPLE__
     sigaddset(&signal_set, signal_to_add); // On macOS, this call is guaranteed to succeed
 #else
@@ -68,7 +64,6 @@ int main(void)
         return EXIT_FAILURE;
     }
 #endif
-
     printf("Signal set with %d:\n", signal_to_add);
     print_signal_set(&signal_set);
 
@@ -84,7 +79,6 @@ int main(void)
 
     // Remove a signal from the set
     signal_to_remove = SIGINT;
-
 #ifdef __APPLE__
     sigdelset(&signal_set, signal_to_remove); // On macOS, this call is guaranteed to succeed
 #else
@@ -94,7 +88,6 @@ int main(void)
         return EXIT_FAILURE;
     }
 #endif
-
     printf("Signal set without %d:\n", signal_to_remove);
     print_signal_set(&signal_set);
 
@@ -122,14 +115,13 @@ int main(void)
     // Print the complete set
     printf("Full signal set:\n");
     print_signal_set(&signal_set);
-
     return EXIT_SUCCESS;
 }
+
 
 static void print_signal_set(const sigset_t *signal_set)
 {
     printf("-----\n");
-
     for(int sig = 1; sig <= NSIG; sig++)
     {
         if(sigismember(signal_set, sig))
@@ -137,6 +129,5 @@ static void print_signal_set(const sigset_t *signal_set)
             printf("\t- Signal %d is in the set.\n", sig);
         }
     }
-
     printf("-----\n");
 }

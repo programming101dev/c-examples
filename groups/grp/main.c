@@ -35,7 +35,6 @@ int main(void)
     // Rewind the group database
     setgrent();
     entry = getgrent();
-
     if(entry != NULL)
     {
         print_entry(entry);
@@ -43,33 +42,31 @@ int main(void)
 
     // Close the group database after usage
     endgrent();
-
     return EXIT_SUCCESS;
 }
+
 
 static void print_entries(void)
 {
     struct group *entry;
-
     while((entry = getgrent()) != NULL)
     {
         print_entry(entry);
     }
 }
 
+
 static void print_entry(const struct group *entry)
 {
     printf("Group name: %s\n", entry->gr_name);
     printf("Group ID (GID): %u\n", entry->gr_gid);
     printf("Group Members:\n");
-
     if(entry->gr_mem != NULL)
     {
         for(int i = 0; entry->gr_mem[i] != NULL; i++)
         {
             printf(" - %s\n", entry->gr_mem[i]);
         }
-
         printf("-------------------------\n");
     }
     else

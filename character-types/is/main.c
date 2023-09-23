@@ -23,7 +23,6 @@
 struct func_info
 {
     int (*func)(int ch);
-
     const char *name;
     const char *message;
 };
@@ -35,27 +34,23 @@ static void print_info(const struct func_info *info, int ch);
 
 int main(void)
 {
-    static struct func_info info[] =
-            {
-                    {isalnum,  "alnum",  "Alphanumeric"},
-                    {isalpha,  "alpha",  "Alphabetic"},
-                    {isblank,  "blank",  "Blank"},
-                    {iscntrl,  "cntrl",  "Control"},
-                    {isdigit,  "digit",  "Digit"},
-                    {isgraph,  "graph",  "Graph"},
-                    {islower,  "lower",  "Lowercase"},
-                    {isprint,  "print",  "Printable"},
-                    {ispunct,  "punct",  "Punctuation"},
-                    {isspace,  "space",  "Whitespace"},
-                    {isupper,  "upper",  "Uppercase"},
-                    {isxdigit, "xdigit", "Hex Digit"}
-            };
-
+    static struct func_info info[] = {{isalnum,  "alnum",  "Alphanumeric"},
+                                      {isalpha,  "alpha",  "Alphabetic"},
+                                      {isblank,  "blank",  "Blank"},
+                                      {iscntrl,  "cntrl",  "Control"},
+                                      {isdigit,  "digit",  "Digit"},
+                                      {isgraph,  "graph",  "Graph"},
+                                      {islower,  "lower",  "Lowercase"},
+                                      {isprint,  "print",  "Printable"},
+                                      {ispunct,  "punct",  "Punctuation"},
+                                      {isspace,  "space",  "Whitespace"},
+                                      {isupper,  "upper",  "Uppercase"},
+                                      {isxdigit, "xdigit", "Hex Digit"}};
     printf("Char | Binary  | Oct | Dec | Hex | ");
 
     for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
     {
-        if (info[i].name != NULL)
+        if(info[i].name != NULL)
         {
             printf("%-6s | ", info[i].name);
         }
@@ -74,19 +69,16 @@ int main(void)
         printf("%c    | ", isprint(ch) ? ch : ' ');
         print_binary(ch);
         printf(" | %3o | %3u | %3X | ", (unsigned int)ch, (unsigned int)ch, (unsigned int)ch);
-
         for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
         {
             print_info(&info[i], ch);
         }
-
-        printf("%c     | %c     |\n",
-               isprint(ch) ? tolower(ch) : ' ',
-               isprint(ch) ? toupper(ch) : ' ');
+        printf("%c     | %c     |\n", isprint(ch) ? tolower(ch) : ' ', isprint(ch) ? toupper(ch) : ' ');
     }
 
     return EXIT_SUCCESS;
 }
+
 
 static void print_binary(int ch)
 {

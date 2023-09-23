@@ -22,20 +22,22 @@
 
 int main(void)
 {
-    int source_data[] = {1, 2, 3, 4, 5};
+    int    source_data[] = {
+            1,
+            2,
+            3,
+            4,
+            5
+    };
     size_t num_elements;
-    int destination_buffer[5];
-
+    int    destination_buffer[5];
     num_elements = sizeof(source_data) / sizeof(source_data[0]);
     memmove(destination_buffer, source_data, num_elements * sizeof(source_data[0]));
     printf("Copied elements: ");
-
     for(size_t i = 0; i < num_elements; i++)
     {
         printf("%d ", destination_buffer[i]);
     }
-
     printf("\n");
-
     return EXIT_SUCCESS;
 }

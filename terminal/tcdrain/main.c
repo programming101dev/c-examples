@@ -24,14 +24,12 @@
 int main(void)
 {
     struct termios options;
-    char message[256];
-
+    char           message[256];
     tcgetattr(STDOUT_FILENO, &options);
     cfsetispeed(&options, B9600);
     cfsetospeed(&options, B9600);
     options.c_cflag |= (CLOCAL | CREAD);
     tcsetattr(STDOUT_FILENO, TCSANOW, &options);
-
     printf("Enter your message: ");
     fflush(stdout);
 
@@ -48,6 +46,5 @@ int main(void)
         perror("Error waiting for data to be transmitted");
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }

@@ -28,7 +28,7 @@ static void check_file_existence(const char *filename, const char *message);
 int main(void)
 {
     const char *source_filename = "example.txt";
-    const char *link_filename = "symbolic_link.txt";
+    const char *link_filename   = "symbolic_link.txt";
 
     // Creating source file
     printf("Creating file %s\n", source_filename);
@@ -49,7 +49,6 @@ int main(void)
         perror("Error deleting source file");
         return EXIT_FAILURE;
     }
-
     check_file_existence(source_filename, "Source file");
 
     // Deleting symbolic link
@@ -59,17 +58,15 @@ int main(void)
         perror("Error deleting symbolic link");
         return EXIT_FAILURE;
     }
-
     check_file_existence(link_filename, "Symbolic link");
-
     return EXIT_SUCCESS;
 }
+
 
 static void create_sample_file(const char *filename)
 {
     // Variable declarations
     FILE *file = fopen(filename, "w");
-
     if(file == NULL)
     {
         perror("Error creating sample file");
@@ -81,6 +78,7 @@ static void create_sample_file(const char *filename)
     fclose(file);
 }
 
+
 static void create_symbolic_link(const char *source_filename, const char *link_filename)
 {
     if(symlink(source_filename, link_filename) == -1)
@@ -89,6 +87,7 @@ static void create_symbolic_link(const char *source_filename, const char *link_f
         exit(EXIT_FAILURE);
     }
 }
+
 
 static void check_file_existence(const char *filename, const char *message)
 {

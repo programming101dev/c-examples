@@ -21,8 +21,6 @@
 
 
 static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit);
-
-
 #define SET_LIMIT(resource, soft_limit, hard_limit) \
     set_rlimit(resource, #resource, soft_limit, hard_limit)
 
@@ -46,41 +44,35 @@ int main(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-
     return EXIT_SUCCESS;
 }
+
 
 static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit)
 {
     struct rlimit rlim;
-
     rlim.rlim_cur = soft_limit;
     rlim.rlim_max = hard_limit;
-
     printf("Resource: %s\n", name);
-
 #if defined(__GNUC__) && !defined(__clang__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wc++-compat"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc++-compat"
 #elif defined(__clang__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
-
     if(setrlimit(resource, &rlim) == -1)
-
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-
     {
         perror("setrlimit");
     }
     else
     {
-        printf("  Soft limit set to: %lld\n", (long long) rlim.rlim_cur);
-        printf("  Hard limit set to: %lld\n", (long long) rlim.rlim_max);
+        printf("  Soft limit set to: %lld\n", (long long)rlim.rlim_cur);
+        printf("  Hard limit set to: %lld\n", (long long)rlim.rlim_max);
     }
 }

@@ -23,9 +23,7 @@
 int main(void)
 {
     pid_t pid;
-
     pid = getppid();
     printf("Process ID (PID): %d\n", pid);
-
     return EXIT_SUCCESS;
 }

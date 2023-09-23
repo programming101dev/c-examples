@@ -28,40 +28,31 @@ static void check_file_existence(const char *filename, const char *message);
 int main(void)
 {
     const char *source_filename = "example.txt";
-    const char *link_filename = "hard_link.txt";
-
+    const char *link_filename   = "hard_link.txt";
     printf("Creating file %s\n", source_filename);
     create_sample_file(source_filename);
     check_file_existence(source_filename, "Source file");
     check_file_existence(link_filename, "Link file");
-
     printf("Creating hard link %s\n", link_filename);
     create_hard_link(source_filename, link_filename);
     check_file_existence(source_filename, "Source file");
     check_file_existence(link_filename, "Hard link");
-
     printf("Deleting file %s\n", source_filename);
-
     if(unlink(source_filename) == -1)
     {
         perror("Error deleting source file");
         return EXIT_FAILURE;
     }
-
     check_file_existence(source_filename, "Source file");
     check_file_existence(link_filename, "Hard link");
-
     printf("Deleting hard link %s\n", link_filename);
-
     if(unlink(link_filename) == -1)
     {
         perror("Error deleting hard link");
         return EXIT_FAILURE;
     }
-
     check_file_existence(source_filename, "Source file");
     check_file_existence(link_filename, "Hard link");
-
     return EXIT_SUCCESS;
 }
 
@@ -69,7 +60,6 @@ int main(void)
 static void create_sample_file(const char *filename)
 {
     FILE *file = fopen(filename, "w");
-
     if(file != NULL)
     {
         fprintf(file, "This is a sample file.\n");

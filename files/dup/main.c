@@ -23,7 +23,6 @@
 int main(void)
 {
     int stdout_dup_fd = dup(STDOUT_FILENO);
-
     if(stdout_dup_fd == -1)
     {
         perror("Error duplicating stdout");
@@ -55,6 +54,5 @@ int main(void)
 
     // The standard output (stdout) is now closed, so printf will not work
     printf("This will not be printed because stdout is closed.\n");
-
     return EXIT_SUCCESS;
 }

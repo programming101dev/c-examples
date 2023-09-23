@@ -22,15 +22,12 @@
 int main(void)
 {
     FILE *tempFile;
-
     tempFile = tmpfile();
-
     if(tempFile == NULL)
     {
         perror("Error creating temporary file");
         return EXIT_FAILURE;
     }
-
     printf("Temp file created\n");
 
     // The temporary file will be automatically deleted when the program terminates
@@ -40,8 +37,6 @@ int main(void)
         perror("Error closing temporary file");
         return EXIT_FAILURE;
     }
-
     printf("Temp file closed\n");
-
     return EXIT_SUCCESS;
 }

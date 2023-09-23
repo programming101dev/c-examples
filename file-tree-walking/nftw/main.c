@@ -30,16 +30,13 @@ static int print_file(const char *fpath, const struct stat *sb, int tflag, struc
 int main(int argc, char *argv[])
 {
     char *directory_path;
-
     parse_arguments(argc, argv, &directory_path);
     handle_arguments(argv[0], directory_path);
-
     if(nftw(directory_path, print_file, 1, FTW_PHYS) == -1)
     {
         perror("nftw");
         return 1;
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -47,9 +44,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **directory_path)
 {
     int opt;
-
-    opterr = 0;
-
+    opterr     = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -61,7 +56,6 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
             case '?':
             {
                 char message[24];
-
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -71,7 +65,6 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
             }
         }
     }
-
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The directory path is required");
@@ -80,7 +73,6 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
-
     *directory_path = argv[optind];
 }
 
@@ -100,7 +92,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
-
     fprintf(stderr, "Usage: %s [-h] <directory path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -110,6 +101,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
+
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
     if(tflag == FTW_F)
@@ -124,7 +117,8 @@ static int print_file(const char *fpath, const struct stat *sb, int tflag, struc
     {
         printf("Link: %s\n", fpath);
     }
-
     return 0; // Continue traversing the directory tree
 }
+
+
 #pragma GCC diagnostic pop

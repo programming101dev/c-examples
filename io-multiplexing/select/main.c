@@ -44,8 +44,6 @@ int main(void)
     int *client_sockets = NULL;
     size_t max_clients = 0;
     int max_fd, activity, new_socket, sd;
-    int addrlen;
-    struct sockaddr_un address;
     fd_set readfds;
 
     setup_signal_handler();
@@ -100,8 +98,12 @@ int main(void)
         if(FD_ISSET((unsigned int)sockfd, &readfds))
         {
             int *temp;
+            struct sockaddr_un addr;
+            socklen_t addrlen;
 
-            if((new_socket = accept(sockfd, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
+            addrlen = sizeof(addr);
+            
+            if((new_socket = accept(sockfd, (struct sockaddr *)&addr, &addrlen)) == -1)
             {
                 perror("Accept error");
                 exit(EXIT_FAILURE);

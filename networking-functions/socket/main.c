@@ -23,7 +23,7 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **address_family_str, char **socket_type_str);
-static int string_to_address_family(const char *address_family_str);
+static int string_to_address_family(const char *address_family_str) __attribute__((pure));
 static int string_to_socket_type(const char *socket_type_str);
 static void handle_arguments(const char *binary_name, const char *address_family_str, const char *socket_type_str, int *address_family, int *socket_type);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);

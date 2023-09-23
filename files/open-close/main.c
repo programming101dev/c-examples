@@ -30,22 +30,27 @@ int main(int argc, char *argv[])
 {
     char *file_path;
     int  fd;
+
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     printf("Opening %s\n", file_path);
     fd = open(file_path, O_RDONLY);
+
     if(fd == -1)
     {
         perror("Error opening file");
         return EXIT_FAILURE;
     }
+
     printf("Closing the file\n");
+
     if(close(fd) == -1)
     {
         perror("Error closing file");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
 

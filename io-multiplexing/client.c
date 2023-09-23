@@ -51,18 +51,21 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     file = fopen(file_path, "r");
+
     if(file == NULL)
     {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
+
     sockfd = connect_to_server(SOCKET_PATH);
 
-    // Read and parse words from the file
     while(fgets(line, sizeof(line), file) != NULL)
     {
         char *word;
+
         word = strtok(line, " \t\n");
+
         while(word != NULL)
         {
             uint8_t size;
@@ -75,14 +78,15 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
             }
 
-            // Write the size of the word as uint8_t
             size             = (uint8_t)word_len;
             send_word(sockfd, word, size);
             word = strtok(NULL, " \t\n");
         }
     }
+
     fclose(file);
     socket_close(sockfd);
+
     return EXIT_SUCCESS;
 }
 

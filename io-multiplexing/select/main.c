@@ -30,7 +30,9 @@ static void sigint_handler(int signum);
 static int socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void socket_close(int sockfd);
-#define SOCKET_PATH "/tmp/example_socket" // Replace with your desired socket path
+
+
+#define SOCKET_PATH "/tmp/example_socket"
 
 
 static volatile int running = 1;
@@ -43,18 +45,20 @@ int main(void)
     size_t     max_clients     = 0;
     int        max_fd, activity, new_socket, sd;
     fd_set     readfds;
+
     setup_signal_handler();
     unlink(SOCKET_PATH); // Remove the existing socket file if it exists
     sockfd       = socket_create();
     socket_bind(sockfd, SOCKET_PATH);
 
-    // Listen for incoming connections
     if(listen(sockfd, SOMAXCONN) == -1)
     {
         perror("Listen error");
         exit(EXIT_FAILURE);
     }
+
     printf("Server listening for incoming connections...\n");
+
     while(running)
     {
         // Clear the socket set
@@ -68,6 +72,7 @@ int main(void)
         for(size_t i = 0; i < max_clients; i++)
         {
             sd = client_sockets[i];
+
             if(sd > 0)
             {
                 FD_SET((unsigned int)sd, &readfds);
@@ -78,8 +83,8 @@ int main(void)
             }
         }
 
-        // Use select to monitor sockets for read readiness
-        activity     = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+        activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
+
         if(activity < 0)
         {
             perror("Select error");
@@ -92,17 +97,21 @@ int main(void)
             int                *temp;
             struct sockaddr_un addr;
             socklen_t          addrlen;
-            addrlen        = sizeof(addr);
+
+            addrlen = sizeof(addr);
+
             if((new_socket = accept(sockfd, (struct sockaddr *)&addr, &addrlen)) == -1)
             {
                 perror("Accept error");
                 exit(EXIT_FAILURE);
             }
+
             printf("New connection established\n");
 
             // Increase the size of the client_sockets array
             max_clients++;
             temp = (int *)realloc(client_sockets, sizeof(int) * max_clients);
+
             if(temp == NULL)
             {
                 perror("realloc");
@@ -120,6 +129,7 @@ int main(void)
         for(size_t i = 0; i < max_clients; i++)
         {
             sd = client_sockets[i];
+
             if(FD_ISSET((unsigned int)sd, &readfds))
             {
                 char    word_length;
@@ -128,6 +138,7 @@ int main(void)
 
                 // Receive the word length (uint8_t)
                 valread = read(sd, &word_length, sizeof(word_length));
+
                 if(valread <= 0)
                 {
                     // Connection closed or error
@@ -140,6 +151,7 @@ int main(void)
                 {
                     // Receive the word based on the length received
                     valread = read(sd, word, (size_t)word_length);
+
                     if(valread <= 0)
                     {
                         // Connection closed or error
@@ -163,21 +175,18 @@ int main(void)
     for(size_t i = 0; i < max_clients; i++)
     {
         sd = client_sockets[i];
+
         if(sd > 0)
         {
             socket_close(sd);
         }
     }
 
-    // Free the client_sockets array
     free(client_sockets);
-
-    // Close the server socket
     socket_close(sockfd);
-
-    // Remove the socket file
     unlink(SOCKET_PATH);
     printf("Server exited successfully.\n");
+
     return EXIT_SUCCESS;
 }
 
@@ -200,26 +209,25 @@ static void setup_signal_handler(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void sigint_handler(int signum)
 {
     running = 0;
 }
-
-
 #pragma GCC diagnostic pop
 
 
 static int socket_create(void)
 {
     int sockfd;
+
     sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
     if(sockfd == -1)
     {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
+
     return sockfd;
 }
 
@@ -227,15 +235,18 @@ static int socket_create(void)
 static void socket_bind(int sockfd, const char *path)
 {
     struct sockaddr_un addr;
+
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
+
     if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
     {
         perror("bind");
         exit(EXIT_FAILURE);
     }
+
     printf("Bound to domain socket: %s\n", path);
 }
 

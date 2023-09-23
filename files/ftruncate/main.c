@@ -30,12 +30,15 @@ int main(void)
     char       filename[] = "example_XXXXXX";
     int        fd;
     off_t      new_size;
+
     fd = mkstemp(filename);
+
     if(fd == -1)
     {
         perror("Error creating temporary file");
         return EXIT_FAILURE;
     }
+
     dprintf(fd, "%s\n", content);
     check_file_size(filename, "Initial file size");
     new_size = 9;
@@ -47,16 +50,19 @@ int main(void)
         close(fd);
         return EXIT_FAILURE;
     }
+
     if(close(fd) == -1)
     {
         perror("Error closing file");
         return EXIT_FAILURE;
     }
+
     if(unlink(filename) == -1)
     {
         perror("Error unlinking file");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
 

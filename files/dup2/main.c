@@ -42,6 +42,7 @@ int main(void)
         close(original_fd); // Close the file descriptor before exiting
         return EXIT_FAILURE;
     }
+
     fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long)file_stat.st_size);
 
     // Redirect stdout (file descriptor 1) to the temporary file
@@ -90,5 +91,6 @@ int main(void)
         perror("Error removing temporary file");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }

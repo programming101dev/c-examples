@@ -37,6 +37,7 @@ int main(void)
 
     // Open the FIFO for reading
     fd = open(FIFO_FILE, O_RDONLY);
+
     if(fd == -1)
     {
         perror("open");
@@ -50,6 +51,8 @@ int main(void)
         word[size] = '\0'; // Null-terminate the string
         printf("Word Size: %u, Word: %s\n", size, word);
     }
+
     close(fd);
+
     return EXIT_SUCCESS;
 }

@@ -24,7 +24,10 @@
 
 void display(const char *msg)
 {
-    char *uppercase_msg = strdup(msg);
+    char *uppercase_msg;
+
+    uppercase_msg = strdup(msg);
+
     if(uppercase_msg == NULL)
     {
         fprintf(stderr, "Error: Memory allocation failed.\n");
@@ -36,6 +39,7 @@ void display(const char *msg)
     {
         uppercase_msg[i] = (char)toupper(uppercase_msg[i]);
     }
+
     printf("testlib-2: display: %s\n", uppercase_msg);
     free(uppercase_msg);
 }

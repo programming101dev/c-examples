@@ -34,10 +34,12 @@ int main(int argc, char *argv[])
     char    buffer[1024];
     ssize_t bytesRead;
     int     flags;
+
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     fd = open(file_path, O_RDONLY);
+
     if(fd == -1)
     {
         perror("Error opening the file");
@@ -46,12 +48,14 @@ int main(int argc, char *argv[])
 
     // Set the file descriptor to non-blocking mode
     flags = fcntl(fd, F_GETFL);
+
     if(flags == -1)
     {
         perror("Error getting file descriptor flags");
         close(fd);
         return EXIT_FAILURE;
     }
+
     if(fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
         perror("Error setting file descriptor to non-blocking mode");
@@ -61,6 +65,7 @@ int main(int argc, char *argv[])
 
     // Read from the file (will not block due to O_NONBLOCK)
     bytesRead = read(fd, buffer, sizeof(buffer));
+
     if(bytesRead == -1)
     {
         if(errno == EAGAIN)
@@ -79,11 +84,13 @@ int main(int argc, char *argv[])
         buffer[bytesRead] = '\0';
         printf("Read %zd bytes:\n%s\n", bytesRead, buffer);
     }
+
     if(close(fd) == -1)
     {
         perror("Error closing the file");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -91,7 +98,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -112,14 +121,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -139,6 +151,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

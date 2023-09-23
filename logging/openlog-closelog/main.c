@@ -29,6 +29,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *log_name;
+
     log_name = NULL;
     parse_arguments(argc, argv, &log_name);
     handle_arguments(argv[0], log_name);
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
     printf("Opened log for %s\n", log_name);
     closelog();
     printf("Closed log for %s\n", log_name);
+
     return EXIT_SUCCESS;
 }
 
@@ -43,7 +45,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **log_name)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -64,14 +68,17 @@ static void parse_arguments(int argc, char *argv[], char **log_name)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *log_name = argv[optind];
 }
 
@@ -91,6 +98,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <log name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

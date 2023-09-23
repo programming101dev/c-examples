@@ -27,11 +27,13 @@ int main(void)
 
     // Create a temporary file using mkstemp
     fd = mkstemp(templ);
+
     if(fd == -1)
     {
         perror("Error creating temporary file");
         return EXIT_FAILURE;
     }
+
     printf("Created temporary file %s\n", templ);
 
     // Delete the temporary file using unlink
@@ -40,6 +42,8 @@ int main(void)
         perror("Error deleting temporary file");
         return EXIT_FAILURE;
     }
+
     printf("Temporary file deleted successfully.\n");
+
     return EXIT_SUCCESS;
 }

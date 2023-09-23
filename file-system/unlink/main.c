@@ -29,37 +29,41 @@ int main(int argc, char *argv[])
 {
     char *file_path;
     FILE *file;
+
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
+
     if(access(file_path, F_OK) == 0)
     {
         fprintf(stderr, "%s already exists, please us a file that does not exist\n", file_path);
         return EXIT_FAILURE;
     }
+
     file = fopen(file_path, "w");
+
     if(file == NULL)
     {
         perror("Error creating file");
         return EXIT_FAILURE;
     }
+
     printf("Created file %s\n", file_path);
     fprintf(file, "This is a sample file.\n");
     fclose(file);
 
-    // Check if the file exists before deletion
     if(access(file_path, F_OK) == -1)
     {
         printf("File '%s' does not exist.\n", file_path);
         return EXIT_FAILURE;
     }
 
-    // Delete the file using unlink
     if(unlink(file_path) == -1)
     {
         perror("Error deleting file");
         return EXIT_FAILURE;
     }
+
     if(access(file_path, F_OK) == -1)
     {
         printf("File '%s' successfully deleted.\n", file_path);
@@ -68,6 +72,7 @@ int main(int argc, char *argv[])
     {
         printf("File '%s' was not deleted.\n", file_path);
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -75,7 +80,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -96,14 +103,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -123,6 +133,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

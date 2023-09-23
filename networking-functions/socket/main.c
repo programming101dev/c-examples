@@ -146,6 +146,7 @@ static int string_to_socket_type(const char *socket_type_str)
     {
         usage("Invalid socket type string.", EXIT_FAILURE, NULL);
     }
+
     if(strcmp(socket_type_str, "SOCK_STREAM") == 0)
     {
         return SOCK_STREAM;

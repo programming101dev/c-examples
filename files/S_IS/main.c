@@ -36,16 +36,20 @@ int main(int argc, char *argv[])
 {
     char        *file_path;
     struct stat fileStat;
+
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
+
     if(stat(file_path, &fileStat) == -1)
     {
         perror("Error getting file stats");
         return EXIT_FAILURE;
     }
+
     printf("File Information for '%s':\n\n", file_path);
     print_file_info(&fileStat);
+
     return EXIT_SUCCESS;
 }
 
@@ -53,7 +57,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **filename)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -74,6 +80,7 @@ static void parse_arguments(int argc, char *argv[], char **filename)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The file name is required");
@@ -82,6 +89,7 @@ static void parse_arguments(int argc, char *argv[], char **filename)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *filename = argv[optind];
 }
 
@@ -101,6 +109,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -200,4 +209,3 @@ static void print_time(const char *label, time_t timeValue)
 {
     printf("%s: %ld\n", label, timeValue);
 }
-

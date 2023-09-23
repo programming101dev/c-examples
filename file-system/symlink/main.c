@@ -44,36 +44,41 @@ int main(void)
 
     // Deleting source file
     printf("Deleting file %s\n", source_filename);
+
     if(unlink(source_filename) == -1)
     {
         perror("Error deleting source file");
         return EXIT_FAILURE;
     }
+
     check_file_existence(source_filename, "Source file");
 
-    // Deleting symbolic link
     printf("Deleting symbolic link %s\n", link_filename);
+
     if(unlink(link_filename) == -1)
     {
         perror("Error deleting symbolic link");
         return EXIT_FAILURE;
     }
+
     check_file_existence(link_filename, "Symbolic link");
+
     return EXIT_SUCCESS;
 }
 
 
 static void create_sample_file(const char *filename)
 {
-    // Variable declarations
-    FILE *file = fopen(filename, "w");
+    FILE *file;
+
+    file = fopen(filename, "w");
+
     if(file == NULL)
     {
         perror("Error creating sample file");
         exit(EXIT_FAILURE);
     }
 
-    // Variable assignments
     fprintf(file, "This is a sample file.\n");
     fclose(file);
 }
@@ -100,4 +105,3 @@ static void check_file_existence(const char *filename, const char *message)
         printf("\t%s '%s' does not exist.\n", message, filename);
     }
 }
-

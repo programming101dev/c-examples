@@ -44,5 +44,6 @@ int main(void)
     {
         printf("Machine is big-endian.\n");
     }
+
     return 0;
 }

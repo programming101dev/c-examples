@@ -31,10 +31,12 @@ int main(int argc, char *argv[])
 {
     char         *group_name;
     struct group *group_info;
+
     group_name = NULL;
     parse_arguments(argc, argv, &group_name);
     handle_arguments(argv[0], group_name);
     group_info = getgrnam(group_name);
+
     if(group_info != NULL)
     {
         print_entry(group_info);
@@ -43,6 +45,7 @@ int main(int argc, char *argv[])
     {
         printf("Group '%s' not found.\n", group_name);
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -50,7 +53,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **group_name)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -71,6 +76,7 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group name is required");
@@ -79,6 +85,7 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *group_name = argv[optind];
 }
 
@@ -98,6 +105,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <group name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -110,6 +118,7 @@ static void print_entry(const struct group *entry)
     printf("Group name: %s\n", entry->gr_name);
     printf("Group ID (GID): %u\n", entry->gr_gid);
     printf("Group Members:\n");
+
     if(entry->gr_mem != NULL)
     {
         for(int i = 0; entry->gr_mem[i] != NULL; i++)

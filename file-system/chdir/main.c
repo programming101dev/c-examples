@@ -32,23 +32,27 @@ int main(int argc, char *argv[])
 {
     char *directory_path;
     long path_max;
+
     directory_path = NULL;
     parse_arguments(argc, argv, &directory_path);
     handle_arguments(argv[0], directory_path);
-
-    // Get the maximum path length
     path_max = pathconf(directory_path, _PC_PATH_MAX);
+
     if(path_max == -1)
     {
         path_max = 4096; // A common default value for the maximum path length
     }
+
     printCurrentWorkingDirectory(path_max);
+
     if(chdir(directory_path) == -1)
     {
         perror("chdir");
         exit(EXIT_FAILURE);
     }
+
     printCurrentWorkingDirectory(path_max);
+
     return EXIT_SUCCESS;
 }
 
@@ -56,7 +60,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **directory_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -77,14 +83,17 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *directory_path = argv[optind];
 }
 
@@ -104,6 +113,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <directory path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -113,17 +123,21 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 char *getCurrentWorkingDirectory(long path_max)
 {
-    char   *buffer = NULL;
+    char   *buffer;
     size_t size    = (size_t)path_max;
+
     buffer = NULL;
+
     while(1)
     {
         buffer = (char *)realloc(buffer, size);
+
         if(buffer == NULL)
         {
             perror("Error allocating/reallocating memory for buffer");
             return NULL;
         }
+
         if(getcwd(buffer, size) != NULL)
         {
             return buffer; // Return the current working directory
@@ -140,6 +154,7 @@ char *getCurrentWorkingDirectory(long path_max)
             {
                 perror("Error getting current working directory");
                 free(buffer);
+
                 return NULL;
             }
         }
@@ -150,7 +165,9 @@ char *getCurrentWorkingDirectory(long path_max)
 void printCurrentWorkingDirectory(long path_max)
 {
     char *cwd;
+
     cwd = getCurrentWorkingDirectory(path_max);
+
     if(cwd == NULL)
     {
         exit(EXIT_FAILURE);

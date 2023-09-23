@@ -30,22 +30,28 @@ int main(int argc, char *argv[])
 {
     char *library_path;
     void *handle;
+
     library_path = NULL;
     parse_arguments(argc, argv, &library_path);
     handle_arguments(argv[0], library_path);
     handle = dlopen(library_path, RTLD_LAZY);
-    if(!handle)
+
+    if(handle == NULL)
     {
         fprintf(stderr, "Error loading the shared library: %s\n", dlerror());
         return EXIT_FAILURE;
     }
+
     printf("Opened %s\n", library_path);
+
     if(dlclose(handle) != 0)
     {
         fprintf(stderr, "Error unloading the shared library: %s\n", dlerror());
         return EXIT_FAILURE;
     }
+
     printf("Closed %s\n", library_path);
+
     return EXIT_SUCCESS;
 }
 
@@ -53,7 +59,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **library_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h:")) != -1)
     {
         switch(opt)
@@ -74,6 +82,7 @@ static void parse_arguments(int argc, char *argv[], char **library_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The library name is required");
@@ -82,6 +91,7 @@ static void parse_arguments(int argc, char *argv[], char **library_path)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *library_path = argv[optind];
 }
 
@@ -101,6 +111,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <library path>\n", program_name);
     exit(exit_code);
 }

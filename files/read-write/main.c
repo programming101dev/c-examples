@@ -27,25 +27,31 @@ int main(void)
 {
     char    buffer[BUFFER_SIZE];
     ssize_t bytesRead;
+
     printf("Press ctrl-d to exit.\n");
     printf("Start typing...\n");
     fflush(stdout);
+
     while((bytesRead = read(STDIN_FILENO, buffer, sizeof(buffer))) > 0)
     {
         size_t  bytes_to_write;
         ssize_t bytesWritten;
+
         bytes_to_write = (size_t)bytesRead;
         bytesWritten   = write(STDOUT_FILENO, buffer, bytes_to_write);
+
         if(bytesWritten != bytesRead)
         {
             perror("Error writing to stdout");
             return EXIT_FAILURE;
         }
     }
+
     if(bytesRead == -1)
     {
         perror("Error reading from stdin");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }

@@ -40,25 +40,31 @@ int main(int argc, char *argv[])
     char  *group_id;
     uid_t uid;
     gid_t gid;
+
     path     = NULL;
     user_id  = NULL;
     group_id = NULL;
     parse_arguments(argc, argv, &path, &user_id, &group_id);
     handle_arguments(argv[0], path, user_id, group_id, &uid, &gid);
+
     if(chown(path, uid, gid) == -1)
     {
         perror("chown");
         exit(EXIT_FAILURE);
     }
+
     printf("File ownership changed successfully.\n");
-    return 0;
+
+    return EXIT_SUCCESS;
 }
 
 
 static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "hu:g:")) != -1)
     {
         switch(opt)
@@ -89,6 +95,7 @@ static void parse_arguments(int argc, char *argv[], char **path, char **user_id,
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The file path is required");
@@ -97,6 +104,7 @@ static void parse_arguments(int argc, char *argv[], char **path, char **user_id,
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *path = argv[optind];
 }
 
@@ -107,14 +115,17 @@ static void handle_arguments(const char *binary_name, const char *path, const ch
     {
         usage(binary_name, EXIT_FAILURE, "The path is required.");
     }
+
     if(user_id == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The user id is required.");
     }
+
     if(group_id == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The group id is required.");
     }
+
     *uid = parse_uid_t(binary_name, user_id);
     *gid = parse_gid_t(binary_name, group_id);
 }
@@ -123,6 +134,7 @@ static void handle_arguments(const char *binary_name, const char *path, const ch
 static uid_t get_uid_t_max(void)
 {
     uid_t value;
+
     if(sizeof(uid_t) == sizeof(unsigned char))
     {
         value = (uid_t)UCHAR_MAX;
@@ -158,8 +170,10 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
     uintmax_t max = get_uid_t_max();
     char      *endptr;
     uintmax_t parsed_value;
+
     errno         = 0;
     parsed_value  = strtoumax(str, &endptr, 10);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");
@@ -170,10 +184,12 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
     if(parsed_value > max)
     {
         usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
     }
+
     return (uid_t)parsed_value;
 }
 
@@ -181,6 +197,7 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
 static gid_t get_gid_t_max(void)
 {
     gid_t value;
+
     if(sizeof(gid_t) == sizeof(unsigned char))
     {
         value = (gid_t)UCHAR_MAX;
@@ -206,6 +223,7 @@ static gid_t get_gid_t_max(void)
         fprintf(stderr, "Unsupported size of gid_t\n");
         exit(EXIT_FAILURE);
     }
+
     return value;
 }
 
@@ -215,8 +233,10 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
     gid_t     max = get_gid_t_max();
     char      *endptr;
     uintmax_t parsed_value;
+
     errno         = 0;
     parsed_value  = strtoumax(str, &endptr, 10);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing gid_t.");
@@ -227,10 +247,12 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
     if(parsed_value > max)
     {
         usage(binary_name, EXIT_FAILURE, "gid_t value out of range.");
     }
+
     return (gid_t)parsed_value;
 }
 
@@ -241,6 +263,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] -u <user id> -g <group id> <path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h              Display this help message\n", stderr);

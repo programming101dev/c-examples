@@ -15,15 +15,18 @@
  */
 
 
-#include <stdio.h>
 #include <arpa/inet.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 int main(void)
 {
     uint16_t host_value    = 12345;
     uint16_t network_value = htons(host_value);
+
     printf("Host value: %hu\n", host_value);
     printf("Network value: %hu\n", network_value);
-    return 0;
+
+    return EXIT_SUCCESS;
 }

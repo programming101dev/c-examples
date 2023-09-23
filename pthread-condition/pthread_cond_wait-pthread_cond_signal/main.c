@@ -146,8 +146,15 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static void send_word(const char *word)
 {
+#if defined(__clang__)
+    #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-negative"
+#endif
     pthread_mutex_lock(&mutex);
-
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+    
     while(word_ready)
     {
         if(pthread_cond_wait(&cond, &mutex) != 0)

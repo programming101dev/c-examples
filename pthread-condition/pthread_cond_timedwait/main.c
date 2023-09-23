@@ -301,7 +301,7 @@ static void *thread_function(void *arg)
 
     // Signal the condition variable
 #if defined(__clang__)
-    #pragma clang diagnostic push
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
     pthread_mutex_lock(&mutex);

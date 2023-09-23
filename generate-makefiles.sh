@@ -1017,7 +1017,7 @@ generate_makefile() {
                 echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo "LIBS += lib$filename-traceaable$SHARED_EXT" >> Makefile
             else
-                if [[ "$CC" == "gcc" || "$CC" = "gcc-13" ]]; then
+                if [[ "$CC" == "gcc"* ]]; then
                     if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
                         # Add the additional flag for files in the specified directories
                         echo -e COMPILATION_FLAGS+="-Wno-analyzer-use-of-uninitialized-value -Wno-sometimes-uninitialized" >> Makefile

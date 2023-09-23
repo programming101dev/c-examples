@@ -102,7 +102,7 @@ int main(void)
             socklen_t addrlen;
 
             addrlen = sizeof(addr);
-            
+
             if((new_socket = accept(sockfd, (struct sockaddr *)&addr, &addrlen)) == -1)
             {
                 perror("Accept error");

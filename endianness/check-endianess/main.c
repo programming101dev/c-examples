@@ -18,7 +18,7 @@
 #include <stdio.h>
 
 
-int is_little_endian(void);
+int is_little_endian(void) __attribute__((const));
 
 
 int is_little_endian(void)
@@ -27,7 +27,7 @@ int is_little_endian(void)
     unsigned int value = 1;
 
     // Obtain the first byte of the integer
-    unsigned char *byte_ptr = (unsigned char *) &value;
+    const unsigned char *byte_ptr = (unsigned char *) &value;
 
     // If the first byte (lowest address) contains 1, the machine is little-endian
     return (*byte_ptr == 1);

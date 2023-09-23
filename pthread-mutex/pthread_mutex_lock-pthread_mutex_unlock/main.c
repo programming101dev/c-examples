@@ -153,8 +153,14 @@ static void *thread_function(void *arg)
     }
 
     // Critical section: Accessing and modifying the shared variable
+#if defined(__clang__)
+    #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-analysis"
+#endif
     (*(data->sharedVariable))++;
-
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     // Print the thread ID and shared variable value
     tid = pthread_self();
     memcpy(&tid_val, &tid, sizeof(uintptr_t));

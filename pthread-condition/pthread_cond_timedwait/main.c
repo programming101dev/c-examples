@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_REALTIME, &abs_timeout);
     abs_timeout.tv_sec += main_seconds; // Changed to 5 seconds
 
-    // Unlock the mutex before waiting on the condition variable
-    pthread_mutex_unlock(&mutex);
+    // Lock the mutex before waiting on the condition variable
+    pthread_mutex_lock(&mutex);
     result = pthread_cond_timedwait(&cond_var, &mutex, &abs_timeout);
-    pthread_mutex_lock(&mutex);  // Reacquire the mutex after returning from pthread_cond_timedwait
+    pthread_mutex_unlock(&mutex);
 
     if(result == 0)
     {

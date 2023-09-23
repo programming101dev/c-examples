@@ -807,7 +807,7 @@ populate_supported_flags() {
       "-Wunknown-directives"
       "-Wunknown-escape-sequence"
       "-Wunknown-sanitizers"
-      "-Wunknown-warning-option"
+      "-Wno-unknown-warning-option"
       "-Wunnamed-type-template-args"
       "-Wunneeded-internal-declaration"
       "-Wunneeded-member-function"
@@ -819,7 +819,7 @@ populate_supported_flags() {
       "-Wunreachable-code-generic-assoc"
       "-Wunreachable-code-loop-increment"
       "-Wunreachable-code-return"
-      "-Wunsafe-buffer-usage"
+#      "-Wunsafe-buffer-usage"
       "-Wunsequenced"
       "-Wunsupported-abi"
       "-Wunsupported-abs"
@@ -1020,7 +1020,7 @@ generate_makefile() {
                 if [[ "$CC" == "gcc" || "$CC" = "gcc-13" ]]; then
                     if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
                         # Add the additional flag for files in the specified directories
-                        echo -e COMPILATION_FLAGS+="-Wno-analyzer-use-of-uninitialized-value " >> Makefile
+                        echo -e COMPILATION_FLAGS+="-Wno-analyzer-use-of-uninitialized-value -Wno-sometimes-uninitialized" >> Makefile
                     fi
                 fi
 

@@ -52,6 +52,13 @@ static void print_socket_opt_linger(int sockfd, int option_level, int option_nam
 static void socket_close(int sockfd);
 
 
+#if defined(__APPLE__)
+#define D_MS_FORMAT "%d"
+#else
+#define D_MS_FORMAT "%lu"
+#endif
+
+
 int main(int argc, char *argv[])
 {
     char *address;
@@ -333,7 +340,7 @@ static void print_socket_opt_timeval(int sockfd, int option_level, int option_na
 
     if(ret == 0)
     {
-        printf("%s: %ld seconds %ld microseconds\n", option_name_str, optval.tv_sec, optval.tv_usec);
+        printf("%s: %ld seconds " D_MS_FORMAT " microseconds\n", option_name_str, optval.tv_sec, optval.tv_usec);
     }
     else
     {

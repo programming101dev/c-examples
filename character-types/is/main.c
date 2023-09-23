@@ -55,7 +55,15 @@ int main(void)
 
     for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
     {
-        printf("%-6s | ", info[i].name);
+        if (info[i].name != NULL)
+        {
+            printf("%-6s | ", info[i].name);
+        }
+        else
+        {
+            fprintf(stderr, "Null string encountered.\n");
+            return EXIT_FAILURE;
+        }
     }
 
     printf("Lower | Upper |\n");

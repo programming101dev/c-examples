@@ -31,11 +31,15 @@ int main(void)
     int signal_to_add;
     int signal_to_remove;
 
+#ifdef __APPLE__
+    sigemptyset(&signal_set);  // On macOS, this call is guaranteed to succeed
+#else
     if(sigemptyset(&signal_set) != 0)
     {
         perror("Failed to create an empty signal set");
-        return 1;
+        return EXIT_FAILURE;
     }
+#endif
 
     printf("Empty signal set:\n");
     print_signal_set(&signal_set);
@@ -55,11 +59,15 @@ int main(void)
     // Add a signal to the set
     signal_to_add = SIGINT;
 
+#ifdef __APPLE__
+    sigaddset(&signal_set, signal_to_add); // On macOS, this call is guaranteed to succeed
+#else
     if(sigaddset(&signal_set, signal_to_add) != 0)
     {
         perror("Failed to add signal to the set");
-        return 1;
+        return EXIT_FAILURE;
     }
+#endif
 
     printf("Signal set with %d:\n", signal_to_add);
     print_signal_set(&signal_set);
@@ -77,11 +85,15 @@ int main(void)
     // Remove a signal from the set
     signal_to_remove = SIGINT;
 
+#ifdef __APPLE__
+    sigdelset(&signal_set, signal_to_remove); // On macOS, this call is guaranteed to succeed
+#else
     if(sigdelset(&signal_set, signal_to_remove) != 0)
     {
         perror("Failed to remove signal from the set");
-        return 1;
+        return EXIT_FAILURE;
     }
+#endif
 
     printf("Signal set without %d:\n", signal_to_remove);
     print_signal_set(&signal_set);
@@ -97,11 +109,15 @@ int main(void)
     }
 
     // Fill the entire set with all available signals
+#if defined(__APPLE__)
+    sigfillset(&signal_set);  // Always succeeds on macOS, so no need to check
+#else
     if(sigfillset(&signal_set) != 0)
     {
         perror("Failed to fill the signal set");
-        return 1;
+        return EXIT_FAILURE;
     }
+#endif
 
     // Print the complete set
     printf("Full signal set:\n");

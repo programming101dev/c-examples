@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
     if(shm_unlink(shm_name) == -1)
     {
         perror("shm_unlink");
-        close(shm_fd);
         return EXIT_FAILURE;
     }
 

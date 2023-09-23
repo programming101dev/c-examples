@@ -82,6 +82,12 @@ int main(void)
         printf("Waiting for client_sem\n");
         sem_wait(client_sem);
 
+        if(shm_ptr == NULL)
+        {
+            sem_post(server_sem);
+            break;
+        }
+
         // Check if the process is done
         if(strcmp(shm_ptr, "") == 0)
         {

@@ -128,6 +128,11 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static int string_to_address_family(const char *address_family_str)
 {
+    if(address_family_str == NULL)
+    {
+        usage("Invalid address family string.", EXIT_FAILURE, NULL);
+    }
+
     if (strcmp(address_family_str, "AF_INET") == 0)
     {
         return AF_INET;
@@ -148,6 +153,11 @@ static int string_to_address_family(const char *address_family_str)
 
 static int string_to_socket_type(const char *socket_type_str)
 {
+    if(socket_type_str == NULL)
+    {
+        usage("Invalid socket type string.", EXIT_FAILURE, NULL);
+    }
+
     if (strcmp(socket_type_str, "SOCK_STREAM") == 0)
     {
         return SOCK_STREAM;

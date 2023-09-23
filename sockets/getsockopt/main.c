@@ -55,7 +55,7 @@ static void socket_close(int sockfd);
 #if defined(__APPLE__)
 #define D_MS_FORMAT "%d"
 #elif defined(__linux__)
-#define D_MS_FORMAT "%lu"
+#define D_MS_FORMAT "%ld"
 #elif defined(__FreeBSD__)
 #define D_MS_FORMAT "%ld"
 #endif

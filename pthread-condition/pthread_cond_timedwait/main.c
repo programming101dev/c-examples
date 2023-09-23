@@ -270,12 +270,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
     }
 
-    // Now we will verify that the parsed_value fits within an unsigned int.
-    if (parsed_value > (uintmax_t)UINT_MAX)
-    {
-        usage(binary_name, EXIT_FAILURE, "Unsigned integer does not fit within an unsigned int.");
-    }
-
     return (unsigned int)parsed_value;
 }
 
@@ -306,7 +300,14 @@ static void *thread_function(void *arg)
     sleep(sleep_time);
 
     // Signal the condition variable
+#if defined(__clang__)
+    #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-negative"
+#endif
     pthread_mutex_lock(&mutex);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     pthread_cond_signal(&cond_var);
     pthread_mutex_unlock(&mutex);
 

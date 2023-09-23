@@ -84,7 +84,14 @@ static void *thread_function(void *thread_id)
 {
     long tid = (long) thread_id;
 
+#if defined(__clang__)
+    #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-negative"
+#endif
     pthread_mutex_lock(&mutex);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
     while(shared_data < 10)
     {

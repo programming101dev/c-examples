@@ -30,7 +30,7 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
 int main(void)
 {
 #if defined(__clang__)
-    #pragma clang diagnostic push
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     SET_LIMIT(RLIMIT_CORE, 8, 32);

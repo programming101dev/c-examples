@@ -54,7 +54,14 @@ int main(void)
     // Simulate some work and update the shared_data variable
     for(int i = 0; i < 10; i++)
     {
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-negative"
+#endif
         pthread_mutex_lock(&mutex);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
         shared_data = i + 1;
         printf("Main thread updating shared_data: %d\n", shared_data);
         pthread_cond_broadcast(&cond_var);

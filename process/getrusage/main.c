@@ -25,7 +25,7 @@
 
 
 static long long performCalculation(size_t size, size_t iterations);
-static void printUsage(struct rusage ru);
+static void printUsage(struct rusage *ru);
 
 
 int main(void)
@@ -58,9 +58,9 @@ int main(void)
         wait(NULL);
         getrusage(RUSAGE_CHILDREN, &end_ru);
         printf("Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
-        printUsage(end_ru);
+        printUsage(&end_ru);
         getrusage(RUSAGE_SELF, &end_ru);
-        printUsage(end_ru);
+        printUsage(&end_ru);
     }
 
     return EXIT_SUCCESS;
@@ -103,22 +103,22 @@ static long long performCalculation(size_t size, size_t iterations)
 }
 
 
-static void printUsage(struct rusage ru)
+static void printUsage(struct rusage *ru)
 {
-    printf("User time: %jd.%06ld seconds\n", (intmax_t) ru.ru_utime.tv_sec, (long) ru.ru_utime.tv_usec);
-    printf("System time: %jd.%06ld seconds\n", (intmax_t) ru.ru_stime.tv_sec, (long) ru.ru_stime.tv_usec);
-    printf("Maximum resident set size (RSS): %ld kilobytes\n", ru.ru_maxrss);
-    printf("Integral shared memory size: %ld kilobytes\n", ru.ru_ixrss);
-    printf("Integral unshared data size: %ld kilobytes\n", ru.ru_idrss);
-    printf("Integral unshared stack size: %ld kilobytes\n", ru.ru_isrss);
-    printf("Page reclaims (soft page faults): %ld\n", ru.ru_minflt);
-    printf("Page faults (hard page faults): %ld\n", ru.ru_majflt);
-    printf("Swaps: %ld\n", ru.ru_nswap);
-    printf("Block input operations: %ld\n", ru.ru_inblock);
-    printf("Block output operations: %ld\n", ru.ru_oublock);
-    printf("IPC messages sent: %ld\n", ru.ru_msgsnd);
-    printf("IPC messages received: %ld\n", ru.ru_msgrcv);
-    printf("Signals received: %ld\n", ru.ru_nsignals);
-    printf("Voluntary context switches: %ld\n", ru.ru_nvcsw);
-    printf("Involuntary context switches: %ld\n", ru.ru_nivcsw);
+    printf("User time: %jd.%06ld seconds\n", (intmax_t) ru->ru_utime.tv_sec, (long) ru->ru_utime.tv_usec);
+    printf("System time: %jd.%06ld seconds\n", (intmax_t) ru->ru_stime.tv_sec, (long) ru->ru_stime.tv_usec);
+    printf("Maximum resident set size (RSS): %ld kilobytes\n", ru->ru_maxrss);
+    printf("Integral shared memory size: %ld kilobytes\n", ru->ru_ixrss);
+    printf("Integral unshared data size: %ld kilobytes\n", ru->ru_idrss);
+    printf("Integral unshared stack size: %ld kilobytes\n", ru->ru_isrss);
+    printf("Page reclaims (soft page faults): %ld\n", ru->ru_minflt);
+    printf("Page faults (hard page faults): %ld\n", ru->ru_majflt);
+    printf("Swaps: %ld\n", ru->ru_nswap);
+    printf("Block input operations: %ld\n", ru->ru_inblock);
+    printf("Block output operations: %ld\n", ru->ru_oublock);
+    printf("IPC messages sent: %ld\n", ru->ru_msgsnd);
+    printf("IPC messages received: %ld\n", ru->ru_msgrcv);
+    printf("Signals received: %ld\n", ru->ru_nsignals);
+    printf("Voluntary context switches: %ld\n", ru->ru_nvcsw);
+    printf("Involuntary context switches: %ld\n", ru->ru_nivcsw);
 }

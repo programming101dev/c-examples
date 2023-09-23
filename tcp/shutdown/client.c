@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
     char *port_str;
     in_port_t port;
     int sockfd;
-    int domain;
     struct sockaddr_storage addr;
 
     address = NULL;

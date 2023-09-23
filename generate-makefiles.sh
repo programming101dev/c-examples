@@ -80,7 +80,6 @@ populate_supported_flags() {
       "-Wenum-compare"
       "-Wenum-conversion"
       "-Wenum-int-mismatch"
-      "-Werror"
       "-Wexpansion-to-defined"
       "-Wextra"
       "-Wfatal-errors"
@@ -340,9 +339,6 @@ populate_supported_flags() {
       "-Wdeprecated-increment-bool"
       "-Wdeprecated-literal-operator"
       "-Wdeprecated-non-prototype"
-      "-Wdeprecated-objc-isa-usage"
-      "-Wdeprecated-objc-pointer-introspection"
-      "-Wdeprecated-objc-pointer-introspection-performSelector"
       "-Wdeprecated-pragma"
       "-Wdeprecated-redundant-constexpr-static-def"
       "-Wdeprecated-register"
@@ -992,9 +988,9 @@ generate_makefile() {
       esac
 
     # Initialize the Makefile
-    echo "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE" > Makefile
+    echo "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror" > Makefile
     echo "SUPPORTED_FLAGS=${SUPPORTED_FLAGS[@]}" >> Makefile
-    echo "SUPPORTED_FLAGS=${SUPPORTED_SANITIZER_FLAGS[@]}" >> Makefile
+    echo "SUPPORTED_SANITIZER_FLAGS=${SUPPORTED_SANITIZER_FLAGS[@]}" >> Makefile
     echo "LIBRARIES=${LIBRARIES}" >> Makefile
     echo "PROGRAMS=" >> Makefile
     echo "LIBS=" >> Makefile
@@ -1004,6 +1000,9 @@ generate_makefile() {
         if [[ -f "$file" ]]; then
             # Extract the file name without extension
             filename="${file%.c}"
+            full_path=$(realpath "$file")
+            last_dir=$(basename "$(dirname "$full_path")")
+            second_to_last_dir=$(basename "$(dirname "$(dirname "$full_path")")")
 
             # Check if the file is one of the testlib files
             if [[ "$filename" == "testlib-1" || "$filename" == "testlib-2" ]]; then
@@ -1017,6 +1016,13 @@ generate_makefile() {
                 echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo "LIBS += lib$filename-traceaable$SHARED_EXT" >> Makefile
             else
+                if [[ "$CC" == "gcc" ]]; then
+                    if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
+                        # Add the additional flag for files in the specified directories
+                        echo -e COMPILATION_FLAGS+="-Wno-analyzer-use-of-uninitialized-value" >> Makefile
+                    fi
+                fi
+
                 # Generate an executable rule with the supported warning flags
                 echo "$filename: $file" >> Makefile
                 echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -o $filename $file \$(LIBRARIES)" >> Makefile

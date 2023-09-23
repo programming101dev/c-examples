@@ -42,7 +42,7 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port)
 static void handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void convert_address(const char *address, struct sockaddr_storage *addr);;
+static void convert_address(const char *address, struct sockaddr_storage *addr);
 static int socket_create(int domain, int type, int protocol);
 static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
 static void print_socket_opt_bool(int sockfd, int option_level, int option_name, const char *option_name_str);
@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
     char *port_str;
     in_port_t port;
     int sockfd;
-    int domain;
     struct sockaddr_storage addr;
     struct socket_option options[] =
     {
@@ -92,6 +91,8 @@ int main(int argc, char *argv[])
     {
         options[i].print(sockfd, options[i].level, options[i].option, options[i].name);
     }
+
+    socket_close(sockfd);
 
     return EXIT_SUCCESS;
 }

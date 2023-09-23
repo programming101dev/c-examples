@@ -62,6 +62,13 @@ static void *thread_function(void *arg)
 
     // Exit the thread and return a value (optional)
     result = (int *)malloc(sizeof(int));
+
+    if(result == NULL)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
     *result = thread_id * 2;
     pthread_exit(result);
 }

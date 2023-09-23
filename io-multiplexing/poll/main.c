@@ -29,7 +29,7 @@
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients);
 static void handle_client_data(int sd, int **client_sockets, nfds_t *max_clients);
 static void setup_signal_handler(void);
-static void signal_handler(int signum);
+static void sigint_handler(int signum);
 static int socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void socket_close(int sockfd);
@@ -151,14 +151,13 @@ int main(void)
 }
 
 
-static void signal_handler(int signum)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void sigint_handler(int signum)
 {
-    if (signum == SIGINT)
-    {
-        printf("Received SIGINT. Cleaning up...\n");
-        running = 0;
-    }
+    running = 0;
 }
+#pragma GCC diagnostic pop
 
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients)
 {
@@ -243,7 +242,14 @@ static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = signal_handler;
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
+    sa.sa_handler = sigint_handler;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     sigaction(SIGINT, &sa, NULL);
 }
 

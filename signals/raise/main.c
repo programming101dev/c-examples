@@ -57,7 +57,14 @@ int main(void)
     pid_t pid;
     struct sigaction sa;
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
     sa.sa_handler = signal_handler;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 

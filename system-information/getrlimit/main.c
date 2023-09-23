@@ -29,6 +29,10 @@ static void show_limit(int resource, const char *name);
 
 int main(void)
 {
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
     SHOW_LIMIT(RLIMIT_CORE);
     SHOW_LIMIT(RLIMIT_CPU);
     SHOW_LIMIT(RLIMIT_DATA);
@@ -36,6 +40,9 @@ int main(void)
     SHOW_LIMIT(RLIMIT_NOFILE);
     SHOW_LIMIT(RLIMIT_STACK);
     SHOW_LIMIT(RLIMIT_AS);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
     return EXIT_SUCCESS;
 }
@@ -50,6 +57,7 @@ static void show_limit(int resource, const char *name)
 #elif defined(__clang__)
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wsign-conversion"
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
 
     if(getrlimit(resource, &rlim) == 0)

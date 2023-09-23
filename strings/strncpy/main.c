@@ -132,7 +132,6 @@ size_t parse_size_t(const char *binary_name, const char *str)
     if (errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing size_t.");
-        exit(EXIT_FAILURE);
     }
 
     // Check if there are any non-numeric characters in the input string

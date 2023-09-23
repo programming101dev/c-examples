@@ -32,9 +32,12 @@ int main(void)
     printf("Main function executing.\n");
     exit(EXIT_SUCCESS);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
     printf("This won't be seen.\n");
 
     return EXIT_FAILURE;
+#pragma GCC diagnostic pop
 }
 
 

@@ -69,7 +69,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
             case 'h':
             {
                 usage(argv[0], EXIT_SUCCESS, NULL);
-                break;
             }
             case '?':
             {
@@ -77,7 +76,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
 
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
-                break;
             }
             default:
             {

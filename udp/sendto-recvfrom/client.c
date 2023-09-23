@@ -25,7 +25,6 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <netdb.h> // Added for getaddrinfo
 
 
 static void parse_arguments(int argc, char *argv[], char **address, char **port, char **msg);
@@ -45,7 +44,6 @@ int main(int argc, char *argv[])
     char *message;
     in_port_t port;
     int sockfd;
-    int domain;
     ssize_t bytes_sent;
     struct sockaddr_storage addr;
 
@@ -56,7 +54,7 @@ int main(int argc, char *argv[])
     handle_arguments(argv[0], address, port_str, message, &port);
     convert_address(address, &addr);
     sockfd = socket_create(addr.ss_family, SOCK_DGRAM, 0);
-    get_address_to_server(&addr, sizeof(addr), address, domain, port);
+    get_address_to_server(&addr, sizeof(addr), address, addr.ss_family, port);
     bytes_sent = sendto(sockfd, message, strlen(message) + 1, 0, (struct sockaddr *)&addr, sizeof(addr));
     printf("Sent %zu bytes: \"%s\"\n", (size_t)bytes_sent, message);
     socket_close(sockfd);

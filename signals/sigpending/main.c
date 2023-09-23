@@ -68,7 +68,14 @@ static void setup_signal_handler(void)
     struct sigaction sa;
 
     memset(&sa, 0, sizeof(sa));
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
     sa.sa_handler = sigint_handler;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 

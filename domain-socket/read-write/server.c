@@ -32,7 +32,7 @@ static void sigint_handler(int signum);
 static int socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void start_listening(int server_fd, int backlog);
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len);
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr);
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
 static void socket_close(int sockfd);
 
@@ -57,10 +57,8 @@ int main(void)
     {
         int client_sockfd;
         struct sockaddr_storage client_addr;
-        socklen_t client_addr_len;
 
-        client_addr_len = sizeof(client_addr);
-        client_sockfd = socket_accept_connection(sockfd, &client_addr, &client_addr_len);
+        client_sockfd = socket_accept_connection(sockfd, &client_addr);
 
         if(client_sockfd == -1)
         {
@@ -88,7 +86,14 @@ static void setup_signal_handler(void)
     struct sigaction sa;
 
     memset(&sa, 0, sizeof(sa));
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
     sa.sa_handler = sigint_handler;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
 
@@ -134,7 +139,7 @@ static void socket_bind(int sockfd, const char *path)
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
 
-    if(bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
     {
         perror("bind");
         exit(EXIT_FAILURE);
@@ -158,13 +163,15 @@ static void start_listening(int server_fd, int backlog)
 }
 
 
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len)
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr)
 {
     int client_fd;
     char client_host[NI_MAXHOST];
+    socklen_t client_addr_len;
 
     errno = 0;
-    client_fd = accept(server_fd, (struct sockaddr *)client_addr, client_addr_len);
+    client_addr_len = sizeof(*client_addr);
+    client_fd = accept(server_fd, (struct sockaddr *)client_addr, &client_addr_len);
 
     if(client_fd == -1)
     {
@@ -176,7 +183,7 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
         return -1;
     }
 
-    if(getnameinfo((struct sockaddr *)client_addr, *client_addr_len, client_host, NI_MAXHOST, NULL, 0, 0) == 0)
+    if(getnameinfo((struct sockaddr *)client_addr, client_addr_len, client_host, NI_MAXHOST, NULL, 0, 0) == 0)
     {
         printf("Accepted a new connection from %s\n", client_host);
     }

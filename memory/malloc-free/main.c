@@ -35,7 +35,15 @@ int main(void)
         return EXIT_FAILURE;
     }
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
     print_array(dynamic_array, num_elements);
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
     free(dynamic_array);
 
     return EXIT_SUCCESS;

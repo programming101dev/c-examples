@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     ssize_t bytes_received;
     struct sockaddr_storage client_addr;
     socklen_t client_addr_len;
-    int domain;
     struct sockaddr_storage addr;
 
     address = NULL;

@@ -26,7 +26,7 @@
 
 
 static void setup_signal_handler(void);
-static void signal_handler(int signum);
+static void sigint_handler(int signum);
 static int socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void socket_close(int sockfd);
@@ -99,6 +99,8 @@ int main(void)
         // Handle new client connections
         if(FD_ISSET((unsigned int)sockfd, &readfds))
         {
+            int *temp;
+
             if((new_socket = accept(sockfd, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
             {
                 perror("Accept error");
@@ -109,8 +111,19 @@ int main(void)
 
             // Increase the size of the client_sockets array
             max_clients++;
-            client_sockets = (int *)realloc(client_sockets, sizeof(int) * max_clients);
-            client_sockets[max_clients - 1] = new_socket;
+            temp = (int *)realloc(client_sockets, sizeof(int) * max_clients);
+
+            if (temp == NULL)
+            {
+                perror("realloc");
+                free(client_sockets);
+                exit(EXIT_FAILURE);
+            }
+            else
+            {
+                client_sockets = temp;
+                client_sockets[max_clients - 1] = new_socket;
+            }
         }
 
         // Handle incoming data from existing clients
@@ -185,18 +198,25 @@ static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = signal_handler;
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
+    sa.sa_handler = sigint_handler;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     sigaction(SIGINT, &sa, NULL);
 }
 
 
-static void signal_handler(int signum)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+static void sigint_handler(int signum)
 {
-    if(signum == SIGINT)
-    {
-        running = 0;
-    }
+    running = 0;
 }
+#pragma GCC diagnostic pop
 
 
 static int socket_create(void)

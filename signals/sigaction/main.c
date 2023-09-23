@@ -65,7 +65,14 @@ int main(void)
     struct sigaction new_sa;
     pid_t pid;
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
     new_sa.sa_handler = signal_handler;
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
     sigemptyset(&new_sa.sa_mask);
     new_sa.sa_flags = 0;
 
@@ -73,11 +80,25 @@ int main(void)
     {
         if(sigaction(signals[i].signal_number, NULL, &sa) == 0)
         {
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
             if(sa.sa_handler == SIG_IGN)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
             {
                 printf("Signal %s (%d) is currently being ignored\n", signals[i].signal_name, signals[i].signal_number);
             }
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
             else if(sa.sa_handler == SIG_DFL)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
             {
                 printf("Signal %s (%d) is set to default action\n", signals[i].signal_name, signals[i].signal_number);
             }

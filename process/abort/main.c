@@ -53,9 +53,11 @@ int main(int argc, char *argv[])
     printf("Main function executing.\n");
     abort();
 
-    // This line will not be reached due to the abort call
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
     printf("Main function finished.\n");
     return EXIT_SUCCESS;
+#pragma GCC diagnostic pop
 }
 
 

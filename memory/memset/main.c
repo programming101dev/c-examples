@@ -41,9 +41,11 @@ int main(void)
     printf("Array after malloc:\n");
 
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
+    #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
     print_array(dynamic_array, num_elements);
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
     

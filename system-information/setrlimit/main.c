@@ -29,6 +29,10 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
 
 int main(void)
 {
+#if defined(__clang__)
+    #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+#endif
     SET_LIMIT(RLIMIT_CORE, 8, 32);
     SET_LIMIT(RLIMIT_CPU, 5, 10);
     // RLIMIT_DATA is informational only and not settable.
@@ -39,6 +43,9 @@ int main(void)
     SET_LIMIT(RLIMIT_STACK, 8388608, 16777216);
     // TODO - this is problematic
     SET_LIMIT(RLIMIT_AS, 6710886, 6710886);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
     return EXIT_SUCCESS;
 }

@@ -20,11 +20,14 @@
 #include <time.h>
 
 
+#define BUFFER_LEN 80
+
+
 int main(void)
 {
     time_t    rawtime;
     struct tm *timeinfo;
-    char      buffer[80];
+    char      buffer[BUFFER_LEN];
     if(time(&rawtime) == -1)
     {
         perror("Error getting current time");

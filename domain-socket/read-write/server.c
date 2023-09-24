@@ -18,9 +18,9 @@
 #include <errno.h>
 #include <netdb.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -40,7 +40,7 @@ static void socket_close(int sockfd);
 #define SOCKET_PATH "/tmp/example_socket"
 
 
-static volatile sig_atomic_t exit_flag = 0;
+static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 
 int main(void)
@@ -214,9 +214,9 @@ static void handle_connection(int client_sockfd, struct sockaddr_storage *client
 #pragma GCC diagnostic pop
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

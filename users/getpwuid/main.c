@@ -32,6 +32,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void print_entry(const struct passwd *entry);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char          *user_id;
@@ -67,7 +71,7 @@ static void parse_arguments(int argc, char *argv[], char **user_id)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -138,7 +142,7 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, 10);
+    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");

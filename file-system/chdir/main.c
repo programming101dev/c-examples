@@ -22,10 +22,14 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **directory_path);
-static void handle_arguments(const char *binary_name, const char *directrory_path);
+static void handle_arguments(const char *binary_name, const char *directory_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static char *getCurrentWorkingDirectory(long path_max);
 static void printCurrentWorkingDirectory(long path_max);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define PATH_LEN 4096   // A common default value for the maximum path length
 
 
 int main(int argc, char *argv[])
@@ -40,7 +44,7 @@ int main(int argc, char *argv[])
 
     if(path_max == -1)
     {
-        path_max = 4096; // A common default value for the maximum path length
+        path_max = PATH_LEN;
     }
 
     printCurrentWorkingDirectory(path_max);
@@ -73,7 +77,7 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -140,25 +144,25 @@ char *getCurrentWorkingDirectory(long path_max)
 
         if(getcwd(buffer, size) != NULL)
         {
-            return buffer; // Return the current working directory
+            break;
+        }
+
+        // Check if the failure was due to insufficient buffer size
+        if(errno == ERANGE)
+        {
+            // Retry with a larger buffer size
+            size *= 2; // Double the buffer size
         }
         else
         {
-            // Check if the failure was due to insufficient buffer size
-            if(errno == ERANGE)
-            {
-                // Retry with a larger buffer size
-                size *= 2; // Double the buffer size
-            }
-            else
-            {
-                perror("Error getting current working directory");
-                free(buffer);
+            perror("Error getting current working directory");
+            free(buffer);
 
-                return NULL;
-            }
+            return NULL;
         }
     }
+
+    return buffer;
 }
 
 

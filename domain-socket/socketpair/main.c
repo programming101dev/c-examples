@@ -15,12 +15,12 @@
  */
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **file_path);
@@ -30,7 +30,10 @@ static void child_process(int sockfd, const char *file_path);
 static void parent_process(int sockfd);
 static void send_word(int sockfd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
+
+
 #define MAX_WORD_LENGTH 255
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -86,7 +89,8 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
+
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -172,7 +176,7 @@ static void child_process(int sockfd, const char *file_path)
     char    word[MAX_WORD_LENGTH];
     uint8_t length = 0;
 
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "re");
 
     if(file == NULL)
     {

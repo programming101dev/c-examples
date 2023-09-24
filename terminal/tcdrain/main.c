@@ -21,10 +21,13 @@
 #include <unistd.h>
 
 
+#define MESSAGE_LEN 256
+
+
 int main(void)
 {
     struct termios options;
-    char           message[256];
+    char           message[MESSAGE_LEN];
     tcgetattr(STDOUT_FILENO, &options);
     cfsetispeed(&options, B9600);
     cfsetospeed(&options, B9600);

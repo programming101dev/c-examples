@@ -24,16 +24,21 @@
 #include <string.h>
 
 
+static void parse_arguments(int argc, char *argv[], bool *use_mutex);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+static void *thread_function(void *arg);
+
+
 #define NUM_THREADS 10
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+
+
 struct thread_data
 {
     bool            use_mutex;
     pthread_mutex_t *mutex;
     int             *sharedVariable;
 };
-static void parse_arguments(int argc, char *argv[], bool *use_mutex);
-_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void *thread_function(void *arg);
 
 
 int main(int argc, char *argv[])
@@ -99,7 +104,7 @@ static void parse_arguments(int argc, char *argv[], bool *use_mutex)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

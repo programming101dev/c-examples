@@ -33,6 +33,10 @@ static long parse_long(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char            *seconds_str;
@@ -56,11 +60,9 @@ int main(int argc, char *argv[])
             tim = rem; // If interrupted by a signal, assign the remaining time to tim
             continue;
         }
-        else
-        {
-            perror("nanosleep");
-            return EXIT_FAILURE;
-        }
+
+        perror("nanosleep");
+        return EXIT_FAILURE;
     }
     printf("Program woke up!\n");
     return EXIT_SUCCESS;
@@ -91,7 +93,7 @@ static void parse_arguments(int argc, char *argv[], char **seconds, char **nanos
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -139,25 +141,27 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
 
 time_t get_time_t_min(void)
 {
+    time_t value;
+
     if(sizeof(time_t) == sizeof(char))
     {
-        return CHAR_MIN;
+        value = CHAR_MIN;
     }
     else if(sizeof(time_t) == sizeof(short))
     {
-        return SHRT_MIN;
+        value = SHRT_MIN;
     }
     else if(sizeof(time_t) == sizeof(int))
     {
-        return INT_MIN;
+        value = INT_MIN;
     }
     else if(sizeof(time_t) == sizeof(long))
     {
-        return LONG_MIN;
+        value = LONG_MIN;
     }
     else if(sizeof(time_t) == sizeof(long long))
     {
-        return LLONG_MIN;
+        value = LLONG_MIN;
     }
     else
     {
@@ -165,36 +169,42 @@ time_t get_time_t_min(void)
         fprintf(stderr, "Unsupported size of time_t\n");
         exit(EXIT_FAILURE);
     }
+
+    return value;
 }
 
 
 time_t get_time_t_max(void)
 {
+    time_t value;
+
     if(sizeof(time_t) == sizeof(char))
     {
-        return CHAR_MAX;
+        value = CHAR_MAX;
     }
     else if(sizeof(time_t) == sizeof(short))
     {
-        return SHRT_MAX;
+        value = SHRT_MAX;
     }
     else if(sizeof(time_t) == sizeof(int))
     {
-        return INT_MAX;
+        value = INT_MAX;
     }
     else if(sizeof(time_t) == sizeof(long))
     {
-        return LONG_MAX;
+        value = LONG_MAX;
     }
     else if(sizeof(time_t) == sizeof(long long))
     {
-        return LLONG_MAX;
+        value = LLONG_MAX;
     }
     else
     {
         fprintf(stderr, "Unsupported size of time_t\n");
         exit(EXIT_FAILURE);
     }
+
+    return value;
 }
 
 
@@ -203,7 +213,7 @@ time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char 
     char     *endptr;
     intmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoimax(str, &endptr, 10);
+    parsed_value = strtoimax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing time.");
@@ -227,7 +237,7 @@ static long parse_long(const char *binary_name, const char *str)
     char     *endptr;
     intmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoimax(str, &endptr, 10);
+    parsed_value = strtoimax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");

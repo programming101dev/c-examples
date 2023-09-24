@@ -25,38 +25,39 @@
 
 
 // Character Types
-static void convertChar(char c, char *buffer, size_t bufferSize);
+static void convertChar(char value, char *buffer, size_t bufferSize);
 // Integer Types
-static void convertInt8(int8_t num, char *buffer, size_t bufferSize);
-static void convertUInt8(uint8_t num, char *buffer, size_t bufferSize);
-static void convertInt16(int16_t num, char *buffer, size_t bufferSize);
-static void convertUInt16(uint16_t num, char *buffer, size_t bufferSize);
-static void convertInt32(int32_t num, char *buffer, size_t bufferSize);
-static void convertUInt32(uint32_t num, char *buffer, size_t bufferSize);
-static void convertInt(int num, char *buffer, size_t bufferSize);
-static void convertUInt(unsigned int num, char *buffer, size_t bufferSize);
-static void convertLong(long num, char *buffer, size_t bufferSize);
-static void convertULong(unsigned long num, char *buffer, size_t bufferSize);
-static void convertLongLong(long long num, char *buffer, size_t bufferSize);
-static void convertULongLong(unsigned long long num, char *buffer, size_t bufferSize);
+static void convertInt8(int8_t value, char *buffer, size_t bufferSize);
+static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize);
+static void convertInt16(int16_t value, char *buffer, size_t bufferSize);
+static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize);
+static void convertInt32(int32_t value, char *buffer, size_t bufferSize);
+static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize);
+static void convertInt(int value, char *buffer, size_t bufferSize);
+static void convertUInt(unsigned int value, char *buffer, size_t bufferSize);
+static void convertLong(long value, char *buffer, size_t bufferSize);
+static void convertULong(unsigned long value, char *buffer, size_t bufferSize);
+static void convertLongLong(long long value, char *buffer, size_t bufferSize);
+static void convertULongLong(unsigned long long value, char *buffer, size_t bufferSize);
 // Floating-Point Types
-static void convertFloat(float num, char *buffer, size_t bufferSize);
-static void convertDouble(double num, char *buffer, size_t bufferSize);
-static void convertLongDouble(long double num, char *buffer, size_t bufferSize);
+static void convertFloat(float value, char *buffer, size_t bufferSize);
+static void convertDouble(double value, char *buffer, size_t bufferSize);
+static void convertLongDouble(long double value, char *buffer, size_t bufferSize);
 // Pointer Types
-static void convertPointer(const void *ptr, char *buffer, size_t bufferSize);
+static void convertPointer(const void *value, char *buffer, size_t bufferSize);
 // Size and Offset Types
-static void convertSize(size_t num, char *buffer, size_t bufferSize);
-static void convertSSize(ssize_t num, char *buffer, size_t bufferSize);
-static void convertOff(off_t num, char *buffer, size_t bufferSize);
+static void convertSize(size_t value, char *buffer, size_t bufferSize);
+static void convertSSize(ssize_t value, char *buffer, size_t bufferSize);
+static void convertOff(off_t value, char *buffer, size_t bufferSize);
 // Boolean Type
 static void convertBool(bool value, char *buffer, size_t bufferSize);
 // Process and User ID Types (POSIX-specific)
-static void convertPid(pid_t num, char *buffer, size_t bufferSize);
-static void convertUid(uid_t num, char *buffer, size_t bufferSize);
-static void convertGid(gid_t num, char *buffer, size_t bufferSize);
+static void convertPid(pid_t value, char *buffer, size_t bufferSize);
+static void convertUid(uid_t value, char *buffer, size_t bufferSize);
+static void convertGid(gid_t value, char *buffer, size_t bufferSize);
 
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 int main(void)
 {
     char good_buffer[50];
@@ -149,7 +150,7 @@ int main(void)
 
     // Floating-Point Types
     printf("float\n");
-    convertFloat(3.14159f, good_buffer, sizeof(good_buffer));
+    convertFloat(3.14159F, good_buffer, sizeof(good_buffer));
     printf("\tGood Buffer: %s\n", good_buffer);
     memset(good_buffer, 0, sizeof(good_buffer));
     convertFloat(FLT_MAX, bad_buffer, sizeof(bad_buffer));
@@ -225,6 +226,7 @@ int main(void)
     memset(good_buffer, 0, sizeof(good_buffer));
     return EXIT_SUCCESS;
 }
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
 
 static void convertChar(char value, char *buffer, size_t bufferSize)

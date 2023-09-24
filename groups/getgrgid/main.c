@@ -32,6 +32,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void print_entry(const struct group *entry);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char         *group_id;
@@ -72,7 +76,7 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -148,7 +152,7 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
 
     max          = get_gid_t_max();
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {

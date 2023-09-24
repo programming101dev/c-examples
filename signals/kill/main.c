@@ -15,10 +15,10 @@
  */
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <signal.h>
 
 
 static void signal_handler(int signal_number);

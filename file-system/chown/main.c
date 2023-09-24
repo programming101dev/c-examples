@@ -33,6 +33,10 @@ static gid_t parse_gid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char  *path;
@@ -85,7 +89,7 @@ static void parse_arguments(int argc, char *argv[], char **path, char **user_id,
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -172,7 +176,7 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
     uintmax_t parsed_value;
 
     errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, 10);
+    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {
@@ -208,7 +212,7 @@ static gid_t get_gid_t_max(void)
     }
     else if(sizeof(gid_t) == sizeof(unsigned int))
     {
-        return UINT_MAX;
+        value = UINT_MAX;
     }
     else if(sizeof(gid_t) == sizeof(unsigned long))
     {
@@ -235,7 +239,7 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
     uintmax_t parsed_value;
 
     errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, 10);
+    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {

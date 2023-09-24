@@ -24,6 +24,7 @@ static int intcmp(const void *a, const void *b);
 
 int main(void)
 {
+    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     int    arr[] = {
             5,
             2,
@@ -31,6 +32,7 @@ int main(void)
             1,
             3
     };
+    // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     size_t size  = sizeof(arr) / sizeof(arr[0]);
     printf("Original array: ");
     for(size_t i = 0; i < size; i++)

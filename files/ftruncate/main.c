@@ -24,6 +24,9 @@
 static void check_file_size(const char *filename, const char *message);
 
 
+// TODO - pass the size in on the command line
+#define SIZE 9
+
 int main(void)
 {
     const char *content   = "This is a sample file.\n";
@@ -41,7 +44,7 @@ int main(void)
 
     dprintf(fd, "%s\n", content);
     check_file_size(filename, "Initial file size");
-    new_size = 9;
+    new_size = SIZE;
 // XXXXXX    printf("Truncating file %s to %lld bytes\n", filename, (long long) new_size);
 
     if(ftruncate(fd, new_size) == -1)

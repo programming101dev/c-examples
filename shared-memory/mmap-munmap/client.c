@@ -16,22 +16,26 @@
 
 
 #include <fcntl.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <semaphore.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 
-#define SHM_SIZE 1024
-#define CLIENT_SEM_NAME "/client_semaphore"
-#define SERVER_SEM_NAME "/server_semaphore"
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 static _Noreturn void usage(const char *program_name, int exit_code, const char *message);
 static size_t get_page_size(void);
+
+
+#define SHM_SIZE 1024
+#define CLIENT_SEM_NAME "/client_semaphore"
+#define SERVER_SEM_NAME "/server_semaphore"
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BUFFER_LEN 100
 
 
 int main(int argc, char *argv[])
@@ -39,9 +43,10 @@ int main(int argc, char *argv[])
     char       *file_path;
     int        shm_fd;
     char       *shm_ptr;
-    sem_t      *client_sem, *server_sem;
+    sem_t      *client_sem;
+    sem_t      *server_sem;
     FILE       *file;
-    char       buffer[100];
+    char       buffer[BUFFER_LEN];
     const char *shm_name = "/my_shared_memory";
     size_t     page_size = get_page_size();
     size_t     shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
@@ -50,7 +55,7 @@ int main(int argc, char *argv[])
     handle_arguments(argv[0], file_path);
 
     // Open and read the file
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "re");
     if(!file)
     {
         perror("fopen");
@@ -147,7 +152,8 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
+
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

@@ -28,6 +28,9 @@ static long long performCalculation(size_t size, size_t iterations);
 static void printTimes(struct tms tms_data);
 
 
+#define MAX_NUMBER 100
+
+
 int main(void)
 {
     const size_t MAX_NUMBERS    = 100000;
@@ -38,7 +41,8 @@ int main(void)
         fprintf(stderr, "Fork failed\n");
         return EXIT_FAILURE;
     }
-    else if(pid == 0)
+
+    if(pid == 0)
     {
         long long sum;
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
@@ -77,7 +81,7 @@ static long long performCalculation(size_t size, size_t iterations)
     srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
     for(size_t i = 0; i < size; i++)
     {
-        numbers[i] = rand() % 100;
+        numbers[i] = rand() % MAX_NUMBER;
     }
     for(size_t i = 0; i < iterations; i++)
     {

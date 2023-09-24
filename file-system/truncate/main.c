@@ -17,11 +17,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 
 static void check_file_size(const char *filename, const char *message);
+
+
+// TODO - pass the size in on the command line
+#define SIZE 9
 
 
 int main(void)
@@ -30,7 +34,7 @@ int main(void)
     off_t      new_size;
     FILE       *file;
 
-    file = fopen(filename, "w");
+    file = fopen(filename, "we");
 
     if(file != NULL)
     {
@@ -39,7 +43,7 @@ int main(void)
     }
 
     check_file_size(filename, "Truncated file size");
-    new_size = 9;
+    new_size = SIZE;
     printf("Truncating file %s to %lld bytes\n", filename, (long long)new_size);
 
     if(truncate(filename, new_size) == -1)

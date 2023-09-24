@@ -18,14 +18,17 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <sys/resource.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
 
 static long long performCalculation(size_t size, size_t iterations);
 static void printUsage(struct rusage *ru);
+
+
+#define MAX_NUMBER 100
 
 
 int main(void)
@@ -38,7 +41,8 @@ int main(void)
         fprintf(stderr, "Fork failed\n");
         return EXIT_FAILURE;
     }
-    else if(pid == 0)
+
+    if(pid == 0)
     {
         long long sum;
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
@@ -47,7 +51,8 @@ int main(void)
     }
     else
     {
-        struct rusage start_ru, end_ru;
+        struct rusage start_ru;
+        struct rusage end_ru;
         long long     sum;
         getrusage(RUSAGE_SELF, &start_ru);
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
@@ -76,7 +81,7 @@ static long long performCalculation(size_t size, size_t iterations)
     srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
     for(size_t i = 0; i < size; i++)
     {
-        numbers[i] = rand() % 100;
+        numbers[i] = rand() % MAX_NUMBER;
     }
     for(size_t i = 0; i < iterations; i++)
     {

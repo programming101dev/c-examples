@@ -20,9 +20,12 @@
 #include <string.h>
 
 
+#define BUFFER_LEN 100
+
+
 int main(void)
 {
-    char       str1[50] = "Hello, ";
+    char       str1[BUFFER_LEN] = "Hello, ";
     const char *str2    = "World!";
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push

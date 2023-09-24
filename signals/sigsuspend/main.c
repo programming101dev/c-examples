@@ -31,6 +31,9 @@ int main(void)
 {
     sigset_t block_set;
     pid_t    pid;
+    sigset_t empty_set;
+    int      status;
+
     setup_signal_handler();
 
     // Block SIGINT temporarily
@@ -45,9 +48,10 @@ int main(void)
     if(pid < 0)
     {
         perror("Fork failed");
-        return 1;
+        return EXIT_FAILURE;
     }
-    else if(pid == 0)
+
+    if(pid == 0)
     {
         // Child process
         sleep(3);
@@ -55,22 +59,17 @@ int main(void)
         kill(getppid(), SIGINT);
         return EXIT_SUCCESS;
     }
-    else
-    {
-        sigset_t empty_set;
-        int      status;
 
-        // Parent process
-        printf("Parent waiting for SIGINT...\n");
+    // Parent process
+    printf("Parent waiting for SIGINT...\n");
 
-        // TODO: should I put something in the set?
-        sigemptyset(&empty_set);
-        sigsuspend(&empty_set);
-        printf("Parent received SIGINT.\n");
+    // TODO: should I put something in the set?
+    sigemptyset(&empty_set);
+    sigsuspend(&empty_set);
+    printf("Parent received SIGINT.\n");
 
-        // Wait for the child process to complete
-        waitpid(pid, &status, 0);
-    }
+    // Wait for the child process to complete
+    waitpid(pid, &status, 0);
 
     // Unblock SIGINT
     if(sigprocmask(SIG_UNBLOCK, &block_set, NULL) < 0)
@@ -78,6 +77,7 @@ int main(void)
         perror("Failed to unblock SIGINT");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
 

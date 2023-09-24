@@ -71,7 +71,7 @@ static void create_sample_file(const char *filename)
 {
     FILE *file;
 
-    file = fopen(filename, "w");
+    file = fopen(filename, "we");
 
     if(file == NULL)
     {

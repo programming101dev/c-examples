@@ -19,8 +19,8 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -29,6 +29,9 @@ static void parse_arguments(int argc, char *argv[], char **host_name);
 static void handle_arguments(const char *binary_name, const char *host_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int resolve_hostname_to_ip(const char *hostname);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -46,7 +49,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **host_name)
 {
     int opt;
-    opt        = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -57,7 +62,7 @@ static void parse_arguments(int argc, char *argv[], char **host_name)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -103,7 +108,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static int resolve_hostname_to_ip(const char *hostname)
 {
-    struct addrinfo hints, *result, *res;
+    struct addrinfo hints;
+    struct addrinfo *result;
+    struct addrinfo *res;
     int             error;
     char            ipstr[INET6_ADDRSTRLEN];
     memset(&hints, 0, sizeof(hints));

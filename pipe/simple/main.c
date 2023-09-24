@@ -15,9 +15,9 @@
  */
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -29,7 +29,10 @@ _Noreturn static void child_process(int pipefd[2], FILE *file);
 _Noreturn static void parent_process(int pipefd[2]);
 static void send_word(int pipefd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
+
+
 #define MAX_WORD_LENGTH 255
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -41,12 +44,12 @@ int main(int argc, char *argv[])
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "r");       // NOLINT(android-cloexec-fopen)
     if(file == NULL)
     {
         error_exit("Error opening file");
     }
-    if(pipe(pipefd) == -1)
+    if(pipe(pipefd) == -1)      // NOLINT(android-cloexec-pipe)
     {
         error_exit("Error creating pipe");
     }
@@ -82,7 +85,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

@@ -7,7 +7,7 @@ run_make() {
     # Check if a Makefile exists in the current directory
     if [ -f "$current_dir/Makefile" ]; then
         echo "Running 'make all' in $current_dir..."
-        (cd "$current_dir" && make all > /dev/null)  # Redirect stdout to /dev/null
+        (cd "$current_dir" && make all)
         result=$?
         if [ $result -ne 0 ]; then
             echo "Error: Make failed in $current_dir."
@@ -31,5 +31,20 @@ run_make() {
     done
 }
 
-# Start the traversal process from the current directory
-run_make "."
+# Parse command-line options
+start_dir="." # Default to the current directory if -d is not provided
+
+while getopts "d:" opt; do
+    case $opt in
+        d)
+            start_dir="$OPTARG"
+            ;;
+        \?)
+            echo "Usage: $0 -d <directory>"
+            exit 1
+            ;;
+    esac
+done
+
+# Start the traversal process from the specified directory
+run_make "$start_dir"

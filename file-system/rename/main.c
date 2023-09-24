@@ -29,7 +29,7 @@ int main(void)
     const char *new_filename = "new_file.txt";
     FILE       *file;
 
-    file = fopen(old_filename, "w");
+    file = fopen(old_filename, "we");
 
     if(file != NULL)
     {

@@ -25,6 +25,9 @@
 static void convert(const char *str);
 
 
+#define TOLLERANCE 1e-6L
+
+
 int main(void)
 {
     const char goodNumber[]     = "12345.6789";
@@ -42,12 +45,11 @@ static void convert(const char *str)
     long double result;
     char        *endptr;
     long double tolerance;
-    result    = 0;
     errno     = 0;
     result    = strtold(str, &endptr);
 
     // Define your desired tolerance
-    tolerance = 1e-6L;
+    tolerance = TOLLERANCE;
 
     // Check for conversion errors
     if((errno == ERANGE && (fabsl(result - HUGE_VALL) < tolerance)) || (errno != 0 && fabsl(result) < tolerance))

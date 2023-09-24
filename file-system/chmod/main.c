@@ -30,7 +30,7 @@ int main(void)
     mode_t     new_permissions;
     FILE       *file;
 
-    file = fopen(filename, "w");
+    file = fopen(filename, "we");
 
     if(file == NULL)
     {

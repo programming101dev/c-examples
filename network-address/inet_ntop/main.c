@@ -23,6 +23,7 @@
 
 int main(void)
 {
+    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     // Hard-coded binary representations of an IPv4 address and an IPv6 address
     unsigned char ipv4_bytes[4] = {
             192,
@@ -48,6 +49,7 @@ int main(void)
             115,
             52
     };
+    // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     char          ipv4_str[INET_ADDRSTRLEN];
     char          ipv6_str[INET6_ADDRSTRLEN];
 

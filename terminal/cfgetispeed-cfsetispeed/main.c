@@ -29,6 +29,10 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 // TODO the speed is always invalid
 
 
@@ -86,7 +90,7 @@ static void parse_arguments(int argc, char *argv[], char **speed)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -142,7 +146,7 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
     long long int        parsed_speed;
     int                  valid_baud_rate;
     errno        = 0;
-    parsed_speed = strtoll(baud_rate_str, &endptr, 10);
+    parsed_speed = strtoll(baud_rate_str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing baud rate.");

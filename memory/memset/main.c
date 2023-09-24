@@ -59,15 +59,16 @@ static void print_array(const int *arr, size_t size)
 {
     for(size_t i = 0; i < size; i++)
     {
-        printf("%d ", arr[i]);
+        printf("%d ", arr[i]);      // NOLINT(clang-analyzer-core.CallAndMessage)
     }
+
     printf("\n");
 }
 
 
 static void fill_with_random_ints(int *arr, size_t size)
 {
-    srand((unsigned int)time(NULL));
+    srand((unsigned int)time(NULL));    // NOLINT(cert-msc32-c,cert-msc51-cpp)
     for(size_t i = 0; i < size; i++)
     {
         arr[i] = rand();

@@ -15,34 +15,41 @@
  */
 
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 
-static void *thread_function(void *thread_id);
+static void *thread_function(void *arg);
+
+
 #define NUM_THREADS 3
+#define ITERATIONS 10
 
 
-static pthread_mutex_t mutex;
-
-
-static pthread_cond_t  cond_var;
-
-
-static int             shared_data = 0;
+struct synchronization_data
+{
+    pthread_mutex_t mutex;
+    pthread_cond_t cond_var;
+    int shared_data;
+};
 
 
 int main(void)
 {
-    pthread_t threads[NUM_THREADS];
-    int       rc;
-    long      t;
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&cond_var, NULL);
+    pthread_t                   threads[NUM_THREADS];
+int                             rc;
+    long                        t;
+    struct synchronization_data data;
+
+    pthread_mutex_init(&data.mutex, NULL);
+    pthread_cond_init(&data.cond_var, NULL);
+    data.shared_data = 0;
+
     for(t = 0; t < NUM_THREADS; t++)
     {
-        rc = pthread_create(&threads[t], NULL, thread_function, (void *)t);
+        rc = pthread_create(&threads[t], NULL, thread_function, (void *)&data);
+
         if(rc)
         {
             printf("ERROR: Return code from pthread_create() is %d\n", rc);
@@ -51,50 +58,53 @@ int main(void)
     }
 
     // Simulate some work and update the shared_data variable
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < ITERATIONS; i++)
     {
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&data.mutex);
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-        shared_data = i + 1;
-        printf("Main thread updating shared_data: %d\n", shared_data);
-        pthread_cond_broadcast(&cond_var);
-        pthread_mutex_unlock(&mutex);
+        data.shared_data = i + 1;
+        printf("Main thread updating shared_data: %d\n", data.shared_data);
+        pthread_cond_broadcast(&data.cond_var);
+        pthread_mutex_unlock(&data.mutex);
     }
 
     // Wait for all threads to finish
-    for(t     = 0; t < NUM_THREADS; t++)
+    for(t = 0; t < NUM_THREADS; t++)
     {
         pthread_join(threads[t], NULL);
     }
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&cond_var);
+    pthread_mutex_destroy(&data.mutex);
+    pthread_cond_destroy(&data.cond_var);
     pthread_exit(NULL);
 }
 
 
-static void *thread_function(void *thread_id)
+static void *thread_function(void *arg)
 {
-    long tid = (long)thread_id;
+    struct synchronization_data *data;
+    pthread_t                   thread_id = pthread_self();
+
+    data = (struct synchronization_data *)arg;
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&data->mutex);
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-    while(shared_data < 10)
+    while(data->shared_data < ITERATIONS)
     {
-        printf("Thread %ld is waiting...\n", tid);
-        pthread_cond_wait(&cond_var, &mutex);
-        printf("Thread %ld is awake and running. Shared data: %d\n", tid, shared_data);
+        printf("Thread %lu is waiting...\n", (unsigned long)thread_id);
+        pthread_cond_wait(&data->cond_var, &data->mutex);
+        printf("Thread %lu is awake and running. Shared data: %d\n", (unsigned long)thread_id, data->shared_data);
     }
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&data->mutex);
     pthread_exit(NULL);
 }

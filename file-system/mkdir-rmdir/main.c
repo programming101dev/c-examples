@@ -25,7 +25,7 @@ int main(void)
 {
     const char *tempdir_template = "example_dir";
 
-    if(mkdir(tempdir_template, 0700) == -1)
+    if(mkdir(tempdir_template, S_IRWXU) == -1)
     {
         perror("Error creating temporary directory");
         return EXIT_FAILURE;

@@ -16,6 +16,7 @@
 
 
 #include <ctype.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,8 +29,11 @@ struct func_info
 };
 
 
-static void print_binary(int ch);
+static void print_binary(unsigned int ch);
 static void print_info(const struct func_info *info, int ch);
+
+
+#define WIDTH 6
 
 
 int main(void)
@@ -64,27 +68,29 @@ int main(void)
     printf("Lower | Upper |\n");
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
 
-    for(int ch = 0; ch <= 127; ch++)
+    for(unsigned int ch = 0; ch <= INT8_MAX; ch++)
     {
-        printf("%c    | ", isprint(ch) ? ch : ' ');
+        printf("%c    | ", isprint(ch) ? (char)ch : ' ');
         print_binary(ch);
-        printf(" | %3o | %3u | %3X | ", (unsigned int)ch, (unsigned int)ch, (unsigned int)ch);
+        printf(" | %3o | %3u | %3X | ", ch, ch, ch);
+
         for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
         {
-            print_info(&info[i], ch);
+            print_info(&info[i], (int)ch);
         }
-        printf("%c     | %c     |\n", isprint(ch) ? tolower(ch) : ' ', isprint(ch) ? toupper(ch) : ' ');
+
+        printf("%c     | %c     |\n", isprint((int)ch) ? tolower((int)ch) : ' ', isprint((int)ch) ? toupper((int)ch) : ' ');
     }
 
     return EXIT_SUCCESS;
 }
 
 
-static void print_binary(int ch)
+static void print_binary(unsigned int ch)
 {
-    for(int i = 6; i >= 0; i--)
+    for(unsigned int i = WIDTH; i != 0; i--)
     {
-        printf("%d", (ch >> i) & 1);
+        printf("%u", (ch >> i) & (unsigned int)1);
     }
 }
 

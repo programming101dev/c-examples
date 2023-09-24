@@ -15,14 +15,17 @@
  */
 
 
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 
 static void convert(const char *str);
+
+
+#define BASE_TEN 10
 
 
 int main(void)
@@ -41,9 +44,8 @@ static void convert(const char *str)
 {
     long result;
     char *endptr;
-    result = 0;
     errno  = 0;
-    result = strtol(str, &endptr, 10);
+    result = strtol(str, &endptr, BASE_TEN);
 
     // Check for conversion errors
     if((errno == ERANGE && (result == LONG_MAX || result == LONG_MIN)) || (errno != 0 && result == 0))

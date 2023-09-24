@@ -31,6 +31,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void display_file(FILE *file, const char *message, long offset);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char *file_path;
@@ -41,7 +45,7 @@ int main(int argc, char *argv[])
     offset_str = NULL;
     parse_arguments(argc, argv, &file_path, &offset_str);
     handle_arguments(argv[0], file_path, offset_str, &offset);
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "re");
     if(file == NULL)
     {
         perror("Error opening the file");
@@ -77,7 +81,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **off
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -118,7 +122,7 @@ static long parse_long(const char *binary_name, const char *str)
     char     *endptr;
     intmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoimax(str, &endptr, 10);
+    parsed_value = strtoimax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");

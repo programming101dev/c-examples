@@ -22,11 +22,11 @@
 
 int main(void)
 {
-    uint32_t network_value = 0x78563412; // Hex value of 0x12345678 in network byte order
+    uint32_t network_value = 0x78563412;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     uint32_t host_value    = ntohl(network_value);
 
     printf("Network value: %u\n", network_value);
     printf("Host value: %u\n", host_value);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

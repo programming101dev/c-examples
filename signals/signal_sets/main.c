@@ -15,9 +15,9 @@
  */
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 
 
 static void print_signal_set(const sigset_t *signal_set);

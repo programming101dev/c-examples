@@ -26,6 +26,9 @@ static void handle_arguments(const char *binary_name, const char *string);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+
+
 int main(int argc, char *argv[])
 {
     char   *string;
@@ -62,7 +65,7 @@ static void parse_arguments(int argc, char *argv[], char **string)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

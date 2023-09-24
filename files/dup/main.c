@@ -16,13 +16,13 @@
 
 
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 
 int main(void)
 {
-    int stdout_dup_fd = dup(STDOUT_FILENO);
+    int stdout_dup_fd = dup(STDOUT_FILENO);     // NOLINT(android-cloexec-dup)
 
     if(stdout_dup_fd == -1)
     {

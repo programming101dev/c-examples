@@ -37,7 +37,7 @@ int main(void)
     create_file(filename1, content);
     printf("File created with umask 000:\n");
     print_file_permissions(filename1);
-    umask(0222);
+    umask(S_IWUSR | S_IWGRP | S_IWOTH);
     create_file(filename2, content);
     printf("\nFile created with umask 222:\n");
     print_file_permissions(filename2);
@@ -53,7 +53,7 @@ static void create_file(const char *filename, const char *content)
 {
     FILE *file;
 
-    file = fopen(filename, "w");
+    file = fopen(filename, "we");
 
     if(file == NULL)
     {

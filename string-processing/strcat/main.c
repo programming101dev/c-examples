@@ -20,9 +20,12 @@
 #include <string.h>
 
 
+#define BUFFER_LEN 100
+
+
 int main(void)
 {
-    char       str1[50] = "Hello, ";
+    char       str1[BUFFER_LEN] = "Hello, ";
     const char *str2    = "World!";
     strcat(str1, str2);
     printf("Concatenated string: \"%s\"\n", str1);

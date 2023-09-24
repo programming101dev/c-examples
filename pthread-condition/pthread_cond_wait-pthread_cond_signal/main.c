@@ -22,25 +22,26 @@
 #include <string.h>
 
 
+struct shared_data
+{
+    pthread_mutex_t mutex;
+    pthread_cond_t cond_var;
+    int word_ready;
+    char *shared_word;
+    char *file_path;
+};
+
+
 static void *child_process(void *arg);
 static void *parent_process(void *arg);
-static void send_word(const char *word);
+static void send_word(const char *word, struct shared_data *data);
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+
+
 #define MAX_WORD_LENGTH 255
-
-
-static pthread_mutex_t mutex        = PTHREAD_MUTEX_INITIALIZER;
-
-
-static pthread_cond_t  cond         = PTHREAD_COND_INITIALIZER;
-
-
-static int             word_ready   = 0;
-
-
-static char            *shared_word = NULL;
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -48,15 +49,24 @@ int main(int argc, char *argv[])
     char      *file_path;
     pthread_t child_thread;
     pthread_t parent_thread;
+    struct shared_data data;
+
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    if(pthread_create(&child_thread, NULL, child_process, file_path) != 0)
+
+    pthread_mutex_init(&data.mutex, NULL);
+    pthread_cond_init(&data.cond_var, NULL);
+    data.word_ready  = 0;
+    data.shared_word = NULL;
+    data.file_path   = file_path;
+
+    if(pthread_create(&child_thread, NULL, child_process, (void *)&data) != 0)
     {
         perror("Error creating child thread");
         exit(EXIT_FAILURE);
     }
-    if(pthread_create(&parent_thread, NULL, parent_process, NULL) != 0)
+    if(pthread_create(&parent_thread, NULL, parent_process, (void *)&data) != 0)
     {
         perror("Error creating parent thread");
         exit(EXIT_FAILURE);
@@ -89,7 +99,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -133,59 +143,61 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static void send_word(const char *word)
+static void send_word(const char *word, struct shared_data *data)
 {
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&data->mutex);
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-    while(word_ready)
+    while(data->word_ready)
     {
-        if(pthread_cond_wait(&cond, &mutex) != 0)
+        if(pthread_cond_wait(&data->cond_var, &data->mutex) != 0)
         {
             perror("Error waiting for condition variable");
             exit(EXIT_FAILURE);
         }
     }
-    if(shared_word != NULL)
+    if(data->shared_word != NULL)
     {
-        free(shared_word);
+        free(data->shared_word);
     }
     if(word == NULL)
     {
-        shared_word = NULL;
+        data->shared_word = NULL;
     }
     else
     {
-        shared_word = strdup(word);
-        if(shared_word == NULL)
+        data->shared_word = strdup(word);
+        if(data->shared_word == NULL)
         {
             perror("Error duplicating word");
             exit(EXIT_FAILURE);
         }
     }
-    word_ready = 1;
-    if(pthread_cond_signal(&cond) != 0)
+    data->word_ready = 1;
+    if(pthread_cond_signal(&data->cond_var) != 0)
     {
         perror("Error signaling condition variable");
         exit(EXIT_FAILURE);
     }
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&data->mutex);
 }
 
 
 static void *child_process(void *arg)
 {
-    FILE       *file;
-    char       *token, *saveptr;
-    char       line[MAX_WORD_LENGTH];
-    const char *file_path;
-    file_path = (const char *)arg;
-    file      = fopen(file_path, "r");
+    FILE               *file;
+    char               *token;
+    char               *saveptr;
+    char               line[MAX_WORD_LENGTH];
+    struct shared_data *data;
+
+    data = (struct shared_data *)arg;
+    file = fopen(data->file_path, "re");
     if(file == NULL)
     {
         perror("Error opening file");
@@ -197,11 +209,11 @@ static void *child_process(void *arg)
         token = strtok_r(line, " \t", &saveptr);
         while(token != NULL)
         {
-            send_word(token);
+            send_word(token, data);
             token = strtok_r(NULL, " \t", &saveptr);
         }
     }
-    send_word(NULL);
+    send_word(NULL, data);
     if(fclose(file) != 0)
     {
         perror("Error closing file");
@@ -217,33 +229,37 @@ static void *child_process(void *arg)
 
 static void *parent_process(void *arg)
 {
-    char *word;
+    struct shared_data *data;
+    char               *word;
+
+    data = (struct shared_data *)arg;
+
     while(1)
     {
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&data->mutex);
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-        while(!word_ready)
+        while(!data->word_ready)
         {
-            if(pthread_cond_wait(&cond, &mutex) != 0)
+            if(pthread_cond_wait(&data->cond_var, &data->mutex) != 0)
             {
                 perror("Error waiting for condition variable");
                 exit(EXIT_FAILURE);
             }
         }
-        word_ready = 0;
-        if(pthread_cond_signal(&cond) != 0)
+        data->word_ready = 0;
+        if(pthread_cond_signal(&data->cond_var) != 0)
         {
             perror("Error signaling condition variable");
             exit(EXIT_FAILURE);
         }
-        pthread_mutex_unlock(&mutex);
-        word = shared_word;
+        pthread_mutex_unlock(&data->mutex);
+        word = data->shared_word;
         if(word == NULL)
         {
             break;

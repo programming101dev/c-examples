@@ -22,11 +22,15 @@
 #include <unistd.h>
 
 
+// TODO read this in off the command line
+#define XXX 100
+
+
 int main(void)
 {
     pid_t new_pgid;
     pid_t child_pid;
-    int   terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
+    int   terminal_fd = open("/dev/tty", O_RDWR | O_CLOEXEC); // Open the controlling terminal
 
     if(terminal_fd == -1)
     {
@@ -42,12 +46,12 @@ int main(void)
     {
         perror("Error forking a new process");
         close(terminal_fd);
-        return 1;
+        return EXIT_FAILURE;
     }
-    else if(child_pid == 0)
+    if(child_pid == 0)
     {
         // Child process
-        new_pgid = getpid() + 100;
+        new_pgid = getpid() + XXX;
         printf("Child Process ID (PID): %d\n", getpid());
         if(setsid() == -1)
         {
@@ -64,7 +68,6 @@ int main(void)
         }
         printf("Child Process Group ID (PGID) after change: %d\n", new_pgid);
         close(terminal_fd);
-        return EXIT_SUCCESS;
     }
     else
     {
@@ -73,6 +76,7 @@ int main(void)
         wait(NULL);
         printf("Parent Process ID (PID) after child process execution: %d\n", getpid());
         close(terminal_fd);
-        return EXIT_SUCCESS;
     }
+
+    return EXIT_SUCCESS;
 }

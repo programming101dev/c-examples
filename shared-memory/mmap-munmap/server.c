@@ -35,11 +35,10 @@ int main(void)
 {
     int        shm_fd;
     char       *shm_ptr;
-    sem_t      *client_sem, *server_sem;
+    sem_t      *client_sem;
+    sem_t      *server_sem;
     size_t     page_size = get_page_size();
     size_t     shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
-
-    // Open the shared memory
     const char *shm_name = "/my_shared_memory";
 
     // Open the shared memory

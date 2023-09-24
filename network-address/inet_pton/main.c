@@ -22,6 +22,12 @@
 #include <sys/socket.h>
 
 
+#define BITS_TO_SHIFT_8 8
+#define BITS_TO_SHIFT_16 16
+#define BITS_TO_SHIFT_24 24
+
+
+
 int main(void)
 {
     const char      *ipv4_address_str = "192.168.0.1";
@@ -32,7 +38,12 @@ int main(void)
     // Convert IPv4 address from string to binary format (network byte order)
     if(inet_pton(AF_INET, ipv4_address_str, &ipv4_addr) == 1)
     {
-        printf("IPv4 Address: %u.%u.%u.%u\n", (unsigned char)ipv4_addr.s_addr, (unsigned char)(ipv4_addr.s_addr >> 8), (unsigned char)(ipv4_addr.s_addr >> 16), (unsigned char)(ipv4_addr.s_addr >> 24));
+
+        printf("IPv4 Address: %u.%u.%u.%u\n",
+               (unsigned char)ipv4_addr.s_addr,
+               (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_8),
+               (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_16),
+               (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_24));
     }
     else
     {

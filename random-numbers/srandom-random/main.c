@@ -23,6 +23,10 @@
 static void print_random_numbers(size_t count);
 
 
+// TODO read this in off of the command line
+#define COUNT 5
+
+
 int main(void)
 {
     unsigned int seed;
@@ -31,17 +35,17 @@ int main(void)
     seed = (unsigned int)time(NULL);
     srandom(seed);
     printf("First sequence\n");
-    print_random_numbers(5);
+    print_random_numbers(COUNT);
 
     // Set a different seed value for the second sequence
     srandom(seed + 1);
     printf("Second sequence\n");
-    print_random_numbers(5);
+    print_random_numbers(COUNT);
 
     // Same as the first sequence
     srandom(seed);
     printf("Third sequence\n");
-    print_random_numbers(5);
+    print_random_numbers(COUNT);
     return EXIT_SUCCESS;
 }
 

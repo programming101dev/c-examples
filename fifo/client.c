@@ -15,11 +15,11 @@
  */
 
 
+#include <fcntl.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <fcntl.h>
 #include <unistd.h>
 
 
@@ -29,19 +29,21 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 
 #define FIFO_FILE "./fifo_example"
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define LINE_LEN 1024
 
 
 int main(int argc, char *argv[])
 {
     char *file_path;
     int  fd;
-    char line[1024];
+    char line[LINE_LEN];
     FILE *file;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    fd = open(FIFO_FILE, O_WRONLY);
+    fd = open(FIFO_FILE, O_WRONLY | O_CLOEXEC);
 
     if(fd == -1)
     {
@@ -49,7 +51,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "re");
 
     if(file == NULL)
     {
@@ -110,7 +112,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

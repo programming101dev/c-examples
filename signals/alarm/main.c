@@ -21,8 +21,8 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <signal.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -35,7 +35,11 @@ static void setup_signal_handler(void);
 static void alarm_handler(int signal_number);
 
 
-static volatile sig_atomic_t alarm_received = 0;
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
+static volatile sig_atomic_t alarm_received = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 
 int main(int argc, char *argv[])
@@ -75,7 +79,7 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -112,7 +116,7 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");

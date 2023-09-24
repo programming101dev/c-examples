@@ -19,9 +19,12 @@
 #include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
+
+
+#define TRY_COUNT 5
 
 
 int main(void)
@@ -45,9 +48,10 @@ int main(void)
         perror("Fork failed");
         sem_close(semaphore);
         sem_unlink(sem_name);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
-    else if(pid == 0)
+
+    if(pid == 0)
     {
         // Child process (producer)
         printf("Child process (PID %d): Simulating some work...\n", getpid());
@@ -58,8 +62,9 @@ int main(void)
             perror("sem_trywait failed");
             sem_close(semaphore);
             sem_unlink(sem_name);
-            exit(EXIT_FAILURE);
+            return EXIT_FAILURE;
         }
+
         sleep(3);
 
         // Release the semaphore (post)
@@ -75,7 +80,7 @@ int main(void)
         printf("Parent process (PID %d): Waiting for the child to complete...\n", getpid());
 
         // Wait for the semaphore signal from the child with timeout
-        try_count = 5;
+        try_count = TRY_COUNT;
         while(try_count > 0)
         {
             int ret = sem_trywait(semaphore);
@@ -88,21 +93,20 @@ int main(void)
                 printf("Parent process (PID %d): Child signaled. Continue processing...\n", getpid());
                 break;
             }
-            else if(ret == -1)
+
+            if(ret == -1)
             {
                 if(try_count == 1)
                 {
                     perror("sem_trywait failed");
                     sem_close(semaphore);
                     sem_unlink(sem_name);
-                    exit(EXIT_FAILURE);
+                    return EXIT_FAILURE;
                 }
-                else
-                {
-                    printf("Parent process (PID %d): Child not ready. Retrying...\n", getpid());
-                    try_count--;
-                    sleep(1);
-                }
+
+                printf("Parent process (PID %d): Child not ready. Retrying...\n", getpid());
+                try_count--;
+                sleep(1);
             }
         }
         sem_close(semaphore);

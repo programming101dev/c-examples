@@ -15,10 +15,13 @@
  */
 
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
+
+
+#define PATH_LEN 4096   // A common default value for the maximum path length
 
 
 int main(void)
@@ -33,7 +36,7 @@ int main(void)
     if(path_max == -1)
     {
         // Error occurred
-        path_max = 4096; // A common default value for the maximum path length
+        path_max = PATH_LEN;
     }
 
     buffer   = NULL;
@@ -41,33 +44,35 @@ int main(void)
 
     while(1)
     {
-        // Allocate memory for the buffer (or resize the existing buffer)
-        buffer = (char *)realloc(buffer, size);
+        char *temp_buffer;
 
-        if(buffer == NULL)
+        // Allocate memory for the buffer (or resize the existing buffer)
+        temp_buffer = (char *)realloc(buffer, size);
+
+        if(temp_buffer == NULL)
         {
             perror("Error allocating/reallocating memory for buffer");
+            free(buffer);
             return EXIT_FAILURE;
         }
+
+        buffer = temp_buffer;
 
         if(getcwd(buffer, size) != NULL)
         {
             break;
         }
+        // Check if the failure was due to insufficient buffer size
+        if(errno == ERANGE)
+        {
+            // Retry with a larger buffer size
+            size *= 2; // Double the buffer size
+        }
         else
         {
-            // Check if the failure was due to insufficient buffer size
-            if(errno == ERANGE)
-            {
-                // Retry with a larger buffer size
-                size *= 2; // Double the buffer size
-            }
-            else
-            {
-                perror("Error getting current working directory");
-                free(buffer);
-                return EXIT_FAILURE;
-            }
+            perror("Error getting current working directory");
+            free(buffer);
+            return EXIT_FAILURE;
         }
     }
 

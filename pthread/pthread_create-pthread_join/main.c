@@ -15,13 +15,17 @@
  */
 
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <unistd.h>
 
 
 static void *print_numbers(void *arg);
+
+
+// TODO read this in on the command line
+#define NUMBERS_LEN 5
 
 
 int main(void)
@@ -55,7 +59,8 @@ int main(void)
 
 static void *print_numbers(void *arg)
 {
-    for(int i = 1; i <= 5; ++i)
+    // TODO pass the NUMBERS_LEN in the arg variable
+    for(int i = 1; i <= NUMBERS_LEN; ++i)
     {
         printf("Thread: %d\n", i);
         sleep(1);

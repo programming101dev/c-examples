@@ -41,18 +41,19 @@ int main(void)
         perror("Error forking a new process");
         return 1;
     }
-    else if(child_pid == 0)
+
+    if(child_pid == 0)
     {
         handle_child();
-        return EXIT_SUCCESS;
     }
     else
     {
         // Parent process
         // Wait for the child process to finish
         wait(NULL);
-        return EXIT_SUCCESS;
     }
+
+    return EXIT_SUCCESS;
 }
 
 

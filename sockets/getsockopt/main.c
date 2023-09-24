@@ -48,6 +48,8 @@ static void print_socket_opt_int(int sockfd, int option_level, int option_name, 
 static void print_socket_opt_timeval(int sockfd, int option_level, int option_name, const char *option_name_str);
 static void print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
 static void socket_close(int sockfd);
+
+
 #if defined(__APPLE__)
 #define D_MS_FORMAT "%d"
 #elif defined(__linux__)
@@ -55,6 +57,8 @@ static void socket_close(int sockfd);
 #elif defined(__FreeBSD__)
 #define D_MS_FORMAT "%ld"
 #endif
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
 
 
 int main(int argc, char *argv[])
@@ -111,7 +115,7 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -153,7 +157,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         perror("Error parsing in_port_t");
@@ -328,9 +332,9 @@ static void print_socket_opt_linger(int sockfd, int option_level, int option_nam
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

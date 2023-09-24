@@ -39,12 +39,12 @@ int main(void)
     if(child_pid < 0)
     {
         perror("Error forking a new process");
-        return 1;
+        return EXIT_FAILURE;
     }
-    else if(child_pid == 0)
+
+    if(child_pid == 0)
     {
         handle_child();
-        return EXIT_SUCCESS;
     }
     else
     {
@@ -52,8 +52,9 @@ int main(void)
         // Wait for the child process to finish
         wait(NULL);
         printf("Parent Process ID (PID) after child process execution: %d\n", getpid());
-        return EXIT_SUCCESS;
     }
+
+    return EXIT_SUCCESS;
 }
 
 

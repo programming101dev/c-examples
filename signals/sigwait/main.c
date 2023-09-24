@@ -19,8 +19,8 @@
 #include <getopt.h>
 #include <inttypes.h>
 #include <limits.h>
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -33,6 +33,10 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void setup_signal_handler(void);
 static void sigint_handler(int signal_number);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
 
 
 int main(int argc, char *argv[])
@@ -65,13 +69,12 @@ int main(int argc, char *argv[])
         perror("Fork failed");
         return EXIT_FAILURE;
     }
-    else if(pid == 0)
+
+    if(pid == 0)
     {
         // Child process
         sleep(seconds); // Sleep for 3 seconds
         kill(getppid(), SIGINT); // Send SIGINT to the parent
-
-        return EXIT_SUCCESS;
     }
     else
     {
@@ -109,7 +112,7 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -146,7 +149,7 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");

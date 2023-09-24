@@ -25,6 +25,9 @@ static void handle_arguments(const char *binary_name, const char *command);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+
+
 int main(int argc, char *argv[])
 {
     char *command;
@@ -34,15 +37,15 @@ int main(int argc, char *argv[])
     handle_arguments(argv[0], command);
     printf("Output of \"%s\":\n", command);
     status = system(command);
+
     if(status == -1)
     {
         perror("Error executing command");
         return EXIT_FAILURE;
     }
-    else
-    {
-        printf("Command exited with status: %d\n", status);
-    }
+
+    printf("Command exited with status: %d\n", status);
+
     return EXIT_SUCCESS;
 }
 
@@ -61,7 +64,7 @@ static void parse_arguments(int argc, char *argv[], char **command)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

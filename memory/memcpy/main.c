@@ -20,6 +20,9 @@
 #include <string.h>
 
 
+#define NUM_ELEMENTS 4
+
+
 int main(void)
 {
     // Source data
@@ -28,10 +31,9 @@ int main(void)
             2,
             3,
             4,
-            5
     };
     size_t num_elements;
-    int    destination_buffer[5];
+    int    destination_buffer[NUM_ELEMENTS];
     num_elements = sizeof(source_data) / sizeof(source_data[0]);
     memcpy(destination_buffer, source_data, num_elements * sizeof(source_data[0]));
     printf("Copied elements: ");

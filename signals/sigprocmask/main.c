@@ -28,7 +28,8 @@ static void signal_handler(int signal_number);
 
 int main(void)
 {
-    sigset_t new_mask, old_mask;
+    sigset_t new_mask;
+    sigset_t old_mask;
     setup_signal_handler();
 
     // Block SIGUSR1 signal

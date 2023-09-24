@@ -19,8 +19,8 @@
 #include <getopt.h>
 #include <inttypes.h>
 #include <netdb.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -33,21 +33,26 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void display_address(struct sockaddr_storage *addr, socklen_t addrlen);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
-    char                    *ip_address;
+    char                    *server_address;
     char                    *port_str;
     in_port_t               port;
     struct sockaddr_storage addr;
     socklen_t               addrlen;
-    struct addrinfo         hints, *result;
+    struct addrinfo         hints;
+    struct addrinfo         *result;
     int                     error;
-    parse_arguments(argc, argv, &ip_address, &port_str);
-    handle_arguments(argv[0], ip_address, port_str, &port);
+    parse_arguments(argc, argv, &server_address, &port_str);
+    handle_arguments(argv[0], server_address, port_str, &port);
     memset(&hints, 0, sizeof(hints));
     hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
-    error = getaddrinfo(ip_address, port_str, &hints, &result);
+    error = getaddrinfo(server_address, port_str, &hints, &result);
     if(error != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
@@ -85,7 +90,7 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -108,9 +113,9 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
 }
 
 
-static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *server_address, const char *port_str, in_port_t *port)
 {
-    if(ip_address == NULL)
+    if(server_address == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The ip address is required.");
     }
@@ -127,7 +132,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         perror("Error parsing in_port_t");

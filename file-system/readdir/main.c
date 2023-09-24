@@ -24,11 +24,14 @@
 static void parse_arguments(int argc, char *argv[], char **directory_path);
 static void handle_arguments(const char *binary_name, const char *directory_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+
+
 #if defined(__APPLE__)
 #define D_INO_FORMAT "%lld"
 #else
 #define D_INO_FORMAT "%lu"
 #endif
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -81,7 +84,7 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

@@ -32,6 +32,9 @@ static void print_permissions(mode_t mode);
 static void print_time(const char *label, time_t timeValue);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+
+
 int main(int argc, char *argv[])
 {
     char        *file_path;
@@ -54,7 +57,7 @@ int main(int argc, char *argv[])
 }
 
 
-static void parse_arguments(int argc, char *argv[], char **filename)
+static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
 
@@ -70,7 +73,7 @@ static void parse_arguments(int argc, char *argv[], char **filename)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -90,7 +93,7 @@ static void parse_arguments(int argc, char *argv[], char **filename)
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
 
-    *filename = argv[optind];
+    *file_path = argv[optind];
 }
 
 

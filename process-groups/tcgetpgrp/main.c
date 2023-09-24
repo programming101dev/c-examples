@@ -15,16 +15,16 @@
  */
 
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 
 int main(void)
 {
     pid_t foreground_pgid;
-    int   terminal_fd = open("/dev/tty", O_RDWR); // Open the controlling terminal
+    int   terminal_fd = open("/dev/tty", O_RDWR | O_CLOEXEC); // Open the controlling terminal
 
     if(terminal_fd == -1)
     {

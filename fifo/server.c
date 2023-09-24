@@ -15,10 +15,10 @@
  */
 
 
+#include <fcntl.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -33,10 +33,10 @@ int main(void)
     char    word[UINT8_MAX + 1];
 
     // Create the FIFO if it doesn't exist
-    mkfifo(FIFO_FILE, 0666);
+    mkfifo(FIFO_FILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 
     // Open the FIFO for reading
-    fd = open(FIFO_FILE, O_RDONLY);
+    fd = open(FIFO_FILE, O_RDONLY | O_CLOEXEC);
 
     if(fd == -1)
     {

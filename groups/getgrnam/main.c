@@ -15,16 +15,19 @@
  */
 
 
+#include <getopt.h>
+#include <grp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <grp.h>
-#include <getopt.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **group_name);
 static void handle_arguments(const char *binary_name, const char *group_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void print_entry(const struct group *entry);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -66,7 +69,7 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

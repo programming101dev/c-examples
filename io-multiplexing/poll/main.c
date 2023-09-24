@@ -15,19 +15,19 @@
  */
 
 
+#include <errno.h>
+#include <poll.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <signal.h>
-#include <poll.h>
-#include <errno.h>
 
 
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients);
-static void handle_client_data(int sd, int **client_sockets, nfds_t *max_clients);
+static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients);
 static void setup_signal_handler(void);
 static void sigint_handler(int signum);
 static int socket_create(void);
@@ -36,9 +36,9 @@ static void socket_close(int sockfd);
 
 
 #define SOCKET_PATH "/tmp/example_socket"
+#define MAX_WORD_LEN 256
 
-
-static volatile int running = 1;
+static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 
 int main(void)
@@ -62,7 +62,7 @@ int main(void)
 
     printf("Server listening for incoming connections on %s...\n", SOCKET_PATH);
 
-    while(running)
+    while(!exit_flag)
     {
         // Allocate memory for the fds array
         fds = (struct pollfd *)realloc(fds, (max_clients + 1) * sizeof(struct pollfd));
@@ -96,11 +96,9 @@ int main(void)
                 // Continue the loop and retry the poll call
                 continue;
             }
-            else
-            {
-                perror("Poll error");
-                exit(EXIT_FAILURE);
-            }
+
+            perror("Poll error");
+            exit(EXIT_FAILURE);
         }
 
         // Handle new client connections
@@ -147,7 +145,7 @@ int main(void)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 static void sigint_handler(int signum)
 {
-    running = 0;
+    exit_flag = 1;
 }
 #pragma GCC diagnostic pop
 
@@ -180,10 +178,10 @@ static void handle_new_client(int server_socket, int **client_sockets, nfds_t *m
 }
 
 
-static void handle_client_data(int sd, int **client_sockets, nfds_t *max_clients)
+static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients)
 {
     char    word_length;
-    char    word[256];
+    char    word[MAX_WORD_LEN];
     ssize_t valread = read(sd, &word_length, sizeof(word_length));
 
     if(valread <= 0)
@@ -284,9 +282,9 @@ static void socket_bind(int sockfd, const char *path)
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

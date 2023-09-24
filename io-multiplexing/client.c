@@ -15,18 +15,18 @@
  */
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *group_path);
+static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void send_word(int sockfd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
@@ -34,7 +34,14 @@ static int connect_to_server(const char *path);
 static int socket_create(void);
 static void setup_socket_address(struct sockaddr_un *addr, const char *path);
 static void socket_close(int sockfd);
+
+
 #define SOCKET_PATH "/tmp/example_socket"
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define LINE_LEN 1024
+#define MILLISECONDS_IN_NANOSECONDS 1000000
+#define MIN_DELAY_MILLISECONDS 500
+#define MAX_ADDITIONAL_NANOSECONDS 1000000000
 
 
 // TODO: fork N children - make N a command line argument
@@ -45,12 +52,12 @@ int main(int argc, char *argv[])
     char *file_path;
     FILE *file;
     int  sockfd;
-    char line[1024]; // Adjust the buffer size as needed
+    char line[LINE_LEN];
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "re");
 
     if(file == NULL)
     {
@@ -105,7 +112,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -170,7 +177,7 @@ static void send_word(int sockfd, const char *word, uint8_t length)
 
     // Add random delay between 500ms and 1500ms
     delay.tv_sec  = 0;
-    delay.tv_nsec = 500000000 + (rand() % 1000000000); // 500ms + random nanoseconds
+    delay.tv_nsec = MIN_DELAY_MILLISECONDS * MILLISECONDS_IN_NANOSECONDS + (rand() % MAX_ADDITIONAL_NANOSECONDS);
     nanosleep(&delay, NULL);
 }
 
@@ -221,9 +228,9 @@ static void setup_socket_address(struct sockaddr_un *addr, const char *path)
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

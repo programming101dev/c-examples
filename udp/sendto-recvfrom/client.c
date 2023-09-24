@@ -28,13 +28,17 @@
 
 
 static void parse_arguments(int argc, char *argv[], char **address, char **port, char **msg);
-static void handle_arguments(const char *binary_name, const char *address, char *port_str, char *message, in_port_t *port);
+static void handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port);
 static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void convert_address(const char *address, struct sockaddr_storage *addr);
 static int socket_create(int domain, int type, int protocol);
 static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port);
 static void socket_close(int sockfd);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
 
 
 int main(int argc, char *argv[])
@@ -75,7 +79,7 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -99,7 +103,7 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
 }
 
 
-static void handle_arguments(const char *binary_name, const char *address, char *port_str, char *message, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port)
 {
     if(address == NULL)
     {
@@ -122,7 +126,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         perror("Error parsing in_port_t");
@@ -211,9 +215,9 @@ static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

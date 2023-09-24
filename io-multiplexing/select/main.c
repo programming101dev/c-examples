@@ -15,13 +15,13 @@
  */
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <signal.h>
 #include <unistd.h>
 
 
@@ -33,9 +33,10 @@ static void socket_close(int sockfd);
 
 
 #define SOCKET_PATH "/tmp/example_socket"
+#define MAX_WORD_LEN 256
 
 
-static volatile int running = 1;
+static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 
 int main(void)
@@ -43,7 +44,10 @@ int main(void)
     int        sockfd;
     int        *client_sockets = NULL;
     size_t     max_clients     = 0;
-    int        max_fd, activity, new_socket, sd;
+    int        max_fd;
+    int        activity;
+    int        new_socket;
+    int        sd;
     fd_set     readfds;
 
     setup_signal_handler();
@@ -59,7 +63,7 @@ int main(void)
 
     printf("Server listening for incoming connections...\n");
 
-    while(running)
+    while(!exit_flag)
     {
         // Clear the socket set
         FD_ZERO(&readfds);
@@ -100,7 +104,9 @@ int main(void)
 
             addrlen = sizeof(addr);
 
-            if((new_socket = accept(sockfd, (struct sockaddr *)&addr, &addrlen)) == -1)
+            new_socket = accept(sockfd, (struct sockaddr *)&addr, &addrlen);
+
+            if(new_socket == -1)
             {
                 perror("Accept error");
                 exit(EXIT_FAILURE);
@@ -133,7 +139,7 @@ int main(void)
             if(FD_ISSET((unsigned int)sd, &readfds))
             {
                 char    word_length;
-                char    word[256];
+                char    word[MAX_WORD_LEN];
                 ssize_t valread;
 
                 // Receive the word length (uint8_t)
@@ -211,7 +217,7 @@ static void setup_signal_handler(void)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 static void sigint_handler(int signum)
 {
-    running = 0;
+    exit_flag = 1;
 }
 #pragma GCC diagnostic pop
 
@@ -251,9 +257,9 @@ static void socket_bind(int sockfd, const char *path)
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

@@ -22,7 +22,7 @@
 
 int main(void)
 {
-    uint16_t network_value = 0x3039; // Hex value of 12345 in network byte order
+        uint16_t network_value = 0x3039;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     uint16_t host_value    = ntohs(network_value);
 
     printf("Network value: %hu\n", network_value);

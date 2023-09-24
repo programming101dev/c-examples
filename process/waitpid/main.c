@@ -17,8 +17,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 
 static void print_process_info(const char *name);
@@ -33,7 +33,7 @@ int main(void)
         perror("Error creating child process");
         return EXIT_FAILURE;
     }
-    else if(pid == 0)
+    if(pid == 0)
     {
         // This is the child process
         print_process_info("Child");

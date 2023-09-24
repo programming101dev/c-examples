@@ -927,21 +927,21 @@ populate_supported_flags() {
     )
 
     # Loop through each flag group and check if the flags are supported
-    for flag in "${WARNING_FLAGS[@]}" "${ANALYZER_FLAGS[@]}" "${DEBUG_FLAGS[@]}"; do
+    for flag in "${WARNING_FLAGS[@]}"; do
         if [[ "$flag" == "-fsanitize=pointer-compare" || "$flag" == "-fsanitize=pointer-subtract" ]]; then
             # Include -fsanitize=address as a dependency for pointer-compare and pointer-subtract
             if is_flag_supported "$flag -fsanitize=address"; then
-                SUPPORTED_FLAGS+=("$flag")
+                SUPPORTED_WARNING_FLAGS+=("$flag")
             fi
         elif [[ "$flag" == "-fvar-tracking" || "$flag" == "-fvar-tracking-assignments" ]]; then
             # Include --g as a dependency for pfvar-tracking
             if is_flag_supported "$flag --g"; then
-                SUPPORTED_FLAGS+=("$flag")
+                SUPPORTED_WARNING_FLAGS+=("$flag")
             fi
         else
             # For other flags, check support without address
             if is_flag_supported "$flag"; then
-                SUPPORTED_FLAGS+=("$flag")
+                SUPPORTED_WARNING_FLAGS+=("$flag")
             fi
         fi
     done
@@ -962,6 +962,46 @@ populate_supported_flags() {
             # For other flags, check support without address
             if is_flag_supported "$flag"; then
                 SUPPORTED_SANITIZER_FLAGS+=("$flag")
+            fi
+        fi
+    done
+
+    # Loop through each flag group and check if the flags are supported
+    for flag in "${ANALYZER_FLAGS[@]}"; do
+        if [[ "$flag" == "-fsanitize=pointer-compare" || "$flag" == "-fsanitize=pointer-subtract" ]]; then
+            # Include -fsanitize=address as a dependency for pointer-compare and pointer-subtract
+            if is_flag_supported "$flag -fsanitize=address"; then
+                SUPPORTED_ANALYZER_FLAGS+=("$flag")
+            fi
+        elif [[ "$flag" == "-fvar-tracking" || "$flag" == "-fvar-tracking-assignments" ]]; then
+            # Include --g as a dependency for pfvar-tracking
+            if is_flag_supported "$flag --g"; then
+                SUPPORTED_ANALYZER_FLAGS+=("$flag")
+            fi
+        else
+            # For other flags, check support without address
+            if is_flag_supported "$flag"; then
+                SUPPORTED_ANALYZER_FLAGS+=("$flag")
+            fi
+        fi
+    done
+
+    # Loop through each flag group and check if the flags are supported
+    for flag in "${DEBUG_FLAGS[@]}"; do
+        if [[ "$flag" == "-fsanitize=pointer-compare" || "$flag" == "-fsanitize=pointer-subtract" ]]; then
+            # Include -fsanitize=address as a dependency for pointer-compare and pointer-subtract
+            if is_flag_supported "$flag -fsanitize=address"; then
+                SUPPORTED_DEBUG_FLAGS+=("$flag")
+            fi
+        elif [[ "$flag" == "-fvar-tracking" || "$flag" == "-fvar-tracking-assignments" ]]; then
+            # Include --g as a dependency for pfvar-tracking
+            if is_flag_supported "$flag --g"; then
+                SUPPORTED_DEBUG_FLAGS+=("$flag")
+            fi
+        else
+            # For other flags, check support without address
+            if is_flag_supported "$flag"; then
+                SUPPORTED_DEBUG_FLAGS+=("$flag")
             fi
         fi
     done
@@ -989,12 +1029,18 @@ generate_makefile() {
       esac
 
     # Initialize the Makefile
-    echo "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror" > Makefile
-    echo "SUPPORTED_FLAGS=${SUPPORTED_FLAGS[@]}" >> Makefile
+    echo -e ".PHONY: main main-traceable clean lint all\n" > Makefile
+    echo "CC=$CC" >> Makefile
+    echo "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror" >> Makefile
+    echo "SUPPORTED_WARNING_FLAGS=${SUPPORTED_WARNING_FLAGS[@]}" >> Makefile
     echo "SUPPORTED_SANITIZER_FLAGS=${SUPPORTED_SANITIZER_FLAGS[@]}" >> Makefile
+    echo "SUPPORTED_ANALYZER_FLAGS=${SUPPORTED_ANALYZER_FLAGS[@]}" >> Makefile
+    echo "SUPPORTED_DEBUG_FLAGS=${SUPPORTED_DEBUG_FLAGS[@]}" >> Makefile
+    echo "CLANG_TIDY_CHECKS=-checks=*,-llvmlibc-restrict-system-libc-headers,-altera-struct-pack-align,-readability-identifier-length,-altera-unroll-loops,-cppcoreguidelines-init-variables,-cert-err33-c,-modernize-macro-to-enum,-bugprone-easily-swappable-parameters,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-altera-id-dependent-backward-branch,-concurrency-mt-unsafe,-misc-unused-parameters,-hicpp-signed-bitwise,-google-readability-todo,-cert-msc30-c,-cert-msc50-cpp,-readability-function-cognitive-complexity,-clang-analyzer-security.insecureAPI.strcpy,-cert-env33-c" >> Makefile
     echo "LIBRARIES=${LIBRARIES}" >> Makefile
     echo "PROGRAMS=" >> Makefile
     echo "LIBS=" >> Makefile
+    echo -e "SOURCES=\n" >> Makefile
 
     # Loop through each .c file in the current directory
     for file in *.c; do
@@ -1009,12 +1055,12 @@ generate_makefile() {
             if [[ "$filename" == "testlib-1" || "$filename" == "testlib-2" ]]; then
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename$SHARED_EXT: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -shared -fPIC -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo "LIBS += lib$filename$SHARED_EXT" >> Makefile
 
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename-traceaable$SHARED_EXT: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -shared -fPIC -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS)  -shared -fPIC -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo "LIBS += lib$filename-traceaable$SHARED_EXT" >> Makefile
             else
                 if [[ "$CC" == "gcc"* ]]; then
@@ -1024,25 +1070,31 @@ generate_makefile() {
                     fi
                 fi
 
+                echo "SOURCES += $filename.c" >> Makefile
+
                 # Generate an executable rule with the supported warning flags
                 echo "$filename: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) -o $filename $file \$(LIBRARIES)" >> Makefile
-                echo "PROGRAMS += $filename" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS)  -o $filename $file \$(LIBRARIES)" >> Makefile
+                echo -e "PROGRAMS += $filename\n" >> Makefile
 
                 # Generate a traceable version rule
                 echo "$filename-traceable: $file" >> Makefile
-                echo -e "\t\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_FLAGS) -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
-                echo "PROGRAMS += $filename-traceable" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS)  -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
+                echo -e "PROGRAMS += $filename-traceable\n" >> Makefile
             fi
         fi
     done
 
     # Add a clean rule to remove all generated binaries and libraries
-    echo -e "\nclean:" >> Makefile
-    echo -e "\trm -f \$(PROGRAMS) \$(LIBS)" >> Makefile
+    echo -e "clean:" >> Makefile
+    echo -e "\t@rm -f \$(PROGRAMS) \$(LIBS)" >> Makefile
+
+    # Add a lint rule to remove all generated binaries and libraries
+    echo -e "\nlint:" >> Makefile
+	  echo -e "\t@clang-tidy \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(LIBRARIES)" >> Makefile
 
     # Add an "all" rule to build all programs and libraries
-    echo -e "\nall: \$(PROGRAMS) \$(LIBS)" >> Makefile
+    echo -e "\nall: \$(PROGRAMS) \$(LIBS) lint" >> Makefile
 
     # Print a message indicating the Makefile generation is complete
     echo -e "\nMakefile generated successfully in directory: $(pwd)"

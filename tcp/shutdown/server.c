@@ -39,13 +39,17 @@ static void convert_address(const char *address, struct sockaddr_storage *addr);
 static int socket_create(int domain, int type, int protocol);
 static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
 static void start_listening(int server_fd, int backlog);
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len);
+static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len);
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
 static void shutdown_socket(int sockfd, int how);
 static void socket_close(int sockfd);
 
 
-static volatile sig_atomic_t exit_flag = 0;
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
+static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 
 int main(int argc, char *argv[])
@@ -103,7 +107,7 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -145,7 +149,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         perror("Error parsing in_port_t");
@@ -332,9 +336,9 @@ static void handle_connection(int client_sockfd, struct sockaddr_storage *client
 #pragma GCC diagnostic pop
 
 
-static void shutdown_socket(int client_fd, int how)
+static void shutdown_socket(int sockfd, int how)
 {
-    if(shutdown(client_fd, how) == -1)
+    if(shutdown(sockfd, how) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);
@@ -342,9 +346,9 @@ static void shutdown_socket(int client_fd, int how)
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

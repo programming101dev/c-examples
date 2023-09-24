@@ -27,21 +27,18 @@ int main(void)
             2,
             3,
             4,
-            5
     };
     int data2[] = {
             1,
             2,
             3,
             4,
-            5
     };
     int data3[] = {
             1,
             2,
             3,
-            5,
-            4
+            4,
     };
     int result1;
     int result2;

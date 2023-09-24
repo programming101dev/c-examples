@@ -15,19 +15,22 @@
  */
 
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <string.h>
-#include <stdlib.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **host_name, char **service);
 static void handle_arguments(const char *binary_name, const char *host_name, const char *service);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -37,7 +40,9 @@ int main(int argc, char *argv[])
     int                sockfd;
     struct sockaddr_in local_addr;
     socklen_t          addrlen;
-    struct addrinfo    hints, *result, *rp;
+    struct addrinfo    hints;
+    struct addrinfo    *result;
+    struct addrinfo    *rp;
     int                status;
     char               ipstr[INET6_ADDRSTRLEN]; // Use a larger buffer for IPv6
 
@@ -87,6 +92,8 @@ int main(int argc, char *argv[])
         freeaddrinfo(result);
         return EXIT_FAILURE;
     }
+    memset(&local_addr, 0, sizeof(local_addr));
+    memset(ipstr, 0, sizeof(ipstr));
     if(rp->ai_family == AF_INET)
     {
         inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET6_ADDRSTRLEN);
@@ -117,7 +124,7 @@ static void parse_arguments(int argc, char *argv[], char **host_name, char **ser
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

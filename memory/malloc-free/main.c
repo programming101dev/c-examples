@@ -22,9 +22,12 @@
 static void print_array(const int *arr, size_t size);
 
 
+#define NUM_ELEMENTS 5
+
+
 int main(void)
 {
-    const size_t num_elements = 5;
+    const size_t num_elements = NUM_ELEMENTS;
     int          *dynamic_array;
     dynamic_array = (int *)malloc(num_elements * sizeof(dynamic_array[0]));
     if(dynamic_array == NULL)
@@ -49,7 +52,7 @@ static void print_array(const int *arr, size_t size)
 {
     for(size_t i = 0; i < size; i++)
     {
-        printf("%d ", arr[i]);
+        printf("%d ", arr[i]);      // NOLINT(clang-analyzer-core.CallAndMessage)
     }
     printf("\n");
 }

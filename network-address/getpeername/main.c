@@ -15,14 +15,14 @@
  */
 
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <stdlib.h>
 #include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **server_address, char **service);
@@ -30,12 +30,17 @@ static void handle_arguments(const char *binary_name, const char *server_address
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+
+
 int main(int argc, char *argv[])
 {
     char               *server_address;
     char               *service;
     int                sockfd;
-    struct addrinfo    hints, *result, *rp;
+    struct addrinfo    hints;
+    struct addrinfo    *result;
+    struct addrinfo    *rp;
     int                status;
     struct sockaddr_in peer_addr;
     socklen_t          peer_addr_len;
@@ -108,7 +113,7 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

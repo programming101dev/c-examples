@@ -15,9 +15,9 @@
  */
 
 
+#include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pwd.h>
 
 
 static void print_entries(void);

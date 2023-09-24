@@ -15,13 +15,13 @@
  */
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <semaphore.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **file_path);
@@ -33,9 +33,12 @@ static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_p
 _Noreturn static void error_exit(const char *msg);
 static void write_fully(int fd, const void *buf, size_t count);
 static void read_fully(int fd, void *buf, size_t count);
+
+
 #define MAX_WORD_LENGTH 255
 #define SEM_PARENT "/sem_parent"
 #define SEM_CHILD "/sem_child"
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -49,26 +52,26 @@ int main(int argc, char *argv[])
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "r");       // NOLINT(android-cloexec-fopen)
     if(file == NULL)
     {
         error_exit("Error opening file");
     }
-    if(pipe(pipefd) == -1)
+    if(pipe(pipefd) == -1)  // NOLINT(android-cloexec-pipe)
     {
         error_exit("Error creating pipe");
     }
-    sem_parent = sem_open(SEM_PARENT, O_CREAT, 0644, 0);
+    sem_parent = sem_open(SEM_PARENT, O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, 0);
     if(sem_parent == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_PARENT semaphore");
     }
-    sem_child = sem_open(SEM_CHILD, O_CREAT, 0644, 1);
+    sem_child = sem_open(SEM_CHILD, O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, 1);
     if(sem_child == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_CHILD semaphore");
     }
-    pid = fork();
+    pid = fork();   // NOLINT(android-cloexec-fopen)
     if(pid == -1)
     {
         error_exit("Error creating child process");
@@ -102,7 +105,7 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

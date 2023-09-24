@@ -24,11 +24,14 @@ static void print_array(const char *message, const int *array, size_t num_elemen
 static int *resize_array(int *array, size_t new_num_elements);
 
 
+#define NUM_ELEMENTS 5
+
+
 int main(void)
 {
-    int    *dynamic_array;
+    int *dynamic_array;
     size_t num_elements;
-    num_elements  = 5;
+    num_elements  = NUM_ELEMENTS;
     dynamic_array = (int *)malloc(num_elements * sizeof(int));
     if(dynamic_array == NULL)
     {
@@ -37,9 +40,9 @@ int main(void)
     }
     initialize_array(dynamic_array, num_elements);
     print_array("Initial elements of the array: ", dynamic_array, num_elements);
-    num_elements  = 10;
+    num_elements  = (size_t)NUM_ELEMENTS * 2;
     dynamic_array = resize_array(dynamic_array, num_elements);
-    initialize_array(&dynamic_array[5], num_elements - 5);
+    initialize_array(&dynamic_array[NUM_ELEMENTS], num_elements - NUM_ELEMENTS);
     print_array("Resized elements of the array: ", dynamic_array, num_elements);
     free(dynamic_array);
     return EXIT_SUCCESS;

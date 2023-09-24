@@ -25,6 +25,9 @@
 static void convert(const char *str);
 
 
+#define BASE_TEN 10
+
+
 int main(void)
 {
     const char goodNumber[]     = "12345";
@@ -41,9 +44,8 @@ static void convert(const char *str)
 {
     long long int result;
     char          *endptr;
-    result = 0;
     errno  = 0;
-    result = strtoll(str, &endptr, 10);
+    result = strtoll(str, &endptr, BASE_TEN);
 
     // Check for conversion errors
     if((errno == ERANGE && (result == LLONG_MAX || result == LLONG_MIN)) || (errno != 0 && result == 0))

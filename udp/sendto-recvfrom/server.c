@@ -38,13 +38,18 @@ static void handle_packet(int client_sockfd, struct sockaddr_storage *client_add
 static void socket_close(int sockfd);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define LINE_LEN 1024
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char                    *address;
     char                    *port_str;
     in_port_t               port;
     int                     sockfd;
-    char                    buffer[1024];
+    char                    buffer[LINE_LEN];
     ssize_t                 bytes_received;
     struct sockaddr_storage client_addr;
     socklen_t               client_addr_len;
@@ -83,7 +88,7 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -125,7 +130,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno        = 0;
-    parsed_value = strtoumax(str, &endptr, 10);
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         perror("Error parsing in_port_t");
@@ -239,9 +244,9 @@ static void handle_packet(int client_sockfd, struct sockaddr_storage *client_add
 #pragma GCC diagnostic pop
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

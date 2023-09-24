@@ -15,9 +15,9 @@
  */
 
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 
 static void *thread_function(void *arg);

@@ -17,9 +17,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <string.h>
 
 
 static void parse_arguments(int argc, char *argv[], char **address_family_str, char **socket_type_str);
@@ -28,7 +28,10 @@ static int string_to_socket_type(const char *socket_type_str) __attribute__((pur
 static void handle_arguments(const char *binary_name, const char *address_family_str, const char *socket_type_str, int *address_family, int *socket_type);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int socket_create(int domain, int type, int protocol);
-static void socket_close(int sock_fd);
+static void socket_close(int sockfd);
+
+
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -64,7 +67,7 @@ static void parse_arguments(int argc, char *argv[], char **address_family_str, c
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -117,31 +120,37 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static int string_to_address_family(const char *address_family_str)
 {
+    int value;
+
     if(address_family_str == NULL)
     {
         usage("Invalid address family string.", EXIT_FAILURE, NULL);
     }
     if(strcmp(address_family_str, "AF_INET") == 0)
     {
-        return AF_INET;
+        value = AF_INET;
     }
     else if(strcmp(address_family_str, "AF_INET6") == 0)
     {
-        return AF_INET6;
+        value = AF_INET6;
     }
     else if(strcmp(address_family_str, "AF_UNIX") == 0)
     {
-        return AF_UNIX;
+        value = AF_UNIX;
     }
     else
     {
         usage("Invalid address family string.", EXIT_FAILURE, NULL);
     }
+
+    return value;
 }
 
 
 static int string_to_socket_type(const char *socket_type_str)
 {
+    int value;
+
     if(socket_type_str == NULL)
     {
         usage("Invalid socket type string.", EXIT_FAILURE, NULL);
@@ -149,24 +158,26 @@ static int string_to_socket_type(const char *socket_type_str)
 
     if(strcmp(socket_type_str, "SOCK_STREAM") == 0)
     {
-        return SOCK_STREAM;
+        value = SOCK_STREAM;
     }
     else if(strcmp(socket_type_str, "SOCK_DGRAM") == 0)
     {
-        return SOCK_DGRAM;
+        value = SOCK_DGRAM;
     }
     else if(strcmp(socket_type_str, "SOCK_RAW") == 0)
     {
-        return SOCK_RAW;
+        value = SOCK_RAW;
     }
     else if(strcmp(socket_type_str, "SOCK_SEQPACKET") == 0)
     {
-        return SOCK_SEQPACKET;
+        value = SOCK_SEQPACKET;
     }
     else
     {
         usage("Invalid socket type string.", EXIT_FAILURE, NULL);
     }
+
+    return value;
 }
 
 
@@ -183,9 +194,9 @@ static int socket_create(int domain, int type, int protocol)
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

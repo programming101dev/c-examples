@@ -15,9 +15,9 @@
  */
 
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -34,6 +34,8 @@ static void socket_close(int sockfd);
 
 
 #define SOCKET_PATH "/tmp/example_socket"
+#define LINE_LEN 1024
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 
 int main(int argc, char *argv[])
@@ -41,13 +43,13 @@ int main(int argc, char *argv[])
     char                    *file_path;
     FILE                    *file;
     int                     sockfd;
-    char                    line[1024];
+    char                    line[LINE_LEN];
     struct sockaddr_storage addr;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    file = fopen(file_path, "r");
+    file = fopen(file_path, "re");
 
     if(file == NULL)
     {
@@ -69,6 +71,7 @@ int main(int argc, char *argv[])
         {
             uint8_t size;
             size_t  word_len = strlen(word);
+
             if(word_len > UINT8_MAX)
             {
                 fprintf(stderr, "Word exceeds maximum length\n");
@@ -110,7 +113,8 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
+
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -201,9 +205,9 @@ static void setup_socket_address(struct sockaddr_storage *addr, const char *path
 }
 
 
-static void socket_close(int client_fd)
+static void socket_close(int sockfd)
 {
-    if(close(client_fd) == -1)
+    if(close(sockfd) == -1)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);

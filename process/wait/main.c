@@ -17,27 +17,32 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <unistd.h>
 
 
 static void print_process_info(const char *name);
 static void child_process(const char *name);
 
 
+#define MAX_SECONDS 5
+
+
 int main(void)
 {
     pid_t pid1;
     pid_t pid2;
-    int   status1, status2;
+    int   status1;
+    int   status2;
     pid1 = fork();
     if(pid1 == -1)
     {
         perror("Error creating child process 1");
         return EXIT_FAILURE;
     }
-    else if(pid1 == 0)
+
+    if(pid1 == 0)
     {
         // This is the first child process
         child_process("Child 1");
@@ -49,7 +54,8 @@ int main(void)
         perror("Error creating child process 2");
         return EXIT_FAILURE;
     }
-    else if(pid2 == 0)
+
+    if(pid2 == 0)
     {
         // This is the second child process
         child_process("Child 2");
@@ -95,7 +101,7 @@ static void child_process(const char *name)
     unsigned int sleep_time;
     srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
     print_process_info(name);
-    sleep_time = (unsigned int)rand() % 5;
+    sleep_time = (unsigned int)rand() % MAX_SECONDS;
     sleep(sleep_time);
     printf("%s process finished after sleeping %u seconds.\n", name, sleep_time);
 }

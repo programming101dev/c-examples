@@ -34,6 +34,10 @@ static void abort_handler(void);
 static void set_core_dump_limit(rlim_t limit);
 
 
+#define UNKNOWN_OPTION_MESSAGE_LEN 24
+#define BASE_TEN 10
+
+
 int main(int argc, char *argv[])
 {
     char   *limit_str;
@@ -78,7 +82,7 @@ static void parse_arguments(int argc, char *argv[], char **limit)
             }
             case '?':
             {
-                char message[24];
+                char message[UNKNOWN_OPTION_MESSAGE_LEN];
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }
@@ -143,7 +147,7 @@ static rlim_t parse_rlim_t(const char *binary_name, const char *str)
     char      *endptr;
     uintmax_t parsed_value;
     errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, 10);
+    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");

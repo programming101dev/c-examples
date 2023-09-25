@@ -70,7 +70,7 @@ int main(void)
 
     for(unsigned int ch = 0; ch <= INT8_MAX; ch++)
     {
-        printf("%c    | ", isprint(ch) ? (char)ch : ' ');
+        printf("%c    | ", isprint((int)ch) ? (char)ch : ' ');
         print_binary(ch);
         printf(" | %3o | %3u | %3X | ", ch, ch, ch);
 

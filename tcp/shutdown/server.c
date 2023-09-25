@@ -208,14 +208,10 @@ static void setup_signal_handler(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
-
-
 #pragma GCC diagnostic pop
 
 
@@ -326,13 +322,9 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
 {
 }
-
-
 #pragma GCC diagnostic pop
 
 

@@ -29,7 +29,7 @@ int main(void)
     {
         printf("you typed: ");
         putchar(ch);
-        putchar((int)'\n');
+        putchar('\n');
     }
 
     return EXIT_SUCCESS;

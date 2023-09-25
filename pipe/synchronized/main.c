@@ -27,7 +27,7 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-_Noreturn static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
+static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
 static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
 static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
 _Noreturn static void error_exit(const char *msg);

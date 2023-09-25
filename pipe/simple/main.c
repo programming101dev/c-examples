@@ -224,7 +224,7 @@ static void child_process(int pipefd[2], FILE *file)
 }
 
 
-_Noreturn static void parent_process(int pipefd[2])
+static void parent_process(int pipefd[2])
 {
     uint8_t length;
     char    word[MAX_WORD_LENGTH];

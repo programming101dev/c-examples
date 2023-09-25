@@ -26,7 +26,7 @@ int main(void)
     int            destroy_result;
     int            init_result;
 
-    result = pthread_cond_init(&condition, NULL);
+    init_result = pthread_cond_init(&condition, NULL);
 
     if(init_result != 0)
     {

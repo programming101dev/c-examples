@@ -186,7 +186,7 @@ static int socket_create(void)
 {
     int sockfd;
 
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+    sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 
     if(sockfd == -1)
     {

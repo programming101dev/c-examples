@@ -47,7 +47,7 @@ int main(void)
     dprintf(fd, "%s\n", content);
     check_file_size(filename, "Initial file size");
     new_size = SIZE;
-// XXXXXX    printf("Truncating file %s to %lld bytes\n", filename, (long long) new_size);
+// TODO    printf("Truncating file %s to %lld bytes\n", filename, (long long) new_size);
 
     if(ftruncate(fd, new_size) == -1)
     {

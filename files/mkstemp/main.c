@@ -22,6 +22,7 @@
 
 int main(void)
 {
+    // TODO pass on the command line
     char templ[] = "/tmp/temp_file_XXXXXX";
     int  fd;
 

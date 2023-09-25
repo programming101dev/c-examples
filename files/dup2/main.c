@@ -23,6 +23,7 @@
 
 int main(void)
 {
+    // TODO pass on the command line
     char        templ[] = "/tmp/tempfileXXXXXX";
     int         original_fd;
     struct stat file_stat;
@@ -83,7 +84,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-// XXXXXX    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
+// TODO    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
 
     // Cleanup: remove the temporary file
     if(unlink(templ) == -1)

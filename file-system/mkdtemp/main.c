@@ -22,6 +22,7 @@
 
 int main(void)
 {
+    // TODO pass on the command line
     char tempdir_template[] = "exampleXXXXXX";
 
     if(mkdtemp(tempdir_template) == NULL)

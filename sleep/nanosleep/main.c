@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     long            nanoseconds;
     struct timespec tim;
     struct timespec rem;
+
     seconds_str     = NULL;
     nanoseconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str, &nanoseconds_str);
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
     tim.tv_nsec = nanoseconds;
     printf("Starting program...\n");
     printf("Sleeping for %ld.%09ld seconds...\n", seconds, tim.tv_nsec);
+
     while(nanosleep(&tim, &rem) == -1)
     {
         if(errno == EINTR)
@@ -64,7 +66,9 @@ int main(int argc, char *argv[])
         perror("nanosleep");
         return EXIT_FAILURE;
     }
+
     printf("Program woke up!\n");
+
     return EXIT_SUCCESS;
 }
 
@@ -72,7 +76,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "hs:n:")) != -1)
     {
         switch(opt)
@@ -103,6 +109,7 @@ static void parse_arguments(int argc, char *argv[], char **seconds, char **nanos
             }
         }
     }
+
     if(optind != argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
@@ -116,10 +123,12 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
     {
         usage(binary_name, EXIT_FAILURE, "seconds or nanoseconds are required.");
     }
+
     if(seconds_str)
     {
         time_t min;
         time_t max;
+
         min = get_time_t_min();
         max = get_time_t_max();
         *seconds = parse_time_t(binary_name, min, max, seconds_str);
@@ -128,6 +137,7 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
     {
         *seconds = 0;
     }
+
     if(nanoseconds_str)
     {
         *nanoseconds = parse_long(binary_name, nanoseconds_str);
@@ -212,8 +222,10 @@ time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char 
 {
     char     *endptr;
     intmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoimax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing time.");
@@ -224,10 +236,12 @@ time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char 
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
     if(parsed_value < min || parsed_value > max)
     {
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for time.");
     }
+
     return (time_t)parsed_value;
 }
 
@@ -236,8 +250,10 @@ static long parse_long(const char *binary_name, const char *str)
 {
     char     *endptr;
     intmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoimax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
@@ -254,6 +270,7 @@ static long parse_long(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for signed long.");
     }
+
     return (long)parsed_value;
 }
 
@@ -264,6 +281,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] [-s <seconds>] [-n nanoseconds]\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h                Display this help message\n", stderr);

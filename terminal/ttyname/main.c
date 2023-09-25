@@ -22,7 +22,10 @@
 
 int main(void)
 {
-    char *tty = ttyname(STDIN_FILENO);
+    char *tty;
+
+    tty = ttyname(STDIN_FILENO);
+
     if(tty != NULL)
     {
         printf("The terminal associated with stdin is: %s\n", tty);
@@ -31,5 +34,6 @@ int main(void)
     {
         printf("stdin is not associated with a terminal.\n");
     }
+
     return EXIT_SUCCESS;
 }

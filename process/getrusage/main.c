@@ -35,7 +35,10 @@ int main(void)
 {
     const size_t MAX_NUMBERS    = 100000;
     const size_t NUM_ITERATIONS = 20000;
-    pid_t        pid            = fork();
+    pid_t        pid;
+
+    pid = fork();
+
     if(pid < 0)
     {
         fprintf(stderr, "Fork failed\n");
@@ -45,6 +48,7 @@ int main(void)
     if(pid == 0)
     {
         long long sum;
+
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
         printf("Sum of %zu random numbers for %zu iterations: %lld\n", MAX_NUMBERS, NUM_ITERATIONS, sum);
         exit(EXIT_SUCCESS);
@@ -54,6 +58,7 @@ int main(void)
         struct rusage start_ru;
         struct rusage end_ru;
         long long     sum;
+
         getrusage(RUSAGE_SELF, &start_ru);
         sum = performCalculation(MAX_NUMBERS, NUM_ITERATIONS);
         wait(NULL);
@@ -63,6 +68,7 @@ int main(void)
         getrusage(RUSAGE_SELF, &end_ru);
         printUsage(&end_ru);
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -71,18 +77,23 @@ static long long performCalculation(size_t size, size_t iterations)
 {
     int       *numbers;
     long long sum;
+
     numbers = (int *)malloc(size * sizeof(int));
+
     if(numbers == NULL)
     {
         perror("Failed to allocate memory");
         exit(EXIT_FAILURE);
     }
+
     sum = 0;
     srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
+
     for(size_t i = 0; i < size; i++)
     {
         numbers[i] = rand() % MAX_NUMBER;
     }
+
     for(size_t i = 0; i < iterations; i++)
     {
         for(size_t j = 0; j < size; j++)
@@ -90,7 +101,9 @@ static long long performCalculation(size_t size, size_t iterations)
             sum += numbers[j];
         }
     }
+
     free(numbers);
+
     return sum;
 }
 

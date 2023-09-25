@@ -35,7 +35,9 @@ int main(void)
     pid_t pid2;
     int   status1;
     int   status2;
+
     pid1 = fork();
+
     if(pid1 == -1)
     {
         perror("Error creating child process 1");
@@ -48,7 +50,9 @@ int main(void)
         child_process("Child 1");
         return EXIT_SUCCESS;
     }
+
     pid2 = fork();
+
     if(pid2 == -1)
     {
         perror("Error creating child process 2");
@@ -71,6 +75,7 @@ int main(void)
         perror("Error waiting for child process 1");
         return EXIT_FAILURE;
     }
+
     if(waitpid(pid2, &status2, 0) == -1)
     {
         perror("Error waiting for child process 2");
@@ -82,10 +87,12 @@ int main(void)
     {
         printf("Child 1 exited with status: %d\n", WEXITSTATUS(status1));
     }
+
     if(WIFEXITED(status2))
     {
         printf("Child 2 exited with status: %d\n", WEXITSTATUS(status2));
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -99,6 +106,7 @@ static void print_process_info(const char *name)
 static void child_process(const char *name)
 {
     unsigned int sleep_time;
+
     srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
     print_process_info(name);
     sleep_time = (unsigned int)rand() % MAX_SECONDS;

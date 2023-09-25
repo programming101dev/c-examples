@@ -36,28 +36,35 @@ int main(void)
             3
     };
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    size_t size  = sizeof(arr) / sizeof(arr[0]);
+    size_t size;
     int    *result;
     int    target;
+
+    size  = sizeof(arr) / sizeof(arr[0]);
     printf("Unsorted array: ");
+
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
+
     printf("\n");
 
     // Using qsort to sort the array
     qsort(arr, size, sizeof(int), intcmp);
     printf("Sorted array: ");
+
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
+
     printf("\n");
     target = 3;
 
     // Using bsearch to search for the target element
     result = (int *)bsearch(&target, arr, size, sizeof(int), intcmp);
+
     if(result != NULL)
     {
         printf("Element %d found at index %ld\n", target, result - arr);
@@ -66,6 +73,7 @@ int main(void)
     {
         printf("Element %d not found\n", target);
     }
+
     return EXIT_SUCCESS;
 }
 

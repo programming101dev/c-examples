@@ -30,16 +30,19 @@ int main(void)
 {
     sigset_t new_mask;
     sigset_t old_mask;
+
     setup_signal_handler();
 
     // Block SIGUSR1 signal
     sigemptyset(&new_mask);
     sigaddset(&new_mask, SIGUSR1);
+
     if(sigprocmask(SIG_BLOCK, &new_mask, &old_mask) < 0)
     {
         perror("Failed to block SIGUSR1 signal");
         return EXIT_FAILURE;
     }
+
     printf("SIGUSR1 signal is blocked. Sending SIGUSR1...\n");
     raise(SIGUSR1); // This will not be delivered immediately due to the signal being blocked
 
@@ -52,11 +55,13 @@ int main(void)
         perror("Failed to unblock SIGUSR1 signal");
         return EXIT_FAILURE;
     }
+
     printf("SIGUSR1 signal is unblocked. Sending SIGUSR1...\n");
     raise(SIGUSR1); // This will be delivered and handled immediately
 
     // Wait for a while to allow the signal handler to run
     sleep(3);
+
     return EXIT_SUCCESS;
 }
 
@@ -65,6 +70,7 @@ static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -73,8 +79,10 @@ static void setup_signal_handler(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
+
     if(sigaction(SIGUSR1, &sa, NULL) == -1)
     {
         perror("sigaction");

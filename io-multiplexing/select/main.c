@@ -42,14 +42,16 @@ static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoi
 int main(void)
 {
     int        sockfd;
-    int        *client_sockets = NULL;
-    size_t     max_clients     = 0;
+    int        *client_sockets;
+    size_t     max_clients;
     int        max_fd;
     int        activity;
     int        new_socket;
     int        sd;
     fd_set     readfds;
 
+    client_sockets = NULL;
+    max_clients    = 0;
     setup_signal_handler();
     unlink(SOCKET_PATH); // Remove the existing socket file if it exists
     sockfd       = socket_create();

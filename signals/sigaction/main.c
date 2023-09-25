@@ -21,12 +21,14 @@
 #include <unistd.h>
 
 
-void signal_handler(int signal_number);
 struct signal_info
 {
     int        signal_number;
     const char *signal_name;
 };
+
+
+void signal_handler(int signal_number);
 
 
 int main(void)
@@ -54,10 +56,13 @@ int main(void)
                                     {SIGVTALRM, "SIGVTALRM"},
                                     {SIGXCPU,   "SIGXCPU"},
                                     {SIGXFSZ,   "SIGXFSZ"}};
-    int                n         = sizeof(signals) / sizeof(signals[0]);
+    int                n;
     struct sigaction   sa;
     struct sigaction   new_sa;
     pid_t              pid;
+
+    n = sizeof(signals) / sizeof(signals[0]);
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -66,8 +71,10 @@ int main(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&new_sa.sa_mask);
     new_sa.sa_flags = 0;
+
     for(int i = 0; i < n; i++)
     {
         if(sigaction(signals[i].signal_number, NULL, &sa) == 0)
@@ -103,11 +110,13 @@ int main(void)
         {
             printf("Failed to retrieve signal info: %s (%d)\n", signals[i].signal_name, signals[i].signal_number);
         }
+
         if(sigaction(signals[i].signal_number, &new_sa, NULL) < 0)
         {
             printf("Failed to set signal handler: %s (%d)\n", signals[i].signal_name, signals[i].signal_number);
         }
     }
+
     pid = getpid();
     printf("My process ID is: %d\n", pid);
     printf("Sending SIGUSR1 signal to my own process...\n");
@@ -150,6 +159,7 @@ int main(void)
     while(1)
     {
     }
+
     return EXIT_SUCCESS;
 }
 

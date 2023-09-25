@@ -46,15 +46,14 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char      *file_path;
-    pthread_t child_thread;
-    pthread_t parent_thread;
+    char               *file_path;
+    pthread_t          child_thread;
+    pthread_t          parent_thread;
     struct shared_data data;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-
     pthread_mutex_init(&data.mutex, NULL);
     pthread_cond_init(&data.cond_var, NULL);
     data.word_ready  = 0;
@@ -66,21 +65,25 @@ int main(int argc, char *argv[])
         perror("Error creating child thread");
         exit(EXIT_FAILURE);
     }
+
     if(pthread_create(&parent_thread, NULL, parent_process, (void *)&data) != 0)
     {
         perror("Error creating parent thread");
         exit(EXIT_FAILURE);
     }
+
     if(pthread_join(child_thread, NULL) != 0)
     {
         perror("Error joining child thread");
         exit(EXIT_FAILURE);
     }
+
     if(pthread_join(parent_thread, NULL) != 0)
     {
         perror("Error joining parent thread");
         exit(EXIT_FAILURE);
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -88,7 +91,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -109,14 +114,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -136,6 +144,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -153,6 +162,7 @@ static void send_word(const char *word, struct shared_data *data)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     while(data->word_ready)
     {
         if(pthread_cond_wait(&data->cond_var, &data->mutex) != 0)
@@ -161,10 +171,12 @@ static void send_word(const char *word, struct shared_data *data)
             exit(EXIT_FAILURE);
         }
     }
+
     if(data->shared_word != NULL)
     {
         free(data->shared_word);
     }
+
     if(word == NULL)
     {
         data->shared_word = NULL;
@@ -172,18 +184,22 @@ static void send_word(const char *word, struct shared_data *data)
     else
     {
         data->shared_word = strdup(word);
+
         if(data->shared_word == NULL)
         {
             perror("Error duplicating word");
             exit(EXIT_FAILURE);
         }
     }
+
     data->word_ready = 1;
+
     if(pthread_cond_signal(&data->cond_var) != 0)
     {
         perror("Error signaling condition variable");
         exit(EXIT_FAILURE);
     }
+
     pthread_mutex_unlock(&data->mutex);
 }
 
@@ -198,35 +214,39 @@ static void *child_process(void *arg)
 
     data = (struct shared_data *)arg;
     file = fopen(data->file_path, "re");
+
     if(file == NULL)
     {
         perror("Error opening file");
         exit(EXIT_FAILURE);
     }
+
     while(fgets(line, sizeof(line), file) != NULL)
     {
         line[strcspn(line, "\n")] = '\0'; // Remove the newline character if present
         token = strtok_r(line, " \t", &saveptr);
+
         while(token != NULL)
         {
             send_word(token, data);
             token = strtok_r(NULL, " \t", &saveptr);
         }
     }
+
     send_word(NULL, data);
+
     if(fclose(file) != 0)
     {
         perror("Error closing file");
         exit(EXIT_FAILURE);
     }
+
     pthread_exit(NULL);
 }
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void *parent_process(void *arg)
 {
     struct shared_data *data;
@@ -252,22 +272,26 @@ static void *parent_process(void *arg)
                 exit(EXIT_FAILURE);
             }
         }
+
         data->word_ready = 0;
+
         if(pthread_cond_signal(&data->cond_var) != 0)
         {
             perror("Error signaling condition variable");
             exit(EXIT_FAILURE);
         }
+
         pthread_mutex_unlock(&data->mutex);
         word = data->shared_word;
+
         if(word == NULL)
         {
             break;
         }
+
         printf("Parent: received word: %s\n", word);
     }
+
     pthread_exit(NULL);
 }
-
-
 #pragma GCC diagnostic pop

@@ -22,7 +22,9 @@
 
 int main(void)
 {
-    int stdout_dup_fd = dup(STDOUT_FILENO);     // NOLINT(android-cloexec-dup)
+    int stdout_dup_fd;
+
+    stdout_dup_fd = dup(STDOUT_FILENO);     // NOLINT(android-cloexec-dup)
 
     if(stdout_dup_fd == -1)
     {

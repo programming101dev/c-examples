@@ -33,13 +33,14 @@ int main(void)
     pthread_t thread_id;
     int       result;
 
-    // Create the thread
     result = pthread_create(&thread_id, NULL, print_numbers, NULL);
+
     if(result != 0)
     {
         perror("Thread creation failed");
         return 1;
     }
+
     printf("Main is working\n");
     sleep(2);
     printf("Main is still working\n");
@@ -49,14 +50,13 @@ int main(void)
     // Wait for the thread to finish execution
     pthread_join(thread_id, NULL);
     printf("Thread execution completed.\n");
+
     return EXIT_SUCCESS;
 }
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void *print_numbers(void *arg)
 {
     // TODO pass the NUMBERS_LEN in the arg variable
@@ -69,6 +69,4 @@ static void *print_numbers(void *arg)
     // The thread returns NULL upon completion
     return NULL;
 }
-
-
 #pragma GCC diagnostic pop

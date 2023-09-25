@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
 {
     char         *seconds_str;
     unsigned int seconds;
+
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
@@ -60,7 +61,9 @@ int main(int argc, char *argv[])
     {
         // Put any other processing you want here.
     }
+
     printf("Exiting.\n");
+
     return EXIT_SUCCESS;
 }
 
@@ -68,7 +71,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -89,14 +94,17 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *seconds = argv[optind];
 }
 
@@ -107,6 +115,7 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, u
     {
         usage(binary_name, EXIT_FAILURE, "The seconds are required.");
     }
+
     *seconds = parse_unsigned_int(binary_name, seconds_str);
 }
 
@@ -115,8 +124,10 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
     char      *endptr;
     uintmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoumax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
@@ -133,6 +144,7 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
     }
+
     return (unsigned int)parsed_value;
 }
 
@@ -143,6 +155,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <seconds>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -154,6 +167,7 @@ static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -162,8 +176,10 @@ static void setup_signal_handler(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
+
     if(sigaction(SIGALRM, &sa, NULL) == -1)
     {
         perror("sigaction");
@@ -174,14 +190,11 @@ static void setup_signal_handler(void)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void alarm_handler(int signal_number)
 {
     const char *message = "Alarm received!\n";
+
     write(STDERR_FILENO, message, strlen(message));
     alarm_received = 1;
 }
-
-
 #pragma GCC diagnostic pop

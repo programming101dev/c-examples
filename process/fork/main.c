@@ -40,10 +40,12 @@ int main(int argc, char *argv[])
     char         *seconds_str;
     unsigned int seconds;
     pid_t        pid;
+
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
     pid = fork();
+
     if(pid == -1)
     {
         perror("Error creating child process");
@@ -63,6 +65,7 @@ int main(int argc, char *argv[])
         sleep(seconds);
         printf("Parent process finished.\n");
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -70,7 +73,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "hs:")) != -1)
     {
         switch(opt)
@@ -116,8 +121,10 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
     char      *endptr;
     uintmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoumax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
@@ -134,6 +141,7 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
     }
+
     return (unsigned int)parsed_value;
 }
 
@@ -144,6 +152,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <seconds>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

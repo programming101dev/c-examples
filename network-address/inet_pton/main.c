@@ -55,7 +55,9 @@ int main(void)
     {
         // Print the IPv6 address as an array of unsigned bytes
         unsigned char *bytes = (unsigned char *)&ipv6_addr;
+
         printf("IPv6 Address: ");
+
         for(size_t i = 0; i < sizeof(ipv6_addr); i++)
         {
             printf("%02x", bytes[i]);
@@ -64,11 +66,13 @@ int main(void)
                 printf(":");
             }
         }
+
         printf("\n");
     }
     else
     {
         printf("Invalid IPv6 Address: %s\n", ipv6_address_str);
     }
+
     return EXIT_SUCCESS;
 }

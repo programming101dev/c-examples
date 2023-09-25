@@ -33,9 +33,11 @@ int main(void)
     const char goodNumber[]     = "12345.6789";
     const char leftoverNumber[] = "42.8857hello";
     const char badNumber[]      = "abcde";
+
     convert(goodNumber);
     convert(leftoverNumber);
     convert(badNumber);
+
     return EXIT_SUCCESS;
 }
 
@@ -45,11 +47,11 @@ static void convert(const char *str)
     double result;
     char   *endptr;
     double tolerance;
+
     errno     = 0;
     result    = strtod(str, &endptr);
-
-    // Check for conversion errors
     tolerance = TOLLERANCE;
+
     if((errno == ERANGE && (fabs(result - HUGE_VAL) < tolerance || fabs(result + HUGE_VAL) < tolerance)) || (errno != 0 && fabs(result) < tolerance))
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
@@ -72,5 +74,6 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Result is HUGE_VAL or -HUGE_VAL\n");
     }
+
     printf("Result: %f\n", result);
 }

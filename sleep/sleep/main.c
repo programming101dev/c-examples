@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 {
     char         *seconds_str;
     unsigned int seconds;
+
     seconds_str = NULL;
     parse_arguments(argc, argv, &seconds_str);
     handle_arguments(argv[0], seconds_str, &seconds);
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
     printf("Sleeping for %u seconds...\n", seconds);
     sleep(seconds);
     printf("Program woke up!\n");
+
     return EXIT_SUCCESS;
 }
 
@@ -52,7 +54,8 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
 
     // Parse command-line options
     while((opt = getopt(argc, argv, "hs:")) != -1)
@@ -75,14 +78,17 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *seconds = argv[optind];
 }
 
@@ -104,8 +110,10 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
     char      *endptr;
     uintmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoumax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing unsigned integer.");
@@ -123,11 +131,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range.");
     }
 
-    // Now we will verify that the parsed_value fits within an unsigned int.
-    if(parsed_value > (uintmax_t)UINT_MAX)
-    {
-        usage(binary_name, EXIT_FAILURE, "Unsigned integer does not fit within an unsigned int.");
-    }
     return (unsigned int)parsed_value;
 }
 
@@ -138,6 +141,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <seconds>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

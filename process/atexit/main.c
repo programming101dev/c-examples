@@ -30,6 +30,7 @@ int main(void)
     atexit(exit_handler2);
     atexit(exit_handler3);
     printf("Main function executing.\n");
+
     return EXIT_SUCCESS;
 }
 

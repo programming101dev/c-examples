@@ -26,6 +26,7 @@ int main(void)
 {
     char   buffer[BUFFER_SIZE];
     size_t bytesRead;
+
     buffer[0] = '\0';
     printf("Enter some text (press Ctrl+D to stop):\n");
 
@@ -44,5 +45,6 @@ int main(void)
         // Clear the buffer
         buffer[0] = '\0';
     }
+
     return EXIT_SUCCESS;
 }

@@ -22,14 +22,17 @@
 #include <string.h>
 
 
-#define NUM_THREADS 10
-// Struct to hold shared data (shared variable and mutex)
 struct thread_data
 {
     int             *sharedVariable;
     pthread_mutex_t *mutex;
 };
+
+
 static void *thread_function(void *arg);
+
+
+#define NUM_THREADS 10
 
 
 // TODO: is there a way to make it so that trylock doesn't succeed?
@@ -42,16 +45,19 @@ int main(void)
     int                sharedVariable;
     int                i;
     struct thread_data data;
+
     if(pthread_mutex_init(&mutex, NULL) != 0)
     {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
         return EXIT_FAILURE;
     }
+
     sharedVariable = 0; // Local shared variable for main thread
 
     // Create multiple threads
     data.sharedVariable = &sharedVariable;
     data.mutex          = &mutex;
+
     for(i = 0; i < NUM_THREADS; i++)
     {
         if(pthread_create(&threads[i], NULL, thread_function, (void *)&data) != 0)
@@ -69,6 +75,7 @@ int main(void)
 
     // Destroy the mutex after all threads are done using it
     pthread_mutex_destroy(&mutex);
+
     return EXIT_SUCCESS;
 }
 
@@ -77,7 +84,9 @@ static void *thread_function(void *arg)
 {
     pthread_t          tid;
     uintptr_t          tid_val;
-    struct thread_data *data = (struct thread_data *)arg;
+    struct thread_data *data;
+
+    data = (struct thread_data *)arg;
 
     // Attempt to lock the mutex before accessing the shared variable
     if(pthread_mutex_trylock(data->mutex) != 0)
@@ -92,14 +101,11 @@ static void *thread_function(void *arg)
     // Print the thread ID and shared variable value
     tid                      = pthread_self();
     memcpy(&tid_val, &tid, sizeof(uintptr_t));
-    printf("Thread %"
-    PRIuMAX
-    ": Shared variable value: %d\n", (uintmax_t)tid_val, *(data->sharedVariable));
+    printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t)tid_val, *(data->sharedVariable));
 
     // Unlock the mutex after finishing the critical section
     pthread_mutex_unlock(data->mutex);
 
     // Exit the thread
     pthread_exit(NULL);
-    return NULL; // Added for completeness, pthread_exit doesn't return
 }

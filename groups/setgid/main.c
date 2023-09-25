@@ -145,7 +145,7 @@ static gid_t get_gid_t_max(void)
 
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
-    gid_t     max = get_gid_t_max();
+    gid_t     max;
     char      *endptr;
     uintmax_t parsed_value;
 
@@ -162,6 +162,8 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
+    max = get_gid_t_max();
 
     if(parsed_value > max)
     {

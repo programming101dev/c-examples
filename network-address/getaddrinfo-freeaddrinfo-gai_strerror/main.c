@@ -38,10 +38,12 @@ int main(int argc, char *argv[])
 {
     char *host_name;
     int  result;
+
     host_name = NULL;
     parse_arguments(argc, argv, &host_name);
     handle_arguments(argv[0], host_name);
     result = resolve_hostname_to_ip(host_name);
+
     return result;
 }
 
@@ -72,6 +74,7 @@ static void parse_arguments(int argc, char *argv[], char **host_name)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The host name is required");
@@ -80,6 +83,7 @@ static void parse_arguments(int argc, char *argv[], char **host_name)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *host_name = argv[optind];
 }
 
@@ -99,6 +103,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <host name>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -113,11 +118,12 @@ static int resolve_hostname_to_ip(const char *hostname)
     struct addrinfo *res;
     int             error;
     char            ipstr[INET6_ADDRSTRLEN];
+
     memset(&hints, 0, sizeof(hints));
     hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM; // Use TCP socket type
-
     error = getaddrinfo(hostname, NULL, &hints, &result);
+
     if(error != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
@@ -132,6 +138,7 @@ static int resolve_hostname_to_ip(const char *hostname)
         void                    *addr;
         const char              *ipver;
         struct sockaddr_storage temp;
+
         if(res->ai_family == AF_INET)
         {
             memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_in));
@@ -151,6 +158,7 @@ static int resolve_hostname_to_ip(const char *hostname)
             addr  = NULL;
             ipver = NULL;
         }
+
         if(addr)
         {
             inet_ntop(res->ai_family, addr, ipstr, sizeof(ipstr));
@@ -161,6 +169,8 @@ static int resolve_hostname_to_ip(const char *hostname)
             fprintf(stderr, "Unsupported address family: %d\n", res->ai_family);
         }
     }
+
     freeaddrinfo(result);
+
     return EXIT_SUCCESS;
 }

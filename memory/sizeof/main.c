@@ -50,5 +50,6 @@ int main(void)
     printf("Size of pid_t: %zu\n", sizeof(pid_t));
     printf("Size of uid_t: %zu\n", sizeof(uid_t));
     printf("Size of gid_t: %zu\n", sizeof(gid_t));
+
     return EXIT_SUCCESS;
 }

@@ -46,6 +46,7 @@ int main(void)
     srandom(seed);
     printf("Third sequence\n");
     print_random_numbers(COUNT);
+
     return EXIT_SUCCESS;
 }
 
@@ -54,7 +55,9 @@ static void print_random_numbers(size_t count)
 {
     for(size_t i = 1; i <= count; i++)
     {
-        long randomValue = random();
-        printf("Random number %zu: %ld\n", i, randomValue);
+        long random_value;
+
+        random_value = random();
+        printf("Random number %zu: %ld\n", i, random_value);
     }
 }

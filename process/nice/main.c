@@ -41,26 +41,24 @@ int main(int argc, char *argv[])
     pid_t pid;
     int   current_priority;
     int   new_priority;
+
     parse_arguments(argc, argv, &increment_str);
     handle_arguments(argv[0], increment_str, &increment);
-
-    // Get the current process ID
     pid              = getpid();
-
-    // Get the current priority of the process
     current_priority = nice(0);
     printf("Process ID: %d\n", pid);
     printf("Current Priority: %d\n", current_priority);
-
-    // Try to increase the priority by 1 (less favorable)
     errno        = 0;
     new_priority = nice(increment);
+
     if(new_priority == -1 && errno != 0)
     {
         perror("nice");
         return EXIT_FAILURE;
     }
+
     printf("New Priority: %d\n", new_priority);
+
     return EXIT_SUCCESS;
 }
 
@@ -68,7 +66,8 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **increment)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
 
     // Parse command-line options
     while((opt = getopt(argc, argv, "hs:")) != -1)
@@ -91,14 +90,17 @@ static void parse_arguments(int argc, char *argv[], char **increment)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *increment = argv[optind];
 }
 
@@ -109,6 +111,7 @@ static void handle_arguments(const char *binary_name, const char *increment_str,
     {
         usage(binary_name, EXIT_FAILURE, "The increment is required.");
     }
+
     *increment = parse_int(binary_name, increment_str);
 }
 
@@ -117,8 +120,10 @@ static int parse_int(const char *binary_name, const char *str)
 {
     char     *endptr;
     intmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoimax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing integer.");
@@ -136,11 +141,6 @@ static int parse_int(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Integer out of range.");
     }
 
-    // Now we will verify that the parsed_value fits within an int.
-    if(parsed_value > (intmax_t)INT_MAX || parsed_value < (intmax_t)INT_MIN)
-    {
-        usage(binary_name, EXIT_FAILURE, "Integer does not fit within an int.");
-    }
     return (int)parsed_value;
 }
 
@@ -151,6 +151,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <increment>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

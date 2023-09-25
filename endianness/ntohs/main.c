@@ -22,9 +22,11 @@
 
 int main(void)
 {
-        uint16_t network_value = 0x3039;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    uint16_t host_value    = ntohs(network_value);
+    uint16_t network_value;
+    uint16_t host_value;
 
+    network_value = 0x3039;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    host_value    = ntohs(network_value);
     printf("Network value: %hu\n", network_value);
     printf("Host value: %hu\n", host_value);
 

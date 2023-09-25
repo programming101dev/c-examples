@@ -33,9 +33,11 @@ int main(void)
     const char goodNumber[]     = "12345";
     const char leftoverNumber[] = "42hello";
     const char badNumber[]      = "abcde";
+
     convert(goodNumber);
     convert(leftoverNumber);
     convert(badNumber);
+
     return EXIT_SUCCESS;
 }
 
@@ -44,6 +46,7 @@ static void convert(const char *str)
 {
     unsigned long result;
     char          *endptr;
+
     errno  = 0;
     result = strtoul(str, &endptr, BASE_TEN);
 
@@ -64,5 +67,6 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
+
     printf("Result: %lu\n", result);
 }

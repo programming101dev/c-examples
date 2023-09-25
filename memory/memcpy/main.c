@@ -26,7 +26,8 @@
 int main(void)
 {
     // Source data
-    int    source_data[] = {
+    int    source_data[] =
+            {
             1,
             2,
             3,
@@ -34,13 +35,17 @@ int main(void)
     };
     size_t num_elements;
     int    destination_buffer[NUM_ELEMENTS];
+
     num_elements = sizeof(source_data) / sizeof(source_data[0]);
     memcpy(destination_buffer, source_data, num_elements * sizeof(source_data[0]));
     printf("Copied elements: ");
+
     for(size_t i = 0; i < num_elements; i++)
     {
         printf("%d ", destination_buffer[i]);
     }
+
     printf("\n");
+
     return EXIT_SUCCESS;
 }

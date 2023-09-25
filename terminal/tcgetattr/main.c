@@ -26,8 +26,10 @@ static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_
 
 int main(void)
 {
-    int            fd = STDIN_FILENO; // Use stdin file descriptor for this example
+    int            fd;
     struct termios term_attr;
+
+    fd = STDIN_FILENO;
 
     // Get the current terminal attributes
     if(tcgetattr(fd, &term_attr) == -1)

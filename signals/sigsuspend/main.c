@@ -39,12 +39,15 @@ int main(void)
     // Block SIGINT temporarily
     sigemptyset(&block_set);
     sigaddset(&block_set, SIGINT);
+
     if(sigprocmask(SIG_BLOCK, &block_set, NULL) < 0)
     {
         perror("Failed to block SIGINT");
         return EXIT_FAILURE;
     }
+
     pid = fork();
+
     if(pid < 0)
     {
         perror("Fork failed");
@@ -86,6 +89,7 @@ static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -94,8 +98,10 @@ static void setup_signal_handler(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
+
     if(sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");

@@ -28,9 +28,10 @@ int main(void)
 {
     const char *path   = ".";
     long       path_max;
-    char       *buffer = NULL;
+    char       *buffer;
     size_t     size;
 
+    buffer   = NULL;
     path_max = pathconf(path, _PC_PATH_MAX);
 
     if(path_max == -1)

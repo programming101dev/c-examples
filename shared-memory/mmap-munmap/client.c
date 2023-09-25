@@ -48,14 +48,18 @@ int main(int argc, char *argv[])
     FILE       *file;
     char       buffer[BUFFER_LEN];
     const char *shm_name = "/my_shared_memory";
-    size_t     page_size = get_page_size();
-    size_t     shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
+    size_t     page_size;
+    size_t     shm_size;
+
+    page_size = get_page_size();
+    shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
 
     // Open and read the file
     file = fopen(file_path, "re");
+
     if(!file)
     {
         perror("fopen");
@@ -64,6 +68,7 @@ int main(int argc, char *argv[])
 
     // Open the shared memory
     shm_fd = shm_open(shm_name, O_RDWR, S_IRUSR | S_IWUSR);
+
     if(shm_fd == -1)
     {
         perror("shm_open");
@@ -72,6 +77,7 @@ int main(int argc, char *argv[])
 
     // Map the shared memory into the process address space
     shm_ptr = (char *)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+
     if(shm_ptr == MAP_FAILED)
     {
         perror("mmap");
@@ -80,6 +86,7 @@ int main(int argc, char *argv[])
 
     // Open the client semaphore
     client_sem = sem_open(CLIENT_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
+
     if(client_sem == SEM_FAILED)
     {
         perror("sem_open");
@@ -88,16 +95,19 @@ int main(int argc, char *argv[])
 
     // Open the server semaphore
     server_sem = sem_open(SERVER_SEM_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
+
     if(server_sem == SEM_FAILED)
     {
         perror("sem_open");
         exit(EXIT_FAILURE);
     }
+
     while(fgets(buffer, sizeof(buffer), file))
     {
         char *word;
         char *saveptr;
         word = strtok_r(buffer, " \t\n", &saveptr);
+
         while(word != NULL)
         {
             if(strlen(word) >= SHM_SIZE)
@@ -134,6 +144,7 @@ int main(int argc, char *argv[])
     sem_close(server_sem);
     munmap(shm_ptr, shm_size);
     close(shm_fd);
+
     return EXIT_SUCCESS;
 }
 
@@ -141,7 +152,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -163,14 +176,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -190,6 +206,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -199,11 +216,15 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static size_t get_page_size(void)
 {
-    long page_size = sysconf(_SC_PAGESIZE);
+    long page_size;
+
+    page_size = sysconf(_SC_PAGESIZE);
+
     if(page_size == -1)
     {
         perror("sysconf");
         exit(EXIT_FAILURE);
     }
+
     return (size_t)page_size;
 }

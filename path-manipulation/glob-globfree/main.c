@@ -35,12 +35,12 @@ int main(int argc, char *argv[])
     char   *pattern;
     glob_t glob_result;
     int    glob_status;
+
     pattern = NULL;
     parse_arguments(argc, argv, &pattern);
     handle_arguments(argv[0], pattern);
-
-    // Use glob with a custom error handler
     glob_status = glob(pattern, GLOB_ERR, custom_error_handler, &glob_result);
+
     if(glob_status != 0)
     {
         if(glob_status == GLOB_NOMATCH)
@@ -55,13 +55,17 @@ int main(int argc, char *argv[])
         {
             fprintf(stderr, "Error matching files.\n");
         }
+
         return EXIT_FAILURE;
     }
+
     for(size_t i = 0; i < glob_result.gl_pathc; ++i)
     {
         printf("Matched file: %s\n", glob_result.gl_pathv[i]);
     }
+
     globfree(&glob_result);
+
     return EXIT_SUCCESS;
 }
 

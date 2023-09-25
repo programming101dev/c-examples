@@ -41,6 +41,7 @@ int main(void)
     {
         return EXIT_FAILURE;
     }
+
     printf("Sending SIGINT\n");
     raise(SIGINT);
 
@@ -56,6 +57,7 @@ int main(void)
 
     // Check for pending signals after unblocking
     printf("SIGINT is %s after unblocking.\n", check_pending_signal() ? "pending" : "not pending");
+
     return EXIT_SUCCESS;
 }
 
@@ -63,7 +65,9 @@ int main(void)
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
+
     memset(&sa, 0, sizeof(sa));
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -72,8 +76,10 @@ static void setup_signal_handler(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
+
     if(sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");
@@ -91,11 +97,13 @@ static void sigint_handler(int signal_number)
 static int check_pending_signal(void)
 {
     sigset_t pending_set;
+
     if(sigpending(&pending_set) != 0)
     {
         perror("Failed to get pending signals");
         return EXIT_FAILURE;
     }
+
     return sigismember(&pending_set, SIGINT);
 }
 
@@ -104,11 +112,13 @@ static int block_signal(int signal_num, sigset_t *block_set)
 {
     sigemptyset(block_set);
     sigaddset(block_set, signal_num);
+
     if(sigprocmask(SIG_BLOCK, block_set, NULL) < 0)
     {
         perror("Failed to block signal");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -120,5 +130,6 @@ static int unblock_signal(sigset_t *block_set)
         perror("Failed to unblock signal");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }

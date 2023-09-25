@@ -24,16 +24,15 @@ int main(void)
 {
     pthread_mutex_t mutex;
 
-    // Initialize the mutex
     if(pthread_mutex_init(&mutex, NULL) != 0)
     {
         fprintf(stderr, "Error: Mutex initialization failed.\n");
-        return 1;
+        return EXIT_FAILURE;
     }
-    printf("mutex created\n");
 
-    // Destroy the mutex after it is no longer needed
+    printf("mutex created\n");
     pthread_mutex_destroy(&mutex);
     printf("mutex destroyed\n");
+
     return EXIT_SUCCESS;
 }

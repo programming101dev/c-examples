@@ -73,6 +73,7 @@ int main(void)
 static void check_file_size(const char *filename, const char *message)
 {
     struct stat st;
+
     if(stat(filename, &st) == 0)
     {
         printf("%s of '%s' is %lld bytes.\n", message, filename, (long long)st.st_size);

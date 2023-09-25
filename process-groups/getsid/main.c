@@ -22,14 +22,20 @@
 
 int main(void)
 {
-    pid_t pid = getpid();
-    pid_t sid = getsid(pid);
+    pid_t pid;
+    pid_t sid;
+
+    pid = getpid();
+    sid = getsid(pid);
+
     if(sid == -1)
     {
         perror("Error getting SID");
         return 1;
     }
+
     printf("Process ID (PID): %d\n", pid);
     printf("Session ID (SID) of the process with PID %d: %d\n", pid, sid);
+
     return EXIT_SUCCESS;
 }

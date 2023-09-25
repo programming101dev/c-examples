@@ -34,11 +34,13 @@ int main(int argc, char *argv[])
 {
     char *needle;
     char *haystack;
+
     needle   = NULL;
     haystack = NULL;
     parse_arguments(argc, argv, &needle, &haystack);
     handle_arguments(argv[0], needle, haystack);
     search_for(needle, haystack);
+
     return EXIT_SUCCESS;
 }
 
@@ -46,7 +48,9 @@ int main(int argc, char *argv[])
 static void search_for(const char *needle, const char *haystack)
 {
     char *found_substring;
+
     found_substring = strstr(haystack, needle);
+
     if(found_substring != NULL)
     {
         printf("Found substring '%s' at position %ld\n", needle, found_substring - haystack);
@@ -61,7 +65,9 @@ static void search_for(const char *needle, const char *haystack)
 static void parse_arguments(int argc, char *argv[], char **needle, char **haystack)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -82,14 +88,17 @@ static void parse_arguments(int argc, char *argv[], char **needle, char **haysta
             }
         }
     }
+
     if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
+
     if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *needle   = argv[optind];
     *haystack = argv[optind + 1];
 }
@@ -101,10 +110,12 @@ static void handle_arguments(const char *binary_name, const char *needle, const 
     {
         usage(binary_name, EXIT_FAILURE, "The needle is required.");
     }
+
     if(haystack == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The haystack is required.");
     }
+
     if(strlen(needle) == 0)
     {
         usage(binary_name, EXIT_FAILURE, "The needle must have at least one character.");
@@ -118,6 +129,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <needle> <haystack>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

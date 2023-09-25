@@ -23,6 +23,7 @@
 int main(void)
 {
     pid_t pid;
+
     pid = getpid();
     printf("Current Process ID: %d\n", pid);
 
@@ -39,5 +40,6 @@ int main(void)
     // However, it's a good practice to include it for completeness.
 
     printf("This line will not be executed if execl is successful.\n");
+
     return EXIT_SUCCESS;
 }

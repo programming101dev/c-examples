@@ -34,9 +34,11 @@ int main(int argc, char *argv[])
     FILE       *file;
     const char buffer[] = "This is an attempt to write.";
     file_path = NULL;
+
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     file = fopen(file_path, "re");
+
     if(file == NULL)
     {
         perror("Error opening the file");
@@ -58,6 +60,7 @@ int main(int argc, char *argv[])
 
     // Close the file
     fclose(file);
+
     return EXIT_SUCCESS;
 }
 
@@ -65,7 +68,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -86,14 +91,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -113,6 +121,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

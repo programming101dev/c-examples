@@ -20,13 +20,6 @@
 #include <stdlib.h>
 
 
-static void *thread_function(void *arg);
-
-
-#define NUM_THREADS 3
-#define ITERATIONS 10
-
-
 struct synchronization_data
 {
     pthread_mutex_t mutex;
@@ -35,10 +28,17 @@ struct synchronization_data
 };
 
 
+static void *thread_function(void *arg);
+
+
+#define NUM_THREADS 3
+#define ITERATIONS 10
+
+
 int main(void)
 {
     pthread_t                   threads[NUM_THREADS];
-int                             rc;
+    int                         rc;
     long                        t;
     struct synchronization_data data;
 
@@ -79,6 +79,7 @@ int                             rc;
     {
         pthread_join(threads[t], NULL);
     }
+
     pthread_mutex_destroy(&data.mutex);
     pthread_cond_destroy(&data.cond_var);
     pthread_exit(NULL);
@@ -88,9 +89,12 @@ int                             rc;
 static void *thread_function(void *arg)
 {
     struct synchronization_data *data;
-    pthread_t                   thread_id = pthread_self();
+    pthread_t                   thread_id;
+
+    thread_id = pthread_self();
 
     data = (struct synchronization_data *)arg;
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wthread-safety-negative"
@@ -105,6 +109,7 @@ static void *thread_function(void *arg)
         pthread_cond_wait(&data->cond_var, &data->mutex);
         printf("Thread %lu is awake and running. Shared data: %d\n", (unsigned long)thread_id, data->shared_data);
     }
+
     pthread_mutex_unlock(&data->mutex);
     pthread_exit(NULL);
 }

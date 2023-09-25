@@ -128,9 +128,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 char *getCurrentWorkingDirectory(long path_max)
 {
     char   *buffer;
-    size_t size    = (size_t)path_max;
+    size_t size;
 
     buffer = NULL;
+    size   = (size_t)path_max;
 
     while(1)
     {

@@ -33,9 +33,11 @@ int main(void)
     const char goodNumber[]     = "12345.6789";
     const char leftoverNumber[] = "42.99989hello";
     const char badNumber[]      = "abcde";
+
     convert(goodNumber);
     convert(leftoverNumber);
     convert(badNumber);
+
     return EXIT_SUCCESS;
 }
 
@@ -45,6 +47,7 @@ static void convert(const char *str)
     long double result;
     char        *endptr;
     long double tolerance;
+
     errno     = 0;
     result    = strtold(str, &endptr);
 
@@ -56,6 +59,7 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Error during conversion: %s\n", strerror(errno));
     }
+
     // Check if the entire string was converted
     if(endptr == str)
     {
@@ -67,5 +71,6 @@ static void convert(const char *str)
     {
         fprintf(stderr, "Extra characters after the number: %s\n", endptr);
     }
+
     printf("Result: %Lf\n", result);
 }

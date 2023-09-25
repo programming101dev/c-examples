@@ -25,13 +25,15 @@ int main(void)
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     // Hard-coded binary representations of an IPv4 address and an IPv6 address
-    unsigned char ipv4_bytes[4] = {
+    unsigned char ipv4_bytes[4] =
+    {
             192,
             168,
             0,
             1
     };
-    unsigned char ipv6_bytes[16] = {
+    unsigned char ipv6_bytes[16] =
+    {
             32,
             1,
             13,
@@ -60,5 +62,6 @@ int main(void)
     // Convert IPv6 address from binary format to presentation format (string)
     inet_ntop(AF_INET6, ipv6_bytes, ipv6_str, sizeof(ipv6_str));
     printf("IPv6 Address: %s\n", ipv6_str);
+
     return EXIT_SUCCESS;
 }

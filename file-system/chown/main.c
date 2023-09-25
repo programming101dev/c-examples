@@ -171,10 +171,11 @@ static uid_t get_uid_t_max(void)
 
 static uid_t parse_uid_t(const char *binary_name, const char *str)
 {
-    uintmax_t max = get_uid_t_max();
+    uintmax_t max;
     char      *endptr;
     uintmax_t parsed_value;
 
+    max           = get_uid_t_max();
     errno         = 0;
     parsed_value  = strtoumax(str, &endptr, BASE_TEN);
 
@@ -234,10 +235,11 @@ static gid_t get_gid_t_max(void)
 
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
-    gid_t     max = get_gid_t_max();
+    gid_t     max;
     char      *endptr;
     uintmax_t parsed_value;
 
+    max           = get_gid_t_max();
     errno         = 0;
     parsed_value  = strtoumax(str, &endptr, BASE_TEN);
 

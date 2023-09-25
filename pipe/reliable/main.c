@@ -27,7 +27,7 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-_Noreturn static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
+static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
 static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
 static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
 _Noreturn static void error_exit(const char *msg);
@@ -49,33 +49,43 @@ int main(int argc, char *argv[])
     pid_t pid;
     sem_t *sem_parent;
     sem_t *sem_child;
+
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     file = fopen(file_path, "r");       // NOLINT(android-cloexec-fopen)
+
     if(file == NULL)
     {
         error_exit("Error opening file");
     }
+
     if(pipe(pipefd) == -1)  // NOLINT(android-cloexec-pipe)
     {
         error_exit("Error creating pipe");
     }
+
     sem_parent = sem_open(SEM_PARENT, O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, 0);
+
     if(sem_parent == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_PARENT semaphore");
     }
+
     sem_child = sem_open(SEM_CHILD, O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, 1);
+
     if(sem_child == SEM_FAILED)
     {
         error_exit("Error creating/opening SEM_CHILD semaphore");
     }
+
     pid = fork();   // NOLINT(android-cloexec-fopen)
+
     if(pid == -1)
     {
         error_exit("Error creating child process");
     }
+
     if(pid == 0)
     {
         child_process(pipefd, file, sem_parent, sem_child);
@@ -85,16 +95,20 @@ int main(int argc, char *argv[])
         fclose(file);
         parent_process(pipefd, sem_parent, sem_child);
     }
+
     sem_unlink(SEM_PARENT);
     sem_unlink(SEM_CHILD);
-    return EXIT_SUCCESS;  // This line will not be executed, but it's here to keep the compiler happy.
+
+    return EXIT_SUCCESS;
 }
 
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -115,14 +129,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -142,6 +159,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -152,13 +170,18 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void write_fully(int fd, const void *buf, size_t count)
 {
     const char *ptr = (const char *)buf;
+
     while(count > 0)
     {
-        ssize_t written_bytes = write(fd, ptr, count);
+        ssize_t written_bytes;
+
+        written_bytes = write(fd, ptr, count);
+
         if(written_bytes < 0)
         {
             error_exit("Error writing fully to pipe");
         }
+
         ptr += written_bytes;
         count -= (size_t)written_bytes;
     }
@@ -167,14 +190,21 @@ static void write_fully(int fd, const void *buf, size_t count)
 
 static void read_fully(int fd, void *buf, size_t count)
 {
-    char *ptr = (char *)buf;
+    char *ptr;
+
+    ptr = (char *)buf;
+
     while(count > 0)
     {
-        ssize_t read_bytes = read(fd, ptr, count);
+        ssize_t read_bytes;
+
+        read_bytes = read(fd, ptr, count);
+
         if(read_bytes < 0)
         {
             error_exit("Error reading fully from pipe");
         }
+
         ptr += read_bytes;
         count -= (size_t)read_bytes;
     }
@@ -185,6 +215,7 @@ static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_p
 {
     printf("Child: sending word of length %u: %s\n", length, word);
     write_fully(pipefd, &length, sizeof(length));
+
     if(length > 0)
     {
         write_fully(pipefd, word, length);
@@ -211,12 +242,15 @@ _Noreturn static void error_exit(const char *msg)
 }
 
 
-_Noreturn static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
+static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
 {
     int     ch;
     char    word[MAX_WORD_LENGTH];
-    uint8_t length = 0;
+    uint8_t length;
+
+    length = 0;
     close(pipefd[0]);
+
     while((ch = fgetc(file)) != EOF)
     {
         if(ch == ' ' || ch == '\n' || ch == '\t')
@@ -237,21 +271,24 @@ _Noreturn static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent
             word[length++] = (char)ch;
         }
     }
+
     if(length > 0)
     {
         word[length] = '\0';
         send_word(pipefd[1], word, length, sem_parent, sem_child);
     }
+
     send_word(pipefd[1], NULL, 0, sem_parent, sem_child);
+
     if(fclose(file) != 0)
     {
         error_exit("Error closing file");
     }
+
     if(close(pipefd[1]) != 0)
     {
         error_exit("Error closing pipe");
     }
-    exit(EXIT_SUCCESS);
 }
 
 
@@ -259,7 +296,9 @@ static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 {
     uint8_t length;
     char    word[MAX_WORD_LENGTH];
+
     close(pipefd[1]);
+
     while(1)
     {
         // Wait for child to write
@@ -267,11 +306,14 @@ static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
         {
             error_exit("Semaphore wait operation failed in parent process");
         }
+
         read_fully(pipefd[0], &length, sizeof(length));
+
         if(length == 0)
         {
             break;
         }
+
         read_fully(pipefd[0], word, length);
         word[length] = '\0';
         printf("Parent: received word of length %u: %s\n", length, word);
@@ -282,6 +324,7 @@ static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
             error_exit("Semaphore post operation failed in parent process");
         }
     }
+
     if(close(pipefd[0]) != 0)
     {
         error_exit("Error closing pipe");

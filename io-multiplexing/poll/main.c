@@ -43,12 +43,15 @@ static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoi
 
 int main(void)
 {
-    int           *client_sockets = NULL;
-    nfds_t        max_clients     = 0;
+    int           *client_sockets;
+    nfds_t        max_clients;
     int           num_ready;
     int           sockfd;
-    struct pollfd *fds            = NULL;
+    struct pollfd *fds;
 
+    client_sockets = NULL;
+    max_clients    = 0;
+    fds            = NULL;
     setup_signal_handler();
     unlink(SOCKET_PATH); // Remove the existing socket file if it exists
     sockfd = socket_create();
@@ -80,7 +83,9 @@ int main(void)
         // Set up the pollfd structures for all client sockets
         for(size_t i = 0; i < max_clients; i++)
         {
-            int sd            = client_sockets[i];
+            int sd;
+
+            sd                = client_sockets[i];
             fds[i + 1].fd     = sd;
             fds[i + 1].events = POLLIN;
         }
@@ -110,7 +115,9 @@ int main(void)
         // Handle incoming data from existing clients
         for(size_t i = 0; i < max_clients; i++)
         {
-            int sd = client_sockets[i];
+            int sd;
+
+            sd = client_sockets[i];
 
             if(fds[i + 1].revents & POLLIN)
             {
@@ -124,7 +131,10 @@ int main(void)
     // Cleanup and close all client sockets
     for(size_t i = 0; i < max_clients; i++)
     {
-        int sd = client_sockets[i];
+        int sd;
+
+        sd = client_sockets[i];
+
         if(sd > 0)
         {
             socket_close(sd);
@@ -153,8 +163,11 @@ static void sigint_handler(int signum)
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients)
 {
     struct sockaddr_un address;
-    socklen_t          client_len = sizeof(address);
-    int                new_socket = accept(server_socket, (struct sockaddr *)&address, &client_len);
+    socklen_t          client_len;
+    int                new_socket;
+
+    client_len = sizeof(address);
+    new_socket = accept(server_socket, (struct sockaddr *)&address, &client_len);
 
     if(new_socket == -1)
     {
@@ -182,7 +195,9 @@ static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_c
 {
     char    word_length;
     char    word[MAX_WORD_LEN];
-    ssize_t valread = read(sd, &word_length, sizeof(word_length));
+    ssize_t valread;
+
+    valread = read(sd, &word_length, sizeof(word_length));
 
     if(valread <= 0)
     {

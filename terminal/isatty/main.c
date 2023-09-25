@@ -22,7 +22,9 @@
 
 int main(void)
 {
-    int fd = fileno(stdin); // Get the file descriptor for stdin
+    int fd;
+
+    fd = fileno(stdin); // Get the file descriptor for stdin
 
     if(isatty(fd))
     {
@@ -32,5 +34,6 @@ int main(void)
     {
         printf("stdin is not a terminal device.\n");
     }
+
     return EXIT_SUCCESS;
 }

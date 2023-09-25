@@ -32,12 +32,15 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char *pattern;
+
     pattern = NULL;
     parse_arguments(argc, argv, &pattern);
     handle_arguments(argv[0], pattern);
+
     for(int i = optind + 1; i < argc; i++)
     {
         const char *filename = argv[i];
+
         if(fnmatch(pattern, filename, 0) != 0)
         {
             printf("Filename '%s' doesn't match the pattern.\n", filename);
@@ -47,6 +50,7 @@ int main(int argc, char *argv[])
             printf("Filename '%s' matches the pattern.\n", filename);
         }
     }
+
     return EXIT_SUCCESS;
 }
 
@@ -54,7 +58,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **pattern)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -75,10 +81,12 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     *pattern = argv[optind];
 }
 
@@ -98,6 +106,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <pattern> <filename1> [filename2 ...]\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

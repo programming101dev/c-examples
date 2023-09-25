@@ -27,6 +27,7 @@ int main(void)
 {
     pthread_t thread1;
     pthread_t thread2;
+
     pthread_create(&thread1, NULL, thread_function, NULL);
     pthread_create(&thread2, NULL, thread_function, NULL);
 
@@ -59,21 +60,19 @@ int main(void)
     {
         printf("Thread 1 and the main thread have different thread IDs.\n");
     }
+
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
     printf("Main thread is done.\n");
+
     return EXIT_SUCCESS;
 }
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-
 static void *thread_function(void *arg)
 {
     return NULL;
 }
-
-
 #pragma GCC diagnostic pop

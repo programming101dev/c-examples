@@ -33,12 +33,14 @@ int main(int argc, char *argv[])
 {
     char *path;
     char *file_name;
+
     path = NULL;
     parse_arguments(argc, argv, &path);
     handle_arguments(argv[0], path);
     file_name = basename(path);
     printf("Original Path: %s\n", path);
     printf("File Name: %s\n", file_name);
+
     return EXIT_SUCCESS;
 }
 
@@ -46,7 +48,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -67,14 +71,17 @@ static void parse_arguments(int argc, char *argv[], char **path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *path = argv[optind];
 }
 
@@ -94,6 +101,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

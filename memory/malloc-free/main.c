@@ -29,12 +29,15 @@ int main(void)
 {
     const size_t num_elements = NUM_ELEMENTS;
     int          *dynamic_array;
+
     dynamic_array = (int *)malloc(num_elements * sizeof(dynamic_array[0]));
+
     if(dynamic_array == NULL)
     {
         perror("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -43,7 +46,9 @@ int main(void)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     free(dynamic_array);
+
     return EXIT_SUCCESS;
 }
 
@@ -54,5 +59,6 @@ static void print_array(const int *arr, size_t size)
     {
         printf("%d ", arr[i]);      // NOLINT(clang-analyzer-core.CallAndMessage)
     }
+
     printf("\n");
 }

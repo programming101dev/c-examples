@@ -174,7 +174,7 @@ static void child_process(int sockfd, const char *file_path)
     FILE    *file;
     int     ch;
     char    word[MAX_WORD_LENGTH];
-    uint8_t length = 0;
+    uint8_t length;
 
     file = fopen(file_path, "re");
 
@@ -182,6 +182,8 @@ static void child_process(int sockfd, const char *file_path)
     {
         error_exit("Error opening file");
     }
+
+    length = 0;
 
     while((ch = fgetc(file)) != EOF)
     {

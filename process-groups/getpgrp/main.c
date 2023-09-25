@@ -22,9 +22,13 @@
 
 int main(void)
 {
-    pid_t pid  = getpid();
-    pid_t pgid = getpgrp();
+    pid_t pid;
+    pid_t pgid;
+
+    pid  = getpid();
+    pgid = getpgrp();
     printf("Process ID (PID): %d\n", pid);
     printf("Process Group ID (PGID) of the calling process: %d\n", pgid);
+
     return EXIT_SUCCESS;
 }

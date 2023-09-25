@@ -31,13 +31,16 @@ int main(void)
 {
     int *dynamic_array;
     size_t num_elements;
+
     num_elements  = NUM_ELEMENTS;
     dynamic_array = (int *)malloc(num_elements * sizeof(int));
+
     if(dynamic_array == NULL)
     {
         perror("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
+
     initialize_array(dynamic_array, num_elements);
     print_array("Initial elements of the array: ", dynamic_array, num_elements);
     num_elements  = (size_t)NUM_ELEMENTS * 2;
@@ -45,6 +48,7 @@ int main(void)
     initialize_array(&dynamic_array[NUM_ELEMENTS], num_elements - NUM_ELEMENTS);
     print_array("Resized elements of the array: ", dynamic_array, num_elements);
     free(dynamic_array);
+
     return EXIT_SUCCESS;
 }
 
@@ -61,10 +65,12 @@ static void initialize_array(int *array, size_t num_elements)
 static void print_array(const char *message, const int *array, size_t num_elements)
 {
     printf("%s", message);
+
     for(size_t i = 0; i < num_elements; i++)
     {
         printf("%d ", array[i]);
     }
+
     printf("\n");
 }
 
@@ -72,12 +78,15 @@ static void print_array(const char *message, const int *array, size_t num_elemen
 static int *resize_array(int *array, size_t new_num_elements)
 {
     int *resized_array;
+
     resized_array = (int *)realloc(array, new_num_elements * sizeof(int));
+
     if(resized_array == NULL)
     {
         perror("Memory reallocation failed\n");
         free(array);
         exit(EXIT_FAILURE);
     }
+
     return resized_array;
 }

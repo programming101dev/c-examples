@@ -28,6 +28,7 @@ int main(void)
         perror("Error setting the vbuf to _IOFBF");
         return EXIT_FAILURE;
     }
+
     printf("This is part one... ");
     sleep(1);
     printf("and this is part two.\n");
@@ -39,6 +40,7 @@ int main(void)
         perror("Error setting the vbuf to _IOLBF");
         return EXIT_FAILURE;
     }
+
     printf("This is part three... ");
     sleep(1);
     printf("and this is part four.\n");
@@ -50,9 +52,11 @@ int main(void)
         perror("Error setting the vbuf to _IONBF");
         return EXIT_FAILURE;
     }
+
     printf("This is part five... ");
     sleep(3);
     printf("and this is part six.\n");
     sleep(3);
+
     return EXIT_SUCCESS;
 }

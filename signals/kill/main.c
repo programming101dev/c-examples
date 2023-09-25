@@ -55,6 +55,7 @@ int main(void)
     };
     pid_t            pid;
     struct sigaction sa;
+
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -63,8 +64,10 @@ int main(void)
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
+
     for(size_t i = 0; i < sizeof(signals_to_handle) / sizeof(signals_to_handle[0]); i++)
     {
         if(sigaction(signals_to_handle[i], &sa, NULL) < 0)
@@ -76,6 +79,7 @@ int main(void)
             printf("Set signal handler for signal %d\n", signals_to_handle[i]);
         }
     }
+
     pid = getpid();
     printf("My process ID is: %d\n", pid);
     printf("Sending SIGUSR1 signal to my own process...\n");
@@ -118,6 +122,7 @@ int main(void)
     while(1)
     {
     }
+
     return EXIT_SUCCESS;
 }
 

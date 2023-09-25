@@ -28,19 +28,14 @@ int main(void)
     display_value(0);
     printf("----\n");
     display_value(UINT8_MAX);
+
     return EXIT_SUCCESS;
 }
 
 
 static void display_value(uint8_t value)
 {
-    printf("Using PRIu8 (unsigned): %"
-    PRIu8
-    "\n", value);
-    printf("Using PRIx8 (hexadecimal): %"
-    PRIx8
-    "\n", value);
-    printf("Using PRIX8 (uppercase hexadecimal): %"
-    PRIX8
-    "\n", value);
+    printf("Using PRIu8 (unsigned): %" PRIu8 "\n", value);
+    printf("Using PRIx8 (hexadecimal): %" PRIx8 "\n", value);
+    printf("Using PRIX8 (uppercase hexadecimal): %" PRIX8 "\n", value);
 }

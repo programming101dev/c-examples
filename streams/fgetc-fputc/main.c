@@ -22,12 +22,15 @@
 int main(void)
 {
     int c;
+
     printf("Please input some text, end with Ctrl-D:\n");
+
     while((c = fgetc(stdin)) != EOF)
     {
         printf("you typed: ");
         putchar(c);
         putchar('\n');
     }
+
     return EXIT_SUCCESS;
 }

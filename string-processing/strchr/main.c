@@ -35,11 +35,14 @@ int main(int argc, char *argv[])
     char *needle_str;
     char *haystack;
     char needle;
+
     needle_str = NULL;
     haystack   = NULL;
+
     parse_arguments(argc, argv, &needle_str, &haystack);
     handle_arguments(argv[0], needle_str, haystack, &needle);
     search_for(needle, haystack);
+
     return EXIT_SUCCESS;
 }
 
@@ -47,7 +50,8 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **needle, char **haystack)
 {
     int opt;
-    opterr     = 0;
+    opterr  = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -68,14 +72,17 @@ static void parse_arguments(int argc, char *argv[], char **needle, char **haysta
             }
         }
     }
+
     if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
+
     if(optind < argc - 2)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *needle   = argv[optind];
     *haystack = argv[optind + 1];
 }
@@ -87,14 +94,17 @@ static void handle_arguments(const char *binary_name, const char *needle_str, co
     {
         usage(binary_name, EXIT_FAILURE, "The needle is required.");
     }
+
     if(haystack == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The haystack is required.");
     }
+
     if(strlen(needle_str) != 1)
     {
         usage(binary_name, EXIT_FAILURE, "The needle must be a single character.");
     }
+
     *needle = needle_str[0];
 }
 
@@ -105,6 +115,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <needle> <haystack>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -115,7 +126,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void search_for(char needle, const char *haystack)
 {
     char *found_char;
+
     found_char = strchr(haystack, needle);
+
     if(found_char != NULL)
     {
         printf("Found character '%c' at position %ld\n", needle, found_char - haystack);

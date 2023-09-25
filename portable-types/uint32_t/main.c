@@ -28,19 +28,14 @@ int main(void)
     display_value(0);
     printf("----\n");
     display_value(UINT32_MAX);
+
     return EXIT_SUCCESS;
 }
 
 
 static void display_value(uint32_t value)
 {
-    printf("Using PRIu16 (unsigned): %"
-    PRIu32
-    "\n", value);
-    printf("Using PRIx16 (hexadecimal): %"
-    PRIx32
-    "\n", value);
-    printf("Using PRIX16 (uppercase hexadecimal): %"
-    PRIX32
-    "\n", value);
+    printf("Using PRIu16 (unsigned): %" PRIu32 "\n", value);
+    printf("Using PRIx16 (hexadecimal): %" PRIx32 "\n", value);
+    printf("Using PRIX16 (uppercase hexadecimal): %" PRIX32 "\n", value);
 }

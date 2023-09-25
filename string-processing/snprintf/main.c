@@ -253,8 +253,10 @@ static void convertChar(char value, char *buffer, size_t bufferSize)
 
 static void convertInt8(int8_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "int8_t: %"
-    PRId8, value);
+    int result;
+
+    result = snprintf(buffer, bufferSize, "int8_t: %" PRId8, value);
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -268,8 +270,10 @@ static void convertInt8(int8_t value, char *buffer, size_t bufferSize)
 
 static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uint8_t: %"
-    PRIu8, value);
+    int result;
+
+    result = snprintf(buffer, bufferSize, "uint8_t: %" PRIu8, value);
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -284,15 +288,16 @@ static void convertUInt8(uint8_t value, char *buffer, size_t bufferSize)
 static void convertInt16(int16_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "int16_t: %"
-    PRId16, value);
+    result = snprintf(buffer, bufferSize, "int16_t: %" PRId16, value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -306,8 +311,10 @@ static void convertInt16(int16_t value, char *buffer, size_t bufferSize)
 
 static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uint16_t: %"
-    PRIu16, value);
+    int result;
+
+    result = snprintf(buffer, bufferSize, "uint16_t: %" PRIu16, value);
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -322,15 +329,16 @@ static void convertUInt16(uint16_t value, char *buffer, size_t bufferSize)
 static void convertInt32(int32_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "int32_t: %"
-    PRId32, value);
+    result = snprintf(buffer, bufferSize, "int32_t: %" PRId32, value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -344,8 +352,10 @@ static void convertInt32(int32_t value, char *buffer, size_t bufferSize)
 
 static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize)
 {
-    int result = snprintf(buffer, bufferSize, "uint32_t: %"
-    PRIu32, value);
+    int result;
+
+    result = snprintf(buffer, bufferSize, "uint32_t: %" PRIu32, value);
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -360,6 +370,7 @@ static void convertUInt32(uint32_t value, char *buffer, size_t bufferSize)
 static void convertInt(int value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -368,6 +379,7 @@ static void convertInt(int value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -382,6 +394,7 @@ static void convertInt(int value, char *buffer, size_t bufferSize)
 static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -390,6 +403,7 @@ static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -404,6 +418,7 @@ static void convertUInt(unsigned int value, char *buffer, size_t bufferSize)
 static void convertLong(long value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -412,6 +427,7 @@ static void convertLong(long value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -426,6 +442,7 @@ static void convertLong(long value, char *buffer, size_t bufferSize)
 static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -434,6 +451,7 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -448,6 +466,7 @@ static void convertULong(unsigned long value, char *buffer, size_t bufferSize)
 static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -456,6 +475,7 @@ static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -470,6 +490,7 @@ static void convertLongLong(long long value, char *buffer, size_t bufferSize)
 static void convertULongLong(unsigned long long value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -478,6 +499,7 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -492,6 +514,7 @@ static void convertULongLong(unsigned long long value, char *buffer, size_t buff
 static void convertFloat(float value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -500,6 +523,7 @@ static void convertFloat(float value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -514,6 +538,7 @@ static void convertFloat(float value, char *buffer, size_t bufferSize)
 static void convertDouble(double value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -522,6 +547,7 @@ static void convertDouble(double value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -536,6 +562,7 @@ static void convertDouble(double value, char *buffer, size_t bufferSize)
 static void convertLongDouble(long double value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -544,6 +571,7 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -558,6 +586,7 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 static void convertBool(bool value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -566,6 +595,7 @@ static void convertBool(bool value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -580,6 +610,7 @@ static void convertBool(bool value, char *buffer, size_t bufferSize)
 static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -588,6 +619,7 @@ static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -602,6 +634,7 @@ static void convertPointer(const void *value, char *buffer, size_t bufferSize)
 static void convertSize(size_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -610,6 +643,7 @@ static void convertSize(size_t value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -624,6 +658,7 @@ static void convertSize(size_t value, char *buffer, size_t bufferSize)
 static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
@@ -632,6 +667,7 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -646,15 +682,16 @@ static void convertSSize(ssize_t value, char *buffer, size_t bufferSize)
 static void convertOff(off_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "off_t: %"
-    PRId64, (int64_t)value);
+    result = snprintf(buffer, bufferSize, "off_t: %" PRId64, (int64_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -669,15 +706,16 @@ static void convertOff(off_t value, char *buffer, size_t bufferSize)
 static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "pid_t: %"
-    PRIdMAX, (intmax_t)value);
+    result = snprintf(buffer, bufferSize, "pid_t: %" PRIdMAX, (intmax_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -692,15 +730,16 @@ static void convertPid(pid_t value, char *buffer, size_t bufferSize)
 static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "uid_t: %"
-    PRIdMAX, (intmax_t)value);
+    result = snprintf(buffer, bufferSize, "uid_t: %" PRIdMAX, (intmax_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';
@@ -715,15 +754,16 @@ static void convertUid(uid_t value, char *buffer, size_t bufferSize)
 static void convertGid(gid_t value, char *buffer, size_t bufferSize)
 {
     int result;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "gid_t: %"
-    PRIdMAX, (intmax_t)value);
+    result = snprintf(buffer, bufferSize, "gid_t: %" PRIdMAX, (intmax_t)value);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     if(result >= 0 && (size_t)result < bufferSize)
     {
         buffer[result] = '\0';

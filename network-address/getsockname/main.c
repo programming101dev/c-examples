@@ -51,15 +51,18 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &host_name, &service);
     handle_arguments(argv[0], host_name, service);
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
     if(sockfd == -1)
     {
         perror("socket");
         return EXIT_FAILURE;
     }
+
     memset(&hints, 0, sizeof(hints));
     hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
     status = getaddrinfo(host_name, service, &hints, &result);
+
     if(status != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
@@ -75,6 +78,7 @@ int main(int argc, char *argv[])
             break; // Connected successfully
         }
     }
+
     if(rp == NULL)
     {
         perror("connect");
@@ -85,6 +89,7 @@ int main(int argc, char *argv[])
 
     // Get the local address and port number associated with the socket
     addrlen = sizeof(local_addr);
+
     if(getsockname(sockfd, (struct sockaddr *)&local_addr, &addrlen) == -1)
     {
         perror("getsockname");
@@ -92,8 +97,10 @@ int main(int argc, char *argv[])
         freeaddrinfo(result);
         return EXIT_FAILURE;
     }
+
     memset(&local_addr, 0, sizeof(local_addr));
     memset(ipstr, 0, sizeof(ipstr));
+
     if(rp->ai_family == AF_INET)
     {
         inet_ntop(AF_INET, &(local_addr.sin_addr), ipstr, INET6_ADDRSTRLEN);
@@ -104,8 +111,10 @@ int main(int argc, char *argv[])
         inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)&local_addr)->sin6_addr), ipstr, INET6_ADDRSTRLEN);
         printf("Local Address (IPv6): %s:%d\n", ipstr, ntohs(local_addr.sin_port));
     }
+
     close(sockfd);
     freeaddrinfo(result);
+
     return EXIT_SUCCESS;
 }
 

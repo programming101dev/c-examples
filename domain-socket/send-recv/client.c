@@ -67,7 +67,9 @@ int main(int argc, char *argv[])
         while(word != NULL)
         {
             uint8_t size;
-            size_t  word_len = strlen(word);
+            size_t  word_len;
+
+            word_len= strlen(word);
 
             if(word_len > UINT8_MAX)
             {

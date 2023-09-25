@@ -35,24 +35,30 @@ int main(int argc, char *argv[])
     char *saveptr;
     char *token;
     char *token_copy;
-    char delimiter[] = " ";
+    char delimiter[] = " "; // TODO read this from the command line
     string = NULL;
+
     parse_arguments(argc, argv, &string);
     handle_arguments(argv[0], string);
     token_copy = strdup(string);
+
     if(token_copy == NULL)
     {
         printf("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
+
     token = strtok_r(token_copy, delimiter, &saveptr);
     printf("Tokenized words:\n");
+
     while(token != NULL)
     {
         printf("Token: %s\n", token);
         token = strtok_r(NULL, delimiter, &saveptr);
     }
+
     free(token_copy);
+
     return EXIT_SUCCESS;
 }
 
@@ -60,7 +66,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **string)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -81,14 +89,17 @@ static void parse_arguments(int argc, char *argv[], char **string)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *string = argv[optind];
 }
 
@@ -108,6 +119,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <string>>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h            Display this help message\n", stderr);

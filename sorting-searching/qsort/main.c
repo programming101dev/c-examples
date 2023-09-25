@@ -33,22 +33,29 @@ int main(void)
             3
     };
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    size_t size  = sizeof(arr) / sizeof(arr[0]);
+    size_t size;
+
+    size = sizeof(arr) / sizeof(arr[0]);
     printf("Original array: ");
+
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
+
     printf("\n");
 
     // Using qsort to sort the array
     qsort(arr, size, sizeof(int), intcmp);
     printf("Sorted array: ");
+
     for(size_t i = 0; i < size; i++)
     {
         printf("%d ", arr[i]);
     }
+
     printf("\n");
+
     return EXIT_SUCCESS;
 }
 
@@ -57,4 +64,3 @@ static int intcmp(const void *a, const void *b)
 {
     return (*(const int *)a - *(const int *)b);
 }
-

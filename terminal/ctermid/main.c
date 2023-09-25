@@ -21,7 +21,10 @@
 
 int main(void)
 {
-    char *terminal_name = ctermid(NULL);
+    char *terminal_name;
+
+    terminal_name = ctermid(NULL);
+
     if(*terminal_name != '\0')
     {
         printf("The current terminal name is: %s\n", terminal_name);
@@ -30,5 +33,6 @@ int main(void)
     {
         printf("Failed to get the current terminal name.\n");
     }
+
     return EXIT_SUCCESS;
 }

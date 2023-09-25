@@ -29,13 +29,17 @@ int main(void)
 {
     const size_t num_elements = 5;
     int          *dynamic_array;
+
     dynamic_array = (int *)malloc(num_elements * sizeof(dynamic_array[0]));
+
     if(dynamic_array == NULL)
     {
         perror("Memory allocation failed\n");
         return EXIT_FAILURE;
     }
+
     printf("Array after malloc:\n");
+
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -44,6 +48,7 @@ int main(void)
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+
     fill_with_random_ints(dynamic_array, num_elements);
     printf("Array after filling with random integers:\n");
     print_array(dynamic_array, num_elements);
@@ -51,6 +56,7 @@ int main(void)
     printf("Array after memset:\n");
     print_array(dynamic_array, num_elements);
     free(dynamic_array);
+
     return EXIT_SUCCESS;
 }
 
@@ -69,6 +75,7 @@ static void print_array(const int *arr, size_t size)
 static void fill_with_random_ints(int *arr, size_t size)
 {
     srand((unsigned int)time(NULL));    // NOLINT(cert-msc32-c,cert-msc51-cpp)
+
     for(size_t i = 0; i < size; i++)
     {
         arr[i] = rand();

@@ -27,12 +27,15 @@ static void print_process_info(const char *name);
 int main(void)
 {
     pid_t pid;
+
     pid = fork();
+
     if(pid == -1)
     {
         perror("Error creating child process");
         return EXIT_FAILURE;
     }
+
     if(pid == 0)
     {
         // This is the child process
@@ -53,8 +56,10 @@ int main(void)
             perror("Error waiting for child process");
             return EXIT_FAILURE;
         }
+
         printf("Parent process finished.\n");
     }
+
     return EXIT_SUCCESS;
 }
 

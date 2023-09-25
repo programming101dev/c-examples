@@ -42,15 +42,18 @@ int main(int argc, char *argv[])
 {
     char   *limit_str;
     rlim_t limit;
+
     limit_str = NULL;
     parse_arguments(argc, argv, &limit_str);
     handle_arguments(argv[0], limit_str, &limit);
     set_core_dump_limit(limit);
+
     if(atexit(abort_handler) != 0)
     {
         perror("Error setting abort handler");
         return EXIT_FAILURE;
     }
+
     printf("Main function executing.\n");
     abort();
 #pragma GCC diagnostic push
@@ -64,7 +67,8 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **limit)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
 
     // Parse command-line options
     while((opt = getopt(argc, argv, "hl:")) != -1)
@@ -111,6 +115,7 @@ static void handle_arguments(const char *binary_name, const char *limit_str, rli
 static rlim_t get_rlim_t_max(void)
 {
     rlim_t value;
+
     if(sizeof(rlim_t) == sizeof(unsigned char))
     {
         value = (rlim_t)UCHAR_MAX;
@@ -137,17 +142,21 @@ static rlim_t get_rlim_t_max(void)
         fprintf(stderr, "Unsupported size of uid_t\n");
         exit(EXIT_FAILURE);
     }
+
     return value;
 }
 
 
 static rlim_t parse_rlim_t(const char *binary_name, const char *str)
 {
-    rlim_t    max = get_rlim_t_max();
+    rlim_t    max;
     char      *endptr;
     uintmax_t parsed_value;
+
+    max           = get_rlim_t_max();
     errno         = 0;
     parsed_value  = strtoumax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing uid_t.");
@@ -158,10 +167,12 @@ static rlim_t parse_rlim_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
     if(parsed_value > (uintmax_t)max)
     {
         usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
     }
+
     return (rlim_t)parsed_value;
 }
 
@@ -172,6 +183,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] [-l limit]\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -189,12 +201,15 @@ static void abort_handler(void)
 static void set_core_dump_limit(rlim_t limit)
 {
     struct rlimit rlim;
+
     rlim.rlim_cur = limit;
     rlim.rlim_max = limit;
+
     if(setrlimit(RLIMIT_CORE, &rlim) == -1)
     {
         perror("Error setting core dump limit");
         exit(EXIT_FAILURE);
     }
+
     printf("Core dump limit set to: \"unlimited\"\n");
 }

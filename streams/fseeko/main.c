@@ -49,16 +49,19 @@ int main(int argc, char *argv[])
     char  *offset_str;
     off_t offset;
     FILE  *file;
+
     file_path  = NULL;
     offset_str = NULL;
     parse_arguments(argc, argv, &file_path, &offset_str);
     handle_arguments(argv[0], file_path, offset_str, &offset);
     file = fopen(file_path, "re");
+
     if(file == NULL)
     {
         perror("Error opening the file");
         return EXIT_FAILURE;
     }
+
     display_file(file, "File contents", 0);
     fseeko(file, 0L, SEEK_SET);
     display_file(file, "\n\nFile contents after SEEK_SET", 0);
@@ -66,6 +69,7 @@ int main(int argc, char *argv[])
     fseeko(file, offset, SEEK_CUR);
     display_file(file, "\n\nFile contents after SEEK_CUR", offset);
     fclose(file);
+
     return EXIT_SUCCESS;
 }
 
@@ -73,7 +77,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path, char **offset)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "ho:")) != -1)
     {
         switch(opt)
@@ -99,14 +105,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **off
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -117,10 +126,12 @@ static void handle_arguments(const char *binary_name, const char *file_path, con
     {
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
+
     if(offset_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The offset is required.");
     }
+
     *offset = parse_off_t(binary_name, offset_str);
 }
 
@@ -198,12 +209,16 @@ off_t get_off_t_max(void)
 // Function to parse a string into an off_t value with bounds checking
 off_t parse_off_t(const char *binary_name, const char *str)
 {
-    off_t    min = get_off_t_min();
-    off_t    max = get_off_t_max();
+    off_t    min;
+    off_t    max;
     char     *endptr;
     intmax_t parsed_value;
+
+    min          = get_off_t_min();
+    max          = get_off_t_max();
     errno        = 0;
     parsed_value = strtoimax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing off_t.");
@@ -214,10 +229,12 @@ off_t parse_off_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
     if(parsed_value < min || parsed_value > max)
     {
         usage(binary_name, EXIT_FAILURE, "off_t value out of range.");
     }
+
     return (off_t)parsed_value;
 }
 
@@ -228,6 +245,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h           Display this help message\n", stderr);
@@ -239,7 +257,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void display_file(FILE *file, const char *message, off_t offset)
 {
     char ch;
+
     printf("%s " D_OFF_FORMAT ":\n\n", message, offset);
+
     while(fread(&ch, sizeof(ch), 1, file) > 0)
     {
         printf("%c", ch);

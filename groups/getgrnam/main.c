@@ -70,6 +70,7 @@ static void parse_arguments(int argc, char *argv[], char **group_name)
             case '?':
             {
                 char message[UNKNOWN_OPTION_MESSAGE_LEN];
+
                 snprintf(message, sizeof(message), "Unknown option '-%c'.", optopt);
                 usage(argv[0], EXIT_FAILURE, message);
             }

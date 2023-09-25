@@ -67,14 +67,18 @@ int main(void)
 
     while(!exit_flag)
     {
-        // Allocate memory for the fds array
-        fds = (struct pollfd *)realloc(fds, (max_clients + 1) * sizeof(struct pollfd));
+        struct pollfd *temp_fds;
 
-        if(fds == NULL)
+        temp_fds = (struct pollfd *)realloc(fds, (max_clients + 1) * sizeof(struct pollfd));
+
+        if(temp_fds == NULL)
         {
             perror("Realloc error");
+            free(fds);
             exit(EXIT_FAILURE);
         }
+
+        fds = temp_fds;
 
         // Set up the pollfd structure for the server socket
         fds[0].fd     = sockfd;

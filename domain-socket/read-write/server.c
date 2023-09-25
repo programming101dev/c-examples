@@ -120,7 +120,11 @@ static int socket_create(void)
 {
     int sockfd;
 
+#ifdef SOCK_CLOEXEC
     sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+#else
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+#endif
 
     if(sockfd == -1)
     {

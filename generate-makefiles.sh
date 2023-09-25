@@ -1036,7 +1036,7 @@ generate_makefile() {
     echo "SUPPORTED_SANITIZER_FLAGS=${SUPPORTED_SANITIZER_FLAGS[@]}" >> Makefile
     echo "SUPPORTED_ANALYZER_FLAGS=${SUPPORTED_ANALYZER_FLAGS[@]}" >> Makefile
     echo "SUPPORTED_DEBUG_FLAGS=${SUPPORTED_DEBUG_FLAGS[@]}" >> Makefile
-    echo "CLANG_TIDY_CHECKS=-checks=*,-llvmlibc-restrict-system-libc-headers,-altera-struct-pack-align,-readability-identifier-length,-altera-unroll-loops,-cppcoreguidelines-init-variables,-cert-err33-c,-modernize-macro-to-enum,-bugprone-easily-swappable-parameters,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-altera-id-dependent-backward-branch,-concurrency-mt-unsafe,-misc-unused-parameters,-hicpp-signed-bitwise,-google-readability-todo,-cert-msc30-c,-cert-msc50-cpp,-readability-function-cognitive-complexity,-clang-analyzer-security.insecureAPI.strcpy,-cert-env33-c,-android-cloexec-accept,-clang-analyzer-security.insecureAPI.rand" >> Makefile
+    echo "CLANG_TIDY_CHECKS=-checks=*,-llvmlibc-restrict-system-libc-headers,-altera-struct-pack-align,-readability-identifier-length,-altera-unroll-loops,-cppcoreguidelines-init-variables,-cert-err33-c,-modernize-macro-to-enum,-bugprone-easily-swappable-parameters,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-altera-id-dependent-backward-branch,-concurrency-mt-unsafe,-misc-unused-parameters,-hicpp-signed-bitwise,-google-readability-todo,-cert-msc30-c,-cert-msc50-cpp,-readability-function-cognitive-complexity,-clang-analyzer-security.insecureAPI.strcpy,-cert-env33-c,-android-cloexec-accept,-clang-analyzer-security.insecureAPI.rand,-misc-include-cleaner" >> Makefile
     echo "LIBRARIES=${LIBRARIES}" >> Makefile
     echo "PROGRAMS=" >> Makefile
     echo "LIBS=" >> Makefile
@@ -1091,7 +1091,7 @@ generate_makefile() {
 
     # Add a lint rule to remove all generated binaries and libraries
     echo -e "\nlint:" >> Makefile
-	  echo -e "\t@clang-tidy \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(LIBRARIES)" >> Makefile
+	  echo -e "\t@\$(CLANGTIDY) \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(LIBRARIES)" >> Makefile
 
     # Add an "all" rule to build all programs and libraries
     echo -e "\nall: \$(PROGRAMS) \$(LIBS) lint" >> Makefile

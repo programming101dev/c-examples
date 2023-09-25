@@ -51,7 +51,11 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &server_address, &service);
     handle_arguments(argv[0], server_address, service);
     // TODO: this should be AF_INET or AF_INET6
+#ifdef SOCK_CLOEXEC
     sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+#else
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+#endif
 
     if(sockfd == -1)
     {

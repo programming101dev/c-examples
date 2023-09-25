@@ -70,7 +70,20 @@ int main(void)
 
     for(unsigned int ch = 0; ch <= INT8_MAX; ch++)
     {
-        printf("%c    | ", isprint((int)ch) ? (char)ch : ' ');
+        char c;
+        char lower;
+        char upper;
+
+        if(isprint((int)ch))
+        {
+            c = (char)ch;
+        }
+        else
+        {
+            c = ' ';
+        }
+
+        printf("%c    | ", c);
         print_binary(ch);
         printf(" | %3o | %3u | %3X | ", ch, ch, ch);
 
@@ -79,7 +92,18 @@ int main(void)
             print_info(&info[i], (int)ch);
         }
 
-        printf("%c     | %c     |\n", isprint((int)ch) ? tolower((int)ch) : ' ', isprint((int)ch) ? toupper((int)ch) : ' ');
+        if(isprint((int)ch))
+        {
+            lower = (char)tolower((int)ch);
+            upper = (char)toupper((int)ch);
+        }
+        else
+        {
+            lower = ' ';
+            upper = ' ';
+        }
+
+        printf("%c     | %c     |\n", lower, upper);
     }
 
     return EXIT_SUCCESS;

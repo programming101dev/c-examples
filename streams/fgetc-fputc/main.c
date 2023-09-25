@@ -21,14 +21,14 @@
 
 int main(void)
 {
-    int c;
+    int ch;
 
     printf("Please input some text, end with Ctrl-D:\n");
 
-    while((c = fgetc(stdin)) != EOF)
+    while((ch = (int)fgetc(stdin)) != EOF)
     {
         printf("you typed: ");
-        putchar(c);
+        putchar(ch);
         putchar('\n');
     }
 

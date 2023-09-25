@@ -857,7 +857,7 @@ populate_supported_flags() {
       "-Wwritable-strings"
       "-Wzero-length-array"
       "-Wc++-compat"
-      "-Wstrict-overflow"
+#      "-Wstrict-overflow"
       "-Wstrict-overflow=4"
       "-Wabi"
 # these need special support for the makefile      "-W#pragma-messages"

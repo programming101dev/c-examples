@@ -25,11 +25,11 @@ int main(void)
 
     printf("Please input some text, end with Ctrl-D:\n");
 
-    while((ch = (int)fgetc(stdin)) != EOF)
+    while((ch = fgetc(stdin)) != EOF)
     {
         printf("you typed: ");
         putchar(ch);
-        putchar('\n');
+        putchar((int)'\n');
     }
 
     return EXIT_SUCCESS;

@@ -65,6 +65,7 @@ static void show_limit(int resource, const char *name)
     {
         printf("%s:\n", name);
         printf("\tCurrent soft limit: ");
+
         if(rlim.rlim_cur == RLIM_INFINITY)
         {
             printf("unlimited\n");
@@ -73,7 +74,9 @@ static void show_limit(int resource, const char *name)
         {
             printf("%lld bytes\n", (long long)rlim.rlim_cur);
         }
+
         printf("\tCurrent hard limit: ");
+
         if(rlim.rlim_max == RLIM_INFINITY)
         {
             printf("unlimited\n");

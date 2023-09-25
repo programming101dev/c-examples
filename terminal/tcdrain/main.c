@@ -28,6 +28,7 @@ int main(void)
 {
     struct termios options;
     char           message[MESSAGE_LEN];
+
     tcgetattr(STDOUT_FILENO, &options);
     cfsetispeed(&options, B9600);
     cfsetospeed(&options, B9600);
@@ -49,5 +50,6 @@ int main(void)
         perror("Error waiting for data to be transmitted");
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }

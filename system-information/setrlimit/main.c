@@ -51,6 +51,7 @@ int main(void)
 static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit)
 {
     struct rlimit rlim;
+
     rlim.rlim_cur = soft_limit;
     rlim.rlim_max = hard_limit;
     printf("Resource: %s\n", name);

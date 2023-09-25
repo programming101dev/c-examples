@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     speed_t        output_baud_rate;
     speed_t        new_output_baud_rate;
     struct termios term;
+
     speed_str = NULL;
     parse_arguments(argc, argv, &speed_str);
     handle_arguments(argv[0], speed_str, &new_output_baud_rate);
@@ -50,30 +51,35 @@ int main(int argc, char *argv[])
     if(tcgetattr(STDIN_FILENO, &term) == -1)
     {
         perror("tcgetattr");
-        return 1;
+        return EXIT_FAILURE;
     }
 
     // Get the current output baud rate
     output_baud_rate = cfgetospeed(&term);
+
     if(output_baud_rate == (speed_t) - 1)
     {
         perror("cfgetospeed");
-        return 1;
+        return EXIT_FAILURE;
     }
+
     printf("Current output baud rate: %lu\n", (unsigned long)output_baud_rate);
+
     if(cfsetospeed(&term, new_output_baud_rate) == -1)
     {
         perror("cfsetospeed");
-        return 1;
+        return EXIT_FAILURE;
     }
+
     printf("New output baud rate: %lu\n", (unsigned long)new_output_baud_rate);
 
     // Apply the updated terminal attributes
     if(tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
     {
         perror("tcsetattr");
-        return 1;
+        return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
 

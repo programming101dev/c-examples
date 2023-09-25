@@ -28,7 +28,8 @@ int main(void)
     struct tm timeinfo;
     time_t    result_time;
     char      buffer[BUFFER_LEN];
-// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
+    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     timeinfo.tm_sec   = 17;
     timeinfo.tm_min   = 30;
     timeinfo.tm_hour  = 12;
@@ -40,12 +41,15 @@ int main(void)
 
     // Convert the timeinfo struct to a time_t value
     result_time = mktime(&timeinfo);
+
     if(result_time == -1)
     {
         perror("Error converting time");
         return EXIT_FAILURE;
     }
+
     strftime(buffer, sizeof(buffer), "Converted time: %Y-%m-%d %H:%M:%S\n", &timeinfo);
     printf("%s", buffer);
+
     return EXIT_SUCCESS;
 }

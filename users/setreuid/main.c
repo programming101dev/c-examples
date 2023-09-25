@@ -41,17 +41,21 @@ int main(int argc, char *argv[])
     char  *euser_id;
     uid_t uid;
     uid_t euid;
+
     user_id  = NULL;
     euser_id = NULL;
     parse_arguments(argc, argv, &user_id, &euser_id);
     handle_arguments(argv[0], user_id, euser_id, &uid, &euid);
+
     if(setreuid(uid, euid) == -1)
     {
         perror("setreuid");
         return EXIT_FAILURE;
     }
+
     printf("Real UID: %u\n", getuid());
     printf("Effective UID: %u\n", geteuid());
+
     return EXIT_SUCCESS;
 }
 
@@ -59,7 +63,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **user_id, char **euser_id)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "hu:e:")) != -1)
     {
         switch(opt)
@@ -90,6 +96,7 @@ static void parse_arguments(int argc, char *argv[], char **user_id, char **euser
             }
         }
     }
+
     if(optind < argc)
     {
         usage(argv[0], EXIT_FAILURE, "Unexpected extra arguments");
@@ -103,10 +110,12 @@ static void handle_arguments(const char *binary_name, const char *user_id, char 
     {
         usage(binary_name, EXIT_FAILURE, "The user id are required.");
     }
+
     if(euser_id == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The effective user id are required.");
     }
+
     *uid  = parse_uid_t(binary_name, user_id);
     *euid = parse_uid_t(binary_name, euser_id);
 }
@@ -115,6 +124,7 @@ static void handle_arguments(const char *binary_name, const char *user_id, char 
 static uid_t get_uid_t_max(void)
 {
     uid_t value;
+
     if(sizeof(uid_t) == sizeof(unsigned char))
     {
         value = (uid_t)UCHAR_MAX;
@@ -141,6 +151,7 @@ static uid_t get_uid_t_max(void)
         fprintf(stderr, "Unsupported size of uid_t\n");
         exit(EXIT_FAILURE);
     }
+
     return value;
 }
 
@@ -165,10 +176,12 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
     if(parsed_value > max)
     {
         usage(binary_name, EXIT_FAILURE, "uid_t value out of range.");
     }
+
     return (uid_t)parsed_value;
 }
 
@@ -179,6 +192,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] -u <user id> -e <effective user id>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h                      Display this help message\n", stderr);
@@ -186,5 +200,3 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -e <effective user id>  Specify the new effective user id\n", stderr);
     exit(exit_code);
 }
-
-

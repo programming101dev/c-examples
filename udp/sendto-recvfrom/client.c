@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     int                     sockfd;
     ssize_t                 bytes_sent;
     struct sockaddr_storage addr;
+
     address  = NULL;
     port_str = NULL;
     message  = NULL;
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
     bytes_sent = sendto(sockfd, message, strlen(message) + 1, 0, (struct sockaddr *)&addr, sizeof(addr));
     printf("Sent %zu bytes: \"%s\"\n", (size_t)bytes_sent, message);
     socket_close(sockfd);
+
     return EXIT_SUCCESS;
 }
 
@@ -68,7 +70,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **address, char **port, char **msg)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -89,14 +93,17 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
             }
         }
     }
+
     if(optind + 1 >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "Too few arguments.");
     }
+
     if(optind < argc - 3)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *address = argv[optind];
     *port    = argv[optind + 1];
     *msg     = argv[optind + 2];
@@ -109,14 +116,17 @@ static void handle_arguments(const char *binary_name, const char *address, char 
     {
         usage(binary_name, EXIT_FAILURE, "The address is required.");
     }
+
     if(port_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The port is required.");
     }
+
     if(message == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The message is required.");
     }
+
     *port = parse_in_port_t(binary_name, port_str);
 }
 
@@ -125,8 +135,10 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
     char      *endptr;
     uintmax_t parsed_value;
+
     errno        = 0;
     parsed_value = strtoumax(str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         perror("Error parsing in_port_t");
@@ -144,6 +156,7 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "in_port_t value out of range.");
     }
+
     return (in_port_t)parsed_value;
 }
 
@@ -154,6 +167,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <address> <port> <message>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -164,6 +178,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
     memset(addr, 0, sizeof(*addr));
+
     if(inet_pton(AF_INET, address, &(((struct sockaddr_in *)addr)->sin_addr)) == 1)
     {
         // IPv4 address
@@ -180,12 +195,15 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
+
     sockfd = socket(domain, type, protocol);
+
     if(sockfd == -1)
     {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
+
     return sockfd;
 }
 
@@ -193,14 +211,17 @@ static int socket_create(int domain, int type, int protocol)
 static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port)
 {
     memset(addr, 0, addr_len);
+
     if(inet_pton(domain, address, addr) != 1)
     {
         perror("Invalid IP address");
         exit(EXIT_FAILURE);
     }
+
     if(domain == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
+
         ipv6_addr = (struct sockaddr_in6 *)addr;
         ipv6_addr->sin6_family = AF_INET6;
         ipv6_addr->sin6_port   = htons(port);
@@ -208,6 +229,7 @@ static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_
     else if(domain == AF_INET)
     {
         struct sockaddr_in *ipv4_addr;
+
         ipv4_addr = (struct sockaddr_in *)addr;
         ipv4_addr->sin_family = AF_INET;
         ipv4_addr->sin_port   = htons(port);

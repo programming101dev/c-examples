@@ -37,6 +37,7 @@ int main(void)
         perror("tcgetattr");
         return 1;
     }
+
     printf("Terminal attributes:\n");
 
     // Input flags

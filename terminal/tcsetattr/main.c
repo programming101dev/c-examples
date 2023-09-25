@@ -54,6 +54,7 @@ int main(void)
     // Read the first character without echoing
     printf("Type the first character: ");
     fflush(stdout);
+
     if(read(STDIN_FILENO, &ch, 1) == 1)
     {
         printf("%c\n", ch);
@@ -61,6 +62,7 @@ int main(void)
 
     // Restore the original terminal settings with ECHO turned on and canonical mode
     term = original_term;
+
     if(tcsetattr(STDIN_FILENO, TCSANOW, &term) != 0)
     {
         perror("tcsetattr");
@@ -70,6 +72,7 @@ int main(void)
     // Read the rest of the characters with echoing
     printf("Type the rest of the characters: ");
     fflush(stdout);
+
     while(1)
     {
         if(read(STDIN_FILENO, &ch, 1) == 1)
@@ -78,10 +81,13 @@ int main(void)
             {
                 break;
             }
+
             printf("%c", (char)ch);
             fflush(stdout); // Force printing without newline
         }
     }
+
     printf("\n");
+
     return EXIT_SUCCESS;
 }

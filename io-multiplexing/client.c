@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
             size_t  word_len;
 
             word_len = strlen(word);
+
             if(word_len > UINT8_MAX)
             {
                 fprintf(stderr, "Word exceeds maximum length\n");
@@ -87,7 +88,7 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
             }
 
-            size             = (uint8_t)word_len;
+            size = (uint8_t)word_len;
             send_word(sockfd, word, size);
             word = strtok(NULL, " \t\n");
         }
@@ -103,7 +104,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
-    opterr     = 0;
+
+    opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -124,14 +127,17 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
             }
         }
     }
+
     if(optind >= argc)
     {
         usage(argv[0], EXIT_FAILURE, "The group id is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *file_path = argv[optind];
 }
 
@@ -151,6 +157,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <file path>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -162,15 +169,19 @@ static void send_word(int sockfd, const char *word, uint8_t length)
 {
     ssize_t         written_bytes;
     struct timespec delay;
+
     printf("Client: sending word of length %u: %s\n", length, word);
     written_bytes = send(sockfd, &length, sizeof(uint8_t), 0);
+
     if(written_bytes < 0)
     {
         error_exit("Error writing word length to socket");
     }
+
     if(length > 0)
     {
         written_bytes = send(sockfd, word, length, 0);
+
         if(written_bytes < 0)
         {
             error_exit("Error writing word to socket");
@@ -195,15 +206,19 @@ static int connect_to_server(const char *path)
 {
     int                sockfd;
     struct sockaddr_un addr;
+
     sockfd = socket_create();
     setup_socket_address(&addr, path);
+
     if(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
     {
         perror("Connection failed");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
+
     printf("Connected to %s\n", path);
+
     return sockfd;
 }
 
@@ -211,12 +226,15 @@ static int connect_to_server(const char *path)
 static int socket_create(void)
 {
     int sockfd;
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+
     if(sockfd == -1)
     {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
+
     return sockfd;
 }
 

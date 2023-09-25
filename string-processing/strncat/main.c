@@ -25,21 +25,20 @@
 
 int main(void)
 {
-    char       str1[BUFFER_LEN];
-    const char *str2    = "World!";
+    char       str[BUFFER_LEN];
 
-    strcpy(str1, "Hello, ");
+    strcpy(str, "Hello, ");
 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #endif
-    strncat(str1, str2, 3);
+    strncat(str, "World!", 3);
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
-    printf("Concatenated string: \"%s\"\n", str1);
+    printf("Concatenated string: \"%s\"\n", str);
 
     return EXIT_SUCCESS;
 }

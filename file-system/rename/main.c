@@ -25,6 +25,7 @@ static void check_file_existence(const char *filename, const char *message);
 
 int main(void)
 {
+    // TODO pass the filenames in on the command line
     const char *old_filename = "old_file.txt";
     const char *new_filename = "new_file.txt";
     FILE       *file;

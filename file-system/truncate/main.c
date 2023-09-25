@@ -30,6 +30,7 @@ static void check_file_size(const char *filename, const char *message);
 
 int main(void)
 {
+    // TODO pass the filename in on the command line
     const char *filename = "example.txt";
     off_t      new_size;
     FILE       *file;

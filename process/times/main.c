@@ -33,6 +33,7 @@ static void printTimes(struct tms tms_data);
 
 int main(void)
 {
+    // TODO pass this in on the command line
     const size_t MAX_NUMBERS    = 100000;
     const size_t NUM_ITERATIONS = 20000;
     pid_t        pid;

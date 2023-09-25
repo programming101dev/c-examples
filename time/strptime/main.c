@@ -25,6 +25,7 @@
 
 int main(void)
 {
+    // TODO pass this in on the command line
     const char *time_str = "2023-08-02 14:30:00";
     const char *format   = "%Y-%m-%d %H:%M:%S";
     struct tm  timeinfo;

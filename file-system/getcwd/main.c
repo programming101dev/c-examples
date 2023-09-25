@@ -26,6 +26,7 @@
 
 int main(void)
 {
+    // TODO pass the filename in on the command line
     const char *path   = ".";
     long       path_max;
     char       *buffer;

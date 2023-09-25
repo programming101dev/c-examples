@@ -27,6 +27,7 @@ static void check_file_existence(const char *filename, const char *message);
 
 int main(void)
 {
+    // TODO pass the filenames in on the command line
     const char *source_filename = "example.txt";
     const char *link_filename   = "hard_link.txt";
 

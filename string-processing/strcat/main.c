@@ -25,11 +25,11 @@
 
 int main(void)
 {
-    char       str1[BUFFER_LEN] = "Hello, ";
-    const char *str2    = "World!";
-    strcat(str1, str2);
+    char       str[BUFFER_LEN];
 
-    printf("Concatenated string: \"%s\"\n", str1);
+    strcpy(str, "Hello, ");
+    strcat(str, "World!");
+    printf("Concatenated string: \"%s\"\n", str);
 
     return EXIT_SUCCESS;
 }

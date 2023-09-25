@@ -22,6 +22,7 @@
 
 int main(void)
 {
+    // TODO pass these in on the command line
     char       templ[] = "/tmp/mytempfileXXXXXX";
     const char *data   = "This is some data that needs to be written to the file.\n";
     int        fd;

@@ -27,6 +27,7 @@ static void fill_with_random_ints(int *arr, size_t size);
 
 int main(void)
 {
+    // TODO pass this in on the command line
     const size_t num_elements = 5;
     int          *dynamic_array;
 

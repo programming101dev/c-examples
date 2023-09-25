@@ -30,6 +30,7 @@
 
 int main(void)
 {
+    // TODO pass these in on the command line
     const char      *ipv4_address_str = "192.168.0.1";
     const char      *ipv6_address_str = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
     struct in_addr  ipv4_addr;

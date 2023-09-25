@@ -79,7 +79,8 @@ static void parse_arguments(int argc, char *argv[], char **host_name)
     {
         usage(argv[0], EXIT_FAILURE, "The host name is required");
     }
-    else if(optind < argc - 1)
+
+    if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }

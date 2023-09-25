@@ -26,6 +26,7 @@
 
 int main(void)
 {
+    // TODO pass this in on the command line
     const char *sem_name = "/example_semaphore";
     sem_t      *semaphore;
     pid_t      pid;

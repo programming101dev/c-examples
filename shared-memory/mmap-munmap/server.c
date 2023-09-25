@@ -41,6 +41,7 @@ int main(void)
     sem_t      *server_sem;
     size_t     page_size;
     size_t     shm_size;
+    // TODO pass this in on the command line
     const char *shm_name = "/my_shared_memory";
 
     page_size = get_page_size();

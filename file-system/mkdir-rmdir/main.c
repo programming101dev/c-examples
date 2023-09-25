@@ -23,6 +23,7 @@
 
 int main(void)
 {
+    // TODO pass the filename in on the command line
     const char *tempdir_template = "example_dir";
 
     if(mkdir(tempdir_template, S_IRWXU) == -1)

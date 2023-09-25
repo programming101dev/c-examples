@@ -26,6 +26,7 @@ void print_permissions(const char *filename);
 
 int main(void)
 {
+    // TODO pass the filename in on the command line
     const char *filename = "file.txt";
     mode_t     new_permissions;
     FILE       *file;

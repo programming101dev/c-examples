@@ -39,7 +39,9 @@ int main(int argc, char *argv[])
 
     for(int i = optind + 1; i < argc; i++)
     {
-        const char *filename = argv[i];
+        char *filename;
+
+        filename = argv[i];
 
         if(fnmatch(pattern, filename, 0) != 0)
         {

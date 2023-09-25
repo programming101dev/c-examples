@@ -28,6 +28,7 @@ static void delete_file(const char *filename);
 
 int main(void)
 {
+    // TODO pass the filenames and content in on the command line
     const char *filename1 = "file1.txt";
     const char *filename2 = "file2.txt";
     const char *content   = "This is a sample file.\n";

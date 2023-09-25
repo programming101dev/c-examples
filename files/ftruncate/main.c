@@ -27,8 +27,10 @@ static void check_file_size(const char *filename, const char *message);
 // TODO - pass the size in on the command line
 #define SIZE 9
 
+
 int main(void)
 {
+    // TODO pass the tempate and content in on the command line
     const char *content   = "This is a sample file.\n";
     char       filename[] = "example_XXXXXX";
     int        fd;

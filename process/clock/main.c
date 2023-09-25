@@ -31,6 +31,7 @@ static long long performCalculation(size_t size, size_t iterations);
 
 int main(void)
 {
+    // TODO pass this in on the command line
     const size_t MAX_NUMBERS    = 100000;
     const size_t NUM_ITERATIONS = 20000;
     double       cpu_time_used;

@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     sem_t      *server_sem;
     FILE       *file;
     char       buffer[BUFFER_LEN];
+    // TODO pass this in on the command line
     const char *shm_name = "/my_shared_memory";
     size_t     page_size;
     size_t     shm_size;

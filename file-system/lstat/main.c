@@ -32,6 +32,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int main(int argc, char *argv[])
 {
     char        *file_path;
+    // TODO pass the filename in on the command line
     const char  *symlink_name = "symlink_example.txt";
     struct stat link_stat;
     struct stat target_stat;

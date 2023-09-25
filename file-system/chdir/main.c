@@ -135,13 +135,18 @@ char *getCurrentWorkingDirectory(long path_max)
 
     while(1)
     {
-        buffer = (char *)realloc(buffer, size);
+        char *temp_buffer;
 
-        if(buffer == NULL)
+        temp_buffer = (char *)realloc(buffer, size);
+
+        if(temp_buffer == NULL)
         {
             perror("Error allocating/reallocating memory for buffer");
+            free(buffer);
             return NULL;
         }
+
+        buffer = temp_buffer;
 
         if(getcwd(buffer, size) != NULL)
         {

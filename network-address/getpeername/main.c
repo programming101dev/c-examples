@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     service        = NULL;
     parse_arguments(argc, argv, &server_address, &service);
     handle_arguments(argv[0], server_address, service);
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // TODO: this should be AF_INET or AF_INET6
+    sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 
     if(sockfd == -1)
     {

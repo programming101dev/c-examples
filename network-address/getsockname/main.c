@@ -44,13 +44,14 @@ int main(int argc, char *argv[])
     struct addrinfo    *result;
     struct addrinfo    *rp;
     int                status;
-    char               ipstr[INET6_ADDRSTRLEN]; // Use a larger buffer for IPv6
+    char               ipstr[INET6_ADDRSTRLEN];
 
     host_name = NULL;
     service   = NULL;
     parse_arguments(argc, argv, &host_name, &service);
     handle_arguments(argv[0], host_name, service);
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    // TODO: this should be AF_INET or AF_INET6
+    sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 
     if(sockfd == -1)
     {

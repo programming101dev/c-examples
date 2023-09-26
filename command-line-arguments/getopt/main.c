@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     bool option_a_set;
     bool option_b_set;
     char *option_c_value;
+
     option_a_set   = false;
     option_b_set   = false;
     option_c_value = NULL;
-
     parse_arguments(argc, argv, &option_a_set, &option_b_set, &option_c_value);
     handle_arguments(argv[0], option_c_value);
     printf("Is option 'a' set?: %d\n", option_a_set);

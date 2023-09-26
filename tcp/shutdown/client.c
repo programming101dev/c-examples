@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     char                    *address;
     char                    *port_str;
     in_port_t               port;
-    int                     sockfd;
     struct sockaddr_storage addr;
+    int                     sockfd;
 
     address  = NULL;
     port_str = NULL;

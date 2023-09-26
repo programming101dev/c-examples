@@ -24,15 +24,16 @@
 #define PATH_LEN 4096   // A common default value for the maximum path length
 
 
+// TODO pass the filename in on the command line
+
+
 int main(void)
 {
-    // TODO pass the filename in on the command line
-    const char *path   = ".";
+    const char *path = ".";
     long       path_max;
     char       *buffer;
     size_t     size;
 
-    buffer   = NULL;
     path_max = pathconf(path, _PC_PATH_MAX);
 
     if(path_max == -1)
@@ -64,6 +65,7 @@ int main(void)
         {
             break;
         }
+
         // Check if the failure was due to insufficient buffer size
         if(errno == ERANGE)
         {

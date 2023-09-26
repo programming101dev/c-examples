@@ -55,8 +55,8 @@ int main(void)
 
     while(!exit_flag)
     {
-        int                     client_sockfd;
         struct sockaddr_storage client_addr;
+        int                     client_sockfd;
 
         client_sockfd = socket_accept_connection(sockfd, &client_addr);
 

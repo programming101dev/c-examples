@@ -167,19 +167,19 @@ static uid_t get_uid_t_max(void)
         fprintf(stderr, "Unsupported size of uid_t\n");
         exit(EXIT_FAILURE);
     }
+
     return value;
 }
 
 
 static uid_t parse_uid_t(const char *binary_name, const char *str)
 {
-    uintmax_t max;
     char      *endptr;
     uintmax_t parsed_value;
+    uintmax_t max;
 
-    max           = get_uid_t_max();
-    errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
+    errno        = 0;
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {
@@ -191,6 +191,8 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
+    max = get_uid_t_max();
 
     if(parsed_value > max)
     {
@@ -237,13 +239,12 @@ static gid_t get_gid_t_max(void)
 
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
-    gid_t     max;
     char      *endptr;
     uintmax_t parsed_value;
+    gid_t     max;
 
-    max           = get_gid_t_max();
-    errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
+    errno        = 0;
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {
@@ -255,6 +256,8 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
     }
+
+    max = get_gid_t_max();
 
     if(parsed_value > max)
     {

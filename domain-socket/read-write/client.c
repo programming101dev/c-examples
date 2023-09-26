@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
 {
     char                    *file_path;
     FILE                    *file;
+    struct sockaddr_storage addr;
     int                     sockfd;
     char                    line[LINE_LEN];
-    struct sockaddr_storage addr;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
 
         while(word != NULL)
         {
-            uint8_t size;
             size_t  word_len;
+            uint8_t size;
 
             word_len = strlen(word);
 

@@ -30,7 +30,6 @@ int main(void)
 {
     int     fd;
     uint8_t size;
-    char    word[UINT8_MAX + 1];
 
     // Create the FIFO if it doesn't exist
     mkfifo(FIFO_FILE, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -47,8 +46,10 @@ int main(void)
     // Read and print words from the client
     while(read(fd, &size, sizeof(uint8_t)) > 0)
     {
+        char word[UINT8_MAX + 1];
+
         read(fd, word, size);
-        word[size] = '\0'; // Null-terminate the string
+        word[size] = '\0';
         printf("Word Size: %u, Word: %s\n", size, word);
     }
 

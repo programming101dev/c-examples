@@ -226,12 +226,12 @@ static void child_process(int sockfd, const char *file_path)
 
 static void parent_process(int sockfd)
 {
-    uint8_t length;
-    char    word[MAX_WORD_LENGTH];
-    ssize_t read_bytes;
-
     while(1)
     {
+        uint8_t length;
+        ssize_t read_bytes;
+        char word[MAX_WORD_LENGTH];
+
         read_bytes = read(sockfd, &length, sizeof(length));
 
         if(read_bytes < 0)

@@ -38,34 +38,31 @@ static void print_info(const struct func_info *info, int ch);
 
 int main(void)
 {
-    static struct func_info info[] = {{isalnum,  "alnum",  "Alphanumeric"},
-                                      {isalpha,  "alpha",  "Alphabetic"},
-                                      {isblank,  "blank",  "Blank"},
-                                      {iscntrl,  "cntrl",  "Control"},
-                                      {isdigit,  "digit",  "Digit"},
-                                      {isgraph,  "graph",  "Graph"},
-                                      {islower,  "lower",  "Lowercase"},
-                                      {isprint,  "print",  "Printable"},
-                                      {ispunct,  "punct",  "Punctuation"},
-                                      {isspace,  "space",  "Whitespace"},
-                                      {isupper,  "upper",  "Uppercase"},
-                                      {isxdigit, "xdigit", "Hex Digit"}};
+    static struct func_info info[] =
+    {
+        { isalnum,  "alnum",  "Alphanumeric" },
+        { isalpha,  "alpha",  "Alphabetic"   },
+        { isblank,  "blank",  "Blank"        },
+        { iscntrl,  "cntrl",  "Control"      },
+        { isdigit,  "digit",  "Digit"        },
+        { isgraph,  "graph",  "Graph"        },
+        { islower,  "lower",  "Lowercase"    },
+        { isprint,  "print",  "Printable"    },
+        { ispunct,  "punct",  "Punctuation"  },
+        { isspace,  "space",  "Whitespace"   },
+        { isupper,  "upper",  "Uppercase"    },
+        { isxdigit, "xdigit", "Hex Digit"    }
+    };
+
     printf("Char | Binary  | Oct | Dec | Hex | ");
 
     for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
     {
-        if(info[i].name != NULL)
-        {
-            printf("%-6s | ", info[i].name);
-        }
-        else
-        {
-            fprintf(stderr, "Null string encountered.\n");
-            return EXIT_FAILURE;
-        }
+        printf("%-6s | ", info[i].name);
     }
 
     printf("Lower | Upper |\n");
+    // TODO: this should be dynamic
     printf("-----------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
 
     for(unsigned int ch = 0; ch <= INT8_MAX; ch++)

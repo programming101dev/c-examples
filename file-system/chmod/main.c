@@ -24,12 +24,14 @@
 void print_permissions(const char *filename);
 
 
+// TODO pass the filename in on the command line
+
+
 int main(void)
 {
-    // TODO pass the filename in on the command line
     const char *filename = "file.txt";
-    mode_t     new_permissions;
     FILE       *file;
+    mode_t     new_permissions;
 
     file = fopen(filename, "we");
 

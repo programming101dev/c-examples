@@ -27,9 +27,9 @@
 static void parse_arguments(int argc, char *argv[], char **file_path);
 static void handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int connect_to_server(const char *path);
 static int socket_create(void);
-static void setup_socket_address(struct sockaddr_un *addr, const char *path);
+static void setup_socket_address(struct sockaddr_storage *addr, const char *path);
+static int connect_to_server(int sockfd, struct sockaddr_storage *addr);
 static void socket_close(int sockfd);
 
 
@@ -40,10 +40,11 @@ static void socket_close(int sockfd);
 
 int main(int argc, char *argv[])
 {
-    char *file_path;
-    FILE *file;
-    int  sockfd;
-    char line[LINE_LEN];
+    char                    *file_path;
+    FILE                    *file;
+    struct sockaddr_storage addr;
+    int                     sockfd;
+    char                    line[LINE_LEN];
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -56,7 +57,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    sockfd = connect_to_server(SOCKET_PATH);
+    setup_socket_address(&addr, SOCKET_PATH);
+    sockfd = socket_create();
+    connect_to_server(sockfd, &addr);
 
     while(fgets(line, sizeof(line), file) != NULL)
     {
@@ -66,10 +69,10 @@ int main(int argc, char *argv[])
 
         while(word != NULL)
         {
-            uint8_t size;
             size_t  word_len;
+            uint8_t size;
 
-            word_len= strlen(word);
+            word_len = strlen(word);
 
             if(word_len > UINT8_MAX)
             {
@@ -80,7 +83,7 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            size = (uint8_t)word_len;
+            size             = (uint8_t)word_len;
             send(sockfd, &size, sizeof(uint8_t), 0);
 
             // Write the word
@@ -161,22 +164,16 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 
-static int connect_to_server(const char *path)
+static int connect_to_server(int sockfd, struct sockaddr_storage *addr)
 {
-    int                sockfd;
-    struct sockaddr_un addr;
-
-    sockfd = socket_create();
-    setup_socket_address(&addr, path);
-
-    if(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    if(connect(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
     {
         perror("Connection failed");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
 
-    printf("Connected to %s\n", path);
+//    printf("Connected to %s\n", path);
 
     return sockfd;
 }
@@ -202,12 +199,15 @@ static int socket_create(void)
 }
 
 
-static void setup_socket_address(struct sockaddr_un *addr, const char *path)
+static void setup_socket_address(struct sockaddr_storage *addr, const char *path)
 {
+    struct sockaddr_un *addr_un;
+
     memset(addr, 0, sizeof(*addr));
-    addr->sun_family = AF_UNIX;
-    strncpy(addr->sun_path, path, sizeof(addr->sun_path) - 1);
-    addr->sun_path[sizeof(addr->sun_path) - 1] = '\0';
+    addr_un = (struct sockaddr_un *)addr;
+    addr_un->sun_family = AF_UNIX;
+    strncpy(addr_un->sun_path, path, sizeof(addr_un->sun_path) - 1);
+    addr_un->sun_path[sizeof(addr_un->sun_path) - 1] = '\0';
 }
 
 

@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 {
     char *file_path;
     int  fd;
-    char line[LINE_LEN];
     FILE *file;
+    char line[LINE_LEN];
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);

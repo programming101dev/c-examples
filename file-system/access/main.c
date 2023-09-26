@@ -33,8 +33,8 @@ static void check_file_access(const char *filename, int mode, const char *access
 int main(int argc, char *argv[])
 {
     char *file_path;
-    file_path = NULL;
 
+    file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
     check_file_access(file_path, R_OK, "readable");

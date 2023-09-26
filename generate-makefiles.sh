@@ -889,7 +889,7 @@ populate_supported_flags() {
         "-fsanitize=pointer-overflow"
         "-fsanitize=builtin"
         "-fsanitize-address-use-after-scope"
-        "-fcf-protection=full"
+#        "-fcf-protection=full"
         "-fharden-compares"
         "-fharden-conditional-branches"
         "-fstack-protector-all"

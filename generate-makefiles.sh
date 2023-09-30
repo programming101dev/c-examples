@@ -1100,14 +1100,14 @@ generate_makefile()
 
     # Add a lint rule to remove all generated binaries and libraries
     echo -e "\nlint:" >> Makefile
-	  echo -e "\t@\$(CLANGTIDY) \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(LIBRARIES)" >> Makefile
+	  echo -e "\t@\$(CLANGTIDY) \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) \$(LIBRARIES)" >> Makefile
 
     # Add a format rule to format the source code
     echo -e "\nformat:" >> Makefile
 	  echo -e "\t@\$(CLANGFORMAT) -i --style=file \$(SOURCES)" >> Makefile
 
     # Add a clean rule to be picky about the code
-    echo -e "clean:" >> Makefile
+    echo -e "\nclean:" >> Makefile
     echo -e "\t@rm -f \$(PROGRAMS) \$(LIBS)" >> Makefile
 
     if [ -n "$BINARY_EXT" ]; then

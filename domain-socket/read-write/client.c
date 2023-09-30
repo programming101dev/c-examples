@@ -26,8 +26,8 @@ static void           parse_arguments(int argc, char *argv[], char **file_path);
 static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int            socket_create(void);
-static void           setup_socket_address(struct sockaddr_storage *addr, const char *path);
-static int            connect_to_server(int sockfd, struct sockaddr_storage *addr);
+static void           setup_socket_address(struct sockaddr_un *addr, const char *path);
+static int            connect_to_server(int sockfd, struct sockaddr_un *addr);
 static void           socket_close(int sockfd);
 
 #define SOCKET_PATH "/tmp/example_socket"
@@ -36,11 +36,11 @@ static void           socket_close(int sockfd);
 
 int main(int argc, char *argv[])
 {
-    char                   *file_path;
-    FILE                   *file;
-    struct sockaddr_storage addr;
-    int                     sockfd;
-    char                    line[LINE_LEN];
+    char              *file_path;
+    FILE              *file;
+    struct sockaddr_un addr;
+    int                sockfd;
+    char               line[LINE_LEN];
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -156,20 +156,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-static int connect_to_server(int sockfd, struct sockaddr_storage *addr)
-{
-    if(connect(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
-    {
-        perror("Connection failed");
-        close(sockfd);
-        exit(EXIT_FAILURE);
-    }
-
-    //    printf("Connected to %s\n", path);
-
-    return sockfd;
-}
-
 static int socket_create(void)
 {
     int sockfd;
@@ -189,15 +175,26 @@ static int socket_create(void)
     return sockfd;
 }
 
-static void setup_socket_address(struct sockaddr_storage *addr, const char *path)
+static void setup_socket_address(struct sockaddr_un *addr, const char *path)
 {
-    struct sockaddr_un *addr_un;
-
     memset(addr, 0, sizeof(*addr));
-    addr_un             = (struct sockaddr_un *)addr;
-    addr_un->sun_family = AF_UNIX;
-    strncpy(addr_un->sun_path, path, sizeof(addr_un->sun_path) - 1);
-    addr_un->sun_path[sizeof(addr_un->sun_path) - 1] = '\0';
+    addr->sun_family = AF_UNIX;
+    strncpy(addr->sun_path, path, sizeof(addr->sun_path) - 1);
+    addr->sun_path[sizeof(addr->sun_path) - 1] = '\0';
+}
+
+static int connect_to_server(int sockfd, struct sockaddr_un *addr)
+{
+    if(connect(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
+    {
+        perror("Connection failed");
+        close(sockfd);
+        exit(EXIT_FAILURE);
+    }
+
+    //    printf("Connected to %s\n", path);
+
+    return sockfd;
 }
 
 static void socket_close(int sockfd)

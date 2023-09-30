@@ -30,8 +30,8 @@ static void sigint_handler(int signum);
 static int  socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void start_listening(int server_fd, int backlog);
-static int  socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr);
-static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
+static int  socket_accept_connection(int server_fd, struct sockaddr_un *client_addr);
+static void handle_connection(int client_sockfd, struct sockaddr_un *client_addr);
 static void socket_close(int sockfd);
 
 #define SOCKET_PATH "/tmp/example_socket"
@@ -50,8 +50,8 @@ int main(void)
 
     while(!exit_flag)
     {
-        struct sockaddr_storage client_addr;
-        int                     client_sockfd;
+        struct sockaddr_un client_addr;
+        int                client_sockfd;
 
         client_sockfd = socket_accept_connection(sockfd, &client_addr);
 
@@ -159,7 +159,7 @@ static void start_listening(int server_fd, int backlog)
     printf("Listening for incoming connections...\n");
 }
 
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr)
+static int socket_accept_connection(int server_fd, struct sockaddr_un *client_addr)
 {
     int       client_fd;
     char      client_host[NI_MAXHOST];
@@ -194,13 +194,14 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
+static void handle_connection(int client_sockfd, struct sockaddr_un *client_addr)
 {
     uint8_t size;
 
     while(read(client_sockfd, &size, sizeof(uint8_t)) > 0)
     {
         char word[UINT8_MAX + 1];
+
         read(client_sockfd, word, size);
         word[size] = '\0';
         printf("Word Size: %u, Word: %s\n", size, word);

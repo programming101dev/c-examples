@@ -162,12 +162,12 @@ static void sigint_handler(int signum)
 
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients)
 {
-    struct sockaddr_un address;
+    struct sockaddr_un addr;
     socklen_t          client_len;
     int                new_socket;
 
-    client_len = sizeof(address);
-    new_socket = accept(server_socket, (struct sockaddr *)&address, &client_len);
+    client_len = sizeof(addr);
+    new_socket = accept(server_socket, (struct sockaddr *)&addr, &client_len);
 
     if(new_socket == -1)
     {

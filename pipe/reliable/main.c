@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <semaphore.h>
 #include <stdint.h>
@@ -24,44 +23,41 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
-static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
-static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
+static void           child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child);
+static void           parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child);
+static void           send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child);
 _Noreturn static void error_exit(const char *msg);
-static void write_fully(int fd, const void *buf, size_t count);
-static void read_fully(int fd, void *buf, size_t count);
-
+static void           write_fully(int fd, const void *buf, size_t count);
+static void           read_fully(int fd, void *buf, size_t count);
 
 #define MAX_WORD_LENGTH 255
 #define SEM_PARENT "/sem_parent"
 #define SEM_CHILD "/sem_child"
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
     char  *file_path;
-    int   pipefd[2];
+    int    pipefd[2];
     FILE  *file;
-    pid_t pid;
+    pid_t  pid;
     sem_t *sem_parent;
     sem_t *sem_child;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    file = fopen(file_path, "r");       // NOLINT(android-cloexec-fopen)
+    file = fopen(file_path, "r");    // NOLINT(android-cloexec-fopen)
 
     if(file == NULL)
     {
         error_exit("Error opening file");
     }
 
-    if(pipe(pipefd) == -1)  // NOLINT(android-cloexec-pipe)
+    if(pipe(pipefd) == -1)    // NOLINT(android-cloexec-pipe)
     {
         error_exit("Error creating pipe");
     }
@@ -80,7 +76,7 @@ int main(int argc, char *argv[])
         error_exit("Error creating/opening SEM_CHILD semaphore");
     }
 
-    pid = fork();   // NOLINT(android-cloexec-fopen)
+    pid = fork();    // NOLINT(android-cloexec-fopen)
 
     if(pid == -1)
     {
@@ -102,7 +98,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -145,7 +140,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -153,7 +147,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -167,7 +160,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void write_fully(int fd, const void *buf, size_t count)
 {
@@ -188,7 +180,6 @@ static void write_fully(int fd, const void *buf, size_t count)
         count -= (size_t)written_bytes;
     }
 }
-
 
 static void read_fully(int fd, void *buf, size_t count)
 {
@@ -211,7 +202,6 @@ static void read_fully(int fd, void *buf, size_t count)
         count -= (size_t)read_bytes;
     }
 }
-
 
 static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child)
 {
@@ -236,13 +226,11 @@ static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_p
     }
 }
 
-
 _Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
-
 
 static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *sem_child)
 {
@@ -292,7 +280,6 @@ static void child_process(int pipefd[2], FILE *file, sem_t *sem_parent, sem_t *s
         error_exit("Error closing pipe");
     }
 }
-
 
 static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 {

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,13 +22,10 @@
 #include <time.h>
 #include <unistd.h>
 
-
 static long long performCalculation(size_t size, size_t iterations);
-static void printUsage(struct rusage *ru);
-
+static void      printUsage(struct rusage *ru);
 
 #define MAX_NUMBER 100
-
 
 int main(void)
 {
@@ -73,10 +69,9 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static long long performCalculation(size_t size, size_t iterations)
 {
-    int       *numbers;
+    int      *numbers;
     long long sum;
 
     numbers = (int *)malloc(size * sizeof(int));
@@ -108,15 +103,10 @@ static long long performCalculation(size_t size, size_t iterations)
     return sum;
 }
 
-
 static void printUsage(struct rusage *ru)
 {
-    printf("User time: %jd.%06ld seconds\n", (intmax_t)ru->ru_utime
-                                                         .tv_sec, (long)ru->ru_utime
-                                                                          .tv_usec);
-    printf("System time: %jd.%06ld seconds\n", (intmax_t)ru->ru_stime
-                                                           .tv_sec, (long)ru->ru_stime
-                                                                            .tv_usec);
+    printf("User time: %jd.%06ld seconds\n", (intmax_t)ru->ru_utime.tv_sec, (long)ru->ru_utime.tv_usec);
+    printf("System time: %jd.%06ld seconds\n", (intmax_t)ru->ru_stime.tv_sec, (long)ru->ru_stime.tv_usec);
     printf("Maximum resident set size (RSS): %ld kilobytes\n", ru->ru_maxrss);
     printf("Integral shared memory size: %ld kilobytes\n", ru->ru_ixrss);
     printf("Integral unshared data size: %ld kilobytes\n", ru->ru_idrss);

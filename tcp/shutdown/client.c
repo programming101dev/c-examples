@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <getopt.h>
@@ -27,26 +26,23 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **target_address, char **port);
-static void handle_arguments(const char *binary_name, const char *target_address, char *port_str, in_port_t *port);
-static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
+static void           parse_arguments(int argc, char *argv[], char **target_address, char **port);
+static void           handle_arguments(const char *binary_name, const char *target_address, char *port_str, in_port_t *port);
+static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void convert_address(const char *address, struct sockaddr_storage *addr);
-static int socket_create(int domain, int type, int protocol);
-static void socket_connect(int sockfd, struct sockaddr_storage *addr, in_port_t port);
-static void shutdown_socket(int client_fd, int how);
-static void socket_close(int client_fd);
-
+static void           convert_address(const char *address, struct sockaddr_storage *addr);
+static int            socket_create(int domain, int type, int protocol);
+static void           socket_connect(int sockfd, struct sockaddr_storage *addr, in_port_t port);
+static void           shutdown_socket(int client_fd, int how);
+static void           socket_close(int client_fd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char                    *address;
-    char                    *port_str;
+    char                   *address;
+    char                   *port_str;
     in_port_t               port;
     struct sockaddr_storage addr;
     int                     sockfd;
@@ -63,7 +59,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **target_address, char **port)
 {
@@ -107,7 +102,6 @@ static void parse_arguments(int argc, char *argv[], char **target_address, char 
     *port           = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *target_address, char *port_str, in_port_t *port)
 {
     if(target_address == NULL)
@@ -123,10 +117,9 @@ static void handle_arguments(const char *binary_name, const char *target_address
     *port = parse_in_port_t(binary_name, port_str);
 }
 
-
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -153,7 +146,6 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -166,7 +158,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
@@ -184,7 +175,6 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
     }
 }
 
-
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
@@ -200,13 +190,15 @@ static int socket_create(int domain, int type, int protocol)
     return sockfd;
 }
 
-
 static void socket_connect(int sockfd, struct sockaddr_storage *addr, in_port_t port)
 {
     char      addr_str[INET6_ADDRSTRLEN];
     in_port_t net_port;
 
-    if(inet_ntop(addr->ss_family, addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr), addr_str, sizeof(addr_str)) == NULL)
+    if(inet_ntop(addr->ss_family,
+                 addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr),
+                 addr_str,
+                 sizeof(addr_str)) == NULL)
     {
         perror("inet_ntop");
         exit(EXIT_FAILURE);
@@ -219,14 +211,14 @@ static void socket_connect(int sockfd, struct sockaddr_storage *addr, in_port_t 
     {
         struct sockaddr_in *ipv4_addr;
 
-        ipv4_addr = (struct sockaddr_in *)addr;
+        ipv4_addr           = (struct sockaddr_in *)addr;
         ipv4_addr->sin_port = net_port;
     }
     else if(addr->ss_family == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
 
-        ipv6_addr = (struct sockaddr_in6 *)addr;
+        ipv6_addr            = (struct sockaddr_in6 *)addr;
         ipv6_addr->sin6_port = net_port;
     }
     else
@@ -244,7 +236,6 @@ static void socket_connect(int sockfd, struct sockaddr_storage *addr, in_port_t 
     printf("Connected to: %s:%u\n", addr_str, port);
 }
 
-
 static void shutdown_socket(int client_fd, int how)
 {
     if(shutdown(client_fd, how) == -1)
@@ -253,7 +244,6 @@ static void shutdown_socket(int client_fd, int how)
         exit(EXIT_FAILURE);
     }
 }
-
 
 static void socket_close(int client_fd)
 {

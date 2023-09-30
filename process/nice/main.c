@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,20 +22,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **increment);
-static void handle_arguments(const char *binary_name, const char *increment_str, int *increment);
-static int parse_int(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **increment);
+static void           handle_arguments(const char *binary_name, const char *increment_str, int *increment);
+static int            parse_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char  *increment_str;
+    char *increment_str;
     int   increment;
     pid_t pid;
     int   current_priority;
@@ -61,7 +57,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **increment)
 {
@@ -105,7 +100,6 @@ static void parse_arguments(int argc, char *argv[], char **increment)
     *increment = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *increment_str, int *increment)
 {
     if(increment_str == NULL)
@@ -116,10 +110,9 @@ static void handle_arguments(const char *binary_name, const char *increment_str,
     *increment = parse_int(binary_name, increment_str);
 }
 
-
 static int parse_int(const char *binary_name, const char *str)
 {
-    char     *endptr;
+    char    *endptr;
     intmax_t parsed_value;
 
     errno        = 0;
@@ -144,7 +137,6 @@ static int parse_int(const char *binary_name, const char *str)
 
     return (int)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

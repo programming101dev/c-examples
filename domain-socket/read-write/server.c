@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <netdb.h>
 #include <signal.h>
@@ -26,22 +25,18 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-
 static void setup_signal_handler(void);
 static void sigint_handler(int signum);
-static int socket_create(void);
+static int  socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void start_listening(int server_fd, int backlog);
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr);
+static int  socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr);
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
 static void socket_close(int sockfd);
 
-
 #define SOCKET_PATH "/tmp/example_socket"
 
-
-static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-
+static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(void)
 {
@@ -80,7 +75,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
@@ -88,12 +82,12 @@ static void setup_signal_handler(void)
     memset(&sa, 0, sizeof(sa));
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -106,15 +100,15 @@ static void setup_signal_handler(void)
     }
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
-#pragma GCC diagnostic pop
 
+#pragma GCC diagnostic pop
 
 static int socket_create(void)
 {
@@ -123,7 +117,7 @@ static int socket_create(void)
 #ifdef SOCK_CLOEXEC
     sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 #else
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);    // NOLINT(android-cloexec-socket)
 #endif
 
     if(sockfd == -1)
@@ -134,7 +128,6 @@ static int socket_create(void)
 
     return sockfd;
 }
-
 
 static void socket_bind(int sockfd, const char *path)
 {
@@ -154,7 +147,6 @@ static void socket_bind(int sockfd, const char *path)
     printf("Bound to domain socket: %s\n", path);
 }
 
-
 static void start_listening(int server_fd, int backlog)
 {
     if(listen(server_fd, backlog) == -1)
@@ -166,7 +158,6 @@ static void start_listening(int server_fd, int backlog)
 
     printf("Listening for incoming connections...\n");
 }
-
 
 static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr)
 {
@@ -200,9 +191,9 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
     return client_fd;
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
 {
     uint8_t size;
@@ -215,8 +206,8 @@ static void handle_connection(int client_sockfd, struct sockaddr_storage *client
         printf("Word Size: %u, Word: %s\n", size, word);
     }
 }
-#pragma GCC diagnostic pop
 
+#pragma GCC diagnostic pop
 
 static void socket_close(int sockfd)
 {

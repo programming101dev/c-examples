@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -25,35 +24,32 @@
 #include <string.h>
 #include <sys/socket.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **server_address, char **port);
-static void handle_arguments(const char *binary_name, const char *server_address, const char *port_str, in_port_t *port);
-static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
+static void           parse_arguments(int argc, char *argv[], char **server_address, char **port);
+static void           handle_arguments(const char *binary_name, const char *server_address, const char *port_str, in_port_t *port);
+static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void display_address(struct sockaddr_storage *addr, socklen_t addrlen);
-
+static void           display_address(struct sockaddr_storage *addr, socklen_t addrlen);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char                    *server_address;
-    char                    *port_str;
+    char                   *server_address;
+    char                   *port_str;
     in_port_t               port;
     struct sockaddr_storage addr;
     socklen_t               addrlen;
     struct addrinfo         hints;
-    struct addrinfo         *result;
+    struct addrinfo        *result;
     int                     error;
 
     parse_arguments(argc, argv, &server_address, &port_str);
     handle_arguments(argv[0], server_address, port_str, &port);
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
+    hints.ai_family   = AF_UNSPEC;    // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
-    error = getaddrinfo(server_address, port_str, &hints, &result);
+    error             = getaddrinfo(server_address, port_str, &hints, &result);
 
     if(error != 0)
     {
@@ -80,7 +76,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **server_address, char **port)
 {
@@ -124,7 +119,6 @@ static void parse_arguments(int argc, char *argv[], char **server_address, char 
     *port           = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *server_address, const char *port_str, in_port_t *port)
 {
     if(server_address == NULL)
@@ -140,10 +134,9 @@ static void handle_arguments(const char *binary_name, const char *server_address
     *port = parse_in_port_t(binary_name, port_str);
 }
 
-
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -170,7 +163,6 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -184,7 +176,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -p <port>  THe port to connect to\n", stderr);
     exit(exit_code);
 }
-
 
 static void display_address(struct sockaddr_storage *addr, socklen_t addrlen)
 {

@@ -14,62 +14,60 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 struct signal_info
 {
-    int        signal_number;
+    int         signal_number;
     const char *signal_name;
 };
 
-
 void signal_handler(int signal_number);
-
 
 int main(void)
 {
-    struct signal_info signals[] = {{SIGABRT,   "SIGABRT"},
-                                    {SIGALRM,   "SIGALRM"},
-                                    {SIGCHLD,   "SIGCHLD"},
-                                    {SIGCONT,   "SIGCONT"},
-                                    {SIGFPE,    "SIGFPE"},
-                                    {SIGHUP,    "SIGHUP"},
-                                    {SIGILL,    "SIGILL"},
-                                    {SIGINT,    "SIGINT"},
-                                    {SIGPIPE,   "SIGPIPE"},
-                                    {SIGQUIT,   "SIGQUIT"},
-                                    {SIGSEGV,   "SIGSEGV"},
-                                    {SIGSYS,    "SIGSYS"},
-                                    {SIGTERM,   "SIGTERM"},
-                                    {SIGTRAP,   "SIGTRAP"},
-                                    {SIGTSTP,   "SIGTSTP"},
-                                    {SIGTTIN,   "SIGTTIN"},
-                                    {SIGTTOU,   "SIGTTOU"},
-                                    {SIGURG,    "SIGURG"},
-                                    {SIGUSR1,   "SIGUSR1"},
-                                    {SIGUSR2,   "SIGUSR2"},
-                                    {SIGVTALRM, "SIGVTALRM"},
-                                    {SIGXCPU,   "SIGXCPU"},
-                                    {SIGXFSZ,   "SIGXFSZ"}};
-    int                n;
-    struct sigaction   sa;
-    struct sigaction   new_sa;
-    pid_t              pid;
+    struct signal_info signals[] = {
+        {SIGABRT,   "SIGABRT"  },
+        {SIGALRM,   "SIGALRM"  },
+        {SIGCHLD,   "SIGCHLD"  },
+        {SIGCONT,   "SIGCONT"  },
+        {SIGFPE,    "SIGFPE"   },
+        {SIGHUP,    "SIGHUP"   },
+        {SIGILL,    "SIGILL"   },
+        {SIGINT,    "SIGINT"   },
+        {SIGPIPE,   "SIGPIPE"  },
+        {SIGQUIT,   "SIGQUIT"  },
+        {SIGSEGV,   "SIGSEGV"  },
+        {SIGSYS,    "SIGSYS"   },
+        {SIGTERM,   "SIGTERM"  },
+        {SIGTRAP,   "SIGTRAP"  },
+        {SIGTSTP,   "SIGTSTP"  },
+        {SIGTTIN,   "SIGTTIN"  },
+        {SIGTTOU,   "SIGTTOU"  },
+        {SIGURG,    "SIGURG"   },
+        {SIGUSR1,   "SIGUSR1"  },
+        {SIGUSR2,   "SIGUSR2"  },
+        {SIGVTALRM, "SIGVTALRM"},
+        {SIGXCPU,   "SIGXCPU"  },
+        {SIGXFSZ,   "SIGXFSZ"  }
+    };
+    int              n;
+    struct sigaction sa;
+    struct sigaction new_sa;
+    pid_t            pid;
 
     n = sizeof(signals) / sizeof(signals[0]);
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     new_sa.sa_handler = signal_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&new_sa.sa_mask);
@@ -80,23 +78,23 @@ int main(void)
         if(sigaction(signals[i].signal_number, NULL, &sa) == 0)
         {
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
             if(sa.sa_handler == SIG_IGN)
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
             {
                 printf("Signal %s (%d) is currently being ignored\n", signals[i].signal_name, signals[i].signal_number);
             }
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
             else if(sa.sa_handler == SIG_DFL)
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
             {
                 printf("Signal %s (%d) is set to default action\n", signals[i].signal_name, signals[i].signal_number);
@@ -162,7 +160,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 void signal_handler(int signal_number)
 {

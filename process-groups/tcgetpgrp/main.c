@@ -14,19 +14,17 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(void)
 {
     pid_t foreground_pgid;
     int   terminal_fd;
 
-    terminal_fd = open("/dev/tty", O_RDWR | O_CLOEXEC); // Open the controlling terminal
+    terminal_fd = open("/dev/tty", O_RDWR | O_CLOEXEC);    // Open the controlling terminal
 
     if(terminal_fd == -1)
     {

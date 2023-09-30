@@ -14,19 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **msg);
-static void handle_arguments(const char *binary_name, const char *message);
+static void           parse_arguments(int argc, char *argv[], char **msg);
+static void           handle_arguments(const char *binary_name, const char *message);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
-
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
@@ -39,7 +35,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **msg)
 {
@@ -82,7 +77,6 @@ static void parse_arguments(int argc, char *argv[], char **msg)
     *msg = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *message)
 {
     if(message == NULL)
@@ -90,7 +84,6 @@ static void handle_arguments(const char *binary_name, const char *message)
         usage(binary_name, EXIT_FAILURE, "The message is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

@@ -14,22 +14,19 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-
 #define BASE_YEAR 1900
-
 
 int main(void)
 {
     // TODO pass this in on the command line
     const char *time_str = "2023-08-02 14:30:00";
     const char *format   = "%Y-%m-%d %H:%M:%S";
-    struct tm  timeinfo;
-    time_t     result_time;
+    struct tm   timeinfo;
+    time_t      result_time;
 
     if(strptime(time_str, format, &timeinfo) == NULL)
     {

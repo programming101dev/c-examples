@@ -14,14 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 static void check_file_existence(const char *filename, const char *message);
-
 
 int main(void)
 {
@@ -64,7 +61,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void check_file_existence(const char *filename, const char *message)
 {

@@ -14,25 +14,21 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value);
-static void handle_arguments(const char *binary_name, const char *option_c_value);
+static void           parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value);
+static void           handle_arguments(const char *binary_name, const char *option_c_value);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    bool option_a_set;
-    bool option_b_set;
+    bool  option_a_set;
+    bool  option_b_set;
     char *option_c_value;
 
     option_a_set   = false;
@@ -52,14 +48,15 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value)
 {
-    static struct option long_options[] = {{"alpha",   no_argument,       NULL, 'a'},
-                                           {"beta",    no_argument,       NULL, 'b'},
-                                           {"charlie", required_argument, NULL, 'c'},
-                                           {"help",    no_argument,       NULL, 'h'},
-                                           {NULL,      0,                 NULL, 0}};
+    static struct option long_options[] = {
+        {"alpha",   no_argument,       NULL, 'a'},
+        {"beta",    no_argument,       NULL, 'b'},
+        {"charlie", required_argument, NULL, 'c'},
+        {"help",    no_argument,       NULL, 'h'},
+        {NULL,      0,                 NULL, 0  }
+    };
     int opt;
 
     opterr = 0;
@@ -109,7 +106,6 @@ static void parse_arguments(int argc, char *argv[], bool *option_a_set, bool *op
     }
 }
 
-
 static void handle_arguments(const char *binary_name, const char *option_c_value)
 {
     if(option_c_value == NULL)
@@ -117,7 +113,6 @@ static void handle_arguments(const char *binary_name, const char *option_c_value
         usage(binary_name, EXIT_FAILURE, "-c is required");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -134,4 +129,3 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -c <value>, --charlie <value>  Option 'c' (required) with value\n", stderr);
     exit(exit_code);
 }
-

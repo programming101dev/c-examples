@@ -14,11 +14,9 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 
 int main(void)
 {

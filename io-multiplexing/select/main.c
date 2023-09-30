@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,37 +23,33 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-
 static void setup_signal_handler(void);
 static void sigint_handler(int signum);
-static int socket_create(void);
+static int  socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void socket_close(int sockfd);
-
 
 #define SOCKET_PATH "/tmp/example_socket"
 #define MAX_WORD_LEN 256
 
-
-static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-
+static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(void)
 {
-    int        sockfd;
-    int        *client_sockets;
-    size_t     max_clients;
-    int        max_fd;
-    int        activity;
-    int        new_socket;
-    int        sd;
-    fd_set     readfds;
+    int    sockfd;
+    int   *client_sockets;
+    size_t max_clients;
+    int    max_fd;
+    int    activity;
+    int    new_socket;
+    int    sd;
+    fd_set readfds;
 
     client_sockets = NULL;
     max_clients    = 0;
     setup_signal_handler();
-    unlink(SOCKET_PATH); // Remove the existing socket file if it exists
-    sockfd       = socket_create();
+    unlink(SOCKET_PATH);    // Remove the existing socket file if it exists
+    sockfd = socket_create();
     socket_bind(sockfd, SOCKET_PATH);
 
     if(listen(sockfd, SOMAXCONN) == -1)
@@ -100,7 +95,7 @@ int main(void)
         // Handle new client connections
         if(FD_ISSET((unsigned int)sockfd, &readfds))
         {
-            int                *temp;
+            int               *temp;
             struct sockaddr_un addr;
             socklen_t          addrlen;
 
@@ -128,7 +123,7 @@ int main(void)
             }
             else
             {
-                client_sockets = temp;
+                client_sockets                  = temp;
                 client_sockets[max_clients - 1] = new_socket;
             }
         }
@@ -152,7 +147,7 @@ int main(void)
                     // Connection closed or error
                     printf("Client %d disconnected\n", sd);
                     close(sd);
-                    FD_CLR((unsigned int)sd, &readfds); // Remove the closed socket from the set
+                    FD_CLR((unsigned int)sd, &readfds);    // Remove the closed socket from the set
                     client_sockets[i] = 0;
                 }
                 else
@@ -165,7 +160,7 @@ int main(void)
                         // Connection closed or error
                         printf("Client %d disconnected\n", sd);
                         close(sd);
-                        FD_CLR((unsigned int)sd, &readfds); // Remove the closed socket from the set
+                        FD_CLR((unsigned int)sd, &readfds);    // Remove the closed socket from the set
                         client_sockets[i] = 0;
                     }
                     else
@@ -198,31 +193,30 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     sigaction(SIGINT, &sa, NULL);
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
-#pragma GCC diagnostic pop
 
+#pragma GCC diagnostic pop
 
 static int socket_create(void)
 {
@@ -231,7 +225,7 @@ static int socket_create(void)
 #ifdef SOCK_CLOEXEC
     sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 #else
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);    // NOLINT(android-cloexec-socket)
 #endif
 
     if(sockfd == -1)
@@ -242,7 +236,6 @@ static int socket_create(void)
 
     return sockfd;
 }
-
 
 static void socket_bind(int sockfd, const char *path)
 {
@@ -261,7 +254,6 @@ static void socket_bind(int sockfd, const char *path)
 
     printf("Bound to domain socket: %s\n", path);
 }
-
 
 static void socket_close(int sockfd)
 {

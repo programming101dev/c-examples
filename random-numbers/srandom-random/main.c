@@ -14,18 +14,14 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-
 static void print_random_numbers(size_t count);
-
 
 // TODO read this in off of the command line
 #define COUNT 5
-
 
 int main(void)
 {
@@ -49,7 +45,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void print_random_numbers(size_t count)
 {

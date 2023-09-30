@@ -14,17 +14,14 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-
 // TODO read this in off the command line
 #define XXX 100
-
 
 int main(void)
 {
@@ -32,7 +29,7 @@ int main(void)
     pid_t child_pid;
     int   terminal_fd;
 
-    terminal_fd = open("/dev/tty", O_RDWR | O_CLOEXEC); // Open the controlling terminal
+    terminal_fd = open("/dev/tty", O_RDWR | O_CLOEXEC);    // Open the controlling terminal
 
     if(terminal_fd == -1)
     {

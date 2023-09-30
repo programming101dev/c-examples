@@ -14,17 +14,14 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 static void create_file(const char *filename, const char *content);
 static void print_file_permissions(const char *filename);
 static void delete_file(const char *filename);
-
 
 int main(void)
 {
@@ -32,7 +29,7 @@ int main(void)
     const char *filename1 = "file1.txt";
     const char *filename2 = "file2.txt";
     const char *content   = "This is a sample file.\n";
-    mode_t     old_mask;
+    mode_t      old_mask;
 
     old_mask = umask(0);
     create_file(filename1, content);
@@ -48,7 +45,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void create_file(const char *filename, const char *content)
 {
@@ -72,7 +68,6 @@ static void create_file(const char *filename, const char *content)
     fclose(file);
 }
 
-
 static void print_file_permissions(const char *filename)
 {
     struct stat fileStat;
@@ -86,7 +81,6 @@ static void print_file_permissions(const char *filename)
     printf("File: %s\n", filename);
     printf("Permissions: %o\n", (unsigned int)fileStat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 }
-
 
 static void delete_file(const char *filename)
 {

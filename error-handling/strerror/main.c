@@ -14,12 +14,10 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 int main(void)
 {
@@ -29,7 +27,7 @@ int main(void)
     if(errno != 0)
     {
         const char *msg;
-        int        current_erro_no;
+        int         current_erro_no;
 
         current_erro_no = errno;
         errno           = 0;

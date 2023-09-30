@@ -14,18 +14,16 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 
 int main(void)
 {
     uint16_t host_value;
     uint16_t network_value;
 
-    host_value    = 12345;     // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    host_value    = 12345;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
     network_value = htons(host_value);
     printf("Host value: %hu\n", host_value);
     printf("Network value: %hu\n", network_value);

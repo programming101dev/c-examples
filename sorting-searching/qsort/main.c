@@ -14,24 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static int intcmp(const void *a, const void *b);
-
 
 int main(void)
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    int    arr[] = {
-            5,
-            2,
-            8,
-            1,
-            3
-    };
+    int arr[] = {5, 2, 8, 1, 3};
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     size_t size;
 
@@ -58,7 +49,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static int intcmp(const void *a, const void *b)
 {

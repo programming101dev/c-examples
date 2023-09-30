@@ -14,25 +14,21 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 static void check_file_size(const char *filename, const char *message);
-
 
 // TODO - pass the size in on the command line
 #define SIZE 9
-
 
 int main(void)
 {
     // TODO pass the filename in on the command line
     const char *filename = "example.txt";
-    off_t      new_size;
+    off_t       new_size;
     FILE       *file;
 
     file = fopen(filename, "we");
@@ -63,7 +59,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void check_file_size(const char *filename, const char *message)
 {

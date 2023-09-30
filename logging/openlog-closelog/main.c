@@ -14,20 +14,16 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <syslog.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **log_name);
-static void handle_arguments(const char *binary_name, const char *log_name);
+static void           parse_arguments(int argc, char *argv[], char **log_name);
+static void           handle_arguments(const char *binary_name, const char *log_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
-
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +39,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **log_name)
 {
@@ -86,7 +81,6 @@ static void parse_arguments(int argc, char *argv[], char **log_name)
     *log_name = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *log_name)
 {
     if(log_name == NULL)
@@ -94,7 +88,6 @@ static void handle_arguments(const char *binary_name, const char *log_name)
         usage(binary_name, EXIT_FAILURE, "The log name is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

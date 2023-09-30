@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <semaphore.h>
 #include <stdio.h>
@@ -24,23 +23,20 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 static size_t get_page_size(void);
-
 
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"
 #define SERVER_SEM_NAME "/server_semaphore"
 
-
 int main(void)
 {
-    int        shm_fd;
-    char       *shm_ptr;
-    sem_t      *client_sem;
-    sem_t      *server_sem;
-    size_t     page_size;
-    size_t     shm_size;
+    int    shm_fd;
+    char  *shm_ptr;
+    sem_t *client_sem;
+    sem_t *server_sem;
+    size_t page_size;
+    size_t shm_size;
     // TODO pass this in on the command line
     const char *shm_name = "/my_shared_memory";
 
@@ -122,7 +118,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static size_t get_page_size(void)
 {

@@ -14,17 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(void)
 {
     long   length;
     size_t max_login_length;
-    char   *login_name;
+    char  *login_name;
     int    result;
 
     length = sysconf(_SC_LOGIN_NAME_MAX);

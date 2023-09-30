@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -22,23 +21,19 @@
 #include <termios.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **speed);
-static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed);
-static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str);
+static void           parse_arguments(int argc, char *argv[], char **speed);
+static void           handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed);
+static speed_t        parse_baud_rate(const char *binary_name, const char *baud_rate_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 // TODO the speed is always invalid
-
 
 int main(int argc, char *argv[])
 {
-    char           *speed_str;
+    char          *speed_str;
     speed_t        input_baud_rate;
     speed_t        new_input_baud_rate;
     struct termios term;
@@ -77,7 +72,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **speed)
 {
@@ -120,7 +114,6 @@ static void parse_arguments(int argc, char *argv[], char **speed)
     *speed = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed)
 {
     if(speed_str == NULL)
@@ -131,11 +124,9 @@ static void handle_arguments(const char *binary_name, const char *speed_str, spe
     *speed = parse_baud_rate(binary_name, speed_str);
 }
 
-
 static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str)
 {
-    static const speed_t baud_rates[] =
-    {
+    static const speed_t baud_rates[] = {
         B0,
         B50,
         B75,
@@ -153,9 +144,9 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
         B19200,
         B38400,
     };
-    char                 *endptr;
-    long long int        parsed_speed;
-    int                  valid_baud_rate;
+    char         *endptr;
+    long long int parsed_speed;
+    int           valid_baud_rate;
 
     errno        = 0;
     parsed_speed = strtoll(baud_rate_str, &endptr, BASE_TEN);
@@ -194,7 +185,6 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
 
     return (speed_t)parsed_speed;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

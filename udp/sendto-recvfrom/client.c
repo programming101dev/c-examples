@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -26,26 +25,23 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **address, char **port, char **msg);
-static void handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port);
-static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
+static void           parse_arguments(int argc, char *argv[], char **address, char **port, char **msg);
+static void           handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port);
+static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void convert_address(const char *address, struct sockaddr_storage *addr);
-static int socket_create(int domain, int type, int protocol);
-static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port);
-static void socket_close(int sockfd);
-
+static void           convert_address(const char *address, struct sockaddr_storage *addr);
+static int            socket_create(int domain, int type, int protocol);
+static void           get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port);
+static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char                    *address;
-    char                    *port_str;
-    char                    *message;
+    char                   *address;
+    char                   *port_str;
+    char                   *message;
     in_port_t               port;
     int                     sockfd;
     ssize_t                 bytes_sent;
@@ -65,7 +61,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **address, char **port, char **msg)
 {
@@ -110,7 +105,6 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
     *msg     = argv[optind + 2];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port)
 {
     if(address == NULL)
@@ -131,10 +125,9 @@ static void handle_arguments(const char *binary_name, const char *address, char 
     *port = parse_in_port_t(binary_name, port_str);
 }
 
-
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -161,7 +154,6 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -174,7 +166,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
@@ -192,7 +183,6 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
     }
 }
 
-
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
@@ -208,7 +198,6 @@ static int socket_create(int domain, int type, int protocol)
     return sockfd;
 }
 
-
 static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port)
 {
     memset(addr, 0, addr_len);
@@ -223,7 +212,7 @@ static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_
     {
         struct sockaddr_in6 *ipv6_addr;
 
-        ipv6_addr = (struct sockaddr_in6 *)addr;
+        ipv6_addr              = (struct sockaddr_in6 *)addr;
         ipv6_addr->sin6_family = AF_INET6;
         ipv6_addr->sin6_port   = htons(port);
     }
@@ -231,12 +220,11 @@ static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_
     {
         struct sockaddr_in *ipv4_addr;
 
-        ipv4_addr = (struct sockaddr_in *)addr;
+        ipv4_addr             = (struct sockaddr_in *)addr;
         ipv4_addr->sin_family = AF_INET;
         ipv4_addr->sin_port   = htons(port);
     }
 }
-
 
 static void socket_close(int sockfd)
 {

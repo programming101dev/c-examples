@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,17 +23,15 @@
 #include <time.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void send_word(int sockfd, const char *word, uint8_t length);
+static void           send_word(int sockfd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
-static int connect_to_server(const char *path);
-static int socket_create(void);
-static void setup_socket_address(struct sockaddr_un *addr, const char *path);
-static void socket_close(int sockfd);
-
+static int            connect_to_server(const char *path);
+static int            socket_create(void);
+static void           setup_socket_address(struct sockaddr_un *addr, const char *path);
+static void           socket_close(int sockfd);
 
 #define SOCKET_PATH "/tmp/example_socket"
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
@@ -43,16 +40,14 @@ static void socket_close(int sockfd);
 #define MIN_DELAY_MILLISECONDS 500
 #define MAX_ADDITIONAL_NANOSECONDS 1000000000
 
-
 // TODO: fork N children - make N a command line argument
-
 
 int main(int argc, char *argv[])
 {
     char *file_path;
     FILE *file;
-    int  sockfd;
-    char line[LINE_LEN];
+    int   sockfd;
+    char  line[LINE_LEN];
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -100,7 +95,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
@@ -142,7 +136,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -150,7 +143,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -164,7 +156,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void send_word(int sockfd, const char *word, uint8_t length)
 {
@@ -195,13 +186,11 @@ static void send_word(int sockfd, const char *word, uint8_t length)
     nanosleep(&delay, NULL);
 }
 
-
 _Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
-
 
 static int connect_to_server(const char *path)
 {
@@ -223,7 +212,6 @@ static int connect_to_server(const char *path)
     return sockfd;
 }
 
-
 static int socket_create(void)
 {
     int sockfd;
@@ -231,7 +219,7 @@ static int socket_create(void)
 #ifdef SOCK_CLOEXEC
     sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 #else
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);    // NOLINT(android-cloexec-socket)
 #endif
 
     if(sockfd == -1)
@@ -243,7 +231,6 @@ static int socket_create(void)
     return sockfd;
 }
 
-
 static void setup_socket_address(struct sockaddr_un *addr, const char *path)
 {
     memset(addr, 0, sizeof(*addr));
@@ -251,7 +238,6 @@ static void setup_socket_address(struct sockaddr_un *addr, const char *path)
     strncpy(addr->sun_path, path, sizeof(addr->sun_path) - 1);
     addr->sun_path[sizeof(addr->sun_path) - 1] = '\0';
 }
-
 
 static void socket_close(int sockfd)
 {

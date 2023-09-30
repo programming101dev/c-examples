@@ -14,12 +14,10 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
-
 
 int main(void)
 {
@@ -83,7 +81,7 @@ int main(void)
             }
 
             printf("%c", (char)ch);
-            fflush(stdout); // Force printing without newline
+            fflush(stdout);    // Force printing without newline
         }
     }
 

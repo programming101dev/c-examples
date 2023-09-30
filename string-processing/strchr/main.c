@@ -14,27 +14,23 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **needle, char **haystack);
-static void handle_arguments(const char *binary_name, const char *needle_str, const char *haystack, char *needle);
+static void           parse_arguments(int argc, char *argv[], char **needle, char **haystack);
+static void           handle_arguments(const char *binary_name, const char *needle_str, const char *haystack, char *needle);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void search_for(char needle, const char *haystack);
-
+static void           search_for(char needle, const char *haystack);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
     char *needle_str;
     char *haystack;
-    char needle;
+    char  needle;
 
     needle_str = NULL;
     haystack   = NULL;
@@ -46,11 +42,10 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **needle, char **haystack)
 {
     int opt;
-    opterr  = 0;
+    opterr = 0;
 
     while((opt = getopt(argc, argv, "h")) != -1)
     {
@@ -88,7 +83,6 @@ static void parse_arguments(int argc, char *argv[], char **needle, char **haysta
     *haystack = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *needle_str, const char *haystack, char *needle)
 {
     if(needle_str == NULL)
@@ -109,7 +103,6 @@ static void handle_arguments(const char *binary_name, const char *needle_str, co
     *needle = needle_str[0];
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -122,7 +115,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void search_for(char needle, const char *haystack)
 {

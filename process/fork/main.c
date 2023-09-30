@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,21 +22,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **seconds);
-static void handle_arguments(const char *binary_name, char *seconds_str, unsigned int *seconds);
-static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **seconds);
+static void           handle_arguments(const char *binary_name, char *seconds_str, unsigned int *seconds);
+static unsigned int   parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void print_process_info(const char *name);
-
+static void           print_process_info(const char *name);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char         *seconds_str;
+    char        *seconds_str;
     unsigned int seconds;
     pid_t        pid;
 
@@ -68,7 +64,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
@@ -104,7 +99,6 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
     }
 }
 
-
 static void handle_arguments(const char *binary_name, char *seconds_str, unsigned int *seconds)
 {
     if(seconds_str == NULL)
@@ -117,10 +111,9 @@ static void handle_arguments(const char *binary_name, char *seconds_str, unsigne
     }
 }
 
-
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -146,7 +139,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     return (unsigned int)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -159,7 +151,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void print_process_info(const char *name)
 {

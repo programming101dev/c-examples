@@ -14,55 +14,27 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 static void signal_handler(int signal_number);
-
 
 int main(void)
 {
-    const int        signals_to_handle[] = {
-            SIGABRT,
-            SIGALRM,
-            SIGCHLD,
-            SIGCONT,
-            SIGFPE,
-            SIGHUP,
-            SIGILL,
-            SIGINT,
-            SIGKILL,
-            SIGPIPE,
-            SIGQUIT,
-            SIGSEGV,
-            SIGSTOP,
-            SIGSYS,
-            SIGTERM,
-            SIGTRAP,
-            SIGTSTP,
-            SIGTTIN,
-            SIGTTOU,
-            SIGURG,
-            SIGUSR1,
-            SIGUSR2,
-            SIGVTALRM,
-            SIGXCPU,
-            SIGXFSZ
-    };
+    const int        signals_to_handle[] = {SIGABRT, SIGALRM, SIGCHLD, SIGCONT, SIGFPE,  SIGHUP,  SIGILL, SIGINT,  SIGKILL, SIGPIPE,   SIGQUIT, SIGSEGV, SIGSTOP,
+                                            SIGSYS,  SIGTERM, SIGTRAP, SIGTSTP, SIGTTIN, SIGTTOU, SIGURG, SIGUSR1, SIGUSR2, SIGVTALRM, SIGXCPU, SIGXFSZ};
     pid_t            pid;
     struct sigaction sa;
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = signal_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -102,7 +74,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void signal_handler(int signal_number)
 {

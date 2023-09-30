@@ -14,44 +14,38 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <ctype.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 struct func_info
 {
-    int (*func)(int ch);
+    int         (*func)(int ch);
     const char *name;
     const char *message;
 };
 
-
 static void print_binary(unsigned int ch);
 static void print_info(const struct func_info *info, int ch);
 
-
 #define WIDTH 6
-
 
 int main(void)
 {
-    static struct func_info info[] =
-    {
-        { isalnum,  "alnum",  "Alphanumeric" },
-        { isalpha,  "alpha",  "Alphabetic"   },
-        { isblank,  "blank",  "Blank"        },
-        { iscntrl,  "cntrl",  "Control"      },
-        { isdigit,  "digit",  "Digit"        },
-        { isgraph,  "graph",  "Graph"        },
-        { islower,  "lower",  "Lowercase"    },
-        { isprint,  "print",  "Printable"    },
-        { ispunct,  "punct",  "Punctuation"  },
-        { isspace,  "space",  "Whitespace"   },
-        { isupper,  "upper",  "Uppercase"    },
-        { isxdigit, "xdigit", "Hex Digit"    }
+    static struct func_info info[] = {
+        {isalnum,  "alnum",  "Alphanumeric"},
+        {isalpha,  "alpha",  "Alphabetic"  },
+        {isblank,  "blank",  "Blank"       },
+        {iscntrl,  "cntrl",  "Control"     },
+        {isdigit,  "digit",  "Digit"       },
+        {isgraph,  "graph",  "Graph"       },
+        {islower,  "lower",  "Lowercase"   },
+        {isprint,  "print",  "Printable"   },
+        {ispunct,  "punct",  "Punctuation" },
+        {isspace,  "space",  "Whitespace"  },
+        {isupper,  "upper",  "Uppercase"   },
+        {isxdigit, "xdigit", "Hex Digit"   }
     };
 
     printf("Char | Binary  | Oct | Dec | Hex | ");
@@ -106,7 +100,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void print_binary(unsigned int ch)
 {
     for(unsigned int i = WIDTH; i != 0; i--)
@@ -114,7 +107,6 @@ static void print_binary(unsigned int ch)
         printf("%u", (ch >> i) & (unsigned int)1);
     }
 }
-
 
 static void print_info(const struct func_info *info, int ch)
 {

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,22 +22,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **n, char **string1, char **string2);
-static void handle_arguments(const char *binary_name, char *n_str, const char *string1, const char *string2, size_t *n);
-static size_t parse_size_t(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **n, char **string1, char **string2);
+static void           handle_arguments(const char *binary_name, char *n_str, const char *string1, const char *string2, size_t *n);
+static size_t         parse_size_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char   *n_str;
-    char   *string1;
-    char   *string2;
+    char  *n_str;
+    char  *string1;
+    char  *string2;
     size_t n;
     int    result;
 
@@ -60,7 +56,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **n, char **string1, char **string2)
 {
@@ -109,7 +104,6 @@ static void parse_arguments(int argc, char *argv[], char **n, char **string1, ch
     *string2 = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, char *n_str, const char *string1, const char *string2, size_t *n)
 {
     if(n_str == NULL)
@@ -130,10 +124,9 @@ static void handle_arguments(const char *binary_name, char *n_str, const char *s
     *n = parse_size_t(binary_name, n_str);
 }
 
-
 size_t parse_size_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -158,7 +151,6 @@ size_t parse_size_t(const char *binary_name, const char *str)
 
     return (size_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

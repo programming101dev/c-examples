@@ -14,21 +14,17 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void check_file_access(const char *filename, int mode, const char *access_msg);
-
+static void           check_file_access(const char *filename, int mode, const char *access_msg);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +39,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -86,7 +81,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -94,7 +88,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -108,7 +101,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void check_file_access(const char *filename, int mode, const char *access_msg)
 {

@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
-
 #define MESSAGE_LEN 256
-
 
 int main(void)
 {

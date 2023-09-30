@@ -14,28 +14,25 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 #define BUFFER_LEN 100
-
 
 int main(void)
 {
-    char       str[BUFFER_LEN];
+    char str[BUFFER_LEN];
 
     strcpy(str, "Hello, ");
 
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-truncation"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wstringop-truncation"
 #endif
     strncat(str, "World!", 3);
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
 
     printf("Concatenated string: \"%s\"\n", str);

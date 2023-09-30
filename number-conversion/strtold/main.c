@@ -14,19 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 static void convert(const char *str);
 
-
 #define TOLLERANCE 1e-6L
-
 
 int main(void)
 {
@@ -41,15 +37,14 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void convert(const char *str)
 {
     long double result;
-    char        *endptr;
+    char       *endptr;
     long double tolerance;
 
-    errno     = 0;
-    result    = strtold(str, &endptr);
+    errno  = 0;
+    result = strtold(str, &endptr);
 
     // Define your desired tolerance
     tolerance = TOLLERANCE;

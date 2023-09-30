@@ -14,25 +14,21 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
-#define PATH_LEN 4096   // A common default value for the maximum path length
-
+#define PATH_LEN 4096    // A common default value for the maximum path length
 
 // TODO pass the filename in on the command line
-
 
 int main(void)
 {
     const char *path = ".";
-    long       path_max;
+    long        path_max;
     char       *buffer;
-    size_t     size;
+    size_t      size;
 
     path_max = pathconf(path, _PC_PATH_MAX);
 
@@ -42,8 +38,8 @@ int main(void)
         path_max = PATH_LEN;
     }
 
-    buffer   = NULL;
-    size     = (size_t)path_max;
+    buffer = NULL;
+    size   = (size_t)path_max;
 
     while(1)
     {
@@ -70,7 +66,7 @@ int main(void)
         if(errno == ERANGE)
         {
             // Retry with a larger buffer size
-            size *= 2; // Double the buffer size
+            size *= 2;    // Double the buffer size
         }
         else
         {

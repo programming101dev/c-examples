@@ -14,39 +14,34 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 struct shared_data
 {
     pthread_mutex_t mutex;
-    pthread_cond_t cond_var;
-    int word_ready;
-    char *shared_word;
-    char *file_path;
+    pthread_cond_t  cond_var;
+    int             word_ready;
+    char           *shared_word;
+    char           *file_path;
 };
 
-
-static void *child_process(void *arg);
-static void *parent_process(void *arg);
-static void send_word(const char *word, struct shared_data *data);
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void          *child_process(void *arg);
+static void          *parent_process(void *arg);
+static void           send_word(const char *word, struct shared_data *data);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define MAX_WORD_LENGTH 255
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char               *file_path;
+    char              *file_path;
     pthread_t          child_thread;
     pthread_t          parent_thread;
     struct shared_data data;
@@ -86,7 +81,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -129,7 +123,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -137,7 +130,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -152,16 +144,15 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static void send_word(const char *word, struct shared_data *data)
 {
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-negative"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
     pthread_mutex_lock(&data->mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     while(data->word_ready)
@@ -204,13 +195,12 @@ static void send_word(const char *word, struct shared_data *data)
     pthread_mutex_unlock(&data->mutex);
 }
 
-
 static void *child_process(void *arg)
 {
     FILE               *file;
     char               *token;
     char               *saveptr;
-    char               line[MAX_WORD_LENGTH];
+    char                line[MAX_WORD_LENGTH];
     struct shared_data *data;
 
     data = (struct shared_data *)arg;
@@ -224,8 +214,8 @@ static void *child_process(void *arg)
 
     while(fgets(line, sizeof(line), file) != NULL)
     {
-        line[strcspn(line, "\n")] = '\0'; // Remove the newline character if present
-        token = strtok_r(line, " \t", &saveptr);
+        line[strcspn(line, "\n")] = '\0';    // Remove the newline character if present
+        token                     = strtok_r(line, " \t", &saveptr);
 
         while(token != NULL)
         {
@@ -245,9 +235,9 @@ static void *child_process(void *arg)
     pthread_exit(NULL);
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *parent_process(void *arg)
 {
     struct shared_data *data;
@@ -258,12 +248,12 @@ static void *parent_process(void *arg)
     while(1)
     {
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-negative"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
         pthread_mutex_lock(&data->mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
         while(!data->word_ready)
         {
@@ -295,4 +285,5 @@ static void *parent_process(void *arg)
 
     pthread_exit(NULL);
 }
+
 #pragma GCC diagnostic pop

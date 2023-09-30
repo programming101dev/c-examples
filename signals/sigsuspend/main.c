@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,10 +21,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-
 static void setup_signal_handler(void);
 static void sigint_handler(int signal_number);
-
 
 int main(void)
 {
@@ -84,19 +81,18 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -108,7 +104,6 @@ static void setup_signal_handler(void)
         exit(EXIT_FAILURE);
     }
 }
-
 
 static void sigint_handler(int signal_number)
 {

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,25 +22,22 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int socket_create(void);
-static void setup_socket_address(struct sockaddr_storage *addr, const char *path);
-static int connect_to_server(int sockfd, struct sockaddr_storage *addr);
-static void socket_close(int sockfd);
-
+static int            socket_create(void);
+static void           setup_socket_address(struct sockaddr_storage *addr, const char *path);
+static int            connect_to_server(int sockfd, struct sockaddr_storage *addr);
+static void           socket_close(int sockfd);
 
 #define SOCKET_PATH "/tmp/example_socket"
 #define LINE_LEN 1024
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char                    *file_path;
-    FILE                    *file;
+    char                   *file_path;
+    FILE                   *file;
     struct sockaddr_storage addr;
     int                     sockfd;
     char                    line[LINE_LEN];
@@ -83,7 +79,7 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            size             = (uint8_t)word_len;
+            size = (uint8_t)word_len;
             send(sockfd, &size, sizeof(uint8_t), 0);
 
             // Write the word
@@ -97,7 +93,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -140,7 +135,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -148,7 +142,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file name is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -163,7 +156,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static int connect_to_server(int sockfd, struct sockaddr_storage *addr)
 {
     if(connect(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
@@ -173,11 +165,10 @@ static int connect_to_server(int sockfd, struct sockaddr_storage *addr)
         exit(EXIT_FAILURE);
     }
 
-//    printf("Connected to %s\n", path);
+    //    printf("Connected to %s\n", path);
 
     return sockfd;
 }
-
 
 static int socket_create(void)
 {
@@ -186,7 +177,7 @@ static int socket_create(void)
 #ifdef SOCK_CLOEXEC
     sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 #else
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);    // NOLINT(android-cloexec-socket)
 #endif
 
     if(sockfd == -1)
@@ -198,18 +189,16 @@ static int socket_create(void)
     return sockfd;
 }
 
-
 static void setup_socket_address(struct sockaddr_storage *addr, const char *path)
 {
     struct sockaddr_un *addr_un;
 
     memset(addr, 0, sizeof(*addr));
-    addr_un = (struct sockaddr_un *)addr;
+    addr_un             = (struct sockaddr_un *)addr;
     addr_un->sun_family = AF_UNIX;
     strncpy(addr_un->sun_path, path, sizeof(addr_un->sun_path) - 1);
     addr_un->sun_path[sizeof(addr_un->sun_path) - 1] = '\0';
 }
-
 
 static void socket_close(int sockfd)
 {

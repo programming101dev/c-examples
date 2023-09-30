@@ -14,8 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -26,25 +24,21 @@
 #include <string.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **seconds);
-static void handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds);
-static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **seconds);
+static void           handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds);
+static unsigned int   parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void setup_signal_handler(void);
-static void alarm_handler(int signal_number);
-
+static void           setup_signal_handler(void);
+static void           alarm_handler(int signal_number);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
-static volatile sig_atomic_t alarm_received = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-
+static volatile sig_atomic_t alarm_received = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(int argc, char *argv[])
 {
-    char         *seconds_str;
+    char        *seconds_str;
     unsigned int seconds;
 
     seconds_str = NULL;
@@ -66,7 +60,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
@@ -109,7 +102,6 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
     *seconds = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds)
 {
     if(seconds_str == NULL)
@@ -120,10 +112,9 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, u
     *seconds = parse_unsigned_int(binary_name, seconds_str);
 }
 
-
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -149,7 +140,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     return (unsigned int)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -163,19 +153,18 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = alarm_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -188,9 +177,9 @@ static void setup_signal_handler(void)
     }
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void alarm_handler(int signal_number)
 {
     const char *message = "Alarm received!\n";
@@ -198,4 +187,5 @@ static void alarm_handler(int signal_number)
     write(STDERR_FILENO, message, strlen(message));
     alarm_received = 1;
 }
+
 #pragma GCC diagnostic pop

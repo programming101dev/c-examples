@@ -1102,7 +1102,11 @@ generate_makefile()
     echo -e "\nlint:" >> Makefile
 	  echo -e "\t@\$(CLANGTIDY) \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(LIBRARIES)" >> Makefile
 
-    # Add a clean rule to remove all generated binaries and libraries
+    # Add a format rule to format the source code
+    echo -e "\nformat:" >> Makefile
+	  echo -e "\t@\$(CLANGFORMAT) -i --style=file \$(SOURCES)" >> Makefile
+
+    # Add a clean rule to be picky about the code
     echo -e "clean:" >> Makefile
     echo -e "\t@rm -f \$(PROGRAMS) \$(LIBS)" >> Makefile
 
@@ -1111,7 +1115,7 @@ generate_makefile()
     fi
 
     # Add an "all" rule to build all programs and libraries
-    echo -e "\nall: \$(PROGRAMS) \$(LIBS) lint" >> Makefile
+    echo -e "\nall: format \$(PROGRAMS) \$(LIBS) lint" >> Makefile
 
     # Print a message indicating the Makefile generation is complete
     echo -e "\nMakefile generated successfully in directory: $(pwd)"

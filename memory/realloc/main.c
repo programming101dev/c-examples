@@ -14,22 +14,18 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
-
 
 static void initialize_array(int *array, size_t num_elements);
 static void print_array(const char *message, const int *array, size_t num_elements);
 static int *resize_array(int *array, size_t new_num_elements);
 
-
 #define NUM_ELEMENTS 5
-
 
 int main(void)
 {
-    int *dynamic_array;
+    int   *dynamic_array;
     size_t num_elements;
 
     num_elements  = NUM_ELEMENTS;
@@ -52,7 +48,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void initialize_array(int *array, size_t num_elements)
 {
     for(size_t i = 0; i < num_elements; i++)
@@ -60,7 +55,6 @@ static void initialize_array(int *array, size_t num_elements)
         array[i] = (int)i + 1;
     }
 }
-
 
 static void print_array(const char *message, const int *array, size_t num_elements)
 {
@@ -73,7 +67,6 @@ static void print_array(const char *message, const int *array, size_t num_elemen
 
     printf("\n");
 }
-
 
 static int *resize_array(int *array, size_t new_num_elements)
 {

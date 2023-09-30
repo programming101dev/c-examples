@@ -14,22 +14,18 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static void print_array(const int *arr, size_t size);
 
-
 #define NUM_ELEMENTS 5
-
 
 int main(void)
 {
     // TODO pass this in on the command line
     const size_t num_elements = NUM_ELEMENTS;
-    int          *dynamic_array;
+    int         *dynamic_array;
 
     dynamic_array = (int *)malloc(num_elements * sizeof(dynamic_array[0]));
 
@@ -40,12 +36,12 @@ int main(void)
     }
 
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
     print_array(dynamic_array, num_elements);
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
 
     free(dynamic_array);
@@ -53,12 +49,11 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void print_array(const int *arr, size_t size)
 {
     for(size_t i = 0; i < size; i++)
     {
-        printf("%d ", arr[i]);      // NOLINT(clang-analyzer-core.CallAndMessage)
+        printf("%d ", arr[i]);    // NOLINT(clang-analyzer-core.CallAndMessage)
     }
 
     printf("\n");

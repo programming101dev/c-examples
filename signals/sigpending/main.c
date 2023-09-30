@@ -14,19 +14,16 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 static void setup_signal_handler(void);
 static void sigint_handler(int signal_number);
-static int check_pending_signal(void);
-static int block_signal(int signal_num, sigset_t *block_set);
-static int unblock_signal(sigset_t *block_set);
-
+static int  check_pending_signal(void);
+static int  block_signal(int signal_num, sigset_t *block_set);
+static int  unblock_signal(sigset_t *block_set);
 
 int main(void)
 {
@@ -61,7 +58,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
@@ -69,12 +65,12 @@ static void setup_signal_handler(void)
     memset(&sa, 0, sizeof(sa));
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -87,12 +83,10 @@ static void setup_signal_handler(void)
     }
 }
 
-
 static void sigint_handler(int signal_number)
 {
     printf("Received signal: %d\n", signal_number);
 }
-
 
 static int check_pending_signal(void)
 {
@@ -107,7 +101,6 @@ static int check_pending_signal(void)
     return sigismember(&pending_set, SIGINT);
 }
 
-
 static int block_signal(int signal_num, sigset_t *block_set)
 {
     sigemptyset(block_set);
@@ -121,7 +114,6 @@ static int block_signal(int signal_num, sigset_t *block_set)
 
     return EXIT_SUCCESS;
 }
-
 
 static int unblock_signal(sigset_t *block_set)
 {

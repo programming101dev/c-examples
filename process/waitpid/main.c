@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-
 static void print_process_info(const char *name);
-
 
 int main(void)
 {
@@ -62,7 +59,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void print_process_info(const char *name)
 {

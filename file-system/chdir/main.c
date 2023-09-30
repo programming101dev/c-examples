@@ -14,28 +14,24 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **directory_path);
-static void handle_arguments(const char *binary_name, const char *directory_path);
+static void           parse_arguments(int argc, char *argv[], char **directory_path);
+static void           handle_arguments(const char *binary_name, const char *directory_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static char *getCurrentWorkingDirectory(long path_max);
-static void printCurrentWorkingDirectory(long path_max);
-
+static char          *getCurrentWorkingDirectory(long path_max);
+static void           printCurrentWorkingDirectory(long path_max);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-#define PATH_LEN 4096   // A common default value for the maximum path length
-
+#define PATH_LEN 4096    // A common default value for the maximum path length
 
 int main(int argc, char *argv[])
 {
     char *directory_path;
-    long path_max;
+    long  path_max;
 
     directory_path = NULL;
     parse_arguments(argc, argv, &directory_path);
@@ -59,7 +55,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **directory_path)
 {
@@ -102,7 +97,6 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
     *directory_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *directory_path)
 {
     if(directory_path == NULL)
@@ -110,7 +104,6 @@ static void handle_arguments(const char *binary_name, const char *directory_path
         usage(binary_name, EXIT_FAILURE, "The directory path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -125,10 +118,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 char *getCurrentWorkingDirectory(long path_max)
 {
-    char   *buffer;
+    char  *buffer;
     size_t size;
 
     buffer = NULL;
@@ -158,7 +150,7 @@ char *getCurrentWorkingDirectory(long path_max)
         if(errno == ERANGE)
         {
             // Retry with a larger buffer size
-            size *= 2; // Double the buffer size
+            size *= 2;    // Double the buffer size
         }
         else
         {
@@ -171,7 +163,6 @@ char *getCurrentWorkingDirectory(long path_max)
 
     return buffer;
 }
-
 
 void printCurrentWorkingDirectory(long path_max)
 {

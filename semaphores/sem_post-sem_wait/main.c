@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <semaphore.h>
 #include <stdio.h>
@@ -23,13 +22,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-
 int main(void)
 {
     // TODO pass this in on the command line
     const char *sem_name = "/example_semaphore";
     sem_t      *semaphore;
-    pid_t      pid;
+    pid_t       pid;
 
     // Create a named semaphore with initial value 1 (available)
     semaphore = sem_open(sem_name, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, 1);

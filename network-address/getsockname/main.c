@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -24,25 +23,22 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **host_name, char **service);
-static void handle_arguments(const char *binary_name, const char *host_name, const char *service);
+static void           parse_arguments(int argc, char *argv[], char **host_name, char **service);
+static void           handle_arguments(const char *binary_name, const char *host_name, const char *service);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char               *host_name;
-    char               *service;
+    char              *host_name;
+    char              *service;
     int                sockfd;
     struct sockaddr_in local_addr;
     socklen_t          addrlen;
     struct addrinfo    hints;
-    struct addrinfo    *result;
-    struct addrinfo    *rp;
+    struct addrinfo   *result;
+    struct addrinfo   *rp;
     int                status;
     char               ipstr[INET6_ADDRSTRLEN];
 
@@ -54,7 +50,7 @@ int main(int argc, char *argv[])
 #ifdef SOCK_CLOEXEC
     sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 #else
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);    // NOLINT(android-cloexec-socket)
 #endif
 
     if(sockfd == -1)
@@ -64,9 +60,9 @@ int main(int argc, char *argv[])
     }
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family   = AF_UNSPEC; // Allow both IPv4 and IPv6
+    hints.ai_family   = AF_UNSPEC;    // Allow both IPv4 and IPv6
     hints.ai_socktype = SOCK_STREAM;
-    status = getaddrinfo(host_name, service, &hints, &result);
+    status            = getaddrinfo(host_name, service, &hints, &result);
 
     if(status != 0)
     {
@@ -80,7 +76,7 @@ int main(int argc, char *argv[])
     {
         if(connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0)
         {
-            break; // Connected successfully
+            break;    // Connected successfully
         }
     }
 
@@ -123,11 +119,10 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **host_name, char **service)
 {
     int opt;
-    opterr     = 0;
+    opterr = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -161,7 +156,6 @@ static void parse_arguments(int argc, char *argv[], char **host_name, char **ser
     *service   = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *host_name, const char *service)
 {
     if(host_name == NULL)
@@ -173,7 +167,6 @@ static void handle_arguments(const char *binary_name, const char *host_name, con
         usage(binary_name, EXIT_FAILURE, "Y");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

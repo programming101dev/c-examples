@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
-
 
 static void exit_handler1(void);
 static void exit_handler2(void);
 static void exit_handler3(void);
-
 
 int main(void)
 {
@@ -34,18 +31,15 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void exit_handler1(void)
 {
     printf("exit_handler1 called.\n");
 }
 
-
 static void exit_handler2(void)
 {
     printf("exit_handler2 called.\n");
 }
-
 
 static void exit_handler3(void)
 {

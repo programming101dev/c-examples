@@ -14,24 +14,20 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 void print_permissions(const char *filename);
 
-
 // TODO pass the filename in on the command line
-
 
 int main(void)
 {
     const char *filename = "file.txt";
     FILE       *file;
-    mode_t     new_permissions;
+    mode_t      new_permissions;
 
     file = fopen(filename, "we");
 
@@ -44,7 +40,7 @@ int main(void)
     fclose(file);
     printf("Before chmod:\n");
     print_permissions(filename);
-    new_permissions = S_IRUSR | S_IWUSR | S_IXUSR | S_IWGRP | S_IRGRP | S_IROTH; // rwx-w-r--
+    new_permissions = S_IRUSR | S_IWUSR | S_IXUSR | S_IWGRP | S_IRGRP | S_IROTH;    // rwx-w-r--
 
     if(chmod(filename, new_permissions) == -1)
     {
@@ -64,7 +60,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 void print_permissions(const char *filename)
 {

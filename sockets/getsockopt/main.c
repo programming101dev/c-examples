@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <getopt.h>
@@ -27,64 +26,61 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-
 struct socket_option
 {
-    int        level;
-    int        option;
+    int         level;
+    int         option;
     const char *name;
-    void (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
+    void        (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
 };
 
-
-static void parse_arguments(int argc, char *argv[], char **address, char **port);
-static void handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port);
-static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
+static void           parse_arguments(int argc, char *argv[], char **address, char **port);
+static void           handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port);
+static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void convert_address(const char *address, struct sockaddr_storage *addr);
-static int socket_create(int domain, int type, int protocol);
-static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
-static void print_socket_opt_bool(int sockfd, int option_level, int option_name, const char *option_name_str);
-static void print_socket_opt_int(int sockfd, int option_level, int option_name, const char *option_name_str);
-static void print_socket_opt_timeval(int sockfd, int option_level, int option_name, const char *option_name_str);
-static void print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
-static void socket_close(int sockfd);
-
+static void           convert_address(const char *address, struct sockaddr_storage *addr);
+static int            socket_create(int domain, int type, int protocol);
+static void           socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
+static void           print_socket_opt_bool(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void           print_socket_opt_int(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void           print_socket_opt_timeval(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void           print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
+static void           socket_close(int sockfd);
 
 #if defined(__APPLE__)
-#define D_MS_FORMAT "%d"
+    #define D_MS_FORMAT "%d"
 #elif defined(__linux__)
-#define D_MS_FORMAT "%ld"
+    #define D_MS_FORMAT "%ld"
 #elif defined(__FreeBSD__)
-#define D_MS_FORMAT "%ld"
+    #define D_MS_FORMAT "%ld"
 #endif
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char                    *address;
-    char                    *port_str;
+    char                   *address;
+    char                   *port_str;
     in_port_t               port;
     int                     sockfd;
     struct sockaddr_storage addr;
-    struct socket_option    options[] = {{IPPROTO_TCP, SO_ACCEPTCONN, "SO_ACCEPTCONN", print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_BROADCAST,  "SO_BROADCAST",  print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_DEBUG,      "SO_DEBUG",      print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_DONTROUTE,  "SO_DONTROUTE",  print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_ERROR,      "SO_ERROR",      print_socket_opt_int},
-                                         {SOL_SOCKET,  SO_KEEPALIVE,  "SO_KEEPALIVE",  print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_LINGER,     "SO_LINGER",     print_socket_opt_linger},
-                                         {SOL_SOCKET,  SO_OOBINLINE,  "SO_OOBINLINE",  print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_RCVBUF,     "SO_RCVBUF",     print_socket_opt_int},
-                                         {SOL_SOCKET,  SO_RCVLOWAT,   "SO_RCVLOWAT",   print_socket_opt_int},
-                                         {SOL_SOCKET,  SO_RCVTIMEO,   "SO_RCVTIMEO",   print_socket_opt_timeval},
-                                         {SOL_SOCKET,  SO_REUSEADDR,  "SO_REUSEADDR",  print_socket_opt_bool},
-                                         {SOL_SOCKET,  SO_SNDBUF,     "SO_SNDBUF",     print_socket_opt_int},
-                                         {SOL_SOCKET,  SO_SNDLOWAT,   "SO_SNDLOWAT",   print_socket_opt_int},
-                                         {SOL_SOCKET,  SO_SNDTIMEO,   "SO_SNDTIMEO",   print_socket_opt_timeval},
-                                         {SOL_SOCKET,  SO_TYPE,       "SO_TYPE",       print_socket_opt_int},
+    struct socket_option    options[] = {
+        {IPPROTO_TCP, SO_ACCEPTCONN, "SO_ACCEPTCONN", print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_BROADCAST,  "SO_BROADCAST",  print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_DEBUG,      "SO_DEBUG",      print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_DONTROUTE,  "SO_DONTROUTE",  print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_ERROR,      "SO_ERROR",      print_socket_opt_int    },
+        {SOL_SOCKET,  SO_KEEPALIVE,  "SO_KEEPALIVE",  print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_LINGER,     "SO_LINGER",     print_socket_opt_linger },
+        {SOL_SOCKET,  SO_OOBINLINE,  "SO_OOBINLINE",  print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_RCVBUF,     "SO_RCVBUF",     print_socket_opt_int    },
+        {SOL_SOCKET,  SO_RCVLOWAT,   "SO_RCVLOWAT",   print_socket_opt_int    },
+        {SOL_SOCKET,  SO_RCVTIMEO,   "SO_RCVTIMEO",   print_socket_opt_timeval},
+        {SOL_SOCKET,  SO_REUSEADDR,  "SO_REUSEADDR",  print_socket_opt_bool   },
+        {SOL_SOCKET,  SO_SNDBUF,     "SO_SNDBUF",     print_socket_opt_int    },
+        {SOL_SOCKET,  SO_SNDLOWAT,   "SO_SNDLOWAT",   print_socket_opt_int    },
+        {SOL_SOCKET,  SO_SNDTIMEO,   "SO_SNDTIMEO",   print_socket_opt_timeval},
+        {SOL_SOCKET,  SO_TYPE,       "SO_TYPE",       print_socket_opt_int    },
     };
 
     address  = NULL;
@@ -104,7 +100,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **address, char **port)
 {
@@ -148,7 +143,6 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port)
     *port    = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *address, const char *port_str, in_port_t *port)
 {
     if(address == NULL)
@@ -164,10 +158,9 @@ static void handle_arguments(const char *binary_name, const char *address, const
     *port = parse_in_port_t(binary_name, port_str);
 }
 
-
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -194,7 +187,6 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -207,7 +199,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
@@ -225,7 +216,6 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
     }
 }
 
-
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
@@ -241,13 +231,15 @@ static int socket_create(int domain, int type, int protocol)
     return sockfd;
 }
 
-
 static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port)
 {
     char      addr_str[INET6_ADDRSTRLEN];
     in_port_t net_port;
 
-    if(inet_ntop(addr->ss_family, addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr), addr_str, sizeof(addr_str)) == NULL)
+    if(inet_ntop(addr->ss_family,
+                 addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr),
+                 addr_str,
+                 sizeof(addr_str)) == NULL)
     {
         perror("inet_ntop");
         exit(EXIT_FAILURE);
@@ -260,14 +252,14 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
     {
         struct sockaddr_in *ipv4_addr;
 
-        ipv4_addr = (struct sockaddr_in *)addr;
+        ipv4_addr           = (struct sockaddr_in *)addr;
         ipv4_addr->sin_port = net_port;
     }
     else if(addr->ss_family == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
 
-        ipv6_addr = (struct sockaddr_in6 *)addr;
+        ipv6_addr            = (struct sockaddr_in6 *)addr;
         ipv6_addr->sin6_port = net_port;
     }
     else
@@ -284,7 +276,6 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
 
     printf("Bound to socket: %s:%u\n", addr_str, port);
 }
-
 
 static void print_socket_opt_bool(int sockfd, int option_level, int option_name, const char *option_name_str)
 {
@@ -309,7 +300,6 @@ static void print_socket_opt_bool(int sockfd, int option_level, int option_name,
     }
 }
 
-
 static void print_socket_opt_int(int sockfd, int option_level, int option_name, const char *option_name_str)
 {
     int       optval;
@@ -333,7 +323,6 @@ static void print_socket_opt_int(int sockfd, int option_level, int option_name, 
     }
 }
 
-
 static void print_socket_opt_timeval(int sockfd, int option_level, int option_name, const char *option_name_str)
 {
     struct timeval optval;
@@ -342,7 +331,6 @@ static void print_socket_opt_timeval(int sockfd, int option_level, int option_na
 
     optlen = sizeof(optval);
     ret    = getsockopt(sockfd, option_level, option_name, &optval, &optlen);
-
 
     if(ret == 0)
     {
@@ -354,11 +342,10 @@ static void print_socket_opt_timeval(int sockfd, int option_level, int option_na
     }
 }
 
-
 static void print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str)
 {
     struct linger optval;
-    socklen_t     optlen ;
+    socklen_t     optlen;
     int           ret;
 
     optlen = sizeof(optval);
@@ -373,7 +360,6 @@ static void print_socket_opt_linger(int sockfd, int option_level, int option_nam
         perror("getsockopt");
     }
 }
-
 
 static void socket_close(int sockfd)
 {

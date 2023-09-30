@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <inttypes.h>
 #include <pthread.h>
@@ -23,23 +22,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-static void parse_arguments(int argc, char *argv[], bool *use_mutex);
+static void           parse_arguments(int argc, char *argv[], bool *use_mutex);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void *thread_function(void *arg);
-
+static void          *thread_function(void *arg);
 
 #define NUM_THREADS 10
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 struct thread_data
 {
-    bool            use_mutex;
+    bool             use_mutex;
     pthread_mutex_t *mutex;
     int             *sharedVariable;
 };
-
 
 int main(int argc, char *argv[])
 {
@@ -90,7 +85,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], bool *use_mutex)
 {
     int opt;
@@ -125,7 +119,6 @@ static void parse_arguments(int argc, char *argv[], bool *use_mutex)
     }
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -140,11 +133,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static void *thread_function(void *arg)
 {
-    pthread_t          tid;
-    uintptr_t          tid_val;
+    pthread_t           tid;
+    uintptr_t           tid_val;
     struct thread_data *data;
 
     data = (struct thread_data *)arg;
@@ -157,12 +149,12 @@ static void *thread_function(void *arg)
 
     // Critical section: Accessing and modifying the shared variable
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-analysis"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-analysis"
 #endif
     (*(data->sharedVariable))++;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     // Print the thread ID and shared variable value
@@ -174,12 +166,12 @@ static void *thread_function(void *arg)
     {
         // Unlock the mutex after finishing the critical section
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-analysis"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-analysis"
 #endif
         pthread_mutex_unlock(data->mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     }
 

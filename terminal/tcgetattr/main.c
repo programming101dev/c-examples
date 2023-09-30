@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
-
 static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_check);
-
 
 int main(void)
 {
@@ -129,7 +126,6 @@ int main(void)
     printf("VTIME:   %d\n", term_attr.c_cc[VTIME]);
     return EXIT_SUCCESS;
 }
-
 
 static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_check)
 {

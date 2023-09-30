@@ -14,19 +14,17 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
-
 
 int main(void)
 {
     int   terminal_fd;
     pid_t sid;
 
-    terminal_fd = STDIN_FILENO; // Use standard input (stdin) as the terminal
+    terminal_fd = STDIN_FILENO;    // Use standard input (stdin) as the terminal
     sid         = tcgetsid(terminal_fd);
 
     if(sid == -1)

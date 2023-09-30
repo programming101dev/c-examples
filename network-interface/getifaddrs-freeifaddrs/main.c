@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <netdb.h>
@@ -24,12 +23,11 @@
 #include <string.h>
 #include <sys/socket.h>
 
-
 int main(void)
 {
     struct ifaddrs *interfaces;
     struct ifaddrs *ifaddr;
-    char           host[NI_MAXHOST];
+    char            host[NI_MAXHOST];
 
     // Get the list of network interfaces
     if(getifaddrs(&interfaces) == -1)

@@ -14,19 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 static void convert(const char *str);
 
-
 #define TOLLERANCE 1e-6f
-
 
 int main(void)
 {
@@ -41,16 +37,15 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void convert(const char *str)
 {
     float result;
-    char  *endptr;
+    char *endptr;
     float tolerance;
 
     errno     = 0;
     result    = strtof(str, &endptr);
-    tolerance = TOLLERANCE; // Define your desired tolerance for float
+    tolerance = TOLLERANCE;    // Define your desired tolerance for float
 
     if((errno == ERANGE && (fabsf(result - HUGE_VALF) < tolerance || fabsf(result + HUGE_VALF) < tolerance)) || (errno != 0 && fabsf(result) < tolerance))
     {

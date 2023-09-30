@@ -14,20 +14,16 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
 
-
 static void print_process_info(const char *name);
 static void child_process(const char *name);
 
-
 #define MAX_SECONDS 5
-
 
 int main(void)
 {
@@ -96,12 +92,10 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void print_process_info(const char *name)
 {
     printf("Name: %s, Process: PID=%d, Parent PID=%d\n", name, getpid(), getppid());
 }
-
 
 static void child_process(const char *name)
 {

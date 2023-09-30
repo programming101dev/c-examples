@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,25 +22,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id);
-static void handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
-static uid_t get_uid_t_max(void);
-static uid_t parse_uid_t(const char *binary_name, const char *str);
-static gid_t get_gid_t_max(void);
-static gid_t parse_gid_t(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id);
+static void           handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid);
+static uid_t          get_uid_t_max(void);
+static uid_t          parse_uid_t(const char *binary_name, const char *str);
+static gid_t          get_gid_t_max(void);
+static gid_t          parse_gid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char  *path;
-    char  *user_id;
-    char  *group_id;
+    char *path;
+    char *user_id;
+    char *group_id;
     uid_t uid;
     gid_t gid;
 
@@ -61,7 +57,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **path, char **user_id, char **group_id)
 {
@@ -114,7 +109,6 @@ static void parse_arguments(int argc, char *argv[], char **path, char **user_id,
     *path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *path, const char *user_id, const char *group_id, uid_t *uid, gid_t *gid)
 {
     if(path == NULL)
@@ -135,7 +129,6 @@ static void handle_arguments(const char *binary_name, const char *path, const ch
     *uid = parse_uid_t(binary_name, user_id);
     *gid = parse_gid_t(binary_name, group_id);
 }
-
 
 static uid_t get_uid_t_max(void)
 {
@@ -171,10 +164,9 @@ static uid_t get_uid_t_max(void)
     return value;
 }
 
-
 static uid_t parse_uid_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
     uintmax_t max;
 
@@ -201,7 +193,6 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
 
     return (uid_t)parsed_value;
 }
-
 
 static gid_t get_gid_t_max(void)
 {
@@ -236,10 +227,9 @@ static gid_t get_gid_t_max(void)
     return value;
 }
 
-
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
     gid_t     max;
 
@@ -266,7 +256,6 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
 
     return (gid_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

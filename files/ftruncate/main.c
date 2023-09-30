@@ -14,27 +14,23 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 static void check_file_size(const char *filename, const char *message);
-
 
 // TODO - pass the size in on the command line
 #define SIZE 9
 
-
 int main(void)
 {
     // TODO pass the tempate and content in on the command line
-    const char *content   = "This is a sample file.\n";
-    char       filename[] = "example_XXXXXX";
-    int        fd;
-    off_t      new_size;
+    const char *content    = "This is a sample file.\n";
+    char        filename[] = "example_XXXXXX";
+    int         fd;
+    off_t       new_size;
 
     fd = mkstemp(filename);
 
@@ -47,7 +43,7 @@ int main(void)
     dprintf(fd, "%s\n", content);
     check_file_size(filename, "Initial file size");
     new_size = SIZE;
-// TODO    printf("Truncating file %s to %lld bytes\n", filename, (long long) new_size);
+    // TODO    printf("Truncating file %s to %lld bytes\n", filename, (long long) new_size);
 
     if(ftruncate(fd, new_size) == -1)
     {
@@ -70,7 +66,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void check_file_size(const char *filename, const char *message)
 {

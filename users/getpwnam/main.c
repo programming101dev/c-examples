@@ -14,21 +14,17 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **user_name);
-static void handle_arguments(const char *binary_name, const char *user_name);
+static void           parse_arguments(int argc, char *argv[], char **user_name);
+static void           handle_arguments(const char *binary_name, const char *user_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void print_entry(const struct passwd *entry);
-
+static void           print_entry(const struct passwd *entry);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
@@ -51,7 +47,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **user_name)
 {
@@ -94,7 +89,6 @@ static void parse_arguments(int argc, char *argv[], char **user_name)
     *user_name = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *user_name)
 {
     if(user_name == NULL)
@@ -102,7 +96,6 @@ static void handle_arguments(const char *binary_name, const char *user_name)
         usage(binary_name, EXIT_FAILURE, "The user name are required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -116,7 +109,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void print_entry(const struct passwd *entry)
 {

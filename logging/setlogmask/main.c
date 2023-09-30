@@ -14,33 +14,30 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <syslog.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **log_name);
-static void handle_arguments(const char *binary_name, const char *log_name);
+static void           parse_arguments(int argc, char *argv[], char **log_name);
+static void           handle_arguments(const char *binary_name, const char *log_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-void logMessages(void);
-
+void                  logMessages(void);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
     char *log_name;
-    int  mask;
+    int   mask;
 
     log_name = NULL;
     parse_arguments(argc, argv, &log_name);
     handle_arguments(argv[0], log_name);
     openlog(log_name, LOG_PID, LOG_USER);
-    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) | LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
+    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) | LOG_MASK(LOG_INFO) |
+           LOG_MASK(LOG_DEBUG);
 
     if(setlogmask(mask) == -1)
     {
@@ -65,7 +62,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **log_name)
 {
@@ -108,7 +104,6 @@ static void parse_arguments(int argc, char *argv[], char **log_name)
     *log_name = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *log_name)
 {
     if(log_name == NULL)
@@ -116,7 +111,6 @@ static void handle_arguments(const char *binary_name, const char *log_name)
         usage(binary_name, EXIT_FAILURE, "The log name is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -130,7 +124,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 void logMessages(void)
 {

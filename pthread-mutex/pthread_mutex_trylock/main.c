@@ -14,13 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <inttypes.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 
 struct thread_data
 {
@@ -28,15 +26,11 @@ struct thread_data
     pthread_mutex_t *mutex;
 };
 
-
 static void *thread_function(void *arg);
-
 
 #define NUM_THREADS 10
 
-
 // TODO: is there a way to make it so that trylock doesn't succeed?
-
 
 int main(void)
 {
@@ -52,7 +46,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    sharedVariable = 0; // Local shared variable for main thread
+    sharedVariable = 0;    // Local shared variable for main thread
 
     // Create multiple threads
     data.sharedVariable = &sharedVariable;
@@ -79,11 +73,10 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void *thread_function(void *arg)
 {
-    pthread_t          tid;
-    uintptr_t          tid_val;
+    pthread_t           tid;
+    uintptr_t           tid_val;
     struct thread_data *data;
 
     data = (struct thread_data *)arg;
@@ -99,7 +92,7 @@ static void *thread_function(void *arg)
     (*(data->sharedVariable))++;
 
     // Print the thread ID and shared variable value
-    tid                      = pthread_self();
+    tid = pthread_self();
     memcpy(&tid_val, &tid, sizeof(uintptr_t));
     printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t)tid_val, *(data->sharedVariable));
 

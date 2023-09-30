@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -26,22 +25,19 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **seconds);
-static void handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds);
-static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **seconds);
+static void           handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds);
+static unsigned int   parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void setup_signal_handler(void);
-static void sigint_handler(int signal_number);
-
+static void           setup_signal_handler(void);
+static void           sigint_handler(int signal_number);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char         *seconds_str;
+    char        *seconds_str;
     unsigned int seconds;
     sigset_t     mask;
     int          sig;
@@ -75,8 +71,8 @@ int main(int argc, char *argv[])
     if(pid == 0)
     {
         // Child process
-        sleep(seconds); // Sleep for 3 seconds
-        kill(getppid(), SIGINT); // Send SIGINT to the parent
+        sleep(seconds);             // Sleep for 3 seconds
+        kill(getppid(), SIGINT);    // Send SIGINT to the parent
     }
     else
     {
@@ -99,7 +95,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **seconds)
 {
@@ -142,7 +137,6 @@ static void parse_arguments(int argc, char *argv[], char **seconds)
     *seconds = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *seconds_str, unsigned int *seconds)
 {
     if(seconds_str == NULL)
@@ -153,10 +147,9 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, u
     *seconds = parse_unsigned_int(binary_name, seconds_str);
 }
 
-
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -182,7 +175,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     return (unsigned int)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -196,19 +188,18 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -221,10 +212,11 @@ static void setup_signal_handler(void)
     }
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signal_number)
 {
 }
+
 #pragma GCC diagnostic pop

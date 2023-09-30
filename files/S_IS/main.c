@@ -14,30 +14,26 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void print_file_info(const struct stat *fileStat);
-static void print_special_type(const struct stat *fileStat);
-static void print_extended_type(const struct stat *fileStat);
-static void print_permissions(mode_t mode);
-static void print_time(const char *label, time_t timeValue);
-
+static void           print_file_info(const struct stat *fileStat);
+static void           print_special_type(const struct stat *fileStat);
+static void           print_extended_type(const struct stat *fileStat);
+static void           print_permissions(mode_t mode);
+static void           print_time(const char *label, time_t timeValue);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char        *file_path;
+    char       *file_path;
     struct stat fileStat;
 
     file_path = NULL;
@@ -55,7 +51,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -98,7 +93,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -106,7 +100,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -120,7 +113,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void print_file_info(const struct stat *fileStat)
 {
@@ -137,7 +129,6 @@ static void print_file_info(const struct stat *fileStat)
     print_time("Last modification time", fileStat->st_mtime);
     print_time("Last status change time", fileStat->st_ctime);
 }
-
 
 static void print_special_type(const struct stat *fileStat)
 {
@@ -175,40 +166,37 @@ static void print_special_type(const struct stat *fileStat)
     }
 }
 
-
 static void print_extended_type(const struct stat *fileStat)
 {
-    (void)fileStat; // Compiler trick
+    (void)fileStat;    // Compiler trick
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
 #if defined(S_TYPEISMQ) && S_TYPEISMQ != 0
-    if (S_TYPEISMQ(fileStat))
-        {
-            printf("Type: Message Queue\n");
-        }
+    if(S_TYPEISMQ(fileStat))
+    {
+        printf("Type: Message Queue\n");
+    }
 #endif
 #if defined(S_TYPEISSEM) && S_TYPEISSEM != 0
-    if (S_TYPEISSEM(fileStat))
-        {
-            printf("Type: Semaphore\n");
-        }
+    if(S_TYPEISSEM(fileStat))
+    {
+        printf("Type: Semaphore\n");
+    }
 #endif
 #if defined(S_TYPEISSHM) && S_TYPEISSHM != 0
-    if (S_TYPEISSHM(fileStat))
-        {
-            printf("Type: Shared Memory\n");
-        }
+    if(S_TYPEISSHM(fileStat))
+    {
+        printf("Type: Shared Memory\n");
+    }
 #endif
 #pragma GCC diagnostic pop
 }
-
 
 static void print_permissions(mode_t mode)
 {
     printf("File Permissions: %o\n", (unsigned int)mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 }
-
 
 static void print_time(const char *label, time_t timeValue)
 {

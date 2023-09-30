@@ -14,18 +14,16 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 int main(void)
 {
     // TODO pass these in on the command line
-    char       templ[] = "/tmp/mytempfileXXXXXX";
-    const char *data   = "This is some data that needs to be written to the file.\n";
-    int        fd;
+    char        templ[] = "/tmp/mytempfileXXXXXX";
+    const char *data    = "This is some data that needs to be written to the file.\n";
+    int         fd;
 
     printf("Creating a temporary file...\n");
     fd = mkstemp(templ);

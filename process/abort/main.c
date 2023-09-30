@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -24,23 +23,20 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **limit);
-static void handle_arguments(const char *binary_name, const char *limit_str, rlim_t *limit);
-static rlim_t get_rlim_t_max(void);
-static rlim_t parse_rlim_t(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **limit);
+static void           handle_arguments(const char *binary_name, const char *limit_str, rlim_t *limit);
+static rlim_t         get_rlim_t_max(void);
+static rlim_t         parse_rlim_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void abort_handler(void);
-static void set_core_dump_limit(rlim_t limit);
-
+static void           abort_handler(void);
+static void           set_core_dump_limit(rlim_t limit);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char   *limit_str;
+    char  *limit_str;
     rlim_t limit;
 
     limit_str = NULL;
@@ -62,7 +58,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 #pragma GCC diagnostic pop
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **limit)
 {
@@ -99,7 +94,6 @@ static void parse_arguments(int argc, char *argv[], char **limit)
     }
 }
 
-
 static void handle_arguments(const char *binary_name, const char *limit_str, rlim_t *limit)
 {
     if(limit_str == NULL)
@@ -111,7 +105,6 @@ static void handle_arguments(const char *binary_name, const char *limit_str, rli
         *limit = parse_rlim_t(binary_name, limit_str);
     }
 }
-
 
 static rlim_t get_rlim_t_max(void)
 {
@@ -147,16 +140,15 @@ static rlim_t get_rlim_t_max(void)
     return value;
 }
 
-
 static rlim_t parse_rlim_t(const char *binary_name, const char *str)
 {
     rlim_t    max;
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
-    max           = get_rlim_t_max();
-    errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
+    max          = get_rlim_t_max();
+    errno        = 0;
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {
@@ -177,7 +169,6 @@ static rlim_t parse_rlim_t(const char *binary_name, const char *str)
     return (rlim_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -192,12 +183,10 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static void abort_handler(void)
 {
     printf("Abort handler called.\n");
 }
-
 
 static void set_core_dump_limit(rlim_t limit)
 {

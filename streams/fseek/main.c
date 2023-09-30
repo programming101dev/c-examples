@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,23 +22,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path, char **offset);
-static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, long *offset);
-static long parse_long(const char *binary_name, const char *offset_str);
+static void           parse_arguments(int argc, char *argv[], char **file_path, char **offset);
+static void           handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, long *offset);
+static long           parse_long(const char *binary_name, const char *offset_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void display_file(FILE *file, const char *message, long offset);
-
+static void           display_file(FILE *file, const char *message, long offset);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
-
 
 int main(int argc, char *argv[])
 {
     char *file_path;
     char *offset_str;
-    long offset;
+    long  offset;
     FILE *file;
 
     file_path  = NULL;
@@ -64,7 +60,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path, char **offset)
 {
@@ -112,7 +107,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **off
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, long *offset)
 {
     if(file_path == NULL)
@@ -128,10 +122,9 @@ static void handle_arguments(const char *binary_name, const char *file_path, con
     *offset = parse_long(binary_name, offset_str);
 }
 
-
 static long parse_long(const char *binary_name, const char *str)
 {
-    char     *endptr;
+    char    *endptr;
     intmax_t parsed_value;
 
     errno        = 0;
@@ -157,7 +150,6 @@ static long parse_long(const char *binary_name, const char *str)
     return (long)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -171,7 +163,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -o <offset>  The offset to move from the start of the file\n", stderr);
     exit(exit_code);
 }
-
 
 static void display_file(FILE *file, const char *message, long offset)
 {

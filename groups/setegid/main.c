@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,21 +22,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **group_id);
-static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
-static gid_t get_gid_t_max(void);
-static gid_t parse_gid_t(const char *binary_name, const char *gid_str);
+static void           parse_arguments(int argc, char *argv[], char **group_id);
+static void           handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
+static gid_t          get_gid_t_max(void);
+static gid_t          parse_gid_t(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char  *group_id;
+    char *group_id;
     gid_t gid;
 
     group_id = NULL;
@@ -55,7 +51,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **group_id)
 {
@@ -98,7 +93,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
     *group_id = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid)
 {
     if(group_id == NULL)
@@ -108,7 +102,6 @@ static void handle_arguments(const char *binary_name, const char *group_id, gid_
 
     *gid = parse_gid_t(binary_name, group_id);
 }
-
 
 static gid_t get_gid_t_max(void)
 {
@@ -143,15 +136,14 @@ static gid_t get_gid_t_max(void)
     return value;
 }
 
-
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
     gid_t     max;
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
-    errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
+    errno        = 0;
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {
@@ -173,7 +165,6 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
 
     return (gid_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

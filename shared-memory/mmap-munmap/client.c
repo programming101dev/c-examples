@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <semaphore.h>
 #include <stdio.h>
@@ -24,12 +23,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 static _Noreturn void usage(const char *program_name, int exit_code, const char *message);
-static size_t get_page_size(void);
-
+static size_t         get_page_size(void);
 
 #define SHM_SIZE 1024
 #define CLIENT_SEM_NAME "/client_semaphore"
@@ -37,20 +34,19 @@ static size_t get_page_size(void);
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BUFFER_LEN 100
 
-
 int main(int argc, char *argv[])
 {
-    char       *file_path;
-    int        shm_fd;
-    char       *shm_ptr;
-    sem_t      *client_sem;
-    sem_t      *server_sem;
-    FILE       *file;
-    char       buffer[BUFFER_LEN];
+    char  *file_path;
+    int    shm_fd;
+    char  *shm_ptr;
+    sem_t *client_sem;
+    sem_t *server_sem;
+    FILE  *file;
+    char   buffer[BUFFER_LEN];
     // TODO pass this in on the command line
     const char *shm_name = "/my_shared_memory";
-    size_t     page_size;
-    size_t     shm_size;
+    size_t      page_size;
+    size_t      shm_size;
 
     page_size = get_page_size();
     shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
@@ -149,7 +145,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
     int opt;
@@ -191,7 +186,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -199,7 +193,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -213,7 +206,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static size_t get_page_size(void)
 {

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -24,29 +23,26 @@
 #include <string.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path, char **offset);
-static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset);
-off_t get_off_t_min(void) __attribute__((const));
-off_t get_off_t_max(void) __attribute__((const));
-off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **file_path, char **offset);
+static void           handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset);
+off_t                 get_off_t_min(void) __attribute__((const));
+off_t                 get_off_t_max(void) __attribute__((const));
+off_t                 parse_off_t(const char *binary_name, off_t min, off_t max, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void display_file(int fd, const char *message, off_t offset);
-
+static void           display_file(int fd, const char *message, off_t offset);
 
 #if defined(__APPLE__)
-#define D_OFF_FORMAT "%lld"
+    #define D_OFF_FORMAT "%lld"
 #else
-#define D_OFF_FORMAT "%ld"
+    #define D_OFF_FORMAT "%ld"
 #endif
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char  *file_path;
-    char  *offset_str;
+    char *file_path;
+    char *offset_str;
     off_t offset;
     int   fd;
 
@@ -72,7 +68,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path, char **offset)
 {
@@ -120,7 +115,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path, char **off
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset)
 {
     off_t min;
@@ -136,11 +130,10 @@ static void handle_arguments(const char *binary_name, const char *file_path, con
         usage(binary_name, EXIT_FAILURE, "The offset is required.");
     }
 
-    min = get_off_t_min();
-    max = get_off_t_max();
+    min     = get_off_t_min();
+    max     = get_off_t_max();
     *offset = parse_off_t(binary_name, min, max, offset_str);
 }
-
 
 off_t get_off_t_min(void)
 {
@@ -176,7 +169,6 @@ off_t get_off_t_min(void)
     return value;
 }
 
-
 off_t get_off_t_max(void)
 {
     off_t value;
@@ -210,10 +202,9 @@ off_t get_off_t_max(void)
     return value;
 }
 
-
 off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str)
 {
-    char     *endptr;
+    char    *endptr;
     intmax_t parsed_value;
 
     errno        = 0;
@@ -238,7 +229,6 @@ off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str
     return (off_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -252,7 +242,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -o <offset>  The offset to move from the start of the file\n", stderr);
     exit(exit_code);
 }
-
 
 static void display_file(int fd, const char *message, off_t offset)
 {

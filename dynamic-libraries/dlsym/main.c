@@ -14,27 +14,23 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **library_path, char **function_name);
-static void handle_arguments(const char *binary_name, const char *library_path, const char *function_name);
+static void           parse_arguments(int argc, char *argv[], char **library_path, char **function_name);
+static void           handle_arguments(const char *binary_name, const char *library_path, const char *function_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
-
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
     char *library_path;
     char *function_name;
     void *handle;
-    void (*func)(const char *);
+    void  (*func)(const char *);
 
     library_path  = NULL;
     function_name = NULL;
@@ -93,7 +89,6 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **library_path, char **function_name)
 {
     int opt;
@@ -133,7 +128,6 @@ static void parse_arguments(int argc, char *argv[], char **library_path, char **
     }
 }
 
-
 static void handle_arguments(const char *binary_name, const char *library_path, const char *function_name)
 {
     if(library_path == NULL)
@@ -146,7 +140,6 @@ static void handle_arguments(const char *binary_name, const char *library_path, 
         usage(binary_name, EXIT_FAILURE, "The function name is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -22,23 +21,19 @@
 #include <termios.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **speed);
-static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed);
-static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str);
+static void           parse_arguments(int argc, char *argv[], char **speed);
+static void           handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed);
+static speed_t        parse_baud_rate(const char *binary_name, const char *baud_rate_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 // TODO the speed is always invalid
-
 
 int main(int argc, char *argv[])
 {
-    char           *speed_str;
+    char          *speed_str;
     speed_t        output_baud_rate;
     speed_t        new_output_baud_rate;
     struct termios term;
@@ -57,7 +52,7 @@ int main(int argc, char *argv[])
     // Get the current output baud rate
     output_baud_rate = cfgetospeed(&term);
 
-    if(output_baud_rate == (speed_t) - 1)
+    if(output_baud_rate == (speed_t)-1)
     {
         perror("cfgetospeed");
         return EXIT_FAILURE;
@@ -83,11 +78,10 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **speed)
 {
     int opt;
-    opterr     = 0;
+    opterr = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -120,7 +114,6 @@ static void parse_arguments(int argc, char *argv[], char **speed)
     *speed = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *speed_str, speed_t *speed)
 {
     if(speed_str == NULL)
@@ -130,30 +123,29 @@ static void handle_arguments(const char *binary_name, const char *speed_str, spe
     *speed = parse_baud_rate(binary_name, speed_str);
 }
 
-
 static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_str)
 {
     static const speed_t baud_rates[] = {
-            B0,
-            B50,
-            B75,
-            B110,
-            B134,
-            B150,
-            B200,
-            B300,
-            B600,
-            B1200,
-            B1800,
-            B2400,
-            B4800,
-            B9600,
-            B19200,
-            B38400,
+        B0,
+        B50,
+        B75,
+        B110,
+        B134,
+        B150,
+        B200,
+        B300,
+        B600,
+        B1200,
+        B1800,
+        B2400,
+        B4800,
+        B9600,
+        B19200,
+        B38400,
     };
-    char                 *endptr;
-    long long int        parsed_speed;
-    int                  valid_baud_rate;
+    char         *endptr;
+    long long int parsed_speed;
+    int           valid_baud_rate;
     errno        = 0;
     parsed_speed = strtoll(baud_rate_str, &endptr, BASE_TEN);
     if(errno != 0)
@@ -186,7 +178,6 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
     return (speed_t)parsed_speed;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -198,4 +189,3 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-

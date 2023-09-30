@@ -14,20 +14,17 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-
 #define BUFFER_LEN 80
-
 
 int main(void)
 {
-    time_t    rawtime;
+    time_t     rawtime;
     struct tm *timeinfo;
-    char      buffer[BUFFER_LEN];
+    char       buffer[BUFFER_LEN];
 
     // Get the current time
     if(time(&rawtime) == -1)

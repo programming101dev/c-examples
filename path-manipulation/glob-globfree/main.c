@@ -14,25 +14,21 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <glob.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **pattern);
-static void handle_arguments(const char *binary_name, const char *pattern);
+static void           parse_arguments(int argc, char *argv[], char **pattern);
+static void           handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-int custom_error_handler(const char *epath, int err);
-
+int                   custom_error_handler(const char *epath, int err);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char   *pattern;
+    char  *pattern;
     glob_t glob_result;
     int    glob_status;
 
@@ -69,11 +65,10 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **pattern)
 {
     int opt;
-    opterr     = 0;
+    opterr = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -106,7 +101,6 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
     *pattern = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *pattern)
 {
     if(pattern == NULL)
@@ -114,7 +108,6 @@ static void handle_arguments(const char *binary_name, const char *pattern)
         usage(binary_name, EXIT_FAILURE, "The pattern is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -128,9 +121,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 int custom_error_handler(const char *epath, int err)
 {
     fprintf(stderr, "Custom Error: Failed to process path '%s' with error code %d\n", epath, err);
-    return 0; // Return 0 to continue processing
+    return 0;    // Return 0 to continue processing
 }

@@ -14,12 +14,9 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 
-
 static int is_little_endian(void) __attribute__((const));
-
 
 int main(void)
 {
@@ -35,10 +32,9 @@ int main(void)
     return 0;
 }
 
-
 static int is_little_endian(void)
 {
-    unsigned int        value;
+    unsigned int         value;
     const unsigned char *byte_ptr;
 
     // Create a 32-bit integer with a known value

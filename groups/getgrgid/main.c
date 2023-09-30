@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <grp.h>
@@ -23,23 +22,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **group_id);
-static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
-static gid_t get_gid_t_max(void);
-static gid_t parse_gid_t(const char *binary_name, const char *gid_str);
+static void           parse_arguments(int argc, char *argv[], char **group_id);
+static void           handle_arguments(const char *binary_name, const char *group_id, gid_t *gid);
+static gid_t          get_gid_t_max(void);
+static gid_t          parse_gid_t(const char *binary_name, const char *gid_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void print_entry(const struct group *entry);
-
+static void           print_entry(const struct group *entry);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
     char         *group_id;
-    gid_t        gid;
+    gid_t         gid;
     struct group *group_info;
 
     group_id = NULL;
@@ -58,7 +54,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **group_id)
 {
@@ -101,7 +96,6 @@ static void parse_arguments(int argc, char *argv[], char **group_id)
     *group_id = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *group_id, gid_t *gid)
 {
     if(group_id == NULL)
@@ -111,7 +105,6 @@ static void handle_arguments(const char *binary_name, const char *group_id, gid_
 
     *gid = parse_gid_t(binary_name, group_id);
 }
-
 
 static gid_t get_gid_t_max(void)
 {
@@ -145,11 +138,10 @@ static gid_t get_gid_t_max(void)
     return value;
 }
 
-
 static gid_t parse_gid_t(const char *binary_name, const char *str)
 {
     gid_t     max;
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     max          = get_gid_t_max();
@@ -175,7 +167,6 @@ static gid_t parse_gid_t(const char *binary_name, const char *str)
     return (gid_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -188,7 +179,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void print_entry(const struct group *entry)
 {

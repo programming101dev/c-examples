@@ -14,33 +14,29 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **address_family_str, char **socket_type_str);
-static int string_to_address_family(const char *address_family_str) __attribute__((pure));
-static int string_to_socket_type(const char *socket_type_str) __attribute__((pure));
-static void handle_arguments(const char *binary_name, const char *address_family_str, const char *socket_type_str, int *address_family, int *socket_type);
+static void           parse_arguments(int argc, char *argv[], char **address_family_str, char **socket_type_str);
+static int            string_to_address_family(const char *address_family_str) __attribute__((pure));
+static int            string_to_socket_type(const char *socket_type_str) __attribute__((pure));
+static void           handle_arguments(const char *binary_name, const char *address_family_str, const char *socket_type_str, int *address_family, int *socket_type);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static int socket_create(int domain, int type, int protocol);
-static void socket_close(int sockfd);
-
+static int            socket_create(int domain, int type, int protocol);
+static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
     char *address_family_str;
     char *socket_type_str;
-    int  address_family;
-    int  socket_type;
-    int  sockfd;
+    int   address_family;
+    int   socket_type;
+    int   sockfd;
 
     address_family_str = NULL;
     socket_type_str    = NULL;
@@ -53,7 +49,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **address_family_str, char **socket_type_str)
 {
@@ -97,7 +92,6 @@ static void parse_arguments(int argc, char *argv[], char **address_family_str, c
     *socket_type_str    = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *address_family_str, const char *socket_type_str, int *address_family, int *socket_type)
 {
     if(address_family_str == NULL)
@@ -114,7 +108,6 @@ static void handle_arguments(const char *binary_name, const char *address_family
     *socket_type    = string_to_socket_type(socket_type_str);
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -127,7 +120,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static int string_to_address_family(const char *address_family_str)
 {
@@ -157,7 +149,6 @@ static int string_to_address_family(const char *address_family_str)
 
     return value;
 }
-
 
 static int string_to_socket_type(const char *socket_type_str)
 {
@@ -192,7 +183,6 @@ static int string_to_socket_type(const char *socket_type_str)
     return value;
 }
 
-
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
@@ -207,7 +197,6 @@ static int socket_create(int domain, int type, int protocol)
 
     return sockfd;
 }
-
 
 static void socket_close(int sockfd)
 {

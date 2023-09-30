@@ -14,19 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 static void convert(const char *str);
 
-
 #define BASE_TEN 10
-
 
 int main(void)
 {
@@ -41,10 +37,9 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void convert(const char *str)
 {
-    long result;
+    long  result;
     char *endptr;
 
     errno  = 0;

@@ -14,17 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(void)
 {
     int fd;
 
-    fd = fileno(stdin); // Get the file descriptor for stdin
+    fd = fileno(stdin);    // Get the file descriptor for stdin
 
     if(isatty(fd))
     {

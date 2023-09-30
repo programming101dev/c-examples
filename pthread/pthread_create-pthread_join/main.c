@@ -14,19 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 static void *print_numbers(void *arg);
-
 
 // TODO read this in on the command line
 #define NUMBERS_LEN 5
-
 
 int main(void)
 {
@@ -54,9 +50,9 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *print_numbers(void *arg)
 {
     // TODO pass the NUMBERS_LEN in the arg variable
@@ -69,4 +65,5 @@ static void *print_numbers(void *arg)
     // The thread returns NULL upon completion
     return NULL;
 }
+
 #pragma GCC diagnostic pop

@@ -14,33 +14,23 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static int intcmp(const void *a, const void *b);
 
-
 // TODO take the number to to find and the numbers to search on the command line
-
 
 int main(void)
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    int    arr[] = {
-            5,
-            2,
-            8,
-            1,
-            3
-    };
+    int arr[] = {5, 2, 8, 1, 3};
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     size_t size;
-    int    *result;
+    int   *result;
     int    target;
 
-    size  = sizeof(arr) / sizeof(arr[0]);
+    size = sizeof(arr) / sizeof(arr[0]);
     printf("Unsorted array: ");
 
     for(size_t i = 0; i < size; i++)
@@ -76,7 +66,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static int intcmp(const void *a, const void *b)
 {

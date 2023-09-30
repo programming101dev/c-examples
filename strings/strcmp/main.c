@@ -14,26 +14,22 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **string1, char **string2);
-static void handle_arguments(const char *binary_name, const char *string1, const char *string2);
+static void           parse_arguments(int argc, char *argv[], char **string1, char **string2);
+static void           handle_arguments(const char *binary_name, const char *string1, const char *string2);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
-
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
     char *string1;
     char *string2;
-    int  result;
+    int   result;
 
     string1 = NULL;
     string2 = NULL;
@@ -52,7 +48,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **string1, char **string2)
 {
@@ -96,7 +91,6 @@ static void parse_arguments(int argc, char *argv[], char **string1, char **strin
     *string2 = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *string1, const char *string2)
 {
     if(string1 == NULL)
@@ -109,7 +103,6 @@ static void handle_arguments(const char *binary_name, const char *string1, const
         usage(binary_name, EXIT_FAILURE, "string2 is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

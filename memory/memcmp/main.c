@@ -14,34 +14,29 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 int main(void)
 {
-    int data1[] =
-    {
-            1,
-            2,
-            3,
-            4,
+    int data1[] = {
+        1,
+        2,
+        3,
+        4,
     };
-    int data2[] =
-    {
-            1,
-            2,
-            3,
-            4,
+    int data2[] = {
+        1,
+        2,
+        3,
+        4,
     };
-    int data3[] =
-    {
-            1,
-            2,
-            3,
-            4,
+    int data3[] = {
+        1,
+        2,
+        3,
+        4,
     };
     int result1;
     int result2;

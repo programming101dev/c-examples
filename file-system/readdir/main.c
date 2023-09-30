@@ -14,25 +14,21 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <dirent.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **directory_path);
-static void handle_arguments(const char *binary_name, const char *directory_path);
+static void           parse_arguments(int argc, char *argv[], char **directory_path);
+static void           handle_arguments(const char *binary_name, const char *directory_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
-
 #if defined(__APPLE__)
-#define D_INO_FORMAT "%lld"
+    #define D_INO_FORMAT "%lld"
 #else
-#define D_INO_FORMAT "%lu"
+    #define D_INO_FORMAT "%lu"
 #endif
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
@@ -66,7 +62,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **directory_path)
 {
@@ -109,7 +104,6 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
     *directory_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *directory_path)
 {
     if(directory_path == NULL)
@@ -117,7 +111,6 @@ static void handle_arguments(const char *binary_name, const char *directory_path
         usage(binary_name, EXIT_FAILURE, "The directory path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

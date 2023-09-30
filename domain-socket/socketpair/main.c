@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,23 +21,20 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void child_process(int sockfd, const char *file_path);
-static void parent_process(int sockfd);
-static void send_word(int sockfd, const char *word, uint8_t length);
+static void           child_process(int sockfd, const char *file_path);
+static void           parent_process(int sockfd);
+static void           send_word(int sockfd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
-
 
 #define MAX_WORD_LENGTH 255
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char  *file_path;
+    char *file_path;
     int   sockfd[2];
     pid_t pid;
 
@@ -71,7 +67,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -114,7 +109,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -122,7 +116,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -136,7 +129,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void send_word(int sockfd, const char *word, uint8_t length)
 {
@@ -161,17 +153,15 @@ static void send_word(int sockfd, const char *word, uint8_t length)
     }
 }
 
-
 _Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
-
 static void child_process(int sockfd, const char *file_path)
 {
-    FILE    *file;
+    FILE   *file;
     int     ch;
     char    word[MAX_WORD_LENGTH];
     uint8_t length;
@@ -223,14 +213,13 @@ static void child_process(int sockfd, const char *file_path)
     close(sockfd);
 }
 
-
 static void parent_process(int sockfd)
 {
     while(1)
     {
         uint8_t length;
         ssize_t read_bytes;
-        char word[MAX_WORD_LENGTH];
+        char    word[MAX_WORD_LENGTH];
 
         read_bytes = read(sockfd, &length, sizeof(length));
 

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,24 +22,21 @@
 #include <stdlib.h>
 #include <time.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds);
-static void handle_arguments(const char *binary_name, const char *seconds_str, const char *nanoseconds_str, time_t *seconds, long *nanoseconds);
-time_t get_time_t_min(void) __attribute__((const));
-time_t get_time_t_max(void) __attribute__((const));
-time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
-static long parse_long(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds);
+static void           handle_arguments(const char *binary_name, const char *seconds_str, const char *nanoseconds_str, time_t *seconds, long *nanoseconds);
+time_t                get_time_t_min(void) __attribute__((const));
+time_t                get_time_t_max(void) __attribute__((const));
+time_t                parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
+static long           parse_long(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char            *seconds_str;
-    char            *nanoseconds_str;
+    char           *seconds_str;
+    char           *nanoseconds_str;
     time_t          seconds;
     long            nanoseconds;
     struct timespec tim;
@@ -59,7 +55,7 @@ int main(int argc, char *argv[])
     {
         if(errno == EINTR)
         {
-            tim = rem; // If interrupted by a signal, assign the remaining time to tim
+            tim = rem;    // If interrupted by a signal, assign the remaining time to tim
             continue;
         }
 
@@ -71,7 +67,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds)
 {
@@ -117,7 +112,6 @@ static void parse_arguments(int argc, char *argv[], char **seconds, char **nanos
     }
 }
 
-
 static void handle_arguments(const char *binary_name, const char *seconds_str, const char *nanoseconds_str, time_t *seconds, long *nanoseconds)
 {
     if(seconds_str == NULL && nanoseconds_str == NULL)
@@ -130,8 +124,8 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
         time_t min;
         time_t max;
 
-        min = get_time_t_min();
-        max = get_time_t_max();
+        min      = get_time_t_min();
+        max      = get_time_t_max();
         *seconds = parse_time_t(binary_name, min, max, seconds_str);
     }
     else
@@ -148,7 +142,6 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
         *nanoseconds = 0;
     }
 }
-
 
 time_t get_time_t_min(void)
 {
@@ -184,7 +177,6 @@ time_t get_time_t_min(void)
     return value;
 }
 
-
 time_t get_time_t_max(void)
 {
     time_t value;
@@ -218,10 +210,9 @@ time_t get_time_t_max(void)
     return value;
 }
 
-
 time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str)
 {
-    char     *endptr;
+    char    *endptr;
     intmax_t parsed_value;
 
     errno        = 0;
@@ -246,10 +237,9 @@ time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char 
     return (time_t)parsed_value;
 }
 
-
 static long parse_long(const char *binary_name, const char *str)
 {
-    char     *endptr;
+    char    *endptr;
     intmax_t parsed_value;
 
     errno        = 0;
@@ -274,7 +264,6 @@ static long parse_long(const char *binary_name, const char *str)
 
     return (long)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

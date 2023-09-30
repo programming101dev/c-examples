@@ -14,11 +14,9 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(void)
 {

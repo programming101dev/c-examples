@@ -14,13 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-
 
 int main(void)
 {

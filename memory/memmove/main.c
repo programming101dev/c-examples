@@ -14,23 +14,19 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 #define NUM_ELEMENTS 4
-
 
 int main(void)
 {
-    int    source_data[] =
-    {
-            1,
-            2,
-            3,
-            4,
+    int source_data[] = {
+        1,
+        2,
+        3,
+        4,
     };
     size_t num_elements;
     int    destination_buffer[NUM_ELEMENTS];

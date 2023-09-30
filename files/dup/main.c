@@ -14,17 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(void)
 {
     int stdout_dup_fd;
 
-    stdout_dup_fd = dup(STDOUT_FILENO);     // NOLINT(android-cloexec-dup)
+    stdout_dup_fd = dup(STDOUT_FILENO);    // NOLINT(android-cloexec-dup)
 
     if(stdout_dup_fd == -1)
     {
@@ -36,7 +34,7 @@ int main(void)
     if(close(STDOUT_FILENO) == -1)
     {
         perror("Error closing stdout");
-        close(stdout_dup_fd); // Close the duplicated file descriptor before exiting
+        close(stdout_dup_fd);    // Close the duplicated file descriptor before exiting
         return EXIT_FAILURE;
     }
 
@@ -44,7 +42,7 @@ int main(void)
     if(dprintf(stdout_dup_fd, "This will be written using dprintf to the duplicated file descriptor.\n") == -1)
     {
         perror("Error writing to stdout using dprintf");
-        close(stdout_dup_fd); // Close the duplicated file descriptor before exiting
+        close(stdout_dup_fd);    // Close the duplicated file descriptor before exiting
         return EXIT_FAILURE;
     }
 

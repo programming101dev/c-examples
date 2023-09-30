@@ -14,14 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
-
 #define BUFFER_LEN 80
-
 
 int main(void)
 {
@@ -35,9 +32,9 @@ int main(void)
     timeinfo.tm_hour  = 12;
     timeinfo.tm_mday  = 1;
     timeinfo.tm_mon   = 6;
-    timeinfo.tm_year  = 122; // Year since 1900 (2022)
-    timeinfo.tm_isdst = -1; // Daylight Saving Time setting (let the system determine)
-// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+    timeinfo.tm_year  = 122;    // Year since 1900 (2022)
+    timeinfo.tm_isdst = -1;     // Daylight Saving Time setting (let the system determine)
+                                // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
     // Convert the timeinfo struct to a time_t value
     result_time = mktime(&timeinfo);

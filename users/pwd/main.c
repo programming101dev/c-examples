@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static void print_entries(void);
 static void print_entry(const struct passwd *entry);
-
 
 int main(void)
 {
@@ -47,7 +44,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void print_entries(void)
 {
     struct passwd *entry;
@@ -57,7 +53,6 @@ static void print_entries(void)
         print_entry(entry);
     }
 }
-
 
 static void print_entry(const struct passwd *entry)
 {

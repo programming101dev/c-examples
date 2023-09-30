@@ -14,12 +14,10 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
 
 int main(void)
 {
@@ -40,7 +38,7 @@ int main(void)
     if(stat(templ, &file_stat) == -1)
     {
         perror("Error getting file stats");
-        close(original_fd); // Close the file descriptor before exiting
+        close(original_fd);    // Close the file descriptor before exiting
         return EXIT_FAILURE;
     }
 
@@ -66,7 +64,7 @@ int main(void)
     if(fflush(stdout) != 0)
     {
         perror("Error flushing stdout");
-        close(original_fd); // Close the file descriptor before exiting
+        close(original_fd);    // Close the file descriptor before exiting
         return EXIT_FAILURE;
     }
 
@@ -84,7 +82,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-// TODO    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
+    // TODO    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
 
     // Cleanup: remove the temporary file
     if(unlink(templ) == -1)

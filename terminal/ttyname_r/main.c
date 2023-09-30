@@ -14,17 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(void)
 {
     long   length;
     size_t max_name_length;
-    char   *ttyname_buf;
+    char  *ttyname_buf;
 
     length = sysconf(_SC_TTY_NAME_MAX);
 
@@ -52,7 +50,7 @@ int main(void)
         perror("stdin is not associated with a terminal");
     }
 
-    free(ttyname_buf); // Free the allocated memory
+    free(ttyname_buf);    // Free the allocated memory
 
     return EXIT_SUCCESS;
 }

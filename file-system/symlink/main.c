@@ -14,16 +14,13 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 static void create_sample_file(const char *filename);
 static void create_symbolic_link(const char *source_filename, const char *link_filename);
 static void check_file_existence(const char *filename, const char *message);
-
 
 int main(void)
 {
@@ -67,7 +64,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void create_sample_file(const char *filename)
 {
     FILE *file;
@@ -84,7 +80,6 @@ static void create_sample_file(const char *filename)
     fclose(file);
 }
 
-
 static void create_symbolic_link(const char *source_filename, const char *link_filename)
 {
     if(symlink(source_filename, link_filename) == -1)
@@ -93,7 +88,6 @@ static void create_symbolic_link(const char *source_filename, const char *link_f
         exit(EXIT_FAILURE);
     }
 }
-
 
 static void check_file_existence(const char *filename, const char *message)
 {

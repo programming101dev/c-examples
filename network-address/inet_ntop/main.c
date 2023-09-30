@@ -14,46 +14,20 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 
-
 int main(void)
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     // Hard-coded binary representations of an IPv4 address and an IPv6 address
-    unsigned char ipv4_bytes[4] =
-    {
-            192,
-            168,
-            0,
-            1
-    };
-    unsigned char ipv6_bytes[16] =
-    {
-            32,
-            1,
-            13,
-            184,
-            133,
-            163,
-            0,
-            0,
-            0,
-            0,
-            138,
-            46,
-            3,
-            112,
-            115,
-            52
-    };
+    unsigned char ipv4_bytes[4]  = {192, 168, 0, 1};
+    unsigned char ipv6_bytes[16] = {32, 1, 13, 184, 133, 163, 0, 0, 0, 0, 138, 46, 3, 112, 115, 52};
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    char          ipv4_str[INET_ADDRSTRLEN];
-    char          ipv6_str[INET6_ADDRSTRLEN];
+    char ipv4_str[INET_ADDRSTRLEN];
+    char ipv6_str[INET6_ADDRSTRLEN];
 
     // Convert IPv4 address from binary format to presentation format (string)
     inet_ntop(AF_INET, ipv4_bytes, ipv4_str, sizeof(ipv4_str));

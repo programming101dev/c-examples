@@ -14,14 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static void *thread_function(void *arg);
-
 
 int main(void)
 {
@@ -68,11 +65,12 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *thread_function(void *arg)
 {
     return NULL;
 }
+
 #pragma GCC diagnostic pop

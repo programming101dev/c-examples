@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,23 +22,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **n, char **string);
-static void handle_arguments(const char *binary_name, const char *n_str, const char *string, size_t *n);
-static size_t parse_size_t(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **n, char **string);
+static void           handle_arguments(const char *binary_name, const char *n_str, const char *string, size_t *n);
+static size_t         parse_size_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char   *n_str;
-    char   *string;
+    char  *n_str;
+    char  *string;
     size_t n;
-    char   *destination;
+    char  *destination;
 
     n_str  = NULL;
     string = NULL;
@@ -60,7 +56,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **n, char **string)
 {
@@ -108,7 +103,6 @@ static void parse_arguments(int argc, char *argv[], char **n, char **string)
     *string = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *n_str, const char *string, size_t *n)
 {
     if(n_str == NULL)
@@ -124,10 +118,9 @@ static void handle_arguments(const char *binary_name, const char *n_str, const c
     *n = parse_size_t(binary_name, n_str);
 }
 
-
 size_t parse_size_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -152,7 +145,6 @@ size_t parse_size_t(const char *binary_name, const char *str)
 
     return (size_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

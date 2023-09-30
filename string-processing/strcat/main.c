@@ -14,18 +14,15 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 #define BUFFER_LEN 100
-
 
 int main(void)
 {
-    char       str[BUFFER_LEN];
+    char str[BUFFER_LEN];
 
     strcpy(str, "Hello, ");
     strcat(str, "World!");

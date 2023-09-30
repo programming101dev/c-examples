@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -23,21 +22,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **user_id);
-static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid);
-static uid_t get_uid_t_max(void);
-static uid_t parse_uid_t(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **user_id);
+static void           handle_arguments(const char *binary_name, const char *user_id, uid_t *uid);
+static uid_t          get_uid_t_max(void);
+static uid_t          parse_uid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 int main(int argc, char *argv[])
 {
-    char  *user_id;
+    char *user_id;
     uid_t uid;
 
     user_id = NULL;
@@ -55,7 +51,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **user_id)
 {
@@ -98,7 +93,6 @@ static void parse_arguments(int argc, char *argv[], char **user_id)
     *user_id = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *user_id, uid_t *uid)
 {
     if(user_id == NULL)
@@ -108,7 +102,6 @@ static void handle_arguments(const char *binary_name, const char *user_id, uid_t
 
     *uid = parse_uid_t(binary_name, user_id);
 }
-
 
 static uid_t get_uid_t_max(void)
 {
@@ -144,16 +137,15 @@ static uid_t get_uid_t_max(void)
     return value;
 }
 
-
 static uid_t parse_uid_t(const char *binary_name, const char *str)
 {
     uintmax_t max;
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
-    max           = get_uid_t_max();
-    errno         = 0;
-    parsed_value  = strtoumax(str, &endptr, BASE_TEN);
+    max          = get_uid_t_max();
+    errno        = 0;
+    parsed_value = strtoumax(str, &endptr, BASE_TEN);
 
     if(errno != 0)
     {
@@ -172,7 +164,6 @@ static uid_t parse_uid_t(const char *binary_name, const char *str)
 
     return (uid_t)parsed_value;
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

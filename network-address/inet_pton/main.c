@@ -14,32 +14,27 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 
-
 #define BITS_TO_SHIFT_8 8
 #define BITS_TO_SHIFT_16 16
 #define BITS_TO_SHIFT_24 24
 
-
-
 int main(void)
 {
     // TODO pass these in on the command line
-    const char      *ipv4_address_str = "192.168.0.1";
-    const char      *ipv6_address_str = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
+    const char     *ipv4_address_str = "192.168.0.1";
+    const char     *ipv6_address_str = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
     struct in_addr  ipv4_addr;
     struct in6_addr ipv6_addr;
 
     // Convert IPv4 address from string to binary format (network byte order)
     if(inet_pton(AF_INET, ipv4_address_str, &ipv4_addr) == 1)
     {
-
         printf("IPv4 Address: %u.%u.%u.%u\n",
                (unsigned char)ipv4_addr.s_addr,
                (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_8),

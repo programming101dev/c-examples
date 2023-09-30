@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <grp.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static void print_entries(void);
 static void print_entry(const struct group *entry);
-
 
 int main(void)
 {
@@ -46,7 +43,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void print_entries(void)
 {
     struct group *entry;
@@ -56,7 +52,6 @@ static void print_entries(void)
         print_entry(entry);
     }
 }
-
 
 static void print_entry(const struct group *entry)
 {

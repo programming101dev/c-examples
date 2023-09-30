@@ -14,14 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-
 #define BUFFER_SIZE 4096
-
 
 int main(void)
 {

@@ -14,18 +14,16 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <assert.h>
 #include <stdlib.h>
-
 
 int main(void)
 {
     int x;
     int y;
 
-    x = 10;     // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
-    y = 20;     // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    x = 10;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+    y = 20;    // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
     // If the condition is false, the program will terminate with an error message.
     // If the condition is true, the program continues normally.

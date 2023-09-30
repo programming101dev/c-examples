@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,13 +22,10 @@
 #include <time.h>
 #include <unistd.h>
 
-
 static long long performCalculation(size_t size, size_t iterations);
-static void printTimes(struct tms tms_data);
-
+static void      printTimes(struct tms tms_data);
 
 #define MAX_NUMBER 100
-
 
 int main(void)
 {
@@ -73,10 +69,9 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static long long performCalculation(size_t size, size_t iterations)
 {
-    int       *numbers;
+    int      *numbers;
     long long sum;
 
     numbers = (int *)malloc(size * sizeof(int));
@@ -107,7 +102,6 @@ static long long performCalculation(size_t size, size_t iterations)
 
     return sum;
 }
-
 
 static void printTimes(struct tms tms_data)
 {

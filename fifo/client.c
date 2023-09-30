@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -22,23 +21,20 @@
 #include <string.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-
 
 #define FIFO_FILE "./fifo_example"
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define LINE_LEN 1024
 
-
 int main(int argc, char *argv[])
 {
     char *file_path;
-    int  fd;
+    int   fd;
     FILE *file;
-    char line[LINE_LEN];
+    char  line[LINE_LEN];
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -82,7 +78,7 @@ int main(int argc, char *argv[])
             }
 
             // Write the size of the word as uint8_t
-            size             = (uint8_t)word_len;
+            size = (uint8_t)word_len;
             write(fd, &size, sizeof(uint8_t));
 
             // Write the word
@@ -96,7 +92,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -139,7 +134,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -147,7 +141,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

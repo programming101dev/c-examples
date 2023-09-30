@@ -14,26 +14,18 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static void *thread_function(void *arg);
-
 
 int main(void)
 {
     pthread_t threads[3];
-    int       thread_args[3] =
-    {
-    1,
-    2,
-    3
-    };
+    int       thread_args[3] = {1, 2, 3};
 
-    for(int  i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++)
     {
         pthread_create(&threads[i], NULL, thread_function, &thread_args[i]);
     }
@@ -45,7 +37,7 @@ int main(void)
 
         pthread_join(threads[i], (void **)&result);
         printf("Thread %d returned: %d\n", i + 1, *result);
-        free(result); // Don't forget to free the memory returned by the thread
+        free(result);    // Don't forget to free the memory returned by the thread
     }
 
     printf("Main thread is done.\n");
@@ -53,10 +45,9 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void *thread_function(void *arg)
 {
-    int thread_id;
+    int  thread_id;
     int *result;
 
     thread_id = *(int *)arg;

@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <poll.h>
 #include <signal.h>
@@ -25,35 +24,32 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients);
 static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients);
 static void setup_signal_handler(void);
 static void sigint_handler(int signum);
-static int socket_create(void);
+static int  socket_create(void);
 static void socket_bind(int sockfd, const char *path);
 static void socket_close(int sockfd);
-
 
 #define SOCKET_PATH "/tmp/example_socket"
 #define MAX_WORD_LEN 256
 
-static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-
+static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(void)
 {
     int           *client_sockets;
-    nfds_t        max_clients;
-    int           num_ready;
-    int           sockfd;
+    nfds_t         max_clients;
+    int            num_ready;
+    int            sockfd;
     struct pollfd *fds;
 
     client_sockets = NULL;
     max_clients    = 0;
     fds            = NULL;
     setup_signal_handler();
-    unlink(SOCKET_PATH); // Remove the existing socket file if it exists
+    unlink(SOCKET_PATH);    // Remove the existing socket file if it exists
     sockfd = socket_create();
     socket_bind(sockfd, SOCKET_PATH);
 
@@ -154,15 +150,15 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
-#pragma GCC diagnostic pop
 
+#pragma GCC diagnostic pop
 
 static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients)
 {
@@ -193,7 +189,6 @@ static void handle_new_client(int server_socket, int **client_sockets, nfds_t *m
 
     (*client_sockets)[(*max_clients) - 1] = new_socket;
 }
-
 
 static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients)
 {
@@ -249,23 +244,21 @@ static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_c
     }
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
 
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     sigaction(SIGINT, &sa, NULL);
 }
-
 
 static int socket_create(void)
 {
@@ -274,7 +267,7 @@ static int socket_create(void)
 #ifdef SOCK_CLOEXEC
     sockfd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
 #else
-    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);   // NOLINT(android-cloexec-socket)
+    sockfd = socket(AF_UNIX, SOCK_STREAM, 0);    // NOLINT(android-cloexec-socket)
 #endif
 
     if(sockfd == -1)
@@ -285,7 +278,6 @@ static int socket_create(void)
 
     return sockfd;
 }
-
 
 static void socket_bind(int sockfd, const char *path)
 {
@@ -304,7 +296,6 @@ static void socket_bind(int sockfd, const char *path)
 
     printf("Bound to domain socket: %s\n", path);
 }
-
 
 static void socket_close(int sockfd)
 {

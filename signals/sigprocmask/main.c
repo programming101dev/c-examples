@@ -14,17 +14,14 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-
 static void setup_signal_handler(void);
 static void signal_handler(int signal_number);
-
 
 int main(void)
 {
@@ -44,7 +41,7 @@ int main(void)
     }
 
     printf("SIGUSR1 signal is blocked. Sending SIGUSR1...\n");
-    raise(SIGUSR1); // This will not be delivered immediately due to the signal being blocked
+    raise(SIGUSR1);    // This will not be delivered immediately due to the signal being blocked
 
     // Wait for a while to demonstrate that SIGUSR1 is blocked
     sleep(3);
@@ -57,7 +54,7 @@ int main(void)
     }
 
     printf("SIGUSR1 signal is unblocked. Sending SIGUSR1...\n");
-    raise(SIGUSR1); // This will be delivered and handled immediately
+    raise(SIGUSR1);    // This will be delivered and handled immediately
 
     // Wait for a while to allow the signal handler to run
     sleep(3);
@@ -65,19 +62,18 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = signal_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     sigemptyset(&sa.sa_mask);
@@ -89,7 +85,6 @@ static void setup_signal_handler(void)
         exit(EXIT_FAILURE);
     }
 }
-
 
 static void signal_handler(int signal_number)
 {

@@ -14,26 +14,21 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 struct synchronization_data
 {
     pthread_mutex_t mutex;
-    pthread_cond_t cond_var;
-    int shared_data;
+    pthread_cond_t  cond_var;
+    int             shared_data;
 };
-
 
 static void *thread_function(void *arg);
 
-
 #define NUM_THREADS 3
 #define ITERATIONS 10
-
 
 int main(void)
 {
@@ -61,12 +56,12 @@ int main(void)
     for(int i = 0; i < ITERATIONS; i++)
     {
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-negative"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
         pthread_mutex_lock(&data.mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
         data.shared_data = i + 1;
         printf("Main thread updating shared_data: %d\n", data.shared_data);
@@ -85,23 +80,22 @@ int main(void)
     pthread_exit(NULL);
 }
 
-
 static void *thread_function(void *arg)
 {
     struct synchronization_data *data;
-    pthread_t                   thread_id;
+    pthread_t                    thread_id;
 
     thread_id = pthread_self();
 
     data = (struct synchronization_data *)arg;
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-negative"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
     pthread_mutex_lock(&data->mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     while(data->shared_data < ITERATIONS)
     {

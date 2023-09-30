@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -26,31 +25,28 @@
 #include <time.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **main_seconds, char **thread_seconds);
-static void handle_arguments(const char *binary_name, const char *main_seconds_str, const char *thread_seconds_str, time_t *main_seconds, unsigned int *thread_seconds);
-time_t get_time_t_min(void) __attribute__((const));
-time_t get_time_t_max(void) __attribute__((const));
-time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
-static unsigned int parse_unsigned_int(const char *binary_name, const char *str);
+static void           parse_arguments(int argc, char *argv[], char **main_seconds, char **thread_seconds);
+static void           handle_arguments(const char *binary_name, const char *main_seconds_str, const char *thread_seconds_str, time_t *main_seconds, unsigned int *thread_seconds);
+time_t                get_time_t_min(void) __attribute__((const));
+time_t                get_time_t_max(void) __attribute__((const));
+time_t                parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
+static unsigned int   parse_unsigned_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void *thread_function(void *arg);
-
+static void          *thread_function(void *arg);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
 static pthread_cond_t  cond_var = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
-// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(int argc, char *argv[])
 {
-    char            *main_seconds_str;
-    char            *thread_seconds_str;
+    char           *main_seconds_str;
+    char           *thread_seconds_str;
     time_t          main_seconds;
     unsigned int    thread_seconds;
     pthread_t       thread_id;
@@ -65,16 +61,16 @@ int main(int argc, char *argv[])
 
     // Get the current time and set the timeout to 5 seconds
     clock_gettime(CLOCK_REALTIME, &abs_timeout);
-    abs_timeout.tv_sec += main_seconds; // Changed to 5 seconds
+    abs_timeout.tv_sec += main_seconds;    // Changed to 5 seconds
 
     // Lock the mutex before waiting on the condition variable
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-negative"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
     pthread_mutex_lock(&mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
 
     result = pthread_cond_timedwait(&cond_var, &mutex, &abs_timeout);
@@ -102,7 +98,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **main_seconds, char **thread_seconds)
 {
@@ -148,7 +143,6 @@ static void parse_arguments(int argc, char *argv[], char **main_seconds, char **
     }
 }
 
-
 static void handle_arguments(const char *binary_name, const char *main_seconds_str, const char *thread_seconds_str, time_t *main_seconds, unsigned int *thread_seconds)
 {
     time_t min;
@@ -164,12 +158,11 @@ static void handle_arguments(const char *binary_name, const char *main_seconds_s
         usage(binary_name, EXIT_FAILURE, "thread seconds or nanoseconds are required.");
     }
 
-    min = get_time_t_min();
-    max = get_time_t_max();
+    min             = get_time_t_min();
+    max             = get_time_t_max();
     *main_seconds   = parse_time_t(binary_name, min, max, main_seconds_str);
     *thread_seconds = parse_unsigned_int(binary_name, thread_seconds_str);
 }
-
 
 time_t get_time_t_min(void)
 {
@@ -205,7 +198,6 @@ time_t get_time_t_min(void)
     return value;
 }
 
-
 time_t get_time_t_max(void)
 {
     time_t value;
@@ -239,10 +231,9 @@ time_t get_time_t_max(void)
     return value;
 }
 
-
 time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str)
 {
-    char     *endptr;
+    char    *endptr;
     intmax_t parsed_value;
 
     errno        = 0;
@@ -267,10 +258,9 @@ time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char 
     return (time_t)parsed_value;
 }
 
-
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
 
     errno        = 0;
@@ -296,7 +286,6 @@ static unsigned int parse_unsigned_int(const char *binary_name, const char *str)
     return (unsigned int)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -312,9 +301,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void *thread_function(void *arg)
 {
     unsigned sleep_time;
@@ -325,18 +314,17 @@ static void *thread_function(void *arg)
 
     // Signal the condition variable
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-negative"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-negative"
 #endif
     pthread_mutex_lock(&mutex);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     pthread_cond_signal(&cond_var);
     pthread_mutex_unlock(&mutex);
 
     return NULL;
 }
-
 
 #pragma GCC diagnostic pop

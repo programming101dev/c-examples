@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -22,9 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 #define FIFO_FILE "./fifo_example"
-
 
 int main(void)
 {

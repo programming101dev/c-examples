@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <inttypes.h>
@@ -28,34 +27,30 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-
-static void setup_signal_handler(void);
-static void sigint_handler(int signum);
-static void parse_arguments(int argc, char *argv[], char **ip_address, char **port);
-static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port);
-static in_port_t parse_in_port_t(const char *binary_name, const char *port_str);
+static void           setup_signal_handler(void);
+static void           sigint_handler(int signum);
+static void           parse_arguments(int argc, char *argv[], char **ip_address, char **port);
+static void           handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port);
+static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void convert_address(const char *address, struct sockaddr_storage *addr);
-static int socket_create(int domain, int type, int protocol);
-static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
-static void start_listening(int server_fd, int backlog);
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len);
-static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
-static void shutdown_socket(int sockfd, int how);
-static void socket_close(int sockfd);
-
+static void           convert_address(const char *address, struct sockaddr_storage *addr);
+static int            socket_create(int domain, int type, int protocol);
+static void           socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
+static void           start_listening(int server_fd, int backlog);
+static int            socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len);
+static void           handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
+static void           shutdown_socket(int sockfd, int how);
+static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
-
-static volatile sig_atomic_t exit_flag = 0;     // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-
+static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(int argc, char *argv[])
 {
-    char                    *address;
-    char                    *port_str;
+    char                   *address;
+    char                   *port_str;
     in_port_t               port;
     int                     sockfd;
     struct sockaddr_storage addr;
@@ -92,11 +87,10 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 static void parse_arguments(int argc, char *argv[], char **ip_address, char **port)
 {
     int opt;
-    opterr     = 0;
+    opterr = 0;
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -130,7 +124,6 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
     *port       = argv[optind + 1];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port)
 {
     if(ip_address == NULL)
@@ -144,10 +137,9 @@ static void handle_arguments(const char *binary_name, const char *ip_address, ch
     *port = parse_in_port_t(binary_name, port_str);
 }
 
-
 in_port_t parse_in_port_t(const char *binary_name, const char *str)
 {
-    char      *endptr;
+    char     *endptr;
     uintmax_t parsed_value;
     errno        = 0;
     parsed_value = strtoumax(str, &endptr, BASE_TEN);
@@ -171,7 +163,6 @@ in_port_t parse_in_port_t(const char *binary_name, const char *str)
     return (in_port_t)parsed_value;
 }
 
-
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
     if(message)
@@ -184,18 +175,17 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     sa.sa_handler = sigint_handler;
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
@@ -206,15 +196,15 @@ static void setup_signal_handler(void)
     }
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
 }
-#pragma GCC diagnostic pop
 
+#pragma GCC diagnostic pop
 
 static void convert_address(const char *address, struct sockaddr_storage *addr)
 {
@@ -231,7 +221,6 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
     }
 }
 
-
 static int socket_create(int domain, int type, int protocol)
 {
     int sockfd;
@@ -244,12 +233,14 @@ static int socket_create(int domain, int type, int protocol)
     return sockfd;
 }
 
-
 static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port)
 {
     char      addr_str[INET6_ADDRSTRLEN];
     in_port_t net_port;
-    if(inet_ntop(addr->ss_family, addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr), addr_str, sizeof(addr_str)) == NULL)
+    if(inet_ntop(addr->ss_family,
+                 addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr),
+                 addr_str,
+                 sizeof(addr_str)) == NULL)
     {
         perror("inet_ntop");
         exit(EXIT_FAILURE);
@@ -259,13 +250,13 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
     if(addr->ss_family == AF_INET)
     {
         struct sockaddr_in *ipv4_addr;
-        ipv4_addr = (struct sockaddr_in *)addr;
+        ipv4_addr           = (struct sockaddr_in *)addr;
         ipv4_addr->sin_port = net_port;
     }
     else if(addr->ss_family == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
-        ipv6_addr = (struct sockaddr_in6 *)addr;
+        ipv6_addr            = (struct sockaddr_in6 *)addr;
         ipv6_addr->sin6_port = net_port;
     }
     else
@@ -281,7 +272,6 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
     printf("Bound to socket: %s:%u\n", addr_str, port);
 }
 
-
 static void start_listening(int server_fd, int backlog)
 {
     if(listen(server_fd, backlog) == -1)
@@ -292,7 +282,6 @@ static void start_listening(int server_fd, int backlog)
     }
     printf("Listening for incoming connections...\n");
 }
-
 
 static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len)
 {
@@ -320,14 +309,14 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
     return client_fd;
 }
 
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
 {
 }
-#pragma GCC diagnostic pop
 
+#pragma GCC diagnostic pop
 
 static void shutdown_socket(int sockfd, int how)
 {
@@ -337,7 +326,6 @@ static void shutdown_socket(int sockfd, int how)
         exit(EXIT_FAILURE);
     }
 }
-
 
 static void socket_close(int sockfd)
 {

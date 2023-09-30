@@ -14,45 +14,41 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **file_path);
-static void handle_arguments(const char *binary_name, const char *file_path);
+static void           parse_arguments(int argc, char *argv[], char **file_path);
+static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void child_process(int pipefd[2], FILE *file);
-static void parent_process(int pipefd[2]);
-static void send_word(int pipefd, const char *word, uint8_t length);
+static void           child_process(int pipefd[2], FILE *file);
+static void           parent_process(int pipefd[2]);
+static void           send_word(int pipefd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
-
 
 #define MAX_WORD_LENGTH 255
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
-
 int main(int argc, char *argv[])
 {
-    char  *file_path;
+    char *file_path;
     int   pipefd[2];
-    FILE  *file;
+    FILE *file;
     pid_t pid;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
     handle_arguments(argv[0], file_path);
-    file = fopen(file_path, "r");       // NOLINT(android-cloexec-fopen)
+    file = fopen(file_path, "r");    // NOLINT(android-cloexec-fopen)
 
     if(file == NULL)
     {
         error_exit("Error opening file");
     }
 
-    if(pipe(pipefd) == -1)      // NOLINT(android-cloexec-pipe)
+    if(pipe(pipefd) == -1)    // NOLINT(android-cloexec-pipe)
     {
         error_exit("Error creating pipe");
     }
@@ -76,7 +72,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **file_path)
 {
@@ -119,7 +114,6 @@ static void parse_arguments(int argc, char *argv[], char **file_path)
     *file_path = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *file_path)
 {
     if(file_path == NULL)
@@ -127,7 +121,6 @@ static void handle_arguments(const char *binary_name, const char *file_path)
         usage(binary_name, EXIT_FAILURE, "The file path is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
@@ -141,7 +134,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -h  Display this help message\n", stderr);
     exit(exit_code);
 }
-
 
 static void send_word(int pipefd, const char *word, uint8_t length)
 {
@@ -166,13 +158,11 @@ static void send_word(int pipefd, const char *word, uint8_t length)
     }
 }
 
-
 _Noreturn static void error_exit(const char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
-
 
 static void child_process(int pipefd[2], FILE *file)
 {
@@ -223,7 +213,6 @@ static void child_process(int pipefd[2], FILE *file)
         error_exit("Error closing pipe");
     }
 }
-
 
 static void parent_process(int pipefd[2])
 {

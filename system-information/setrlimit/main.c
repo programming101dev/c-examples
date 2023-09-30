@@ -14,22 +14,18 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
 
-
 static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit);
-#define SET_LIMIT(resource, soft_limit, hard_limit) \
-    set_rlimit(resource, #resource, soft_limit, hard_limit)
-
+#define SET_LIMIT(resource, soft_limit, hard_limit) set_rlimit(resource, #resource, soft_limit, hard_limit)
 
 int main(void)
 {
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
     SET_LIMIT(RLIMIT_CORE, 8, 32);
     SET_LIMIT(RLIMIT_CPU, 5, 10);
@@ -42,11 +38,10 @@ int main(void)
     // TODO - this is problematic
     SET_LIMIT(RLIMIT_AS, 6710886, 6710886);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     return EXIT_SUCCESS;
 }
-
 
 static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit)
 {
@@ -56,17 +51,17 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
     rlim.rlim_max = hard_limit;
     printf("Resource: %s\n", name);
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wc++-compat"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wc++-compat"
 #elif defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
     if(setrlimit(resource, &rlim) == -1)
 #if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #elif defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif
     {
         perror("setrlimit");

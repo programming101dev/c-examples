@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <fcntl.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -23,19 +22,16 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
-static void parse_arguments(int argc, char *argv[], char **shm_name);
-static void handle_arguments(const char *binary_name, const char *shm_name);
+static void           parse_arguments(int argc, char *argv[], char **shm_name);
+static void           handle_arguments(const char *binary_name, const char *shm_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
-
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
-
 
 int main(int argc, char *argv[])
 {
     char *shm_name;
-    int  shm_fd;
+    int   shm_fd;
 
     shm_name = NULL;
     parse_arguments(argc, argv, &shm_name);
@@ -63,7 +59,6 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
-
 
 static void parse_arguments(int argc, char *argv[], char **shm_name)
 {
@@ -106,7 +101,6 @@ static void parse_arguments(int argc, char *argv[], char **shm_name)
     *shm_name = argv[optind];
 }
 
-
 static void handle_arguments(const char *binary_name, const char *shm_name)
 {
     if(shm_name == NULL)
@@ -114,7 +108,6 @@ static void handle_arguments(const char *binary_name, const char *shm_name)
         usage(binary_name, EXIT_FAILURE, "The shared memory name is required.");
     }
 }
-
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {

@@ -14,15 +14,12 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-
 static void handle_child(void);
-
 
 int main(void)
 {
@@ -30,7 +27,7 @@ int main(void)
     pid_t pgid;
     pid_t child_pid;
 
-    pid  = getpid(); // Get the PID of the current process
+    pid  = getpid();    // Get the PID of the current process
     pgid = getpgid(pid);
     printf("Original Process ID (PID): %d\n", pid);
     printf("Original Process Group ID (PGID): %d\n", pgid);
@@ -55,7 +52,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void handle_child(void)
 {

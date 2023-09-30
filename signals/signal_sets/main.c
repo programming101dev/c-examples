@@ -14,14 +14,11 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 static void print_signal_set(const sigset_t *signal_set);
-
 
 int main(void)
 {
@@ -32,7 +29,7 @@ int main(void)
     int      signal_to_remove;
 
 #ifdef __APPLE__
-    sigemptyset(&signal_set);  // On macOS, this call is guaranteed to succeed
+    sigemptyset(&signal_set);    // On macOS, this call is guaranteed to succeed
 #else
     if(sigemptyset(&signal_set) != 0)
     {
@@ -60,7 +57,7 @@ int main(void)
     signal_to_add = SIGINT;
 
 #ifdef __APPLE__
-    sigaddset(&signal_set, signal_to_add); // On macOS, this call is guaranteed to succeed
+    sigaddset(&signal_set, signal_to_add);    // On macOS, this call is guaranteed to succeed
 #else
 
     if(sigaddset(&signal_set, signal_to_add) != 0)
@@ -87,7 +84,7 @@ int main(void)
     signal_to_remove = SIGINT;
 
 #ifdef __APPLE__
-    sigdelset(&signal_set, signal_to_remove); // On macOS, this call is guaranteed to succeed
+    sigdelset(&signal_set, signal_to_remove);    // On macOS, this call is guaranteed to succeed
 #else
     if(sigdelset(&signal_set, signal_to_remove) != 0)
     {
@@ -111,7 +108,7 @@ int main(void)
 
     // Fill the entire set with all available signals
 #if defined(__APPLE__)
-    sigfillset(&signal_set);  // Always succeeds on macOS, so no need to check
+    sigfillset(&signal_set);    // Always succeeds on macOS, so no need to check
 #else
     if(sigfillset(&signal_set) != 0)
     {
@@ -126,7 +123,6 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
-
 
 static void print_signal_set(const sigset_t *signal_set)
 {

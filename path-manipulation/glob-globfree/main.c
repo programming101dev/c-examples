@@ -68,7 +68,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **pattern)
 {
     int opt;
+
     opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -90,14 +92,17 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
             }
         }
     }
+
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The pattern is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *pattern = argv[optind];
 }
 
@@ -115,6 +120,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <pattern>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
@@ -124,5 +130,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 int custom_error_handler(const char *epath, int err)
 {
     fprintf(stderr, "Custom Error: Failed to process path '%s' with error code %d\n", epath, err);
+
     return 0;    // Return 0 to continue processing
 }

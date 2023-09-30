@@ -79,12 +79,17 @@ static void parse_arguments(int argc, char *argv[], char **string1, char **strin
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The string1 and string2 are required");
+    }
+
+    if(optind + 1 >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The string2 is required");
     }
 
     if(optind < argc - 2)
     {
-        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+        usage(argv[0], EXIT_FAILURE, "Error: Too many arguments.");
     }
 
     *string1 = argv[optind];

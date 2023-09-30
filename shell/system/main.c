@@ -76,7 +76,7 @@ static void parse_arguments(int argc, char *argv[], char **command)
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The command is required");
     }
 
     if(optind < argc - 1)

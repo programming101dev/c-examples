@@ -83,7 +83,7 @@ static void parse_arguments(int argc, char *argv[], char **pattern)
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The pattern is required");
     }
 
     if(optind < argc - 1)
@@ -109,7 +109,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] [pattern]\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] <pattern>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h            Display this help message\n", stderr);
     exit(exit_code);

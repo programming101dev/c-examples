@@ -93,7 +93,7 @@ static void parse_arguments(int argc, char *argv[], char **directory_path)
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The directory path is required");
     }
 
     if(optind < argc - 1)

@@ -120,12 +120,17 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
 
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The ip address and port are required");
+    }
+
+    if(optind + 1 >= argc)
+    {
+        usage(argv[0], EXIT_FAILURE, "The port is required");
     }
 
     if(optind < argc - 2)
     {
-        usage(argv[0], EXIT_FAILURE, "Too many arguments.");
+        usage(argv[0], EXIT_FAILURE, "Error: Too many arguments.");
     }
 
     *ip_address = argv[optind];

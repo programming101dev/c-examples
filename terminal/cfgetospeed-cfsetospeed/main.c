@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **speed)
 {
     int opt;
+
     opterr = 0;
+
     while((opt = getopt(argc, argv, "h")) != -1)
     {
         switch(opt)
@@ -103,14 +105,17 @@ static void parse_arguments(int argc, char *argv[], char **speed)
             }
         }
     }
+
     if(optind >= argc)
     {
-        usage(argv[0], EXIT_FAILURE, "The group id is required");
+        usage(argv[0], EXIT_FAILURE, "The speed is required");
     }
+
     if(optind < argc - 1)
     {
         usage(argv[0], EXIT_FAILURE, "Too many arguments.");
     }
+
     *speed = argv[optind];
 }
 
@@ -120,6 +125,7 @@ static void handle_arguments(const char *binary_name, const char *speed_str, spe
     {
         usage(binary_name, EXIT_FAILURE, "The speed is required.");
     }
+
     *speed = parse_baud_rate(binary_name, speed_str);
 }
 
@@ -146,12 +152,15 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
     char         *endptr;
     long long int parsed_speed;
     int           valid_baud_rate;
+
     errno        = 0;
     parsed_speed = strtoll(baud_rate_str, &endptr, BASE_TEN);
+
     if(errno != 0)
     {
         usage(binary_name, EXIT_FAILURE, "Error parsing baud rate.");
     }
+
     if(*endptr != '\0')
     {
         usage(binary_name, EXIT_FAILURE, "Invalid characters in input.");
@@ -162,7 +171,9 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
     {
         usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
     }
+
     valid_baud_rate = 0;
+
     for(size_t i = 0; i < sizeof(baud_rates) / sizeof(baud_rates[0]); i++)
     {
         if((speed_t)parsed_speed == baud_rates[i])
@@ -171,10 +182,12 @@ static speed_t parse_baud_rate(const char *binary_name, const char *baud_rate_st
             break;
         }
     }
+
     if(!valid_baud_rate)
     {
         usage(binary_name, EXIT_FAILURE, "Invalid baud rate.");
     }
+
     return (speed_t)parsed_speed;
 }
 
@@ -184,6 +197,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     {
         fprintf(stderr, "%s\n", message);
     }
+
     fprintf(stderr, "Usage: %s [-h] <speed>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);

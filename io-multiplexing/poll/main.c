@@ -253,6 +253,7 @@ static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_c
 static void setup_signal_handler(void)
 {
     struct sigaction sa;
+
     memset(&sa, 0, sizeof(sa));
 #if defined(__clang__)
 #pragma clang diagnostic push

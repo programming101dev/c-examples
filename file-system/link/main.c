@@ -22,7 +22,7 @@ static void create_sample_file(const char *filename);
 static void create_hard_link(const char *source_filename, const char *link_filename);
 static void check_file_existence(const char *filename, const char *message);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // TODO pass the filenames in on the command line
     const char *source_filename = "example.txt";

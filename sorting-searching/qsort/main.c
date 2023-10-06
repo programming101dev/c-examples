@@ -19,7 +19,7 @@
 
 static int intcmp(const void *a, const void *b);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     int arr[] = {5, 2, 8, 1, 3};

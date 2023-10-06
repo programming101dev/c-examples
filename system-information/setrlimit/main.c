@@ -21,7 +21,7 @@
 static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t hard_limit);
 #define SET_LIMIT(resource, soft_limit, hard_limit) set_rlimit(resource, #resource, soft_limit, hard_limit)
 
-int main(void)
+int main(int argc, char *argv[])
 {
 #if defined(__clang__)
     #pragma clang diagnostic push

@@ -23,7 +23,7 @@
 static void setup_signal_handler(void);
 static void signal_handler(int signal_number);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     sigset_t new_mask;
     sigset_t old_mask;

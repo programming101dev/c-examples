@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     size_t max_hostname_length;
     long   length;

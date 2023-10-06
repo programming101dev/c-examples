@@ -23,7 +23,7 @@
 #include <string.h>
 #include <sys/socket.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     struct ifaddrs *interfaces;
     struct ifaddrs *ifaddr;

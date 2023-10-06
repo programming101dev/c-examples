@@ -21,7 +21,7 @@
 
 static void print_process_info(const char *name);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pid_t pid;
 

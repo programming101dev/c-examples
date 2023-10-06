@@ -17,7 +17,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     int x;
     int y;

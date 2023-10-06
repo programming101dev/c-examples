@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // TODO pass these in on the command line
     char        templ[] = "/tmp/mytempfileXXXXXX";

@@ -23,7 +23,7 @@
 
 #define FIFO_FILE "./fifo_example"
 
-int main(void)
+int main(int argc, char *argv[])
 {
     int     fd;
     uint8_t size;

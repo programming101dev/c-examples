@@ -19,7 +19,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     struct termios term;
     struct termios original_term;

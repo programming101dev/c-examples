@@ -24,7 +24,7 @@ static void *print_numbers(void *arg);
 // TODO read this in on the command line
 #define NUMBERS_LEN 5
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pthread_t thread_id;
     int       result;

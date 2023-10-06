@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // TODO pass on the command line
     char tempdir_template[] = "exampleXXXXXX";

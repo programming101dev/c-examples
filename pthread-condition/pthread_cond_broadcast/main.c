@@ -30,7 +30,7 @@ static void *thread_function(void *arg);
 #define NUM_THREADS 3
 #define ITERATIONS 10
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pthread_t                   threads[NUM_THREADS];
     int                         rc;

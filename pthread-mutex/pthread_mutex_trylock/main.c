@@ -32,7 +32,7 @@ static void *thread_function(void *arg);
 
 // TODO: is there a way to make it so that trylock doesn't succeed?
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pthread_mutex_t    mutex;
     pthread_t          threads[NUM_THREADS];

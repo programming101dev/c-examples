@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // TODO pass this in on the command line
     const char *sem_name = "/example_semaphore";

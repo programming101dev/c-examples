@@ -34,7 +34,7 @@ static void socket_close(int sockfd);
 
 static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-int main(void)
+int main(int argc, char *argv[])
 {
     int    sockfd;
     int   *client_sockets;

@@ -20,7 +20,7 @@
 
 #define BUFFER_LEN 80
 
-int main(void)
+int main(int argc, char *argv[])
 {
     struct tm timeinfo;
     time_t    result_time;

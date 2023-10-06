@@ -23,7 +23,7 @@ static void print_random_numbers(size_t count);
 // TODO read this in off of the command line
 #define COUNT 5
 
-int main(void)
+int main(int argc, char *argv[])
 {
     unsigned int seed;
 

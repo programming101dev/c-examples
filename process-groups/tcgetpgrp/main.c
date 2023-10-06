@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pid_t foreground_pgid;
     int   terminal_fd;

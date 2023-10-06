@@ -23,7 +23,7 @@ void print_permissions(const char *filename);
 
 // TODO pass the filename in on the command line
 
-int main(void)
+int main(int argc, char *argv[])
 {
     const char *filename = "file.txt";
     FILE       *file;

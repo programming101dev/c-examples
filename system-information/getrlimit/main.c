@@ -21,7 +21,7 @@
 static void show_limit(int resource, const char *name);
 #define SHOW_LIMIT(resource) show_limit(resource, #resource)
 
-int main(void)
+int main(int argc, char *argv[])
 {
 #if defined(__clang__)
     #pragma clang diagnostic push

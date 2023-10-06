@@ -23,7 +23,7 @@
 // TODO read this in off the command line
 #define XXX 100
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pid_t new_pgid;
     pid_t child_pid;

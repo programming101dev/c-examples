@@ -23,7 +23,7 @@ static int *resize_array(int *array, size_t new_num_elements);
 
 #define NUM_ELEMENTS 5
 
-int main(void)
+int main(int argc, char *argv[])
 {
     int   *dynamic_array;
     size_t num_elements;

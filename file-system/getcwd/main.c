@@ -21,7 +21,7 @@
 
 #define PATH_LEN 4096    // A common default value for the maximum path length
 
-int main(void)
+int main(int argc, char *argv[])
 {
     const char *path = ".";
     long        path_max;

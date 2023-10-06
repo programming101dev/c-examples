@@ -21,7 +21,7 @@
 static void print_entries(void);
 static void print_entry(const struct group *entry);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     struct group *entry;
 

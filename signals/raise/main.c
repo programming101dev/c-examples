@@ -21,7 +21,7 @@
 
 static void signal_handler(int signal_number);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     const int        signals_to_handle[] = {SIGABRT, SIGALRM, SIGCHLD, SIGCONT, SIGFPE,  SIGHUP,  SIGILL, SIGINT,  SIGKILL, SIGPIPE,   SIGQUIT, SIGSEGV, SIGSTOP,
                                             SIGSYS,  SIGTERM, SIGTRAP, SIGTSTP, SIGTTIN, SIGTTOU, SIGURG, SIGUSR1, SIGUSR2, SIGVTALRM, SIGXCPU, SIGXFSZ};

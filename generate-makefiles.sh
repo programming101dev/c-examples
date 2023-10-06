@@ -30,7 +30,7 @@ is_flag_supported()
         flag="$flag $dependencies"
     fi
 
-    echo "int main(void) { return 0; }" > test.c
+    echo "int main(int argc, char *argv[]) { return 0; }" > test.c
     local output="$($CC -Werror $flag -E -o /dev/null test.c 2>&1)"
     local result=$?
     rm test.c 2>/dev/null
@@ -1040,7 +1040,7 @@ generate_makefile()
     echo -e "SUPPORTED_ANALYZER_FLAGS=${SUPPORTED_ANALYZER_FLAGS[@]}" >> Makefile
     echo -e "SUPPORTED_DEBUG_FLAGS=${SUPPORTED_DEBUG_FLAGS[@]}" >> Makefile
     echo -e "CLANG_TIDY_CHECKS=-checks=*,-llvmlibc-restrict-system-libc-headers,-altera-struct-pack-align,-readability-identifier-length,-altera-unroll-loops,-cppcoreguidelines-init-variables,-cert-err33-c,-modernize-macro-to-enum,-bugprone-easily-swappable-parameters,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-altera-id-dependent-backward-branch,-concurrency-mt-unsafe,-misc-unused-parameters,-hicpp-signed-bitwise,-google-readability-todo,-cert-msc30-c,-cert-msc50-cpp,-readability-function-cognitive-complexity,-clang-analyzer-security.insecureAPI.strcpy,-cert-env33-c,-android-cloexec-accept,-clang-analyzer-security.insecureAPI.rand,-misc-include-cleaner" >> Makefile
-    echo -e "LIBRARIES=${LIBRARIES}" >> Makefile
+    echo -e "LIBRARIES=${LIBRARIES} -lp101_c -lp101_env -lp101_error -lm -lubsan" >> Makefile
     echo -e "PROGRAMS=" >> Makefile
 
     if [ -n "$BINARY_EXT" ]; then
@@ -1071,11 +1071,13 @@ generate_makefile()
                 echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS)  -shared -fPIC -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename-traceaable$SHARED_EXT\n" >> Makefile
             else
-                if [[ "$CC" == "gcc"* ]]; then
-                    if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
-                        # Add the additional flag for files in the specified directories
-                        echo COMPILATION_FLAGS+="-Wno-analyzer-use-of-uninitialized-value -Wno-sometimes-uninitialized" >> Makefile
+                if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
+                    if is_flag_supported "-Wno-analyzer-use-of-uninitialized-value"; then
+                        echo -e "SUPPORTED_ANALYZER_FLAGS+=-Wno-analyzer-use-of-uninitialized-value" >> Makefile
                     fi
+                    if is_flag_supported "-Wno-sometimes-uninitialized"; then
+                        echo -e "SUPPORTED_ANALYZER_FLAGS+=-Wno-sometimes-uninitialized" >> Makefile
+                     fi
                 fi
 
                 echo "SOURCES += $filename.c" >> Makefile

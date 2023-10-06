@@ -20,7 +20,7 @@
 
 static void check_file_existence(const char *filename, const char *message);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // TODO pass the filenames in on the command line
     const char *old_filename = "old_file.txt";

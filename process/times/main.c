@@ -27,7 +27,7 @@ static void      printTimes(struct tms tms_data);
 
 #define MAX_NUMBER 100
 
-int main(void)
+int main(int argc, char *argv[])
 {
     // TODO pass this in on the command line
     const size_t MAX_NUMBERS    = 100000;

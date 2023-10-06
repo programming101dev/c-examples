@@ -20,7 +20,7 @@
 
 static void display_value(int8_t value);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     display_value(INT8_MIN);
     printf("----\n");

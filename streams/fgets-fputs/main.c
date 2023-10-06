@@ -19,7 +19,7 @@
 
 #define BUFFER_SIZE 256
 
-int main(void)
+int main(int argc, char *argv[])
 {
     char buffer[BUFFER_SIZE];
 

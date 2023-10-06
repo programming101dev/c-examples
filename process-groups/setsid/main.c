@@ -21,7 +21,7 @@
 
 static void handle_child(void);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     pid_t pid;
     pid_t pgid;

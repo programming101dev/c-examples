@@ -19,7 +19,7 @@
 
 static void print_env_variable(const char *variable);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     const char *env_variables[] = {
         "ARFLAGS",    "CC",       "COLUMNS",     "CDPATH",      "CFLAGS",     "CHARSET",  "DATEMSK",  "DEAD",       "EDITOR",  "ENV",     "EXINIT",  "FC",     "FCEDIT",

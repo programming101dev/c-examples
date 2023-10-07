@@ -20,7 +20,7 @@
 
 #define NUM_ELEMENTS 4
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // Source data
     int source_data[] = {

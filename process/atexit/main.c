@@ -21,7 +21,7 @@ static void exit_handler1(void);
 static void exit_handler2(void);
 static void exit_handler3(void);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     atexit(exit_handler1);
     atexit(exit_handler2);

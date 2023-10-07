@@ -18,7 +18,7 @@
 
 static int is_little_endian(void) __attribute__((const));
 
-int main(int argc, char *argv[])
+int main(void)
 {
     if(is_little_endian())
     {

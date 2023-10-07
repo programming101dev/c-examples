@@ -24,7 +24,7 @@
 static void setup_signal_handler(void);
 static void sigint_handler(int signal_number);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     sigset_t block_set;
     pid_t    pid;

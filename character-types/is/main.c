@@ -27,9 +27,6 @@ struct func_info
     void (*print_info)(const struct func_info *info, int ch);
 };
 
-static void           setup(struct p101_error **err, struct p101_env **env, bool report, bool trace);
-static void           config(struct p101_error *err, struct p101_env *env, bool report, bool trace);
-static void           teardown(struct p101_error *err, struct p101_env *env);
 static void print_binary(unsigned int ch, unsigned int width);
 static void print_info_bool(const struct func_info *info, int ch);
 static void print_info_char(const struct func_info *info, int ch);
@@ -37,7 +34,7 @@ static void print_info_char(const struct func_info *info, int ch);
 #define FORMAT_WIDTH 32
 #define BINARY_DIGITS 6
 
-int main(int argc, char *argv[])
+int main(void)
 {
     static struct func_info info[] = {
         {isalnum,  "alnum",  print_info_bool},

@@ -21,7 +21,7 @@
 
 static void print_flags(const char *flag_name, tcflag_t flags, tcflag_t flag_to_check);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     int            fd;
     struct termios term_attr;

@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     char *library_path;
     char *function_name;
     void *handle;
-    void (*func)(const char *);
+    void  (*func)(const char *);
 
     library_path  = NULL;
     function_name = NULL;

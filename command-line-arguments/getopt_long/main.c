@@ -19,9 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void           setup(struct p101_error **err, struct p101_env **env, bool report, bool trace);
-static void           config(struct p101_error *err, struct p101_env *env, bool report, bool trace);
-static void           teardown(struct p101_error *err, struct p101_env *env);
 static void           parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value);
 static void           handle_arguments(const char *binary_name, const char *option_c_value);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);

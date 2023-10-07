@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     pthread_cond_t condition;
     int            destroy_result;

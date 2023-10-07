@@ -21,7 +21,7 @@
 static void print_entries(void);
 static void print_entry(const struct passwd *entry);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     struct passwd *entry;
 

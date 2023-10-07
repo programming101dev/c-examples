@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     dprintf(STDOUT_FILENO, "Hello, %s! This is a dprintf example for stdout.\n", "World");
 

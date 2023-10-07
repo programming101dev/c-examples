@@ -19,7 +19,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     int   terminal_fd;
     pid_t sid;

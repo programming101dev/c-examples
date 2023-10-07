@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <sys/utsname.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     struct utsname system_info;
 

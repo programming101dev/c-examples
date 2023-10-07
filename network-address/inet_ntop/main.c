@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     // Hard-coded binary representations of an IPv4 address and an IPv6 address

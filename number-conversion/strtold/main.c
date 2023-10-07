@@ -24,7 +24,7 @@ static void convert(const char *str);
 
 #define TOLLERANCE 1e-6L
 
-int main(int argc, char *argv[])
+int main(void)
 {
     const char goodNumber[]     = "12345.6789";
     const char leftoverNumber[] = "42.99989hello";

@@ -27,7 +27,7 @@ static void      printUsage(struct rusage *ru);
 
 #define MAX_NUMBER 100
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass this in on the command line
     const size_t MAX_NUMBERS    = 100000;

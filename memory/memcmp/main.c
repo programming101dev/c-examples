@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     int data1[] = {
         1,

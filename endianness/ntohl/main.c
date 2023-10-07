@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     uint32_t network_value;
     uint32_t host_value;

@@ -28,7 +28,7 @@ struct sc_value_name_pair
 
 static long get_sysconf_value(int name, const char *name_str);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     struct sc_value_name_pair pairs[] = {
         {_SC_AIO_LISTIO_MAX,               "_SC_AIO_LISTIO_MAX"              },

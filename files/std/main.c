@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     printf("STDIN_FILENO: %d\n", STDIN_FILENO);
     printf("STDOUT_FILENO: %d\n", STDOUT_FILENO);

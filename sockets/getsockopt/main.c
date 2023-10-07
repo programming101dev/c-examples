@@ -31,7 +31,7 @@ struct socket_option
     int         level;
     int         option;
     const char *name;
-    void (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
+    void        (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
 };
 
 static void           parse_arguments(int argc, char *argv[], char **address, char **port);

@@ -20,7 +20,7 @@
 
 static void print_signal_set(const sigset_t *signal_set);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // Create an empty signal set
     sigset_t signal_set;

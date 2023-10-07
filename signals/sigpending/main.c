@@ -25,7 +25,7 @@ static int  check_pending_signal(void);
 static int  block_signal(int signal_num, sigset_t *block_set);
 static int  unblock_signal(sigset_t *block_set);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     sigset_t block_set;
     setup_signal_handler();

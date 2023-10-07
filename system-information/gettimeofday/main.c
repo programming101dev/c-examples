@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     struct timeval tv;
 

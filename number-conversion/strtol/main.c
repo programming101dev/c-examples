@@ -24,7 +24,7 @@ static void convert(const char *str);
 
 #define BASE_TEN 10
 
-int main(int argc, char *argv[])
+int main(void)
 {
     const char goodNumber[]     = "12345";
     const char leftoverNumber[] = "42hello";

@@ -55,7 +55,7 @@ static void convertUid(uid_t value, char *buffer, size_t bufferSize);
 static void convertGid(gid_t value, char *buffer, size_t bufferSize);
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-int main(int argc, char *argv[])
+int main(void)
 {
     char good_buffer[50];
     char bad_buffer[2];

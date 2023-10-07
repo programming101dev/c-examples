@@ -25,7 +25,7 @@ static void child_process(const char *name);
 
 #define MAX_SECONDS 5
 
-int main(int argc, char *argv[])
+int main(void)
 {
     pid_t pid1;
     pid_t pid2;

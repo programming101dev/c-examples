@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // Fully buffered - probably won't print because the buffer won't get full
     setvbuf(stdout, NULL, _IOFBF, 0);

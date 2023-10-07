@@ -20,7 +20,7 @@
 
 #define BUFFER_SIZE 4096
 
-int main(int argc, char *argv[])
+int main(void)
 {
     char    buffer[BUFFER_SIZE];
     ssize_t bytesRead;

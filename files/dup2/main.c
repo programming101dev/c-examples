@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass on the command line
     char        templ[] = "/tmp/tempfileXXXXXX";

@@ -21,7 +21,7 @@
 
 #define MESSAGE_LEN 256
 
-int main(int argc, char *argv[])
+int main(void)
 {
     struct termios options;
     char           message[MESSAGE_LEN];

@@ -21,7 +21,7 @@ static int intcmp(const void *a, const void *b);
 
 // TODO take the number to to find and the numbers to search on the command line
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     int arr[] = {5, 2, 8, 1, 3};

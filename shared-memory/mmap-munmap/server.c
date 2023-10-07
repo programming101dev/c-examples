@@ -29,7 +29,7 @@ static size_t get_page_size(void);
 #define CLIENT_SEM_NAME "/client_semaphore"
 #define SERVER_SEM_NAME "/server_semaphore"
 
-int main(int argc, char *argv[])
+int main(void)
 {
     int    shm_fd;
     char  *shm_ptr;

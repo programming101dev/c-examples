@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     printf("Size of pointer: %zu\n", sizeof(void *));
     printf("Size of char: %zu\n", sizeof(char));

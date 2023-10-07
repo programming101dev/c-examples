@@ -20,7 +20,7 @@
 
 #define BASE_YEAR 1900
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass this in on the command line
     const char *time_str = "2023-08-02 14:30:00";

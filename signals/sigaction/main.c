@@ -27,7 +27,7 @@ struct signal_info
 
 void signal_handler(int signal_number);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     struct signal_info signals[] = {
         {SIGABRT,   "SIGABRT"  },

@@ -20,7 +20,7 @@
 
 static void display_value(uint16_t value);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     display_value(0);
     printf("----\n");

@@ -20,7 +20,7 @@
 
 #define BUFFER_LEN 100
 
-int main(int argc, char *argv[])
+int main(void)
 {
     char str[BUFFER_LEN];
 

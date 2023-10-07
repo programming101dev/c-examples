@@ -25,7 +25,7 @@ static long long performCalculation(size_t size, size_t iterations);
 
 #define MAX_NUMBER 100
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass this in on the command line
     const size_t MAX_NUMBERS    = 100000;

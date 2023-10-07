@@ -24,7 +24,7 @@
 #define BITS_TO_SHIFT_16 16
 #define BITS_TO_SHIFT_24 24
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass these in on the command line
     const char     *ipv4_address_str = "192.168.0.1";

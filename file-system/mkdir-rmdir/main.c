@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass the filename in on the command line
     const char *tempdir_template = "example_dir";

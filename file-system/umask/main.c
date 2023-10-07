@@ -23,7 +23,7 @@ static void create_file(const char *filename, const char *content);
 static void print_file_permissions(const char *filename);
 static void delete_file(const char *filename);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass the filenames and content in on the command line
     const char *filename1 = "file1.txt";

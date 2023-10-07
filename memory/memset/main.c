@@ -22,7 +22,7 @@
 static void print_array(const int *arr, size_t size);
 static void fill_with_random_ints(int *arr, size_t size);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     // TODO pass this in on the command line
     const size_t num_elements = 5;

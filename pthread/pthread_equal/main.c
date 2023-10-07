@@ -20,7 +20,7 @@
 
 static void *thread_function(void *arg);
 
-int main(int argc, char *argv[])
+int main(void)
 {
     pthread_t thread1;
     pthread_t thread2;

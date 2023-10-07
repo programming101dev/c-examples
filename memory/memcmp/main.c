@@ -20,19 +20,19 @@
 
 int main(void)
 {
-    int data1[] = {
+    const int data1[] = {
         1,
         2,
         3,
         4,
     };
-    int data2[] = {
+    const int data2[] = {
         1,
         2,
         3,
         4,
     };
-    int data3[] = {
+    const int data3[] = {
         1,
         2,
         3,

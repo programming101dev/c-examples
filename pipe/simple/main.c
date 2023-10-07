@@ -23,8 +23,8 @@
 static void           parse_arguments(int argc, char *argv[], char **file_path);
 static void           handle_arguments(const char *binary_name, const char *file_path);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void           child_process(int pipefd[2], FILE *file);
-static void           parent_process(int pipefd[2]);
+static void           child_process(const int pipefd[2], FILE *file);
+static void           parent_process(const int pipefd[2]);
 static void           send_word(int pipefd, const char *word, uint8_t length);
 _Noreturn static void error_exit(const char *msg);
 
@@ -172,7 +172,7 @@ _Noreturn static void error_exit(const char *msg)
     exit(EXIT_FAILURE);
 }
 
-static void child_process(int pipefd[2], FILE *file)
+static void child_process(const int pipefd[2], FILE *file)
 {
     int     ch;
     char    word[MAX_WORD_LENGTH];
@@ -222,7 +222,7 @@ static void child_process(int pipefd[2], FILE *file)
     }
 }
 
-static void parent_process(int pipefd[2])
+static void parent_process(const int pipefd[2])
 {
     uint8_t length;
     char    word[MAX_WORD_LENGTH];

@@ -50,7 +50,7 @@ int main(void)
     if(inet_pton(AF_INET6, ipv6_address_str, &ipv6_addr) == 1)
     {
         // Print the IPv6 address as an array of unsigned bytes
-        unsigned char *bytes = (unsigned char *)&ipv6_addr;
+        const unsigned char *bytes = (unsigned char *)&ipv6_addr;
 
         printf("IPv6 Address: ");
 

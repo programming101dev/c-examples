@@ -28,7 +28,7 @@ static void           parse_arguments(int argc, char *argv[], char **server_addr
 static void           handle_arguments(const char *binary_name, const char *server_address, const char *port_str, in_port_t *port);
 static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void           display_address(struct sockaddr_storage *addr, socklen_t addrlen);
+static void           display_address(const struct sockaddr_storage *addr, socklen_t addrlen);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
@@ -177,7 +177,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-static void display_address(struct sockaddr_storage *addr, socklen_t addrlen)
+static void display_address(const struct sockaddr_storage *addr, socklen_t addrlen)
 {
     if(addr->ss_family == AF_INET || addr->ss_family == AF_INET6)
     {
@@ -185,7 +185,7 @@ static void display_address(struct sockaddr_storage *addr, socklen_t addrlen)
         char port[NI_MAXSERV];
         int  result;
 
-        result = getnameinfo((struct sockaddr *)addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
+        result = getnameinfo((const struct sockaddr *)addr, addrlen, hostname, NI_MAXHOST, port, NI_MAXSERV, NI_NUMERICSERV);
 
         if(result == 0)
         {

@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 static void           parse_arguments(int argc, char *argv[], char **user_id, char **euser_id);
-static void           handle_arguments(const char *binary_name, const char *user_id, char *euser_id, uid_t *uid, uid_t *euid);
+static void           handle_arguments(const char *binary_name, const char *user_id, const char *euser_id, uid_t *uid, uid_t *euid);
 static uid_t          get_uid_t_max(void);
 static uid_t          parse_uid_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
@@ -99,7 +99,7 @@ static void parse_arguments(int argc, char *argv[], char **user_id, char **euser
     }
 }
 
-static void handle_arguments(const char *binary_name, const char *user_id, char *euser_id, uid_t *uid, uid_t *euid)
+static void handle_arguments(const char *binary_name, const char *user_id, const char *euser_id, uid_t *uid, uid_t *euid)
 {
     if(user_id == NULL)
     {

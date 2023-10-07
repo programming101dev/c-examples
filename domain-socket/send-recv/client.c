@@ -27,7 +27,7 @@ static void           handle_arguments(const char *binary_name, const char *file
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static int            socket_create(void);
 static void           setup_socket_address(struct sockaddr_un *addr, const char *path);
-static int            connect_to_server(int sockfd, struct sockaddr_un *addr);
+static int            connect_to_server(int sockfd, const struct sockaddr_un *addr);
 static void           socket_close(int sockfd);
 
 #define SOCKET_PATH "/tmp/example_socket"
@@ -184,9 +184,9 @@ static void setup_socket_address(struct sockaddr_un *addr, const char *path)
     addr->sun_path[sizeof(addr->sun_path) - 1] = '\0';
 }
 
-static int connect_to_server(int sockfd, struct sockaddr_un *addr)
+static int connect_to_server(int sockfd, const struct sockaddr_un *addr)
 {
-    if(connect(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
+    if(connect(sockfd, (const struct sockaddr *)addr, sizeof(*addr)) == -1)
     {
         perror("Connection failed");
         close(sockfd);

@@ -23,7 +23,7 @@
 #include <string.h>
 
 static void           parse_arguments(int argc, char *argv[], char **n, char **string1, char **string2);
-static void           handle_arguments(const char *binary_name, char *n_str, const char *string1, const char *string2, size_t *n);
+static void           handle_arguments(const char *binary_name, const char *n_str, const char *string1, const char *string2, size_t *n);
 static size_t         parse_size_t(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
@@ -109,7 +109,7 @@ static void parse_arguments(int argc, char *argv[], char **n, char **string1, ch
     *string2 = argv[optind + 1];
 }
 
-static void handle_arguments(const char *binary_name, char *n_str, const char *string1, const char *string2, size_t *n)
+static void handle_arguments(const char *binary_name, const char *n_str, const char *string1, const char *string2, size_t *n)
 {
     if(n_str == NULL)
     {

@@ -20,7 +20,7 @@ static int is_little_endian(void) __attribute__((const));
 
 int main(void)
 {
-    if(is_little_endian())
+    if(is_little_endian())    // cppcheck-suppress knownConditionTrueFalse
     {
         printf("Machine is little-endian.\n");
     }

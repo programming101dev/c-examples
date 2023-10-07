@@ -30,7 +30,7 @@
 static void           setup_signal_handler(void);
 static void           sigint_handler(int signum);
 static void           parse_arguments(int argc, char *argv[], char **ip_address, char **port);
-static void           handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port);
+static void           handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port);
 static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void           convert_address(const char *address, struct sockaddr_storage *addr);
@@ -142,7 +142,7 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
     *port       = argv[optind + 1];
 }
 
-static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port)
 {
     if(ip_address == NULL)
     {

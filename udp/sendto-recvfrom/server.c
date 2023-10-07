@@ -26,13 +26,13 @@
 #include <unistd.h>
 
 static void           parse_arguments(int argc, char *argv[], char **ip_address, char **port);
-static void           handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port);
+static void           handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port);
 static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void           convert_address(const char *address, struct sockaddr_storage *addr);
 static int            socket_create(int domain, int type, int protocol);
 static void           socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
-static void           handle_packet(int client_sockfd, struct sockaddr_storage *client_addr, char *buffer, size_t bytes);
+static void           handle_packet(int client_sockfd, struct sockaddr_storage *client_addr, const char *buffer, size_t bytes);
 static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
@@ -120,7 +120,7 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
     *port       = argv[optind + 1];
 }
 
-static void handle_arguments(const char *binary_name, const char *ip_address, char *port_str, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, in_port_t *port)
 {
     if(ip_address == NULL)
     {
@@ -255,7 +255,7 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void handle_packet(int client_sockfd, struct sockaddr_storage *client_addr, char *buffer, size_t bytes)
+static void handle_packet(int client_sockfd, struct sockaddr_storage *client_addr, const char *buffer, size_t bytes)
 {
     printf("%d read %zu characters: \"%s\" from\n", client_sockfd, bytes, buffer);
 }

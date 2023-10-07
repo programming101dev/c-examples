@@ -26,7 +26,7 @@
 #include <unistd.h>
 
 static void           parse_arguments(int argc, char *argv[], char **address, char **port, char **msg);
-static void           handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port);
+static void           handle_arguments(const char *binary_name, const char *address, const char *port_str, const char *message, in_port_t *port);
 static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void           convert_address(const char *address, struct sockaddr_storage *addr);
@@ -105,7 +105,7 @@ static void parse_arguments(int argc, char *argv[], char **address, char **port,
     *msg     = argv[optind + 2];
 }
 
-static void handle_arguments(const char *binary_name, const char *address, char *port_str, const char *message, in_port_t *port)
+static void handle_arguments(const char *binary_name, const char *address, const char *port_str, const char *message, in_port_t *port)
 {
     if(address == NULL)
     {

@@ -23,7 +23,7 @@ static void setup_signal_handler(void);
 static void sigint_handler(int signal_number);
 static int  check_pending_signal(void);
 static int  block_signal(int signal_num, sigset_t *block_set);
-static int  unblock_signal(sigset_t *block_set);
+static int  unblock_signal(const sigset_t *block_set);
 
 int main(void)
 {
@@ -115,7 +115,7 @@ static int block_signal(int signal_num, sigset_t *block_set)
     return EXIT_SUCCESS;
 }
 
-static int unblock_signal(sigset_t *block_set)
+static int unblock_signal(const sigset_t *block_set)
 {
     if(sigprocmask(SIG_UNBLOCK, block_set, NULL) < 0)
     {

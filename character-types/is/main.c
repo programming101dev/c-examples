@@ -22,9 +22,9 @@
 
 struct func_info
 {
-    int         (*func)(int ch);
+    int (*func)(int ch);
     const char *name;
-    void        (*print_info)(const struct func_info *info, int ch);
+    void (*print_info)(const struct func_info *info, int ch);
 };
 
 static void print_binary(unsigned int ch, unsigned int width);

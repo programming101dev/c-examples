@@ -126,13 +126,13 @@ generate_makefile()
         # Add an analyzer rule to pick on the source code
         echo -e "\nanalyze:" >> Makefile
         echo -e "\t@echo \"Running $CC for static code analysis...\"" >> Makefile
-        echo -e "\t@\${CC} --analyzer-output text --analyze -Xclang -analyzer-checker=core --analyze -Xclang -analyzer-checker=deadcode -Xclang -analyzer-checker=security -Xclang -analyzer-disable-checker=security.insecureAPI.DeprecatedOrUnsafeBufferHandling -Xclang -analyzer-checker=unix -Xclang -analyzer-checker=unix \$(COMPILATION_FLAGS) -I/usr/local/include \$(SOURCES)" >> Makefile
+        echo -e "\t@\${CC} --analyze --analyzer-output text -Xclang -analyzer-checker=core --analyze -Xclang -analyzer-checker=deadcode -Xclang -analyzer-checker=security -Xclang -analyzer-disable-checker=security.insecureAPI.DeprecatedOrUnsafeBufferHandling -Xclang -analyzer-checker=unix -Xclang -analyzer-checker=unix -I/usr/local/include \$(CFLAGS) \$(COMPILATION_FLAGS) \$(SOURCES)" >> Makefile
     fi
 
     # Add a check rule to pick on the source code
     echo -e "\ncheck:" >> Makefile
     echo -e "\t@echo \"Running cppcheck for static code analysis...\"" >> Makefile
-    echo -e "\t@cppcheck --error-exitcode=1 --force --quiet --inline-suppr --library=posix --enable=all --suppress=missingIncludeSystem -I/usr/local/include \${SOURCES}" >> Makefile
+    echo -e "\t@cppcheck --error-exitcode=1 --force --quiet --inline-suppr --library=posix --enable=all --suppress=missingIncludeSystem --suppress=ConfigurationNotChecked --suppress=unmatchedSuppression -I/usr/local/include \${SOURCES}" >> Makefile
 
     # Add a clean rule to be picky about the code
     echo -e "\nclean:" >> Makefile

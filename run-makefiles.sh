@@ -4,6 +4,8 @@
 run_make() {
     local current_dir="$1"
 
+    echo -e "\nCompiling: $current_dir"
+
     # Check if a Makefile exists in the current directory
     if [ -f "$current_dir/Makefile" ]; then
         echo "Running 'make all' in $current_dir..."

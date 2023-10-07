@@ -37,6 +37,7 @@ is_flag_supported()
 WARNING_FLAGS=(
   "-Wno-invalid-command-line-argument"
   "-Wno-unused-command-line-argument"
+  "--extra-warnings"
   "-pedantic-errors"
   "-Waddress"
   "-Waggregate-return"

@@ -127,14 +127,14 @@ static int resolve_hostname_to_ip(const char *hostname)
     // Print all IP addresses associated with the hostname
     for(res = result; res != NULL; res = res->ai_next)
     {
-        struct sockaddr_in     *ipv4;
-        struct sockaddr_in6    *ipv6;
         void                   *addr;
         const char             *ipver;
         struct sockaddr_storage temp;
 
         if(res->ai_family == AF_INET)
         {
+            struct sockaddr_in *ipv4;
+
             memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_in));
             ipv4  = (struct sockaddr_in *)&temp;
             addr  = &(ipv4->sin_addr);
@@ -142,6 +142,8 @@ static int resolve_hostname_to_ip(const char *hostname)
         }
         else if(res->ai_family == AF_INET6)
         {
+            struct sockaddr_in6 *ipv6;
+
             memcpy(&temp, res->ai_addr, sizeof(struct sockaddr_in6));
             ipv6  = (struct sockaddr_in6 *)&temp;
             addr  = &(ipv6->sin6_addr);

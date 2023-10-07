@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     group_name = NULL;
     parse_arguments(argc, argv, &group_name);
     handle_arguments(argv[0], group_name);
-    group_info = getgrnam(group_name);
+    group_info = getgrnam(group_name);    // cppcheck-suppress getgrnamCalled
 
     if(group_info != NULL)
     {

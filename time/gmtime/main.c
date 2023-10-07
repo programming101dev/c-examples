@@ -34,7 +34,7 @@ int main(void)
     }
 
     // Convert the time to a local time representation
-    timeinfo = gmtime(&rawtime);
+    timeinfo = gmtime(&rawtime);    // cppcheck-suppress gmtimeCalled
 
     if(timeinfo == NULL)
     {

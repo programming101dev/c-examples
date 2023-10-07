@@ -31,7 +31,7 @@ int main(void)
 
     // Rewind the user database
     setpwent();
-    entry = getpwent();
+    entry = getpwent();    // cppcheck-suppress getpwentCalled
 
     if(entry != NULL)
     {
@@ -48,7 +48,7 @@ static void print_entries(void)
 {
     struct passwd *entry;
 
-    while((entry = getpwent()) != NULL)
+    while((entry = getpwent()) != NULL)    // cppcheck-suppress getpwentCalled
     {
         print_entry(entry);
     }

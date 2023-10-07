@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
     char   *pattern;
     regex_t regex;
     int     ret;
-    char    error_buffer[BUFFER_LEN];
 
     pattern = NULL;
     parse_arguments(argc, argv, &pattern);
@@ -41,6 +40,8 @@ int main(int argc, char *argv[])
 
     if(ret != 0)
     {
+        char error_buffer[BUFFER_LEN];
+
         regerror(ret, &regex, error_buffer, sizeof(error_buffer));
         printf("Error compiling regex: %s\n", error_buffer);
         free(pattern);

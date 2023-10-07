@@ -57,7 +57,7 @@ int main(void)
     printf("My process ID is: %d\n", pid);
     printf("Sending SIGUSR1 signal to my own process...\n");
     raise(SIGUSR1);
-    printf("To send a signal:\n");
+    printf("To send a signal:\n");    // cppcheck-suppress unreachableCode
     printf("\tCtrl+C: Sends the SIGINT signal to the process.\n");
     printf("\tCtrl+Z: Sends the SIGTSTP signal to the process.\n");
     printf("\tCtrl+\\: Sends the SIGQUIT signal to the process.\n");

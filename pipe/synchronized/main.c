@@ -163,7 +163,15 @@ static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_p
 {
     ssize_t written_bytes;
 
-    printf("Child: sending word of length %u: %s\n", length, word);
+    if(word == NULL)
+    {
+        printf("Child: sending word of length 0\n");
+    }
+    else
+    {
+        printf("Child: sending word of length %u: %s\n", length, word);
+    }
+
     written_bytes = write(pipefd, &length, sizeof(length));
 
     if(written_bytes < 0)
@@ -252,12 +260,13 @@ static void parent_process(int pipefd[2], sem_t *sem_parent, sem_t *sem_child)
 {
     uint8_t length;
     char    word[MAX_WORD_LENGTH];
-    ssize_t read_bytes;
 
     close(pipefd[1]);
 
     while(1)
     {
+        ssize_t read_bytes;
+
         // Wait for child to write
         if(sem_wait(sem_parent) == -1)
         {

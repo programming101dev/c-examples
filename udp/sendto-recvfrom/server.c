@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     char                   *port_str;
     in_port_t               port;
     int                     sockfd;
-    char                    buffer[LINE_LEN];
+    char                    buffer[LINE_LEN + 1];
     ssize_t                 bytes_received;
     struct sockaddr_storage client_addr;
     socklen_t               client_addr_len;
@@ -59,14 +59,14 @@ int main(int argc, char *argv[])
     sockfd = socket_create(addr.ss_family, SOCK_DGRAM, 0);
     socket_bind(sockfd, &addr, port);
     client_addr_len = sizeof(client_addr);
-    bytes_received  = recvfrom(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_addr, &client_addr_len);
+    bytes_received  = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&client_addr, &client_addr_len);
 
     if(bytes_received == -1)
     {
         perror("recvfrom");
     }
 
-    buffer[bytes_received] = '\0';
+    buffer[(size_t)bytes_received] = '\0';
     handle_packet(sockfd, &client_addr, buffer, (size_t)bytes_received);
     socket_close(sockfd);
 

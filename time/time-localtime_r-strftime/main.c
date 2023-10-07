@@ -16,22 +16,38 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <time.h>
+
+#define BUFFER_LEN 80
 
 int main(void)
 {
-    char *tty;
+    time_t     rawtime;
+    struct tm *timeinfo;
+    struct tm  result;
+    char       buffer[BUFFER_LEN];
 
-    tty = ttyname(STDIN_FILENO);
+    if(time(&rawtime) == -1)
+    {
+        perror("Error getting current time");
+        return EXIT_FAILURE;
+    }
 
-    if(tty != NULL)
+    timeinfo = localtime_r(&rawtime, &result);
+
+    if(timeinfo == NULL)
     {
-        printf("The terminal associated with stdin is: %s\n", tty);
+        perror("Error converting to local time");
+        return EXIT_FAILURE;
     }
-    else
+
+    if(strftime(buffer, sizeof(buffer), "Formatted date: %Y-%m-%d %H:%M:%S\n", timeinfo) == 0)
     {
-        printf("stdin is not associated with a terminal.\n");
+        perror("Error formatting time");
+        return EXIT_FAILURE;
     }
+
+    printf("%s", buffer);
 
     return EXIT_SUCCESS;
 }

@@ -205,7 +205,15 @@ static void read_fully(int fd, void *buf, size_t count)
 
 static void send_word(int pipefd, const char *word, uint8_t length, sem_t *sem_parent, sem_t *sem_child)
 {
-    printf("Child: sending word of length %u: %s\n", length, word);
+    if(word == NULL)
+    {
+        printf("Child: sending word of length 0\n");
+    }
+    else
+    {
+        printf("Child: sending word of length %u: %s\n", length, word);
+    }
+
     write_fully(pipefd, &length, sizeof(length));
 
     if(length > 0)

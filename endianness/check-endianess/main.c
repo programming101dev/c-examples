@@ -44,5 +44,5 @@ static int is_little_endian(void)
     byte_ptr = (unsigned char *)&value;
 
     // If the first byte (lowest address) contains 1, the machine is little-endian
-    return (*byte_ptr == 1);
+    return (*byte_ptr == 1);    // cppcheck-suppress knownConditionTrueFalse
 }

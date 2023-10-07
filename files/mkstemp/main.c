@@ -34,6 +34,7 @@ int main(void)
     }
 
     printf("Created temporary file %s\n", templ);
+    close(fd);
 
     // Delete the temporary file using unlink
     if(unlink(templ) == -1)

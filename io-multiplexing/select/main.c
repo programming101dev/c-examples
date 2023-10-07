@@ -39,8 +39,6 @@ int main(void)
     int    sockfd;
     int   *client_sockets;
     size_t max_clients;
-    int    max_fd;
-    int    activity;
     int    new_socket;
     int    sd;
     fd_set readfds;
@@ -62,6 +60,9 @@ int main(void)
 
     while(!exit_flag)
     {
+        int max_fd;
+        int activity;
+
         // Clear the socket set
         FD_ZERO(&readfds);
 
@@ -136,7 +137,6 @@ int main(void)
             if(FD_ISSET((unsigned int)sd, &readfds))
             {
                 char    word_length;
-                char    word[MAX_WORD_LEN];
                 ssize_t valread;
 
                 // Receive the word length (uint8_t)
@@ -152,6 +152,8 @@ int main(void)
                 }
                 else
                 {
+                    char word[MAX_WORD_LEN];
+
                     // Receive the word based on the length received
                     valread = read(sd, word, (size_t)word_length);
 

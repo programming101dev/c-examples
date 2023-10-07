@@ -57,7 +57,7 @@ int main(void)
 
     if(result != NULL)
     {
-        printf("Element %d found at index %ld\n", target, result - arr);
+        printf("Element %d found at index %td\n", target, result - arr);
     }
     else
     {

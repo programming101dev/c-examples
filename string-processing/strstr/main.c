@@ -48,7 +48,7 @@ static void search_for(const char *needle, const char *haystack)
 
     if(found_substring != NULL)
     {
-        printf("Found substring '%s' at position %ld\n", needle, found_substring - haystack);
+        printf("Found substring '%s' at position %td\n", needle, found_substring - haystack);
     }
     else
     {

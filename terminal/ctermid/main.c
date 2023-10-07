@@ -21,7 +21,7 @@ int main(void)
 {
     char *terminal_name;
 
-    terminal_name = ctermid(NULL);
+    terminal_name = ctermid(NULL);    // cppcheck-suppress ctermidCalled
 
     if(*terminal_name != '\0')
     {

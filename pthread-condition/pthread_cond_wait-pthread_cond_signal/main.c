@@ -198,7 +198,6 @@ static void send_word(const char *word, struct shared_data *data)
 static void *child_process(void *arg)
 {
     FILE               *file;
-    char               *token;
     char               *saveptr;
     char                line[MAX_WORD_LENGTH];
     struct shared_data *data;
@@ -214,6 +213,8 @@ static void *child_process(void *arg)
 
     while(fgets(line, sizeof(line), file) != NULL)
     {
+        char *token;
+
         line[strcspn(line, "\n")] = '\0';    // Remove the newline character if present
         token                     = strtok_r(line, " \t", &saveptr);
 

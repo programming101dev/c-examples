@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     user_id = NULL;
     parse_arguments(argc, argv, &user_id);
     handle_arguments(argv[0], user_id, &uid);
-    user_info = getpwuid(uid);
+    user_info = getpwuid(uid);    // cppcheck-suppress getpwuidCalled
 
     if(user_info != NULL)
     {

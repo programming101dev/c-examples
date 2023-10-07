@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     group_id = NULL;
     parse_arguments(argc, argv, &group_id);
     handle_arguments(argv[0], group_id, &gid);
-    group_info = getgrgid(gid);
+    group_info = getgrgid(gid);    // cppcheck-suppress getgrgidCalled
 
     if(group_info == NULL)
     {

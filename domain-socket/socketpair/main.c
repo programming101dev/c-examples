@@ -134,7 +134,15 @@ static void send_word(int sockfd, const char *word, uint8_t length)
 {
     ssize_t written_bytes;
 
-    printf("Child: sending word of length %u: %s\n", length, word);
+    if(word == NULL)
+    {
+        printf("Child: sending word of length 0");
+    }
+    else
+    {
+        printf("Child: sending word of length %u: %s\n", length, word);
+    }
+
     written_bytes = write(sockfd, &length, sizeof(length));
 
     if(written_bytes < 0)

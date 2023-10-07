@@ -31,7 +31,7 @@ int main(void)
 
     // Rewind the group database
     setgrent();
-    entry = getgrent();
+    entry = getgrent();    // cppcheck-suppress getgrentCalled
 
     if(entry != NULL)
     {
@@ -47,7 +47,7 @@ static void print_entries(void)
 {
     struct group *entry;
 
-    while((entry = getgrent()) != NULL)
+    while((entry = getgrent()) != NULL)    // cppcheck-suppress getgrentCalled
     {
         print_entry(entry);
     }

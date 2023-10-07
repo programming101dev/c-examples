@@ -41,7 +41,6 @@ int main(void)
 {
     int           *client_sockets;
     nfds_t         max_clients;
-    int            num_ready;
     int            sockfd;
     struct pollfd *fds;
 
@@ -64,6 +63,7 @@ int main(void)
     while(!exit_flag)
     {
         struct pollfd *temp_fds;
+        int            num_ready;
 
         temp_fds = (struct pollfd *)realloc(fds, (max_clients + 1) * sizeof(struct pollfd));
 
@@ -193,7 +193,6 @@ static void handle_new_client(int server_socket, int **client_sockets, nfds_t *m
 static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients)
 {
     char    word_length;
-    char    word[MAX_WORD_LEN];
     ssize_t valread;
 
     valread = read(sd, &word_length, sizeof(word_length));
@@ -216,6 +215,8 @@ static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_c
     }
     else
     {
+        char word[MAX_WORD_LEN];
+
         // Receive the word based on the length received
         valread = read(sd, word, (size_t)word_length);
 

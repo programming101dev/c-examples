@@ -62,7 +62,14 @@ static void print_array(const int *arr, size_t size)
 {
     for(size_t i = 0; i < size; i++)
     {
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
+#endif
         printf("%d ", arr[i]);    // NOLINT(clang-analyzer-core.CallAndMessage)
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
     }
 
     printf("\n");

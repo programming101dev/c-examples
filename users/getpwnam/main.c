@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     user_name = NULL;
     parse_arguments(argc, argv, &user_name);
     handle_arguments(argv[0], user_name);
-    user_info = getpwnam(user_name);
+    user_info = getpwnam(user_name);    // cppcheck-suppress getpwnamCalled
 
     if(user_info != NULL)
     {

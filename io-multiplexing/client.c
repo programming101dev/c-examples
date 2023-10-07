@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
     FILE *file;
     int   sockfd;
     char  line[LINE_LEN];
+    char *saveptr;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     {
         char *word;
 
-        word = strtok(line, " \t\n");
+        word = strtok_r(line, " \t\n", &saveptr);
 
         while(word != NULL)
         {
@@ -85,7 +86,7 @@ int main(int argc, char *argv[])
 
             size = (uint8_t)word_len;
             send_word(sockfd, word, size);
-            word = strtok(NULL, " \t\n");
+            word = strtok_r(NULL, " \t\n", &saveptr);
         }
     }
 

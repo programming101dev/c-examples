@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    while((entry = readdir(dir)) != NULL)
+    while((entry = readdir(dir)) != NULL)    // cppcheck-suppress readdirCalled
     {
         printf("Name: %s\n", entry->d_name);
         printf("Inode number: " D_INO_FORMAT "\n", entry->d_ino);

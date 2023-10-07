@@ -124,7 +124,7 @@ static void search_for(char needle, const char *haystack)
 
     if(found_char != NULL)
     {
-        printf("Found character '%c' at position %ld\n", needle, found_char - haystack);
+        printf("Found character '%c' at position %td\n", needle, found_char - haystack);
     }
     else
     {

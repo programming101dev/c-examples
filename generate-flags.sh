@@ -880,7 +880,7 @@ SANITIZER_FLAGS=(
     "-fno-delete-null-pointer-checks"
     "-fno-omit-frame-pointer"
     "-fstrict-flex-arrays"
-    "-fsanitize-coverage=trace-cmp"
+#    "-fsanitize-coverage=trace-cmp"
 #    "-fsanitize-coverage=trace-pc"
 #    "-finstrument-functions"
 )

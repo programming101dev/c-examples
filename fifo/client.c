@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     int   fd;
     FILE *file;
     char  line[LINE_LEN];
+    char *saveptr;
 
     file_path = NULL;
     parse_arguments(argc, argv, &file_path);
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
     {
         char *word;
 
-        word = strtok(line, " \t\n");
+        word = strtok_r(line, " \t\n", &saveptr);
 
         while(word != NULL)
         {
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
 
             // Write the word
             write(fd, word, word_len);
-            word = strtok(NULL, " \t\n");
+            word = strtok_r(NULL, " \t\n", &saveptr);
         }
     }
 

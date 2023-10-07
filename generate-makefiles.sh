@@ -78,7 +78,7 @@ generate_makefile()
 
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename-traceaable$SHARED_EXT: $file" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS)  -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -Wno-strict-flex-arrays -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename-traceaable$SHARED_EXT\n" >> Makefile
             else
                 if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
@@ -102,7 +102,7 @@ generate_makefile()
                 # Generate a traceable version rule
                 echo -e "$filename-traceable: $file" >> Makefile
                 echo -e "\t@echo \"Compiling $file -> $filename-traceable\"" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -Wno-strict-flex-arrays -I/usr/local/include -I/usr/local/include -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
                 echo -e "PROGRAMS += $filename-traceable" >> Makefile
 
                 if [ -n "$BINARY_EXT" ]; then

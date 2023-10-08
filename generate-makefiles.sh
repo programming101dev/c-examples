@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 
+# Function to display usage information
+usage() {
+    echo "Usage: $0 -c <compiler>"
+    exit 1
+}
+
+# Parse command-line options
+while getopts "c:" opt; do
+    case $opt in
+        c)
+            CC="$OPTARG"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+
+# Check if CC is empty
+if [ -z "$CC" ]; then
+    usage
+fi
+
 # Function to determine the platform and set the shared library extension accordingly
 get_shared_lib_extension() {
     case "$(uname -s)" in

@@ -863,7 +863,6 @@ SANITIZER_FLAGS=(
     "-fsanitize=bounds"
     "-fsanitize=bounds-strict"
     "-fsanitize=alignment"
-    "-fsanitize=object-size"
     "-fsanitize=float-divide-by-zero"
     "-fsanitize=float-cast-overflow"
     "-fsanitize=nonnull-attribute"

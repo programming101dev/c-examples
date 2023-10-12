@@ -55,7 +55,14 @@ int main(int argc, char *argv[])
     strncpy(redirected_command, command, command_len);
     redirected_command[command_len] = '\0';
     remaining_len                   = total_len - command_len;
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
     strncat(redirected_command, redirect, remaining_len);
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
     fp = popen(redirected_command, "r");
     free(redirected_command);
 

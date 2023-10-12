@@ -17,6 +17,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 static void           parse_arguments(int argc, char *argv[], char **file_path);
@@ -110,15 +111,16 @@ static void check_file_access(const char *filename, int mode, const char *access
     }
     else
     {
-        if(errno == EACCES)
+        if(errno == EACCES || errno == EROFS)
         {
-            printf("Access denied: %s is not %s.\n", filename, access_msg);
+            printf("%s is not %s.\n", filename, access_msg);
         }
         else
         {
-            perror("Error accessing file");
-        }
+            const char *msg;
 
-        exit(EXIT_FAILURE);
+            msg = strerror(errno);
+            fprintf(stderr, "Error (%d) accessing %s: %s\n", errno, filename, msg);
+        }
     }
 }

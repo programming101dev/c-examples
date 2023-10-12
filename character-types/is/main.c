@@ -54,7 +54,7 @@ int main(void)
     };
     int total_width;
 
-    total_width = printf("Char | Binary | Oct | Dec | Hex | ");
+    total_width = printf("Char | Binary | Oct | Dec | Hex |");
 
     for(size_t i = 0; i < sizeof(info) / sizeof(info[0]); i++)
     {
@@ -62,7 +62,7 @@ int main(void)
         char   format[FORMAT_WIDTH];
 
         width = strlen(info[i].name);
-        snprintf(format, sizeof(format), "%%-%zus | ", width);
+        snprintf(format, sizeof(format), " %%-%zus |", width);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
         total_width += printf(format, info[i].name);

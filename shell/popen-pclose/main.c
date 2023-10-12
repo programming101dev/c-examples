@@ -50,7 +50,8 @@ int main(int argc, char *argv[])
     }
 
     strncpy(redirected_command, command, command_len);
-    strncpy(redirected_command + command_len, redirect, redirect_len);
+    redirected_command[command_len] = '\0';
+    strncat(redirected_command, redirect, redirect_len);
     redirected_command[command_len + redirect_len] = '\0';
     fp                                             = popen(redirected_command, "r");
     free(redirected_command);

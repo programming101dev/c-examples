@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
     char             *redirected_command;
     size_t            command_len;
     size_t            redirect_len;
+    size_t            total_len;
+    size_t            remaining_len;
     char              buffer[BUFFER_LEN];
     FILE             *fp;
 
@@ -41,6 +43,7 @@ int main(int argc, char *argv[])
     handle_arguments(argv[0], command);
     command_len        = strlen(command);
     redirect_len       = strlen(redirect);
+    total_len          = command_len + redirect_len;
     redirected_command = (char *)malloc(command_len + redirect_len + 1);
 
     if(redirected_command == NULL)
@@ -50,9 +53,17 @@ int main(int argc, char *argv[])
     }
 
     strncpy(redirected_command, command, command_len);
-    strncpy(redirected_command + command_len, redirect, redirect_len);
-    redirected_command[command_len + redirect_len] = '\0';
-    fp                                             = popen(redirected_command, "r");
+    redirected_command[command_len] = '\0';
+    remaining_len                   = total_len - command_len;
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
+    strncat(redirected_command, redirect, remaining_len);
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
+    fp = popen(redirected_command, "r");
     free(redirected_command);
 
     if(fp == NULL)

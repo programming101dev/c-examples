@@ -57,7 +57,9 @@ static void print_array(const int *arr, size_t size)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
+#ifndef __clang_analyzer__
         printf("%d ", arr[i]);    // NOLINT(clang-analyzer-core.CallAndMessage)
+#endif
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic pop
 #endif

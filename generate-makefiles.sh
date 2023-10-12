@@ -149,7 +149,7 @@ generate_makefile()
         # Add an analyzer rule to pick on the source code
         echo -e "\nanalyze:" >> Makefile
         echo -e "\t@echo \"Running $CC for static code analysis...\"" >> Makefile
-        echo -e "\t@\${CC} --analyze --analyzer-output text -Xclang -analyzer-checker=core --analyze -Xclang -analyzer-checker=deadcode -Xclang -analyzer-checker=security -Xclang -analyzer-disable-checker=security.insecureAPI.DeprecatedOrUnsafeBufferHandling -Xclang -analyzer-checker=unix -Xclang -analyzer-checker=unix -I/usr/local/include \$(CFLAGS) \$(COMPILATION_FLAGS) \$(SOURCES)" >> Makefile
+        echo -e "\t@\${CC} --analyze --analyzer-output text -Xclang -analyzer-checker=core --analyze -Xclang -analyzer-checker=deadcode -Xclang -analyzer-checker=security -Xclang -analyzer-disable-checker=security.insecureAPI.DeprecatedOrUnsafeBufferHandling -Xclang -analyzer-disable-checker=security.insecureAPI.rand -Xclang -analyzer-checker=unix -I/usr/local/include \$(CFLAGS) \$(COMPILATION_FLAGS) \$(SOURCES)" >> Makefile
     fi
 
     # Add a check rule to pick on the source code

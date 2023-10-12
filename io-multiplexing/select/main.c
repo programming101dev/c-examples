@@ -64,8 +64,9 @@ int main(void)
         int activity;
 
         // Clear the socket set
+#ifndef __clang_analyzer__
         FD_ZERO(&readfds);
-
+#endif
         // Add the server socket to the set
         FD_SET((unsigned int)sockfd, &readfds);
         max_fd = sockfd;

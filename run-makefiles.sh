@@ -4,6 +4,11 @@
 run_make() {
     local current_dir="$1"
 
+    # Check if the directory name ends with ".dSYM" and skip it
+    if [[ "$(basename "$current_dir")" == *".dSYM" ]]; then
+        return
+    fi
+
     echo -e "\nCompiling: $current_dir"
 
     # Check if a Makefile exists in the current directory

@@ -31,13 +31,17 @@ int main(int argc, char *argv[])
     const char *const redirect = " 2>&1";
     char             *command;
     char             *redirected_command;
+    size_t            command_len;
+    size_t            redirect_len;
     char              buffer[BUFFER_LEN];
     FILE             *fp;
 
     command = NULL;
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
-    redirected_command = (char *)malloc(strlen(command) + strlen(redirect) + 1);
+    command_len        = strlen(command);
+    redirect_len       = strlen(redirect);
+    redirected_command = (char *)malloc(command_len + redirect_len + 1);
 
     if(redirected_command == NULL)
     {
@@ -45,9 +49,10 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    strcpy(redirected_command, command);
-    strcat(redirected_command, redirect);
-    fp = popen(redirected_command, "r");
+    strncpy(redirected_command, command, command_len);
+    strncpy(redirected_command + command_len, redirect, redirect_len);
+    redirected_command[command_len + redirect_len] = '\0';
+    fp                                             = popen(redirected_command, "r");
     free(redirected_command);
 
     if(fp == NULL)

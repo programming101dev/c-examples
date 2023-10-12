@@ -107,15 +107,21 @@ int main(int argc, char *argv[])
 
         while(word != NULL)
         {
-            if(strlen(word) >= SHM_SIZE)
+            size_t len;
+
+            len = strlen(word);
+
+            if(len >= SHM_SIZE - 1)
             {
                 fprintf(stderr, "Word too long for shared memory: %s\n", word);
                 exit(EXIT_FAILURE);
             }
 
             // Copy the word into shared memory
-            strcpy(shm_ptr, word);
-            printf("Client is copying \"%s\" to shared memory\n", word);
+            strncpy(shm_ptr, word, len);
+            shm_ptr[len] = '\0';
+
+            //            printf("Client is copying \"%s\" to shared memory\n", word);
 
             // Signal the server that a word is ready
             sem_post(client_sem);
@@ -129,7 +135,7 @@ int main(int argc, char *argv[])
     }
 
     // Signal the server that the client is done
-    strcpy(shm_ptr, "");
+    shm_ptr[0] = '\0';
     sem_post(client_sem);
 
     // Wait for the server to acknowledge that it has finished processing

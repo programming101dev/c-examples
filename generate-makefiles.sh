@@ -104,15 +104,6 @@ generate_makefile()
                 echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -Wno-strict-flex-arrays -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename-traceaable$SHARED_EXT\n" >> Makefile
             else
-                if [[ "$second_to_last_dir/$last_dir/$file" == "memory/malloc-free/main.c" || "$second_to_last_dir/$last_dir/$file" == "memory/memset/main.c" ]]; then
-                    if is_flag_supported "-Wno-analyzer-use-of-uninitialized-value"; then
-                        echo -e "SUPPORTED_ANALYZER_FLAGS+=-Wno-analyzer-use-of-uninitialized-value" >> Makefile
-                    fi
-                    if is_flag_supported "-Wno-sometimes-uninitialized"; then
-                        echo -e "SUPPORTED_ANALYZER_FLAGS+=-Wno-sometimes-uninitialized" >> Makefile
-                     fi
-                fi
-
                 echo "SOURCES += $filename.c" >> Makefile
 
                 # Generate an executable rule with the supported warning flags
@@ -184,10 +175,19 @@ process_directories()
     # Loop through each subdirectory
     for subdir in "$dir"/*/; do
         if [[ -d "$subdir" ]]; then
-            # Check if there are .c files in the subdirectory
-            if [[ -n $(find "$subdir" -maxdepth 1 -name "*.c" -print -quit) ]]; then
-                # Generate Makefile in the subdirectory
-                (cd "$subdir" && generate_makefile)
+            echo "$subdir"
+            # Check if the directory is not tracked by Git
+            if ! git ls-files --error-unmatch "$subdir" >/dev/null 2>&1; then
+                echo "*******************************************************************************"
+                # Delete the directory and its contents
+                rm -rf "$subdir"
+                echo "Deleted '$subdir'"
+            else
+                # Check if there are .c files in the subdirectory
+                if [[ -n $(find "$subdir" -maxdepth 1 -name "*.c" -print -quit) ]]; then
+                    # Generate Makefile in the subdirectory
+                    (cd "$subdir" && generate_makefile)
+                fi
             fi
 
             # Recursively process subdirectories

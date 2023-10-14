@@ -82,7 +82,7 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    // TODO    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long) file_stat.st_size);
+    fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long)file_stat.st_size);
 
     // Cleanup: remove the temporary file
     if(unlink(templ) == -1)

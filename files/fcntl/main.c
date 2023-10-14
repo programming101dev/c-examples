@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     }
 
     // Read from the file (will not block due to O_NONBLOCK)
-    bytesRead = read(fd, buffer, sizeof(buffer));
+    bytesRead = read(fd, buffer, sizeof(buffer) - 1);
 
     if(bytesRead == -1)
     {

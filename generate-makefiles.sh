@@ -1,26 +1,53 @@
 #!/usr/bin/env bash
 
-# Function to display usage information
-usage() {
-    echo "Usage: $0 -c <compiler>"
+set -e
+
+c_compiler=""
+clang_format_name="clang-format"
+clang_tidy_name="clang-tidy"
+cppcheck_name="cppcheck"
+
+# Function to display script usage
+usage()
+{
+    echo "Usage: $0 -c <C compiler> [-f <clang-format>] [-t <clang-tidy>] [-k <cppcheck>]"
+    echo "  -c c compiler     Specify the c compiler name (e.g. gcc or clang)"
+    echo "  -f clang-format   Specify the clang-format name (e.g. clang-tidy or clang-tidy-17)"
+    echo "  -t clang-tidy     Specify the clang-tidy name (e.g. clang-tidy or clang-tidy-17)"
+    echo "  -k cppcheck       Specify the cppcheck name (e.g. cppcheck)"
     exit 1
 }
 
-# Parse command-line options
-while getopts "c:" opt; do
-    case $opt in
-        c)
-            CC="$OPTARG"
-            ;;
-        *)
-            usage
-            ;;
-    esac
+# Parse command-line options using getopt
+while getopts ":c:f:t:k:" opt; do
+  case $opt in
+    c)
+      c_compiler="$OPTARG"
+      ;;
+    f)
+      clang_format_name="$OPTARG"
+      ;;
+    t)
+      clang_tidy_name="$OPTARG"
+      ;;
+    k)
+      cppcheck_name="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      usage
+      ;;
+  esac
 done
 
-# Check if CC is empty
-if [ -z "$CC" ]; then
-    usage
+# Check if the compiler argument is provided
+if [ -z "$c_compiler" ]; then
+  echo "Error: c compiler argument (-c) is required."
+  usage
 fi
 
 # Function to determine the platform and set the shared library extension accordingly
@@ -66,7 +93,7 @@ generate_makefile()
 
     # Initialize the Makefile
     echo -e ".PHONY: main main-traceable clean lint all\n" > Makefile
-    echo -e "CC=$CC" >> Makefile
+    echo -e "CC=$c_compiler" >> Makefile
     echo -e "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror" >> Makefile
     echo -e "SUPPORTED_WARNING_FLAGS=$SUPPORTED_WARNING_FLAGS" >> Makefile
     echo -e "SUPPORTED_SANITIZER_FLAGS=$SUPPORTED_SANITIZER_FLAGS" >> Makefile
@@ -129,14 +156,14 @@ generate_makefile()
     # Add a format rule to format the source code
     echo -e "format:" >> Makefile
     echo -e "\t@echo \"Formatting source code...\"" >> Makefile
-	  echo -e "\t@clang-format -i --style=file \$(SOURCES)" >> Makefile
+	  echo -e "\t@$clang_format_name -i --style=file \$(SOURCES)" >> Makefile
 
     # Add a lint rule to pick on the source code
     echo -e "\nlint:" >> Makefile
     echo -e "\t@echo \"Running clang-tidy for static code analysis...\"" >> Makefile
-	  echo -e "\t@clang-tidy \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) -I/usr/local/include" >> Makefile
+	  echo -e "\t@$clang_tidy_name \$(SOURCES) -quiet --warnings-as-errors='*' \$(CLANG_TIDY_CHECKS) -- \$(COMPILATION_FLAGS) \$(CFLAGS) -I/usr/local/include" >> Makefile
 
-    if [[ "$CC" == *clang* ]]; then
+    if [[ "$c_compiler" == *clang* ]]; then
         # Add an analyzer rule to pick on the source code
         echo -e "\nanalyze:" >> Makefile
         echo -e "\t@echo \"Running $CC for static code analysis...\"" >> Makefile
@@ -146,7 +173,7 @@ generate_makefile()
     # Add a check rule to pick on the source code
     echo -e "\ncheck:" >> Makefile
     echo -e "\t@echo \"Running cppcheck for static code analysis...\"" >> Makefile
-    echo -e "\t@cppcheck --error-exitcode=1 --force --quiet --inline-suppr --library=posix --enable=all --suppress=missingIncludeSystem --suppress=ConfigurationNotChecked --suppress=unmatchedSuppression -I/usr/local/include \${SOURCES}" >> Makefile
+    echo -e "\t@$cppcheck_name --error-exitcode=1 --force --quiet --inline-suppr --library=posix --enable=all --suppress=missingIncludeSystem --suppress=ConfigurationNotChecked --suppress=unmatchedSuppression -I/usr/local/include \${SOURCES}" >> Makefile
 
     # Add a clean rule to be picky about the code
     echo -e "\nclean:" >> Makefile
@@ -157,7 +184,7 @@ generate_makefile()
     fi
 
     # Add an "all" rule to build all programs and libraries
-    if [[ "$CC" == *clang* ]]; then
+    if [[ "$c_compiler" == *clang* ]]; then
         echo -e "\nall: format \$(PROGRAMS) \$(LIBS) lint analyze check" >> Makefile
     else
         echo -e "\nall: format \$(PROGRAMS) \$(LIBS) lint check" >> Makefile
@@ -178,7 +205,6 @@ process_directories()
             echo "$subdir"
             # Check if the directory is not tracked by Git
             if ! git ls-files --error-unmatch "$subdir" >/dev/null 2>&1; then
-                echo "*******************************************************************************"
                 # Delete the directory and its contents
                 rm -rf "$subdir"
                 echo "Deleted '$subdir'"
@@ -199,18 +225,18 @@ process_directories()
 # Main script execution starts here
 
 # Echo the value of the CC variable
-echo "CC is set to: $CC"
+echo "c_compiler is set to: $c_compiler"
 
-SUPPORTED_WARNING_FLAGS=$(cat "$CC"_warning_flags.txt)
-SUPPORTED_SANITIZER_FLAGS=$(cat "$CC"_sanitizer_flags.txt)
-SUPPORTED_ANALYZER_FLAGS=$(cat "$CC"_analyzer_flags.txt)
-SUPPORTED_DEBUG_FLAGS=$(cat "$CC"_debug_flags.txt)
+SUPPORTED_WARNING_FLAGS=$(cat "$c_compiler"_warning_flags.txt)
+SUPPORTED_SANITIZER_FLAGS=$(cat "$c_compiler"_sanitizer_flags.txt)
+SUPPORTED_ANALYZER_FLAGS=$(cat "$c_compiler"_analyzer_flags.txt)
+SUPPORTED_DEBUG_FLAGS=$(cat "$c_compiler"_debug_flags.txt)
 
 # Determine the shared library extension based on the platform
 get_shared_lib_extension
 
 # Call the function to populate the supported flags
-populate_supported_flags
+# populate_supported_flags
 
 # Start processing directories from the current directory
 process_directories "."

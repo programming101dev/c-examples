@@ -227,16 +227,13 @@ process_directories()
 # Echo the value of the CC variable
 echo "c_compiler is set to: $c_compiler"
 
-SUPPORTED_WARNING_FLAGS=$(cat "$c_compiler"_warning_flags.txt)
-SUPPORTED_SANITIZER_FLAGS=$(cat "$c_compiler"_sanitizer_flags.txt)
-SUPPORTED_ANALYZER_FLAGS=$(cat "$c_compiler"_analyzer_flags.txt)
-SUPPORTED_DEBUG_FLAGS=$(cat "$c_compiler"_debug_flags.txt)
+SUPPORTED_WARNING_FLAGS=$(cat "../flags/${c_compiler}/warning_flags.txt")
+SUPPORTED_SANITIZER_FLAGS=$(cat "../flags/${c_compiler}/sanitizer_flags.txt")
+SUPPORTED_ANALYZER_FLAGS=$(cat "../flags/${c_compiler}/analyzer_flags.txt")
+SUPPORTED_DEBUG_FLAGS=$(cat "../flags/${c_compiler}/debug_flags.txt")
 
 # Determine the shared library extension based on the platform
 get_shared_lib_extension
-
-# Call the function to populate the supported flags
-# populate_supported_flags
 
 # Start processing directories from the current directory
 process_directories "."

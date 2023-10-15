@@ -35,11 +35,7 @@ int main(void)
     // Convert IPv4 address from string to binary format (network byte order)
     if(inet_pton(AF_INET, ipv4_address_str, &ipv4_addr) == 1)
     {
-        printf("IPv4 Address: %u.%u.%u.%u\n",
-               (unsigned char)ipv4_addr.s_addr,
-               (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_8),
-               (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_16),
-               (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_24));
+        printf("IPv4 Address: %u.%u.%u.%u\n", (unsigned char)ipv4_addr.s_addr, (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_8), (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_16), (unsigned char)(ipv4_addr.s_addr >> BITS_TO_SHIFT_24));
     }
     else
     {

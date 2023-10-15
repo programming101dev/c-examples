@@ -268,10 +268,7 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
     char      addr_str[INET6_ADDRSTRLEN];
     in_port_t net_port;
 
-    if(inet_ntop(addr->ss_family,
-                 addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr),
-                 addr_str,
-                 sizeof(addr_str)) == NULL)
+    if(inet_ntop(addr->ss_family, addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr), addr_str, sizeof(addr_str)) == NULL)
     {
         perror("inet_ntop");
         exit(EXIT_FAILURE);

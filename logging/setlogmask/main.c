@@ -36,8 +36,7 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &log_name);
     handle_arguments(argv[0], log_name);
     openlog(log_name, LOG_PID, LOG_USER);
-    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) | LOG_MASK(LOG_INFO) |
-           LOG_MASK(LOG_DEBUG);
+    mask = LOG_MASK(LOG_EMERG) | LOG_MASK(LOG_ALERT) | LOG_MASK(LOG_CRIT) | LOG_MASK(LOG_ERR) | LOG_MASK(LOG_WARNING) | LOG_MASK(LOG_NOTICE) | LOG_MASK(LOG_INFO) | LOG_MASK(LOG_DEBUG);
 
     if(setlogmask(mask) == -1)
     {

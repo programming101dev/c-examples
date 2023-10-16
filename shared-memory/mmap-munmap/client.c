@@ -118,7 +118,14 @@ int main(int argc, char *argv[])
             }
 
             // Copy the word into shared memory
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
             strncpy(shm_ptr, word, len);
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
             shm_ptr[len] = '\0';
 
             //            printf("Client is copying \"%s\" to shared memory\n", word);

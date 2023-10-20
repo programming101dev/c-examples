@@ -22,9 +22,9 @@
 
 struct func_info
 {
-    int (*func)(int ch);
     const char *name;
-    void (*print_info)(const struct func_info *info, int ch);
+    int         (*func)(int ch);
+    void        (*print_info)(const struct func_info *info, int ch);
 };
 
 static void print_binary(unsigned int ch, unsigned int width);
@@ -37,20 +37,20 @@ static void print_info_char(const struct func_info *info, int ch);
 int main(void)
 {
     static struct func_info info[] = {
-        {isalnum,  "alnum",  print_info_bool},
-        {isalpha,  "alpha",  print_info_bool},
-        {isblank,  "blank",  print_info_bool},
-        {iscntrl,  "cntrl",  print_info_bool},
-        {isdigit,  "digit",  print_info_bool},
-        {isgraph,  "graph",  print_info_bool},
-        {islower,  "lower",  print_info_bool},
-        {isprint,  "print",  print_info_bool},
-        {ispunct,  "punct",  print_info_bool},
-        {isspace,  "space",  print_info_bool},
-        {isupper,  "upper",  print_info_bool},
-        {isxdigit, "xdigit", print_info_bool},
-        {toupper,  "upper",  print_info_char},
-        {tolower,  "lower",  print_info_char},
+        {"alnum",  isalnum,  print_info_bool},
+        {"alpha",  isalpha,  print_info_bool},
+        {"blank",  isblank,  print_info_bool},
+        {"cntrl",  iscntrl,  print_info_bool},
+        {"digit",  isdigit,  print_info_bool},
+        {"graph",  isgraph,  print_info_bool},
+        {"lower",  islower,  print_info_bool},
+        {"print",  isprint,  print_info_bool},
+        {"punct",  ispunct,  print_info_bool},
+        {"space",  isspace,  print_info_bool},
+        {"upper",  isupper,  print_info_bool},
+        {"xdigit", isxdigit, print_info_bool},
+        {"upper",  toupper,  print_info_char},
+        {"lower",  tolower,  print_info_char},
     };
     int total_width;
 

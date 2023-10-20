@@ -28,10 +28,10 @@
 
 struct socket_option
 {
+    const char *name;
     int         level;
     int         option;
-    const char *name;
-    void (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
+    void       (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
 };
 
 static void           parse_arguments(int argc, char *argv[], char **address, char **port);
@@ -65,22 +65,22 @@ int main(int argc, char *argv[])
     int                     sockfd;
     struct sockaddr_storage addr;
     struct socket_option    options[] = {
-        {IPPROTO_TCP, SO_ACCEPTCONN, "SO_ACCEPTCONN", print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_BROADCAST,  "SO_BROADCAST",  print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_DEBUG,      "SO_DEBUG",      print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_DONTROUTE,  "SO_DONTROUTE",  print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_ERROR,      "SO_ERROR",      print_socket_opt_int    },
-        {SOL_SOCKET,  SO_KEEPALIVE,  "SO_KEEPALIVE",  print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_LINGER,     "SO_LINGER",     print_socket_opt_linger },
-        {SOL_SOCKET,  SO_OOBINLINE,  "SO_OOBINLINE",  print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_RCVBUF,     "SO_RCVBUF",     print_socket_opt_int    },
-        {SOL_SOCKET,  SO_RCVLOWAT,   "SO_RCVLOWAT",   print_socket_opt_int    },
-        {SOL_SOCKET,  SO_RCVTIMEO,   "SO_RCVTIMEO",   print_socket_opt_timeval},
-        {SOL_SOCKET,  SO_REUSEADDR,  "SO_REUSEADDR",  print_socket_opt_bool   },
-        {SOL_SOCKET,  SO_SNDBUF,     "SO_SNDBUF",     print_socket_opt_int    },
-        {SOL_SOCKET,  SO_SNDLOWAT,   "SO_SNDLOWAT",   print_socket_opt_int    },
-        {SOL_SOCKET,  SO_SNDTIMEO,   "SO_SNDTIMEO",   print_socket_opt_timeval},
-        {SOL_SOCKET,  SO_TYPE,       "SO_TYPE",       print_socket_opt_int    },
+        {"SO_ACCEPTCONN", IPPROTO_TCP, SO_ACCEPTCONN, print_socket_opt_bool   },
+        {"SO_BROADCAST",  SOL_SOCKET,  SO_BROADCAST,  print_socket_opt_bool   },
+        {"SO_DEBUG",      SOL_SOCKET,  SO_DEBUG,      print_socket_opt_bool   },
+        {"SO_DONTROUTE",  SOL_SOCKET,  SO_DONTROUTE,  print_socket_opt_bool   },
+        {"SO_ERROR",      SOL_SOCKET,  SO_ERROR,      print_socket_opt_int    },
+        {"SO_KEEPALIVE",  SOL_SOCKET,  SO_KEEPALIVE,  print_socket_opt_bool   },
+        {"SO_LINGER",     SOL_SOCKET,  SO_LINGER,     print_socket_opt_linger },
+        {"SO_OOBINLINE",  SOL_SOCKET,  SO_OOBINLINE,  print_socket_opt_bool   },
+        {"SO_RCVBUF",     SOL_SOCKET,  SO_RCVBUF,     print_socket_opt_int    },
+        {"SO_RCVLOWAT",   SOL_SOCKET,  SO_RCVLOWAT,   print_socket_opt_int    },
+        {"SO_RCVTIMEO",   SOL_SOCKET,  SO_RCVTIMEO,   print_socket_opt_timeval},
+        {"SO_REUSEADDR",  SOL_SOCKET,  SO_REUSEADDR,  print_socket_opt_bool   },
+        {"SO_SNDBUF",     SOL_SOCKET,  SO_SNDBUF,     print_socket_opt_int    },
+        {"SO_SNDLOWAT",   SOL_SOCKET,  SO_SNDLOWAT,   print_socket_opt_int    },
+        {"SO_SNDTIMEO",   SOL_SOCKET,  SO_SNDTIMEO,   print_socket_opt_timeval},
+        {"SO_TYPE",       SOL_SOCKET,  SO_TYPE,       print_socket_opt_int    },
     };
 
     address  = NULL;

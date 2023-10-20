@@ -417,8 +417,22 @@ static void setup_signal_handler(void)
 
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr, const char *message)
 {
-    // TODO: check for error, also use write_fully
-    write(client_sockfd, message, strlen(message) + 1);
+    size_t len;
+
+    len = strlen(message);
+
+    for(size_t i = 0; i < len; i++)
+    {
+        ssize_t nwritten;
+
+        nwritten = write(client_sockfd, &message[i], sizeof(message[i]));
+
+        if(nwritten == -1)
+        {
+            perror("write");
+            exit(EXIT_FAILURE);
+        }
+    }
 }
 
 #pragma GCC diagnostic pop

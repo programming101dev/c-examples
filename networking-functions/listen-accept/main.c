@@ -432,6 +432,8 @@ static void handle_connection(int client_sockfd, struct sockaddr_storage *client
             perror("write");
             exit(EXIT_FAILURE);
         }
+
+        sleep(1);
     }
 }
 

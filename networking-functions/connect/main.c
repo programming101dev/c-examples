@@ -168,6 +168,11 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
     {
         addr->ss_family = AF_INET6;
     }
+    else
+    {
+        fprintf(stderr, "%s is not an IPv4 or an IPv6 address\n", address);
+        exit(EXIT_FAILURE);
+    }
 }
 
 static int socket_create(int domain, int type, int protocol)

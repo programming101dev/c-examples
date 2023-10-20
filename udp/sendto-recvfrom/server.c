@@ -189,6 +189,11 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
     {
         addr->ss_family = AF_INET6;
     }
+    else
+    {
+        fprintf(stderr, "%s is not an IPv4 or an IPv6 address\n", address);
+        exit(EXIT_FAILURE);
+    }
 }
 
 static int socket_create(int domain, int type, int protocol)
@@ -209,15 +214,10 @@ static int socket_create(int domain, int type, int protocol)
 static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port)
 {
     char      addr_str[INET6_ADDRSTRLEN];
+    socklen_t addr_len;
+    void     *vaddr;
     in_port_t net_port;
 
-    if(inet_ntop(addr->ss_family, addr->ss_family == AF_INET ? (void *)&(((struct sockaddr_in *)addr)->sin_addr) : (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr), addr_str, sizeof(addr_str)) == NULL)
-    {
-        perror("inet_ntop");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Binding to: %s:%u\n", addr_str, port);
     net_port = htons(port);
 
     if(addr->ss_family == AF_INET)
@@ -225,24 +225,37 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
         struct sockaddr_in *ipv4_addr;
 
         ipv4_addr           = (struct sockaddr_in *)addr;
+        addr_len            = sizeof(*ipv4_addr);
         ipv4_addr->sin_port = net_port;
+        vaddr               = (void *)&(((struct sockaddr_in *)addr)->sin_addr);
     }
     else if(addr->ss_family == AF_INET6)
     {
         struct sockaddr_in6 *ipv6_addr;
 
         ipv6_addr            = (struct sockaddr_in6 *)addr;
+        addr_len             = sizeof(*ipv6_addr);
         ipv6_addr->sin6_port = net_port;
+        vaddr                = (void *)&(((struct sockaddr_in6 *)addr)->sin6_addr);
     }
     else
     {
-        fprintf(stderr, "Invalid address family: %d\n", addr->ss_family);
+        fprintf(stderr, "Internal error: addr->ss_family must be AF_INET or AF_INET6, was: %d\n", addr->ss_family);
         exit(EXIT_FAILURE);
     }
 
-    if(bind(sockfd, (struct sockaddr *)addr, sizeof(*addr)) == -1)
+    if(inet_ntop(addr->ss_family, vaddr, addr_str, sizeof(addr_str)) == NULL)
+    {
+        perror("inet_ntop");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Binding to: %s:%u\n", addr_str, port);
+
+    if(bind(sockfd, (struct sockaddr *)addr, addr_len) == -1)
     {
         perror("Binding failed");
+        fprintf(stderr, "Error code: %d\n", errno);
         exit(EXIT_FAILURE);
     }
 

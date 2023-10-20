@@ -165,13 +165,16 @@ static void convert_address(const char *address, struct sockaddr_storage *addr)
 
     if(inet_pton(AF_INET, address, &(((struct sockaddr_in *)addr)->sin_addr)) == 1)
     {
-        // IPv4 address
         addr->ss_family = AF_INET;
     }
     else if(inet_pton(AF_INET6, address, &(((struct sockaddr_in6 *)addr)->sin6_addr)) == 1)
     {
-        // IPv6 address
         addr->ss_family = AF_INET6;
+    }
+    else
+    {
+        fprintf(stderr, "%s is not an IPv4 or an IPv6 address\n", address);
+        exit(EXIT_FAILURE);
     }
 }
 

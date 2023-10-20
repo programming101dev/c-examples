@@ -30,8 +30,8 @@
 
 static void           setup_signal_handler(void);
 static void           sigint_handler(int signum);
-static void           parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog);
-static void           handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog);
+static void           parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog, char **msg);
+static void           handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog, const char *message);
 static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 static int            parse_positive_int(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
@@ -40,7 +40,7 @@ static int            socket_create(int domain, int type, int protocol);
 static void           socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
 static void           start_listening(int server_fd, int backlog);
 static int            socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len);
-static void           handle_connection(int client_sockfd, struct sockaddr_storage *client_addr);
+static void           handle_connection(int client_sockfd, struct sockaddr_storage *client_addr, const char *message);
 static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     char                   *address;
     char                   *port_str;
     char                   *backlog_str;
+    char                   *message;
     in_port_t               port;
     int                     backlog;
     int                     sockfd;
@@ -61,8 +62,9 @@ int main(int argc, char *argv[])
     address     = NULL;
     port_str    = NULL;
     backlog_str = NULL;
-    parse_arguments(argc, argv, &address, &port_str, &backlog_str);
-    handle_arguments(argv[0], address, port_str, backlog_str, &port, &backlog);
+    message     = NULL;
+    parse_arguments(argc, argv, &address, &port_str, &backlog_str, &message);
+    handle_arguments(argv[0], address, port_str, backlog_str, &port, &backlog, message);
     convert_address(address, &addr);
     sockfd = socket_create(addr.ss_family, SOCK_STREAM, 0);
     socket_bind(sockfd, &addr, port);
@@ -88,7 +90,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        handle_connection(client_sockfd, &client_addr);
+        handle_connection(client_sockfd, &client_addr, message);
         socket_close(client_sockfd);
     }
 
@@ -97,7 +99,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog)
+static void parse_arguments(int argc, char *argv[], char **ip_address, char **port, char **backlog, char **msg)
 {
     int opt;
 
@@ -140,16 +142,17 @@ static void parse_arguments(int argc, char *argv[], char **ip_address, char **po
         usage(argv[0], EXIT_FAILURE, "The port is required");
     }
 
-    if(optind < argc - 2)
+    if(optind < argc - 3)
     {
         usage(argv[0], EXIT_FAILURE, "Error: Too many arguments.");
     }
 
     *ip_address = argv[optind];
     *port       = argv[optind + 1];
+    *msg        = argv[optind + 2];
 }
 
-static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog)
+static void handle_arguments(const char *binary_name, const char *ip_address, const char *port_str, const char *backlog_str, in_port_t *port, int *backlog, const char *message)
 {
     if(ip_address == NULL)
     {
@@ -164,6 +167,11 @@ static void handle_arguments(const char *binary_name, const char *ip_address, co
     if(backlog_str == NULL)
     {
         usage(binary_name, EXIT_FAILURE, "The backlog is required.");
+    }
+
+    if(message == NULL)
+    {
+        usage(binary_name, EXIT_FAILURE, "The message is required.");
     }
 
     *port    = parse_in_port_t(binary_name, port_str);
@@ -234,7 +242,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
         fprintf(stderr, "%s\n", message);
     }
 
-    fprintf(stderr, "Usage: %s [-h] -b <backlog> <ip address> <port>\n", program_name);
+    fprintf(stderr, "Usage: %s [-h] -b <backlog> <ip address> <port> <message>\n", program_name);
     fputs("Options:\n", stderr);
     fputs("  -h  Display this help message\n", stderr);
     fputs("  -b <backlog> the backlog\n", stderr);
@@ -407,8 +415,10 @@ static void setup_signal_handler(void)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
+static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr, const char *message)
 {
+    // TODO: check for error, also use write_fully
+    write(client_sockfd, message, strlen(message) + 1);
 }
 
 #pragma GCC diagnostic pop

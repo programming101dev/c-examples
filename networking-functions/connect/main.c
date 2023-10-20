@@ -36,6 +36,7 @@ static void           socket_close(int client_fd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
+#define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[])
 {
@@ -44,6 +45,8 @@ int main(int argc, char *argv[])
     in_port_t               port;
     int                     sockfd;
     struct sockaddr_storage addr;
+    char                    message[BUFFER_SIZE];
+    ssize_t                 nread;
 
     address  = NULL;
     port_str = NULL;
@@ -52,6 +55,15 @@ int main(int argc, char *argv[])
     convert_address(address, &addr);
     sockfd = socket_create(addr.ss_family, SOCK_STREAM, 0);
     socket_connect(sockfd, &addr, port);
+    nread = read(sockfd, message, sizeof(message));
+
+    if(nread == -1)
+    {
+        perror("read");
+        return EXIT_FAILURE;
+    }
+
+    printf("read: %s\n", message);
     socket_close(sockfd);
 
     return EXIT_SUCCESS;

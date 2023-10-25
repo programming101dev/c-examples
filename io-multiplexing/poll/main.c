@@ -14,7 +14,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-#include <errno.h>
 #include <poll.h>
 #include <signal.h>
 #include <stdio.h>
@@ -24,13 +23,15 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients);
-static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients);
-static void setup_signal_handler(void);
-static void sigint_handler(int signum);
-static int  socket_create(void);
-static void socket_bind(int sockfd, const char *path);
-static void socket_close(int sockfd);
+static void           setup_signal_handler(void);
+static void           sigint_handler(int signum);
+static int            socket_create(void);
+static void           socket_bind(int sockfd, const char *path);
+static void           socket_close(int sockfd);
+static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets);
+static void           handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_clients, struct pollfd **fds);
+static void           handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *max_clients);
+static void           handle_client_disconnection(int **client_sockets, nfds_t *max_clients, struct pollfd **fds, nfds_t client_index);
 
 #define SOCKET_PATH "/tmp/example_socket"
 #define MAX_WORD_LEN 256
@@ -39,16 +40,13 @@ static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid
 
 int main(void)
 {
-    int           *client_sockets;
-    nfds_t         max_clients;
     int            sockfd;
+    int           *client_sockets = NULL;
+    nfds_t         max_clients    = 0;
     struct pollfd *fds;
 
-    client_sockets = NULL;
-    max_clients    = 0;
-    fds            = NULL;
     setup_signal_handler();
-    unlink(SOCKET_PATH);    // Remove the existing socket file if it exists
+    unlink(SOCKET_PATH);
     sockfd = socket_create();
     socket_bind(sockfd, SOCKET_PATH);
 
@@ -58,96 +56,57 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    printf("Server listening for incoming connections on %s...\n", SOCKET_PATH);
+    printf("Server listening for incoming connections...\n");
+    fds = initialize_pollfds(sockfd, &client_sockets);
 
     while(!exit_flag)
     {
-        struct pollfd *temp_fds;
-        int            num_ready;
+        int activity;
 
-        temp_fds = (struct pollfd *)realloc(fds, (max_clients + 1) * sizeof(struct pollfd));
+        activity = poll(fds, max_clients + 1, -1);
 
-        if(temp_fds == NULL)
+        if(activity < 0)
         {
-            perror("Realloc error");
-            free(fds);
-            exit(EXIT_FAILURE);
-        }
-
-        fds = temp_fds;
-
-        // Set up the pollfd structure for the server socket
-        fds[0].fd     = sockfd;
-        fds[0].events = POLLIN;
-
-        // Set up the pollfd structures for all client sockets
-        for(size_t i = 0; i < max_clients; i++)
-        {
-            int sd;
-
-            sd                = client_sockets[i];
-            fds[i + 1].fd     = sd;
-            fds[i + 1].events = POLLIN;
-        }
-
-        // Use poll to monitor all sockets for activity
-        num_ready = poll(fds, max_clients + 1, -1);
-
-        if(num_ready < 0)
-        {
-            if(errno == EINTR)
-            {
-                // The poll call was interrupted by a signal (e.g., SIGINT)
-                // Continue the loop and retry the poll call
-                continue;
-            }
-
             perror("Poll error");
             exit(EXIT_FAILURE);
         }
 
         // Handle new client connections
-        if(fds[0].revents & POLLIN)
+        handle_new_connection(sockfd, &client_sockets, &max_clients, &fds);
+
+        if(client_sockets != NULL)
         {
-            handle_new_client(sockfd, &client_sockets, &max_clients);
-        }
-
-        // Handle incoming data from existing clients
-        for(size_t i = 0; i < max_clients; i++)
-        {
-            int sd;
-
-            sd = client_sockets[i];
-
-            if(fds[i + 1].revents & POLLIN)
-            {
-                handle_client_data(sd, &client_sockets, &max_clients);
-            }
+            // Handle incoming data from existing clients
+            handle_client_data(fds, client_sockets, &max_clients);
         }
     }
 
-    printf("Cleaning up\n");
+    free(fds);
 
     // Cleanup and close all client sockets
     for(size_t i = 0; i < max_clients; i++)
     {
-        int sd;
-
-        sd = client_sockets[i];
-
-        if(sd > 0)
+        if(client_sockets[i] > 0)
         {
-            socket_close(sd);
+            socket_close(client_sockets[i]);
         }
     }
 
     free(client_sockets);
-    free(fds);
     socket_close(sockfd);
     unlink(SOCKET_PATH);
     printf("Server exited successfully.\n");
 
     return EXIT_SUCCESS;
+}
+
+static void setup_signal_handler(void)
+{
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sigint_handler;
+    sigaction(SIGINT, &sa, NULL);
+    printf("Signal handler set up.\n");
 }
 
 #pragma GCC diagnostic push
@@ -156,110 +115,10 @@ int main(void)
 static void sigint_handler(int signum)
 {
     exit_flag = 1;
+    printf("SIGINT received. Exiting...\n");
 }
 
 #pragma GCC diagnostic pop
-
-static void handle_new_client(int server_socket, int **client_sockets, nfds_t *max_clients)
-{
-    struct sockaddr_un addr;
-    socklen_t          client_len;
-    int                new_socket;
-
-    client_len = sizeof(addr);
-    new_socket = accept(server_socket, (struct sockaddr *)&addr, &client_len);
-
-    if(new_socket == -1)
-    {
-        perror("Accept error");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("New connection established\n");
-
-    // Increase the size of the client_sockets array
-    (*max_clients)++;
-    *client_sockets = (int *)realloc(*client_sockets, sizeof(int) * (*max_clients));
-
-    if(*client_sockets == NULL)
-    {
-        perror("Realloc error");
-        exit(EXIT_FAILURE);
-    }
-
-    (*client_sockets)[(*max_clients) - 1] = new_socket;
-}
-
-static void handle_client_data(int sd, int **client_sockets, const nfds_t *max_clients)
-{
-    char    word_length;
-    ssize_t valread;
-
-    valread = read(sd, &word_length, sizeof(word_length));
-
-    if(valread <= 0)
-    {
-        // Connection closed or error
-        printf("Client %d disconnected\n", sd);
-        close(sd);
-
-        // Mark the disconnected client socket as 0
-        for(size_t i = 0; i < *max_clients; i++)
-        {
-            if((*client_sockets)[i] == sd)
-            {
-                (*client_sockets)[i] = 0;
-                break;
-            }
-        }
-    }
-    else
-    {
-        char word[MAX_WORD_LEN];
-
-        // Receive the word based on the length received
-        valread = read(sd, word, (size_t)word_length);
-
-        if(valread <= 0)
-        {
-            // Connection closed or error
-            printf("Client %d disconnected\n", sd);
-            close(sd);
-
-            // Mark the disconnected client socket as 0
-            for(size_t i = 0; i < *max_clients; i++)
-            {
-                if((*client_sockets)[i] == sd)
-                {
-                    (*client_sockets)[i] = 0;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            // Null-terminate the word and print it
-            word[valread] = '\0';
-            printf("Received word from client %d: %s\n", sd, word);
-        }
-    }
-}
-
-static void setup_signal_handler(void)
-{
-    struct sigaction sa;
-
-    memset(&sa, 0, sizeof(sa));
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
-#endif
-    sa.sa_handler = sigint_handler;
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
-    sigaction(SIGINT, &sa, NULL);
-}
 
 static int socket_create(void)
 {
@@ -276,6 +135,8 @@ static int socket_create(void)
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
+
+    printf("Socket created successfully.\n");
 
     return sockfd;
 }
@@ -304,5 +165,134 @@ static void socket_close(int sockfd)
     {
         perror("Error closing socket");
         exit(EXIT_FAILURE);
+    }
+
+    printf("Socket closed.\n");
+}
+
+static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets)
+{
+    struct pollfd *fds;
+
+    *client_sockets = NULL;
+
+    fds = (struct pollfd *)malloc((1) * sizeof(struct pollfd));
+
+    if(fds == NULL)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    fds[0].fd     = sockfd;
+    fds[0].events = POLLIN;
+
+    return fds;
+}
+
+static void handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_clients, struct pollfd **fds)
+{
+    if((*fds)[0].revents & POLLIN)
+    {
+        socklen_t          addrlen;
+        int                new_socket;
+        int               *temp;
+        struct sockaddr_un addr;
+
+        addrlen    = sizeof(addr);
+        new_socket = accept(sockfd, (struct sockaddr *)&addr, &addrlen);
+
+        if(new_socket == -1)
+        {
+            perror("Accept error");
+            exit(EXIT_FAILURE);
+        }
+
+        (*max_clients)++;
+        temp = (int *)realloc(*client_sockets, sizeof(int) * (*max_clients));
+
+        if(temp == NULL)
+        {
+            perror("realloc");
+            free(*client_sockets);
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            struct pollfd *new_fds;
+            *client_sockets                       = temp;
+            (*client_sockets)[(*max_clients) - 1] = new_socket;
+
+            new_fds = (struct pollfd *)realloc(*fds, (*max_clients + 1) * sizeof(struct pollfd));
+            if(new_fds == NULL)
+            {
+                perror("realloc");
+                free(*client_sockets);
+                exit(EXIT_FAILURE);
+            }
+            else
+            {
+                *fds                        = new_fds;
+                (*fds)[*max_clients].fd     = new_socket;
+                (*fds)[*max_clients].events = POLLIN;
+            }
+        }
+    }
+}
+
+static void handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *max_clients)
+{
+    for(nfds_t i = 0; i < *max_clients; i++)
+    {
+        if(client_sockets[i] != -1 && (fds[i + 1].revents & POLLIN))
+        {
+            char    word_length;
+            ssize_t valread;
+
+            valread = read(client_sockets[i], &word_length, sizeof(word_length));
+
+            if(valread <= 0)
+            {
+                // Connection closed or error
+                printf("Client %d disconnected\n", client_sockets[i]);
+                handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+            }
+            else
+            {
+                char word[MAX_WORD_LEN];
+
+                valread = read(client_sockets[i], word, (size_t)word_length);
+
+                if(valread <= 0)
+                {
+                    // Connection closed or error
+                    printf("Client %d disconnected\n", client_sockets[i]);
+                    handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                }
+                else
+                {
+                    word[valread] = '\0';
+                    printf("Received word from client %d: %s\n", client_sockets[i], word);
+                }
+            }
+        }
+    }
+}
+
+static void handle_client_disconnection(int **client_sockets, nfds_t *max_clients, struct pollfd **fds, nfds_t client_index)
+{
+    int disconnected_socket = (*client_sockets)[client_index];
+    close(disconnected_socket);
+
+    for(nfds_t i = client_index; i < *max_clients - 1; i++)
+    {
+        (*client_sockets)[i] = (*client_sockets)[i + 1];
+    }
+
+    (*max_clients)--;
+
+    for(nfds_t i = client_index + 1; i <= *max_clients; i++)
+    {
+        (*fds)[i] = (*fds)[i + 1];
     }
 }

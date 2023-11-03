@@ -171,7 +171,7 @@ static void child_process(int sockfd, const char *file_path)
 {
     FILE   *file;
     int     ch;
-    char    word[MAX_WORD_LENGTH];
+    char    word[MAX_WORD_LENGTH + 1];
     uint8_t length;
 
     file = fopen(file_path, "re");

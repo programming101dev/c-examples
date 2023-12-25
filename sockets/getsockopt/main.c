@@ -31,7 +31,7 @@ struct socket_option
     const char *name;
     int         level;
     int         option;
-    void        (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
+    void (*print)(int sockfd, int option_level, int option_name, const char *option_name_str);
 };
 
 static void           parse_arguments(int argc, char *argv[], char **address, char **port);
@@ -347,7 +347,7 @@ static void print_socket_opt_timeval(int sockfd, int option_level, int option_na
 
     if(ret == 0)
     {
-        printf("%s: %ld seconds " D_MS_FORMAT " microseconds\n", option_name_str, optval.tv_sec, optval.tv_usec);
+        printf("%s: %ld seconds " D_MS_FORMAT " microseconds\n", option_name_str, optval.tv_sec, optval.tv_usec);    // cppcheck-suppress unknownMacro
     }
     else
     {

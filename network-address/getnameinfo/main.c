@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     if(result->ai_addrlen > sizeof(addr))
     {
         fprintf(stderr, "Address size exceeds sockaddr_storage capacity\n");
+        freeaddrinfo(result);    // Free the memory allocated by getaddrinfo
         return EXIT_FAILURE;
     }
 

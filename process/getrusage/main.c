@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 static long long performCalculation(size_t size, size_t iterations);
-static void      printUsage(struct rusage *ru);
+static void      printUsage(const struct rusage *ru);
 
 #define MAX_NUMBER 100
 
@@ -103,7 +103,7 @@ static long long performCalculation(size_t size, size_t iterations)
     return sum;
 }
 
-static void printUsage(struct rusage *ru)
+static void printUsage(const struct rusage *ru)
 {
     printf("User time: %jd.%06ld seconds\n", (intmax_t)ru->ru_utime.tv_sec, (long)ru->ru_utime.tv_usec);
     printf("System time: %jd.%06ld seconds\n", (intmax_t)ru->ru_stime.tv_sec, (long)ru->ru_stime.tv_usec);

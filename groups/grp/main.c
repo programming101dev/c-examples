@@ -23,7 +23,7 @@ static void print_entry(const struct group *entry);
 
 int main(void)
 {
-    struct group *entry;
+    const struct group *entry;
 
     // Use getgrent to retrieve all group information
     printf("All group accounts:\n");
@@ -45,7 +45,7 @@ int main(void)
 
 static void print_entries(void)
 {
-    struct group *entry;
+    const struct group *entry;
 
     while((entry = getgrent()) != NULL)    // cppcheck-suppress getgrentCalled
     {

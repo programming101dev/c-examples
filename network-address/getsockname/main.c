@@ -31,16 +31,16 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char              *host_name;
-    char              *service;
-    int                sockfd;
-    struct sockaddr_in local_addr;
-    socklen_t          addrlen;
-    struct addrinfo    hints;
-    struct addrinfo   *result;
-    struct addrinfo   *rp;
-    int                status;
-    char               ipstr[INET6_ADDRSTRLEN];
+    char                  *host_name;
+    char                  *service;
+    int                    sockfd;
+    struct sockaddr_in     local_addr;
+    socklen_t              addrlen;
+    struct addrinfo        hints;
+    struct addrinfo       *result;
+    const struct addrinfo *rp;
+    int                    status;
+    char                   ipstr[INET6_ADDRSTRLEN];
 
     host_name = NULL;
     service   = NULL;

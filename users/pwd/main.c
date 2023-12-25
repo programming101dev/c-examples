@@ -23,7 +23,7 @@ static void print_entry(const struct passwd *entry);
 
 int main(void)
 {
-    struct passwd *entry;
+    const struct passwd *entry;
 
     // Use getpwent to retrieve all user account information
     printf("All user accounts:\n");
@@ -46,7 +46,7 @@ int main(void)
 
 static void print_entries(void)
 {
-    struct passwd *entry;
+    const struct passwd *entry;
 
     while((entry = getpwent()) != NULL)    // cppcheck-suppress getpwentCalled
     {

@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
     if(file == NULL)
     {
         perror("Error creating FILE* stream");
-        close(fd);
         return EXIT_FAILURE;
     }
 

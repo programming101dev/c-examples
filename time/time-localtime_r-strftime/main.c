@@ -22,10 +22,10 @@
 
 int main(void)
 {
-    time_t     rawtime;
-    struct tm *timeinfo;
-    struct tm  result;
-    char       buffer[BUFFER_LEN];
+    time_t           rawtime;
+    const struct tm *timeinfo;
+    struct tm        result;
+    char             buffer[BUFFER_LEN];
 
     if(time(&rawtime) == -1)
     {

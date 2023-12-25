@@ -27,8 +27,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char *path;
-    char *dir_name;
+    char       *path;
+    const char *dir_name;
 
     path = NULL;
     parse_arguments(argc, argv, &path);

@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     for(int i = optind + 1; i < argc; i++)
     {
-        char *path;
+        const char *path;
 
         path = argv[i];
 

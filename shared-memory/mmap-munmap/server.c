@@ -32,7 +32,7 @@ static size_t get_page_size(void);
 int main(void)
 {
     int    shm_fd;
-    char  *shm_ptr;
+    char  *shm_ptr;    // cppcheck-suppress constVariablePointer
     sem_t *client_sem;
     sem_t *server_sem;
     size_t page_size;

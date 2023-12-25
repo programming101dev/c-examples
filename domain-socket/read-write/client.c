@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     while(fgets(line, sizeof(line), file) != NULL)
     {
-        char *word;
+        const char *word;
 
         word = strtok_r(line, " \t\n", &saveptr);
 

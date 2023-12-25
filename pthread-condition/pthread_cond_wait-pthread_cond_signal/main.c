@@ -213,7 +213,7 @@ static void *child_process(void *arg)
 
     while(fgets(line, sizeof(line), file) != NULL)
     {
-        char *token;
+        const char *token;
 
         line[strcspn(line, "\n")] = '\0';    // Remove the newline character if present
         token                     = strtok_r(line, " \t", &saveptr);
@@ -242,7 +242,7 @@ static void *child_process(void *arg)
 static void *parent_process(void *arg)
 {
     struct shared_data *data;
-    char               *word;
+    const char         *word;
 
     data = (struct shared_data *)arg;
 

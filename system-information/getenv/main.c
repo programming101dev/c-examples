@@ -38,7 +38,7 @@ int main(void)
 
 static void print_env_variable(const char *variable)
 {
-    char *value;
+    const char *value;
 
     value = getenv(variable);
 

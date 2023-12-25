@@ -118,7 +118,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static void search_for(char needle, const char *haystack)
 {
-    char *found_char;
+    const char *found_char;
 
     found_char = strchr(haystack, needle);
 

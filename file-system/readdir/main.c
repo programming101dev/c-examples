@@ -32,9 +32,9 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char          *directory_path;
-    struct dirent *entry;
-    DIR           *dir;
+    char                *directory_path;
+    const struct dirent *entry;
+    DIR                 *dir;
 
     directory_path = NULL;
     parse_arguments(argc, argv, &directory_path);

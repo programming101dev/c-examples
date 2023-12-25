@@ -34,9 +34,9 @@ static void           print_entry(const struct group *entry);
 
 int main(int argc, char *argv[])
 {
-    char         *group_id;
-    gid_t         gid;
-    struct group *group_info;
+    char               *group_id;
+    gid_t               gid;
+    const struct group *group_info;
 
     group_id = NULL;
     parse_arguments(argc, argv, &group_id);

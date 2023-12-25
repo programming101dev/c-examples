@@ -22,9 +22,9 @@
 
 int main(void)
 {
-    time_t     rawtime;
-    struct tm *timeinfo;
-    char       buffer[BUFFER_LEN];
+    time_t           rawtime;
+    const struct tm *timeinfo;
+    char             buffer[BUFFER_LEN];
 
     // Get the current time
     if(time(&rawtime) == -1)

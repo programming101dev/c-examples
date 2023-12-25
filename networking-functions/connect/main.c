@@ -243,7 +243,7 @@ static void socket_connect(int sockfd, struct sockaddr_storage *addr, in_port_t 
 
     if(connect(sockfd, (struct sockaddr *)addr, addr_len) == -1)
     {
-        char *msg;
+        const char *msg;
 
         msg = strerror(errno);
         fprintf(stderr, "Error: connect (%d): %s\n", errno, msg);

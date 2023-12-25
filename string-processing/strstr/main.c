@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
 static void search_for(const char *needle, const char *haystack)
 {
-    char *found_substring;
+    const char *found_substring;
 
     found_substring = strstr(haystack, needle);
 

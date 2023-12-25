@@ -34,9 +34,9 @@ static void           print_entry(const struct passwd *entry);
 
 int main(int argc, char *argv[])
 {
-    char          *user_id;
-    uid_t          uid;
-    struct passwd *user_info;
+    char                *user_id;
+    uid_t                uid;
+    const struct passwd *user_info;
 
     user_id = NULL;
     parse_arguments(argc, argv, &user_id);

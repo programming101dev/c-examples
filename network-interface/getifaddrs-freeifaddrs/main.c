@@ -25,9 +25,9 @@
 
 int main(void)
 {
-    struct ifaddrs *interfaces;
-    struct ifaddrs *ifaddr;
-    char            host[NI_MAXHOST];
+    struct ifaddrs       *interfaces;
+    const struct ifaddrs *ifaddr;
+    char                  host[NI_MAXHOST];
 
     // Get the list of network interfaces
     if(getifaddrs(&interfaces) == -1)

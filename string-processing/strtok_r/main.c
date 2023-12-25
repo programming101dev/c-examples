@@ -27,12 +27,12 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 int main(int argc, char *argv[])
 {
-    char      *string;
-    char      *saveptr;
-    char      *token;
-    char      *token_copy;
-    const char delimiter[] = " ";    // TODO read this from the command line
-    string                 = NULL;
+    char       *string;
+    char       *saveptr;
+    const char *token;
+    char       *token_copy;
+    const char  delimiter[] = " ";    // TODO read this from the command line
+    string                  = NULL;
 
     parse_arguments(argc, argv, &string);
     handle_arguments(argv[0], string);

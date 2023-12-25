@@ -28,8 +28,8 @@ static void           print_entry(const struct passwd *entry);
 
 int main(int argc, char *argv[])
 {
-    char          *user_name;
-    struct passwd *user_info;
+    char                *user_name;
+    const struct passwd *user_info;
 
     user_name = NULL;
     parse_arguments(argc, argv, &user_name);

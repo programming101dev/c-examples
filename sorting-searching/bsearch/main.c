@@ -26,9 +26,9 @@ int main(void)
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     int arr[] = {5, 2, 8, 1, 3};
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    size_t size;
-    int   *result;
-    int    target;
+    size_t     size;
+    const int *result;
+    int        target;
 
     size = sizeof(arr) / sizeof(arr[0]);
     printf("Unsorted array: ");

@@ -28,8 +28,8 @@ static void           print_entry(const struct group *entry);
 
 int main(int argc, char *argv[])
 {
-    char         *group_name;
-    struct group *group_info;
+    char               *group_name;
+    const struct group *group_info;
 
     group_name = NULL;
     parse_arguments(argc, argv, &group_name);

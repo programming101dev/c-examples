@@ -101,8 +101,9 @@ int main(int argc, char *argv[])
 
     while(fgets(buffer, sizeof(buffer), file))
     {
-        char *word;
-        char *saveptr;
+        const char *word;
+        char       *saveptr;
+
         word = strtok_r(buffer, " \t\n", &saveptr);
 
         while(word != NULL)

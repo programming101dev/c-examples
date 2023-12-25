@@ -19,7 +19,7 @@
 
 int main(void)
 {
-    char *terminal_name;
+    const char *terminal_name;
 
     terminal_name = ctermid(NULL);    // cppcheck-suppress ctermidCalled
 

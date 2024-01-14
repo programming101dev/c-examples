@@ -173,7 +173,7 @@ generate_makefile()
     # Add a check rule to pick on the source code
     echo -e "\ncheck:" >> Makefile
     echo -e "\t@echo \"Running cppcheck for static code analysis...\"" >> Makefile
-    echo -e "\t@$cppcheck_name --error-exitcode=1 --force --quiet --inline-suppr --library=posix --enable=all --suppress=missingIncludeSystem --suppress=ConfigurationNotChecked --suppress=unmatchedSuppression -I/usr/local/include \${SOURCES}" >> Makefile
+    echo -e "\t@$cppcheck_name --error-exitcode=1 --force --quiet --inline-suppr --library=posix --enable=all --suppress=missingIncludeSystem --suppress=ConfigurationNotChecked --suppress=unmatchedSuppression --suppress=checkersReport -I/usr/local/include \${SOURCES}" >> Makefile
 
     # Add a clean rule to be picky about the code
     echo -e "\nclean:" >> Makefile

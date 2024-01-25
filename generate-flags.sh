@@ -6,8 +6,11 @@ set -e
 # Function to detect system architecture
 detect_architecture()
 {
-    local sys_name=$(uname -s)
-    local architecture=$(uname -m)
+    local sys_name
+    local architecture
+
+    sys_name=$(uname -s)
+    architecture=$(uname -m)
 
     if [[ $sys_name == "Darwin" ]]; then
         case $architecture in
@@ -26,7 +29,7 @@ is_flag_supported() {
     local flag="$2"
     local supported_flags_ref="$3"
 
-    if ("$compiler" $flag -E - < /dev/null &> /dev/null); then
+    if ("$compiler" "$flag" -E - < /dev/null &> /dev/null); then
         echo "Flag '$flag' is supported by $compiler."
         eval "$supported_flags_ref+=('$flag')"
     else
@@ -948,24 +951,23 @@ process_flags()
 
 darwin_architecture=$(detect_architecture)
 
-flags_dir="./.flags"
-
-# Check if the flags directory exists, if so delete it
-if [ -d "$flags_dir" ]; then
-    echo "Flags directory exists. Deleting..."
-    rm -rf "$flags_dir"
-fi
-
-mkdir "$flags_dir"
-
 # Read the list of supported compilers and process each
 supported_c_compilers=()
 while IFS= read -r line; do
     supported_c_compilers+=("$line")
 done < supported_c_compilers.txt
 
+supported_cxx_compilers=()
+while IFS= read -r line; do
+    supported_cxx_compilers+=("$line")
+done < supported_cxx_compilers.txt
+
 # Process C compilers
 for compiler in "${supported_c_compilers[@]}"; do
     process_flags "$compiler"
 done
 
+# Process C++ compilers
+for compiler in "${supported_cxx_compilers[@]}"; do
+    process_flags "$compiler"
+done

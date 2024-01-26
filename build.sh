@@ -53,5 +53,9 @@ while getopts "d:" opt; do
     esac
 done
 
+if [ ! -d "./.flags" ]; then
+    ./generate-flags.sh
+fi
+
 # Start the traversal process from the specified directory
 run_make "$start_dir"

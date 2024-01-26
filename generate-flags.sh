@@ -54,7 +54,7 @@ process_compiler_flags()
     flags_string=$(IFS=" "; echo "${supported_flags[*]}")
 
     # Write to file without trailing space
-    printf "%s" "$flags_string" > "../.flags/${compiler}/${flag_category}_flags.txt"
+    printf "%s" "$flags_string" > "./.flags/${compiler}/${flag_category}_flags.txt"
 }
 
 # Main processing function
@@ -938,7 +938,7 @@ process_flags()
     echo "Checking: $compiler"
 
     # Prepare directory
-    local flag_dir="../.flags/${compiler}"
+    local flag_dir="./.flags/${compiler}"
     mkdir -p "$flag_dir"
     rm -f "$flag_dir"/*
 
@@ -951,23 +951,21 @@ process_flags()
 
 darwin_architecture=$(detect_architecture)
 
+if [ ! -d "./.flags" ]; then
+    ./check-compilers.sh
+fi
+
+if [ ! -f "supported_c_compilers.txt" ]; then
+  ./check-compilers.sh
+fi
+
 # Read the list of supported compilers and process each
 supported_c_compilers=()
 while IFS= read -r line; do
     supported_c_compilers+=("$line")
 done < supported_c_compilers.txt
 
-supported_cxx_compilers=()
-while IFS= read -r line; do
-    supported_cxx_compilers+=("$line")
-done < supported_cxx_compilers.txt
-
 # Process C compilers
 for compiler in "${supported_c_compilers[@]}"; do
-    process_flags "$compiler"
-done
-
-# Process C++ compilers
-for compiler in "${supported_cxx_compilers[@]}"; do
     process_flags "$compiler"
 done

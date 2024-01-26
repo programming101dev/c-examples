@@ -15,9 +15,9 @@ Welcome to the `c-examples` repository. This guide will help you set up and run 
 
 ## **Prerequisites**
 
-- Git
-- Bash
-- Clang & GCC compilers
+- git
+- bash
+- clang & GCC compilers
 
 ## **Cloning the Repository**
 
@@ -33,57 +33,19 @@ Navigate to the cloned directory:
 cd c-examples
 ```
 
-## **Setting up the CC Environment Variable**
-
-To permanently set the CC environment variable for your user, you should modify your shell's configuration file.
-Depending on the shell you're using, you should edit the appropriate configuration file:
-
-For Bash, edit the ~/.bashrc file to include ```export CC=gcc``` or ```export CC=clang```.
-
-```bash
-nano ~/.bashrc
-```
-
-For Zsh, edit the .zshrc file to include ```export CC=gcc``` or ```export CC=clang```.
-
-```bash
-nano ~/.zshrc
-```
-
-For Csh, edit the ~/.cshrc file to include ```setenv CC gcc``` or ```setenv CC clang```.
-
-```bash
-nano ~/.bashrc
-```
-
-Save and close the file. Then, reload your shell configuration to apply the changes:
-
-```bash
-source ~/.bashrc
-```
-
-```bash
-source ~/.zshrc
-```
-
-```bash
-source ~/.cshrc
-```
-
-Now, the CC environment variable is permanently set to your chosen C compiler.
-
 ## **Running the generate-build.sh Script**
 
 First, ensure the script is executable:
 
 ```bash
-chmod +x change-compiler.sh
+chmod +x *.sh
 ```
 
 Now, execute the script:
 
 ```bash
-./change-compiler.sh
+./change-compiler.sh -c <compiler>
+./build.sh
 ```
 
 This will check which compiler flags are supported on your system and subsequently generate a build.sh script tailored

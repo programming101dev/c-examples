@@ -54,7 +54,8 @@ while getopts "d:" opt; do
 done
 
 if [ ! -d "./.flags" ]; then
-    ./generate-flags.sh
+  echo "You must run ./change-compiler.sh first"
+  exit 1
 fi
 
 # Start the traversal process from the specified directory

@@ -95,10 +95,11 @@ generate_makefile()
     echo -e ".PHONY: main main-traceable clean lint all\n" > Makefile
     echo -e "CC=$c_compiler" >> Makefile
     echo -e "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror" >> Makefile
-    echo -e "SUPPORTED_WARNING_FLAGS=$SUPPORTED_WARNING_FLAGS" >> Makefile
-    echo -e "SUPPORTED_SANITIZER_FLAGS=$SUPPORTED_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_ANALYZER_FLAGS=$SUPPORTED_ANALYZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_DEBUG_FLAGS=$SUPPORTED_DEBUG_FLAGS" >> Makefile
+    echo -e "SUPPORTED_INSTRUMENTATION_FLAGS=$SUPPORTED_INSTRUMENTATION_FLAGS" >> Makefile
+    echo -e "SUPPORTED_OPTIMIZATION_FLAGS=$SUPPORTED_OPTIMIZATION_FLAGS" >> Makefile
+    echo -e "SUPPORTED_WARNING_FLAGS=$SUPPORTED_WARNING_FLAGS" >> Makefile
     echo -e "CLANG_TIDY_CHECKS=-checks=*,-llvmlibc-restrict-system-libc-headers,-altera-struct-pack-align,-readability-identifier-length,-altera-unroll-loops,-cppcoreguidelines-init-variables,-cert-err33-c,-modernize-macro-to-enum,-bugprone-easily-swappable-parameters,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-altera-id-dependent-backward-branch,-concurrency-mt-unsafe,-misc-unused-parameters,-hicpp-signed-bitwise,-google-readability-todo,-cert-msc30-c,-cert-msc50-cpp,-readability-function-cognitive-complexity,-clang-analyzer-security.insecureAPI.strcpy,-cert-env33-c,-android-cloexec-accept,-clang-analyzer-security.insecureAPI.rand,-misc-include-cleaner" >> Makefile
     echo -e "LIBRARIES=${LIBRARIES}" >> Makefile
     echo -e "PROGRAMS=" >> Makefile
@@ -123,12 +124,12 @@ generate_makefile()
             if [[ "$filename" == "testlib-1" || "$filename" == "testlib-2" ]]; then
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename$SHARED_EXT: $file" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename$SHARED_EXT" >> Makefile
 
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename-traceaable$SHARED_EXT: $file" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -Wno-strict-flex-arrays -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename-traceaable$SHARED_EXT\n" >> Makefile
             else
                 echo "SOURCES += $filename.c" >> Makefile
@@ -136,14 +137,14 @@ generate_makefile()
                 # Generate an executable rule with the supported warning flags
                 echo "$filename: $file" >> Makefile
                 echo -e "\t@echo \"Compiling $file -> $filename\"" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_SANITIZER_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename $file \$(LIBRARIES)" >> Makefile
                 echo -e "PROGRAMS += $filename" >> Makefile
                 echo -e "BINARIES += $filename$BINARY_EXT\n" >> Makefile
 
                 # Generate a traceable version rule
                 echo -e "$filename-traceable: $file" >> Makefile
                 echo -e "\t@echo \"Compiling $file -> $filename-traceable\"" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) -Wno-strict-flex-arrays -I/usr/local/include -I/usr/local/include -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
                 echo -e "PROGRAMS += $filename-traceable" >> Makefile
 
                 if [ -n "$BINARY_EXT" ]; then
@@ -231,10 +232,11 @@ if [ ! -d "./.flags" ]; then
     ./generate-flags.sh
 fi
 
-SUPPORTED_WARNING_FLAGS=$(cat "./.flags/${c_compiler}/warning_flags.txt")
-SUPPORTED_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/sanitizer_flags.txt")
 SUPPORTED_ANALYZER_FLAGS=$(cat "./.flags/${c_compiler}/analyzer_flags.txt")
 SUPPORTED_DEBUG_FLAGS=$(cat "./.flags/${c_compiler}/debug_flags.txt")
+SUPPORTED_INSTRUMENTATION_FLAGS=$(cat "./.flags/${c_compiler}/instrumentation_flags.txt")
+SUPPORTED_OPTIMIZATION_FLAGS=$(cat "./.flags/${c_compiler}/optimization_flags.txt")
+SUPPORTED_WARNING_FLAGS=$(cat "./.flags/${c_compiler}/warning_flags.txt")
 
 # Determine the shared library extension based on the platform
 get_shared_lib_extension

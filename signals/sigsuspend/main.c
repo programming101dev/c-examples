@@ -35,7 +35,11 @@ int main(void)
 
     // Block SIGINT temporarily
     sigemptyset(&block_set);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
     sigaddset(&block_set, SIGINT);
+#pragma GCC diagnostic pop
 
     if(sigprocmask(SIG_BLOCK, &block_set, NULL) < 0)
     {

@@ -19,14 +19,18 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
+#endif
+
 int main(void)
 {
-    // TODO pass on the command line
     char        templ[] = "/tmp/tempfileXXXXXX";
     int         original_fd;
     struct stat file_stat;
+    int         saved_stdout;
 
-    // Create a temporary file and obtain a unique filename
     original_fd = mkstemp(templ);
     if(original_fd == -1)
     {
@@ -34,48 +38,58 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    // Get the size of the temporary file before writing
     if(stat(templ, &file_stat) == -1)
     {
         perror("Error getting file stats");
-        close(original_fd);    // Close the file descriptor before exiting
+        close(original_fd);
         return EXIT_FAILURE;
     }
 
     fprintf(stderr, "Size of the temporary file before writing: %lld bytes\n", (long long)file_stat.st_size);
+    saved_stdout = dup(STDOUT_FILENO);    // NOLINT(android-cloexec-dup)
 
-    // Redirect stdout (file descriptor 1) to the temporary file
+    if(saved_stdout == -1)
+    {
+        perror("Error saving STDOUT");
+        close(original_fd);
+        return EXIT_FAILURE;
+    }
+
     if(dup2(original_fd, STDOUT_FILENO) == -1)
     {
         perror("Error redirecting stdout");
         close(original_fd);
+        close(saved_stdout);
         return EXIT_FAILURE;
     }
 
-    // Now, printf will write to the temporary file
     if(printf("This will be written to the temporary file using printf.\n") < 0)
     {
         perror("Error writing to temporary file");
         close(original_fd);
+        dup2(saved_stdout, STDOUT_FILENO);
+        close(saved_stdout);
         return EXIT_FAILURE;
     }
 
-    // Flush the output buffer to ensure data is written to the file
     if(fflush(stdout) != 0)
     {
         perror("Error flushing stdout");
-        close(original_fd);    // Close the file descriptor before exiting
+        close(original_fd);
+        dup2(saved_stdout, STDOUT_FILENO);
+        close(saved_stdout);
         return EXIT_FAILURE;
     }
 
-    // Close the temporary file descriptor
+    dup2(saved_stdout, STDOUT_FILENO);
+    close(saved_stdout);
+
     if(close(original_fd) == -1)
     {
         perror("Error closing temporary file descriptor");
         return EXIT_FAILURE;
     }
 
-    // Get the size of the temporary file after writing
     if(stat(templ, &file_stat) == -1)
     {
         perror("Error getting file stats");
@@ -84,7 +98,6 @@ int main(void)
 
     fprintf(stderr, "Size of the temporary file after writing: %lld bytes\n", (long long)file_stat.st_size);
 
-    // Cleanup: remove the temporary file
     if(unlink(templ) == -1)
     {
         perror("Error removing temporary file");
@@ -93,3 +106,7 @@ int main(void)
 
     return EXIT_SUCCESS;
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif

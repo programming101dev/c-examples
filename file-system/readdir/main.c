@@ -24,7 +24,7 @@ static void           handle_arguments(const char *binary_name, const char *dire
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 #if defined(__APPLE__)
-    #define D_INO_FORMAT "%lld"
+    #define D_INO_FORMAT "%llu"
 #else
     #define D_INO_FORMAT "%lu"
 #endif

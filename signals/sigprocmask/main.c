@@ -32,7 +32,10 @@ int main(void)
 
     // Block SIGUSR1 signal
     sigemptyset(&new_mask);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
     sigaddset(&new_mask, SIGUSR1);
+#pragma GCC diagnostic pop
 
     if(sigprocmask(SIG_BLOCK, &new_mask, &old_mask) < 0)
     {

@@ -68,7 +68,7 @@ int main(void)
         FD_ZERO(&readfds);
 #endif
         // Add the server socket to the set
-        FD_SET((unsigned int)sockfd, &readfds);
+        FD_SET(sockfd, &readfds);
         max_fd = sockfd;
 
         // Add the client sockets to the set
@@ -78,7 +78,7 @@ int main(void)
 
             if(sd > 0)
             {
-                FD_SET((unsigned int)sd, &readfds);
+                FD_SET(sd, &readfds);
             }
             if(sd > max_fd)
             {
@@ -95,7 +95,7 @@ int main(void)
         }
 
         // Handle new client connections
-        if(FD_ISSET((unsigned int)sockfd, &readfds))
+        if(FD_ISSET(sockfd, &readfds))
         {
             int               *temp;
             struct sockaddr_un addr;
@@ -135,7 +135,7 @@ int main(void)
         {
             sd = client_sockets[i];
 
-            if(FD_ISSET((unsigned int)sd, &readfds))
+            if(FD_ISSET(sd, &readfds))
             {
                 char    word_length;
                 ssize_t valread;
@@ -148,7 +148,7 @@ int main(void)
                     // Connection closed or error
                     printf("Client %d disconnected\n", sd);
                     close(sd);
-                    FD_CLR((unsigned int)sd, &readfds);    // Remove the closed socket from the set
+                    FD_CLR(sd, &readfds);    // Remove the closed socket from the set
                     client_sockets[i] = 0;
                 }
                 else
@@ -163,7 +163,7 @@ int main(void)
                         // Connection closed or error
                         printf("Client %d disconnected\n", sd);
                         close(sd);
-                        FD_CLR((unsigned int)sd, &readfds);    // Remove the closed socket from the set
+                        FD_CLR(sd, &readfds);    // Remove the closed socket from the set
                         client_sockets[i] = 0;
                     }
                     else

@@ -98,13 +98,20 @@ static int check_pending_signal(void)
         return EXIT_FAILURE;
     }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
     return sigismember(&pending_set, SIGINT);
+#pragma GCC diagnostic pop
 }
 
 static int block_signal(int signal_num, sigset_t *block_set)
 {
     sigemptyset(block_set);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
     sigaddset(block_set, signal_num);
+#pragma GCC diagnostic pop
 
     if(sigprocmask(SIG_BLOCK, block_set, NULL) < 0)
     {

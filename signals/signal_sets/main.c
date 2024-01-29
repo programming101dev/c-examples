@@ -28,15 +28,21 @@ int main(void)
     int      signal_to_add;
     int      signal_to_remove;
 
-#ifdef __APPLE__
-    sigemptyset(&signal_set);    // On macOS, this call is guaranteed to succeed
-#else
-    if(sigemptyset(&signal_set) != 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigemptyset(&signal_set) != 0))
+#pragma GCC diagnostic pop
     {
+#if defined(__clang__)
+    #pragma clang diagnostic push
+    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+#endif
         perror("Failed to create an empty signal set");
+#if defined(__clang__)
+    #pragma GCC diagnostic pop
+#endif
         return EXIT_FAILURE;
     }
-#endif
 
     printf("Empty signal set:\n");
     print_signal_set(&signal_set);
@@ -44,7 +50,10 @@ int main(void)
     // Check if a specific signal is in the set
     signal_to_check = SIGINT;
 
-    if(sigismember(&signal_set, signal_to_check))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigismember(&signal_set, signal_to_check)))
+#pragma GCC diagnostic pop
     {
         printf("Signal %d is in the set.\n", signal_to_check);
     }
@@ -56,22 +65,30 @@ int main(void)
     // Add a signal to the set
     signal_to_add = SIGINT;
 
-#ifdef __APPLE__
-    sigaddset(&signal_set, signal_to_add);    // On macOS, this call is guaranteed to succeed
-#else
-
-    if(sigaddset(&signal_set, signal_to_add) != 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigaddset(&signal_set, signal_to_add) != 0))
+#pragma GCC diagnostic pop
     {
+#if defined(__clang__)
+    #pragma clang diagnostic push
+    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+#endif
         perror("Failed to add signal to the set");
+#if defined(__clang__)
+    #pragma clang diagnostic pop
+#endif
         return EXIT_FAILURE;
     }
-#endif
 
     printf("Signal set with %d:\n", signal_to_add);
     print_signal_set(&signal_set);
 
     // Check if the added signal is now in the set
-    if(sigismember(&signal_set, signal_to_add))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigismember(&signal_set, signal_to_add)))
+#pragma GCC diagnostic pop
     {
         printf("Signal %d is now in the set.\n", signal_to_add);
     }
@@ -83,21 +100,30 @@ int main(void)
     // Remove a signal from the set
     signal_to_remove = SIGINT;
 
-#ifdef __APPLE__
-    sigdelset(&signal_set, signal_to_remove);    // On macOS, this call is guaranteed to succeed
-#else
-    if(sigdelset(&signal_set, signal_to_remove) != 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigdelset(&signal_set, signal_to_remove) != 0))
+#pragma GCC diagnostic pop
     {
+#if defined(__clang__)
+    #pragma clang diagnostic push
+    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+#endif
         perror("Failed to remove signal from the set");
+#if defined(__clang__)
+    #pragma clang diagnostic pop
+#endif
         return EXIT_FAILURE;
     }
-#endif
 
     printf("Signal set without %d:\n", signal_to_remove);
     print_signal_set(&signal_set);
 
     // Check if the removed signal is still in the set
-    if(sigismember(&signal_set, signal_to_remove))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigismember(&signal_set, signal_to_remove)))
+#pragma GCC diagnostic pop
     {
         printf("Signal %d is still in the set.\n", signal_to_remove);
     }
@@ -107,15 +133,21 @@ int main(void)
     }
 
     // Fill the entire set with all available signals
-#if defined(__APPLE__)
-    sigfillset(&signal_set);    // Always succeeds on macOS, so no need to check
-#else
-    if(sigfillset(&signal_set) != 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    if((sigfillset(&signal_set) != 0))
+#pragma GCC diagnostic pop
     {
+#if defined(__clang__)
+    #pragma clang diagnostic push
+    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+#endif
         perror("Failed to fill the signal set");
+#if defined(__clang__)
+    #pragma clang diagnostic pop
+#endif
         return EXIT_FAILURE;
     }
-#endif
 
     // Print the complete set
     printf("Full signal set:\n");
@@ -130,7 +162,10 @@ static void print_signal_set(const sigset_t *signal_set)
 
     for(int sig = 1; sig <= NSIG; sig++)
     {
-        if(sigismember(signal_set, sig))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+        if((sigismember(signal_set, sig)))
+#pragma GCC diagnostic pop
         {
             printf("\t- Signal %d is in the set.\n", sig);
         }

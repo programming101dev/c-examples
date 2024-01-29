@@ -50,7 +50,11 @@ int main(int argc, char *argv[])
 
     // Create a signal mask containing SIGINT
     sigemptyset(&mask);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
     sigaddset(&mask, SIGINT);
+#pragma GCC diagnostic pop
 
     // Block SIGINT in the main thread
     if(sigprocmask(SIG_BLOCK, &mask, NULL) < 0)

@@ -178,6 +178,7 @@ static void child_process(int sockfd, const char *file_path)
 
     if(file == NULL)
     {
+        // TODO: this does not exit the reading thread
         error_exit("Error opening file");
     }
 

@@ -54,6 +54,16 @@ if [ -z "$c_compiler" ]; then
   usage
 fi
 
+./check-env.sh -c "$c_compiler" -f "$clang_format_name" -t "$clang_tidy_name" -k "$cppcheck_name"
+
+if [ ! -f "supported_c_compilers.txt" ] || ! grep -Fxq "$c_compiler" supported_c_compilers.txt; then
+   ./check-compilers.sh
+fi
+
+if [ ! -d "./.flags/$c_compiler" ]; then
+    ./generate-flags.sh
+fi
+
 # Function to determine the platform and set the shared library extension accordingly
 get_shared_lib_extension() {
     case "$(uname -s)" in

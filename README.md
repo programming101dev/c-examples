@@ -32,6 +32,8 @@ cd c-examples
 ./check-env.sh
 ```
 
+If you are missing tools follow these [instructions](https://docs.google.com/document/d/1ZPqlPD1mie5iwJ2XAcNGz7WeA86dTLerFXs9sAuwCco/edit?usp=drive_link).
+
 ## **Running the generate-build.sh Script**
 
 First, ensure the script is executable:

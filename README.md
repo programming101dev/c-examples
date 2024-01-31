@@ -4,20 +4,12 @@ Welcome to the `c-examples` repository. This guide will help you set up and run 
 
 ## **Table of Contents**
 
-1. [Prerequisites](#prerequisites)
-2. [Cloning the Repository](#cloning-the-repository)
-3. [Setting Up the `CC` Environment Variable](#setting-up-the-cc-environment-variable)
-4. [Running the `generate-build.sh` Script](#running-the-generate-buildsh-script)
-5. [Executing the Generated `build.sh` Script](#executing-the-generated-buildsh-script)
-6. [Conclusion](#conclusion)
-7. [Cleanup](#cleaning-up-the-repository)
-8. [Running the `cleanup.sh` Script](#running-the-cleanupsh-script)
-
-## **Prerequisites**
-
-- git
-- bash
-- clang & GCC compilers
+1. [Cloning the Repository](#cloning-the-repository)
+2. [Prerequisites](#prerequisites)
+3. [Running the `change-compiler.sh` Script](#running-the-generate-buildsh-script)
+4. [Running the `build.sh` Script](#executing-the-generated-buildsh-script)
+5. [Cleanup](#cleaning-up-the-repository)
+6. [Running the `cleanup.sh` Script](#running-the-cleanupsh-script)
 
 ## **Cloning the Repository**
 
@@ -33,6 +25,13 @@ Navigate to the cloned directory:
 cd c-examples
 ```
 
+## **Prerequisites**
+
+- to ensure you have all of the required tools installed, run:
+```bash
+./check-env.sh
+```
+
 ## **Running the generate-build.sh Script**
 
 First, ensure the script is executable:
@@ -45,7 +44,6 @@ Now, execute the script:
 
 ```bash
 ./change-compiler.sh -c <compiler>
-./build.sh
 ```
 
 This will check which compiler flags are supported on your system and subsequently generate a build.sh script tailored
@@ -67,12 +65,6 @@ Run the build.sh script:
 
 This script will compile the C files in the repository using the supported flags from the generate-build.sh script.
 
-## **Conclusion**
-
-You've now successfully cloned the c-examples repository, generated a build script tailored to your system, and compiled
-the C examples using that script. If you encounter any issues or need further guidance, please refer to the repository's
-main documentation or raise an issue on the GitHub repository.
-
 ## **Cleaning up the Repository**
 
 To delete the binaries, use the cleanup script. This script:
@@ -89,7 +81,7 @@ To run the cleanup script, navigate to the repository directory and execute it:
 First, ensure the script is executable:
 
 ```bash
-chmod +x cleanup_script_name.sh
+chmod +x cleanup.sh
 ```
 
 Run the cleanup.sh script:

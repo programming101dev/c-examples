@@ -20,7 +20,7 @@ git clone https://github.com/programming101dev/c-examples.git
 Navigate to the cloned directory:
 
 ```bash
-cd template-c
+cd c-examples
 ```
 
 Ensure the scripts are executable:

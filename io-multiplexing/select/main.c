@@ -178,7 +178,14 @@ int main(void)
                     // Connection closed or error
                     printf("Client %d disconnected\n", sd);
                     close(sd);
+#if defined(__FreeBSD__) && defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
                     FD_CLR(sd, &readfds);    // Remove the closed socket from the set
+#if defined(__FreeBSD__) && defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
                     client_sockets[i] = 0;
                 }
                 else

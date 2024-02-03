@@ -134,8 +134,8 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 }
 
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wthread-safety-analysis"
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wthread-safety-analysis"
 #endif
 static void *thread_function(void *arg)
 {
@@ -168,5 +168,5 @@ static void *thread_function(void *arg)
     pthread_exit(NULL);
 }
 #if defined(__clang__)
-#pragma clang diagnostic pop
+    #pragma clang diagnostic pop
 #endif

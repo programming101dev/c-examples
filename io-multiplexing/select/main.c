@@ -15,6 +15,7 @@
  */
 
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,13 +70,13 @@ int main(void)
 #endif
 
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
         // Add the server socket to the set
         FD_SET(sockfd, &readfds);
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
 
         max_fd = sockfd;
@@ -88,12 +89,12 @@ int main(void)
             if(sd > 0)
             {
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
                 FD_SET(sd, &readfds);
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
             }
             if(sd > max_fd)
@@ -111,13 +112,13 @@ int main(void)
         }
 
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
         // Handle new client connections
         if(FD_ISSET(sockfd, &readfds))
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
         {
             int               *temp;
@@ -159,13 +160,13 @@ int main(void)
             sd = client_sockets[i];
 
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
             if(FD_ISSET(sd, &readfds))
             {
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
                 uint8_t word_length;
                 ssize_t valread;
@@ -179,12 +180,12 @@ int main(void)
                     printf("Client %d disconnected\n", sd);
                     close(sd);
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
                     FD_CLR(sd, &readfds);    // Remove the closed socket from the set
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
                     client_sockets[i] = 0;
                 }
@@ -201,12 +202,12 @@ int main(void)
                         printf("Client %d disconnected\n", sd);
                         close(sd);
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-conversion"
 #endif
                         FD_CLR(sd, &readfds);    // Remove the closed socket from the set
 #if defined(__FreeBSD__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
+    #pragma GCC diagnostic pop
 #endif
                         client_sockets[i] = 0;
                     }

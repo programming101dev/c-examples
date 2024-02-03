@@ -21,6 +21,7 @@
 
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__FreeBSD__)
     #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunknown-pragmas"
     #pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
 #endif
 

@@ -87,7 +87,14 @@ int main(void)
 
             if(sd > 0)
             {
+#if defined(__FreeBSD__) && defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
                 FD_SET(sd, &readfds);
+#if defined(__FreeBSD__) && defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
             }
             if(sd > max_fd)
             {
@@ -160,7 +167,7 @@ int main(void)
 #if defined(__FreeBSD__) && defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
-                char    word_length;
+                uint8_t word_length;
                 ssize_t valread;
 
                 // Receive the word length (uint8_t)

@@ -19,11 +19,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#if defined(__GNUC__) && !defined(__clang__) && !defined(__FreeBSD__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunknown-pragmas"
-    #pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
-#endif
+//#if defined(__GNUC__) && !defined(__clang__) && !defined(__FreeBSD__)
+//    #pragma GCC diagnostic push
+//    #pragma GCC diagnostic ignored "-Wunknown-pragmas"
+//    #pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
+//#endif
 
 int main(void)
 {
@@ -108,6 +108,6 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-#if defined(__GNUC__) && !defined(__clang__) && !defined(__FreeBSD__)
-    #pragma GCC diagnostic pop
-#endif
+//#if defined(__GNUC__) && !defined(__clang__) && !defined(__FreeBSD__)
+//    #pragma GCC diagnostic pop
+//#endif

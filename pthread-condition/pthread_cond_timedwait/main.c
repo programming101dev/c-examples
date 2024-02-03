@@ -64,14 +64,7 @@ int main(int argc, char *argv[])
     abs_timeout.tv_sec += main_seconds;    // Changed to 5 seconds
 
     // Lock the mutex before waiting on the condition variable
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-negative"
-#endif
     pthread_mutex_lock(&mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
 
     result = pthread_cond_timedwait(&cond_var, &mutex, &abs_timeout);
     pthread_mutex_unlock(&mutex);
@@ -313,14 +306,7 @@ static void *thread_function(void *arg)
     sleep(sleep_time);
 
     // Signal the condition variable
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-negative"
-#endif
     pthread_mutex_lock(&mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
     pthread_cond_signal(&cond_var);
     pthread_mutex_unlock(&mutex);
 

@@ -148,14 +148,7 @@ static void *thread_function(void *arg)
     }
 
     // Critical section: Accessing and modifying the shared variable
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-analysis"
-#endif
     (*(data->sharedVariable))++;
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
 
     // Print the thread ID and shared variable value
     tid = pthread_self();
@@ -165,14 +158,7 @@ static void *thread_function(void *arg)
     if(data->use_mutex)
     {
         // Unlock the mutex after finishing the critical section
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-analysis"
-#endif
         pthread_mutex_unlock(data->mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
     }
 
     pthread_exit(NULL);

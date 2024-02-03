@@ -146,14 +146,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 
 static void send_word(const char *word, struct shared_data *data)
 {
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-negative"
-#endif
     pthread_mutex_lock(&data->mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
 
     while(data->word_ready)
     {
@@ -242,20 +235,15 @@ static void *child_process(void *arg)
 static void *parent_process(void *arg)
 {
     struct shared_data *data;
-    const char         *word;
 
     data = (struct shared_data *)arg;
 
     while(1)
     {
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-negative"
-#endif
+        const char *word;
+
         pthread_mutex_lock(&data->mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
+
         while(!data->word_ready)
         {
             if(pthread_cond_wait(&data->cond_var, &data->mutex) != 0)

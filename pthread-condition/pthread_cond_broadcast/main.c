@@ -33,7 +33,6 @@ static void *thread_function(void *arg);
 int main(void)
 {
     pthread_t                   threads[NUM_THREADS];
-    int                         rc;
     long                        t;
     struct synchronization_data data;
 
@@ -43,6 +42,8 @@ int main(void)
 
     for(t = 0; t < NUM_THREADS; t++)
     {
+        int rc;
+
         rc = pthread_create(&threads[t], NULL, thread_function, (void *)&data);
 
         if(rc)
@@ -55,14 +56,7 @@ int main(void)
     // Simulate some work and update the shared_data variable
     for(int i = 0; i < ITERATIONS; i++)
     {
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-negative"
-#endif
         pthread_mutex_lock(&data.mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
         data.shared_data = i + 1;
         printf("Main thread updating shared_data: %d\n", data.shared_data);
         pthread_cond_broadcast(&data.cond_var);
@@ -88,15 +82,8 @@ static void *thread_function(void *arg)
     thread_id = pthread_self();
 
     data = (struct synchronization_data *)arg;
-
-#if defined(__clang__)
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wthread-safety-negative"
-#endif
     pthread_mutex_lock(&data->mutex);
-#if defined(__clang__)
-    #pragma clang diagnostic pop
-#endif
+
     while(data->shared_data < ITERATIONS)
     {
         printf("Thread %lu is waiting...\n", (unsigned long)thread_id);

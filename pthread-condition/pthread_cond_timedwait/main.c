@@ -42,6 +42,11 @@ static pthread_mutex_t mutex    = PTHREAD_MUTEX_INITIALIZER;
 
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
+#if defined(__clang__) && defined(__FreeBSD__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wthread-safety-negative"
+#endif
+
 int main(int argc, char *argv[])
 {
     char           *main_seconds_str;
@@ -313,3 +318,7 @@ static void *thread_function(void *arg)
 }
 
 #pragma GCC diagnostic pop
+
+#if defined(__clang__) && defined(__FreeBSD__)
+#pragma clang diagnostic pop
+#endif

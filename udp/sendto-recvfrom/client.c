@@ -29,9 +29,9 @@ static void           parse_arguments(int argc, char *argv[], char **address, ch
 static void           handle_arguments(const char *binary_name, const char *address, const char *port_str, const char *message, in_port_t *port);
 static in_port_t      parse_in_port_t(const char *binary_name, const char *port_str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-static void           convert_address(const char *address, struct sockaddr_storage *addr);
+static void           convert_address(const char *address, struct sockaddr_storage *addr, socklen_t *addr_len);
 static int            socket_create(int domain, int type, int protocol);
-static void           get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port);
+static void           get_address_to_server(struct sockaddr_storage *addr, in_port_t port);
 static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
@@ -46,16 +46,24 @@ int main(int argc, char *argv[])
     int                     sockfd;
     ssize_t                 bytes_sent;
     struct sockaddr_storage addr;
+    socklen_t               addr_len;
 
     address  = NULL;
     port_str = NULL;
     message  = NULL;
     parse_arguments(argc, argv, &address, &port_str, &message);
     handle_arguments(argv[0], address, port_str, message, &port);
-    convert_address(address, &addr);
+    convert_address(address, &addr, &addr_len);
     sockfd = socket_create(addr.ss_family, SOCK_DGRAM, 0);
-    get_address_to_server(&addr, sizeof(addr), address, addr.ss_family, port);
-    bytes_sent = sendto(sockfd, message, strlen(message) + 1, 0, (struct sockaddr *)&addr, sizeof(addr));
+    get_address_to_server(&addr, port);
+    bytes_sent = sendto(sockfd, message, strlen(message) + 1, 0, (struct sockaddr *)&addr, addr_len);
+
+    if(bytes_sent == -1)
+    {
+        perror("sendto");
+        exit(EXIT_FAILURE);
+    }
+
     printf("Sent %zu bytes: \"%s\"\n", (size_t)bytes_sent, message);
     socket_close(sockfd);
 
@@ -167,17 +175,19 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-static void convert_address(const char *address, struct sockaddr_storage *addr)
+static void convert_address(const char *address, struct sockaddr_storage *addr, socklen_t *addr_len)
 {
     memset(addr, 0, sizeof(*addr));
 
     if(inet_pton(AF_INET, address, &(((struct sockaddr_in *)addr)->sin_addr)) == 1)
     {
         addr->ss_family = AF_INET;
+        *addr_len       = sizeof(struct sockaddr_in);
     }
     else if(inet_pton(AF_INET6, address, &(((struct sockaddr_in6 *)addr)->sin6_addr)) == 1)
     {
         addr->ss_family = AF_INET6;
+        *addr_len       = sizeof(struct sockaddr_in6);
     }
     else
     {
@@ -201,31 +211,23 @@ static int socket_create(int domain, int type, int protocol)
     return sockfd;
 }
 
-static void get_address_to_server(struct sockaddr_storage *addr, socklen_t addr_len, const char *address, int domain, in_port_t port)
+static void get_address_to_server(struct sockaddr_storage *addr, in_port_t port)
 {
-    memset(addr, 0, addr_len);
-
-    if(inet_pton(domain, address, addr) != 1)
-    {
-        perror("Invalid IP address");
-        exit(EXIT_FAILURE);
-    }
-
-    if(domain == AF_INET6)
-    {
-        struct sockaddr_in6 *ipv6_addr;
-
-        ipv6_addr              = (struct sockaddr_in6 *)addr;
-        ipv6_addr->sin6_family = AF_INET6;
-        ipv6_addr->sin6_port   = htons(port);
-    }
-    else if(domain == AF_INET)
+    if(addr->ss_family == AF_INET)
     {
         struct sockaddr_in *ipv4_addr;
 
         ipv4_addr             = (struct sockaddr_in *)addr;
         ipv4_addr->sin_family = AF_INET;
         ipv4_addr->sin_port   = htons(port);
+    }
+    else if(addr->ss_family == AF_INET6)
+    {
+        struct sockaddr_in6 *ipv6_addr;
+
+        ipv6_addr              = (struct sockaddr_in6 *)addr;
+        ipv6_addr->sin6_family = AF_INET6;
+        ipv6_addr->sin6_port   = htons(port);
     }
 }
 

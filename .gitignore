@@ -477,3 +477,7 @@ supported_cxx_compilers.txt
 
 *.gcno
 *.gcda
+*.gcov
+coverage.info
+**/coverage_report/
+**/*.xcodeproj/

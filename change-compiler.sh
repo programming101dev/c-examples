@@ -6,7 +6,7 @@ c_compiler=""
 clang_format_name="clang-format"
 clang_tidy_name="clang-tidy"
 cppcheck_name="cppcheck"
-sanitizers="address,undefined"
+sanitizers="address,leak,pointer-overflow,undefined"
 
 # Function to display script usage
 usage()
@@ -110,18 +110,20 @@ generate_makefile()
     echo -e "CC=$c_compiler" >> Makefile
     echo -e "COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror" >> Makefile
     echo -e "SUPPORTED_ANALYZER_FLAGS=$SUPPORTED_ANALYZER_FLAGS" >> Makefile
+    echo -e "SUPPORTED_CODE_GENERATION_FLAGS=$SUPPORTED_CODE_GENERATION_FLAGS" >> Makefile
     echo -e "SUPPORTED_DEBUG_FLAGS=$SUPPORTED_DEBUG_FLAGS" >> Makefile
     echo -e "SUPPORTED_INSTRUMENTATION_FLAGS=$SUPPORTED_INSTRUMENTATION_FLAGS" >> Makefile
     echo -e "SUPPORTED_OPTIMIZATION_FLAGS=$SUPPORTED_OPTIMIZATION_FLAGS" >> Makefile
-    echo -e "SUPPORTED_OPTIMIZE_FLAGS=$SUPPORTED_OPTIMIZE_FLAGS" >> Makefile
     echo -e "SUPPORTED_WARNING_FLAGS=$SUPPORTED_WARNING_FLAGS" >> Makefile
     echo -e "SUPPORTED_ADDRESS_SANITIZER_FLAGS=$SUPPORTED_ADDRESS_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_CFI_SANITIZER_FLAGS=$SUPPORTED_CFI_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_DATAFLOW_SANITIZER_FLAGS=$SUPPORTED_DATAFLOW_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_HWADDRESS_SANITIZER_FLAGS=$SUPPORTED_HWADDRESS_SANITIZER_FLAGS" >> Makefile
+    echo -e "SUPPORTED_LEAK_SANITIZER_FLAGS=$SUPPORTED_LEAK_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_MEMORY_SANITIZER_FLAGS=$SUPPORTED_MEMORY_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_POINTER_OVERLFLOW_SANITIZER_FLAGS=$SUPPORTED_POINTER_OVERLFLOW_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_SAFE_STACK_SANITIZER_FLAGS=$SUPPORTED_SAFE_STACK_SANITIZER_FLAGS" >> Makefile
+    echo -e "SUPPORTED_SHADOW_STACK_SANITIZER_FLAGS=$SUPPORTED_SHADOW_STACK_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_THREAD_SANITIZER_FLAGS=$SUPPORTED_THREAD_SANITIZER_FLAGS" >> Makefile
     echo -e "SUPPORTED_UNDEFINED_SANITIZER_FLAGS=$SUPPORTED_UNDEFINED_SANITIZER_FLAGS" >> Makefile
 
@@ -141,18 +143,17 @@ generate_makefile()
         if [[ -f "$file" ]]; then
             # Extract the file name without extension
             filename="${file%.c}"
-            full_path=$(realpath "$file")
 
             # Check if the file is one of the testlib files
             if [[ "$filename" == "testlib-1" || "$filename" == "testlib-2" ]]; then
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename$SHARED_EXT: $file" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_OPTIMIZE_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(CODE_GENERATION_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_LEAK_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename$SHARED_EXT" >> Makefile
 
                 # Generate a shared library rule with the appropriate extension
                 echo -e "lib$filename-traceaable$SHARED_EXT: $file" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_OPTIMIZE_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(CODE_GENERATION_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_LEAK_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -shared -fPIC -I/usr/local/include -o lib$filename-traceaable$SHARED_EXT $file \$(LIBRARIES)" >> Makefile
                 echo -e "LIBS += lib$filename-traceaable$SHARED_EXT\n" >> Makefile
             else
                 echo "SOURCES += $filename.c" >> Makefile
@@ -160,14 +161,14 @@ generate_makefile()
                 # Generate an executable rule with the supported warning flags
                 echo "$filename: $file" >> Makefile
                 echo -e "\t@echo \"Compiling $file -> $filename\"" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_OPTIMIZE_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(CODE_GENERATION_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_LEAK_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename $file \$(LIBRARIES)" >> Makefile
                 echo -e "PROGRAMS += $filename" >> Makefile
                 echo -e "BINARIES += $filename$BINARY_EXT\n" >> Makefile
 
                 # Generate a traceable version rule
                 echo -e "$filename-traceable: $file" >> Makefile
                 echo -e "\t@echo \"Compiling $file -> $filename-traceable\"" >> Makefile
-                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_OPTIMIZE_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
+                echo -e "\t@\$(CC) \$(COMPILATION_FLAGS) \$(CFLAGS) \$(SUPPORTED_ANALYZER_FLAGS) \$(CODE_GENERATION_ANALYZER_FLAGS) \$(SUPPORTED_DEBUG_FLAGS) \$(SUPPORTED_INSTRUMENTATION_FLAGS) \$(SUPPORTED_OPTIMIZATION_FLAGS) \$(SUPPORTED_WARNING_FLAGS) \$(SUPPORTED_ADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_CFI_SANITIZER_FLAGS) \$(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) \$(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \$(SUPPORTED_LEAK_SANITIZER_FLAGS) \$(SUPPORTED_MEMORY_SANITIZER_FLAGS) \$(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) \$(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \$(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) \$(SUPPORTED_THREAD_SANITIZER_FLAGS) \$(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include -I/usr/local/include -o $filename-traceable $file \$(LIBRARIES)" >> Makefile
                 echo -e "PROGRAMS += $filename-traceable" >> Makefile
 
                 if [ -n "$BINARY_EXT" ]; then
@@ -176,6 +177,12 @@ generate_makefile()
             fi
         fi
     done
+
+    # Add a clean rule to reset coverage
+    echo -e "cleanup:" >> Makefile
+    echo -e "\t@rm -rf *.dSYM" >> Makefile
+    echo -e "\t@rm -f *.gcda" >> Makefile
+    echo -e "\t@rm -f *.gcno" >> Makefile
 
     # Add a format rule to format the source code
     echo -e "format:" >> Makefile
@@ -207,11 +214,15 @@ generate_makefile()
         echo -e "\t@rm -rf \$(BINARIES)" >> Makefile
     fi
 
+    echo -e "\t@rm -rf *.dSYM" >> Makefile
+    echo -e "\t@rm -f *.gcda" >> Makefile
+    echo -e "\t@rm -f *.gcno" >> Makefile
+
     # Add an "all" rule to build all programs and libraries
     if [[ "$c_compiler" == *clang* ]]; then
-        echo -e "\nall: format \$(PROGRAMS) \$(LIBS) lint analyze check" >> Makefile
+        echo -e "\nall: cleanup format \$(PROGRAMS) \$(LIBS) lint analyze check" >> Makefile
     else
-        echo -e "\nall: format \$(PROGRAMS) \$(LIBS) lint check" >> Makefile
+        echo -e "\nall: cleanup format \$(PROGRAMS) \$(LIBS) lint check" >> Makefile
     fi
 
     # Print a message indicating the Makefile generation is complete
@@ -276,12 +287,16 @@ for sanitizer in "${SANITIZERS[@]}"; do
       SUPPORTED_DATAFLOW_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/dataflow_sanitizer_flags.txt")
     elif [[ $sanitizer == "hwaddress" ]]; then
       SUPPORTED_HWADDRESS_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/hwaddress_sanitizer_flags.txt")
+    elif [[ $sanitizer == "leak" ]]; then
+      SUPPORTED_MEMORY_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/leak_sanitizer_flags.txt")
     elif [[ $sanitizer == "memory" ]]; then
       SUPPORTED_MEMORY_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/memory_sanitizer_flags.txt")
     elif [[ $sanitizer == "pointer_overflow" ]]; then
       SUPPORTED_POINTER_OVERLFLOW_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/pointer_overflow_sanitizer_flags.txt")
     elif [[ $sanitizer == "safe_stack" ]]; then
       SUPPORTED_SAFE_STACK_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/safe_stack_sanitizer_flags.txt")
+    elif [[ $sanitizer == "shadow_call_stack" ]]; then
+      SUPPORTED_SAFE_STACK_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/shadow_call_stack_sanitizer_flags.txt")
     elif [[ $sanitizer == "thread" ]]; then
       SUPPORTED_THREAD_SANITIZER_FLAGS=$(cat "./.flags/${c_compiler}/thread_sanitizer_flags.txt")
     elif [[ $sanitizer == "undefined" ]]; then
@@ -293,7 +308,6 @@ SUPPORTED_ANALYZER_FLAGS=$(cat "./.flags/${c_compiler}/analyzer_flags.txt")
 SUPPORTED_DEBUG_FLAGS=$(cat "./.flags/${c_compiler}/debug_flags.txt")
 SUPPORTED_INSTRUMENTATION_FLAGS=$(cat "./.flags/${c_compiler}/instrumentation_flags.txt")
 SUPPORTED_OPTIMIZATION_FLAGS=$(cat "./.flags/${c_compiler}/optimization_flags.txt")
-SUPPORTED_OPTIMIZE_FLAGS=$(cat "./.flags/${c_compiler}/optimize_flags.txt")
 SUPPORTED_WARNING_FLAGS=$(cat "./.flags/${c_compiler}/warning_flags.txt")
 
 # Determine the shared library extension based on the platform

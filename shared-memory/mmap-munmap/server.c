@@ -40,9 +40,6 @@ int main(void)
     // TODO pass this in on the command line
     const char *shm_name = "/my_shared_memory";
 
-    page_size = get_page_size();
-    shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
-
     // Open the shared memory
     shm_fd = shm_open(shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 
@@ -52,7 +49,10 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    // Map the shared memory into the process address space
+    page_size = get_page_size();
+    shm_size  = (SHM_SIZE + page_size - 1) & ~(page_size - 1);
+    shm_size += page_size - (shm_size % page_size);
+    ftruncate(shm_fd, (off_t)shm_size);
     shm_ptr = (char *)mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
 
     if(shm_ptr == MAP_FAILED)

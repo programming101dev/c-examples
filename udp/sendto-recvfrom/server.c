@@ -265,6 +265,7 @@ static void socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t por
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// cppcheck-suppress constParameterPointer
 static void handle_packet(int client_sockfd, struct sockaddr_storage *client_addr, const char *buffer, size_t bytes)
 {
     printf("%d read %zu characters: \"%s\" from\n", client_sockfd, bytes, buffer);

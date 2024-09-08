@@ -45,6 +45,7 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
+// cppcheck-suppress constParameterCallback
 static void *thread_function(void *arg)
 {
     int  thread_id;

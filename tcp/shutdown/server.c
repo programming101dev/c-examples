@@ -363,6 +363,7 @@ static int socket_accept_connection(int server_fd, struct sockaddr_storage *clie
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// cppcheck-suppress constParameterPointer
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
 {
 }

@@ -107,6 +107,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// cppcheck-suppress constParameterCallback
 static int print_file(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf)
 {
     if(tflag == FTW_F)

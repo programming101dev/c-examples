@@ -53,6 +53,7 @@ int main(void)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// cppcheck-suppress constParameterCallback
 static void *print_numbers(void *arg)
 {
     // TODO pass the NUMBERS_LEN in the arg variable

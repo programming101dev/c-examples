@@ -35,7 +35,7 @@ int main(void)
     {
 #if defined(__clang__)
     #pragma clang diagnostic push
-    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+    #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to create an empty signal set");
 #if defined(__clang__)
@@ -72,7 +72,7 @@ int main(void)
     {
 #if defined(__clang__)
     #pragma clang diagnostic push
-    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+    #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to add signal to the set");
 #if defined(__clang__)
@@ -107,7 +107,7 @@ int main(void)
     {
 #if defined(__clang__)
     #pragma clang diagnostic push
-    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+    #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to remove signal from the set");
 #if defined(__clang__)
@@ -140,7 +140,7 @@ int main(void)
     {
 #if defined(__clang__)
     #pragma clang diagnostic push
-    #pragma GCC diagnostic   ignored "-Wunreachable-code"
+    #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to fill the signal set");
 #if defined(__clang__)

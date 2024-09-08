@@ -348,6 +348,7 @@ static void setup_signal_handler(void)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+// cppcheck-suppress constParameterPointer
 static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr)
 {
 }

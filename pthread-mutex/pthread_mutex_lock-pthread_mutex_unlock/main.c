@@ -140,7 +140,6 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
 static void *thread_function(void *arg)
 {
     pthread_t           tid;
-    uintptr_t           tid_val;
     struct thread_data *data;
 
     data = (struct thread_data *)arg;
@@ -154,10 +153,11 @@ static void *thread_function(void *arg)
     // Critical section: Accessing and modifying the shared variable
     (*(data->sharedVariable))++;
 
-    // Print the thread ID and shared variable value
+    // Get the thread ID
     tid = pthread_self();
-    memcpy(&tid_val, &tid, sizeof(uintptr_t));
-    printf("Thread %" PRIuMAX ": Shared variable value: %d\n", (uintmax_t)tid_val, *(data->sharedVariable));
+
+    // Print the thread ID and shared variable value (using pointer representation for pthread_t)
+    printf("Thread %p: Shared variable value: %d\n", (void *)tid, *(data->sharedVariable));
 
     if(data->use_mutex)
     {

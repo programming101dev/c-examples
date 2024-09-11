@@ -157,7 +157,7 @@ static void *thread_function(void *arg)
     tid = pthread_self();
 
     // Print the thread ID and shared variable value (using pointer representation for pthread_t)
-    printf("Thread %p: Shared variable value: %d\n", (void *)tid, *(data->sharedVariable));
+    printf("Thread %lu: Shared variable value: %d\n", (unsigned long)tid, *(data->sharedVariable));
 
     if(data->use_mutex)
     {

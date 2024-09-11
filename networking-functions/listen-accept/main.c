@@ -40,7 +40,7 @@ static int            socket_create(int domain, int type, int protocol);
 static void           socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
 static void           start_listening(int server_fd, int backlog);
 static int            socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_addr_len);
-static void           handle_connection(int client_sockfd, struct sockaddr_storage *client_addr, const char *message);
+static void           handle_connection(int client_sockfd, const struct sockaddr_storage *client_addr, const char *message);
 static void           socket_close(int sockfd);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
@@ -415,7 +415,7 @@ static void setup_signal_handler(void)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void handle_connection(int client_sockfd, struct sockaddr_storage *client_addr, const char *message)
+static void handle_connection(int client_sockfd, const struct sockaddr_storage *client_addr, const char *message)
 {
     size_t len;
 

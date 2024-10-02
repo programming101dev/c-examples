@@ -21,30 +21,35 @@
 
 int main(void)
 {
-    errno = 0;
-    fgetc(stdout);
+    int result;
 
-    if(errno != 0)
+    errno  = 0;
+    result = fgetc(stdout);
+
+    if(result == EOF)
     {
-        const char *msg;
-        int         current_erro_no;
-
-        current_erro_no = errno;
-        errno           = 0;
-        msg             = strerror(current_erro_no);
-
         if(errno != 0)
         {
-            perror("strerror");
-            return EXIT_FAILURE;
-        }
+            const char *msg;
+            int         current_erro_no;
 
-        errno = 0;
+            current_erro_no = errno;
+            errno           = 0;
+            msg             = strerror(current_erro_no);
 
-        if(fprintf(stderr, "There was an error with fgetc: %s\n", msg) < 0)
-        {
-            perror("fprintf");
-            return EXIT_FAILURE;
+            if(errno != 0)
+            {
+                perror("strerror");
+                return EXIT_FAILURE;
+            }
+
+            errno = 0;
+
+            if(fprintf(stderr, "There was an error with fgetc: %s\n", msg) < 0)
+            {
+                perror("fprintf");
+                return EXIT_FAILURE;
+            }
         }
     }
 

@@ -20,17 +20,22 @@
 
 int main(void)
 {
-    errno = 0;
-    fgetc(stdout);
+    int result;
 
-    if(errno != 0)
+    errno  = 0;
+    result = fgetc(stdout);
+
+    if(result == EOF)
     {
-        clearerr(stderr);
-        perror("error with fgetc");
-
-        if(ferror(stderr) != 0)
+        if(errno != 0)
         {
-            perror("error with perror");
+            clearerr(stderr);
+            perror("error with fgetc");
+
+            if(ferror(stderr) != 0)
+            {
+                perror("error with perror");
+            }
         }
     }
 

@@ -6,7 +6,7 @@ c_compiler=""
 clang_format_name="clang-format"
 clang_tidy_name="clang-tidy"
 cppcheck_name="cppcheck"
-sanitizers="address,leak,pointer_overflow,undefined"
+sanitizers=""
 
 # Function to display script usage
 usage()

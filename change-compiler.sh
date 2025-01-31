@@ -217,6 +217,8 @@ generate_makefile()
     echo -e "\t@rm -rf *.dSYM" >> Makefile
     echo -e "\t@rm -f *.gcda" >> Makefile
     echo -e "\t@rm -f *.gcno" >> Makefile
+    echo -e "\t@rm -f *.out" >> Makefile
+    echo -e "\t@rm -f *.gcov" >> Makefile
 
     # Add an "all" rule to build all programs and libraries
     if [[ "$c_compiler" == *clang* ]]; then
@@ -315,3 +317,5 @@ get_shared_lib_extension
 
 # Start processing directories from the current directory
 process_directories "."
+
+./cleanup.sh

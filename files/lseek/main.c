@@ -25,9 +25,9 @@
 
 static void           parse_arguments(int argc, char *argv[], char **file_path, char **offset);
 static void           handle_arguments(const char *binary_name, const char *file_path, const char *offset_str, off_t *offset);
-off_t                 get_off_t_min(void) __attribute__((const));
-off_t                 get_off_t_max(void) __attribute__((const));
-off_t                 parse_off_t(const char *binary_name, off_t min, off_t max, const char *str);
+static off_t          get_off_t_min(void) __attribute__((const));
+static off_t          get_off_t_max(void) __attribute__((const));
+static off_t          parse_off_t(const char *binary_name, off_t min, off_t max, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void           display_file(int fd, const char *message, off_t offset);
 
@@ -135,7 +135,7 @@ static void handle_arguments(const char *binary_name, const char *file_path, con
     *offset = parse_off_t(binary_name, min, max, offset_str);
 }
 
-off_t get_off_t_min(void)
+static off_t get_off_t_min(void)
 {
     off_t value;
 
@@ -169,7 +169,7 @@ off_t get_off_t_min(void)
     return value;
 }
 
-off_t get_off_t_max(void)
+static off_t get_off_t_max(void)
 {
     off_t value;
 
@@ -202,7 +202,7 @@ off_t get_off_t_max(void)
     return value;
 }
 
-off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str)
+static off_t parse_off_t(const char *binary_name, off_t min, off_t max, const char *str)
 {
     char    *endptr;
     intmax_t parsed_value;

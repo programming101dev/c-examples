@@ -23,7 +23,7 @@
 static void           parse_arguments(int argc, char *argv[], char **log_name);
 static void           handle_arguments(const char *binary_name, const char *log_name);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-void                  logMessages(void);
+static void           logMessages(void);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
@@ -104,7 +104,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-void logMessages(void)
+static void logMessages(void)
 {
     syslog(LOG_EMERG, "This is an emergency message.");
     syslog(LOG_ALERT, "This is an alert message.");

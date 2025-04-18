@@ -22,7 +22,7 @@
 static void           parse_arguments(int argc, char *argv[], char **pattern);
 static void           handle_arguments(const char *binary_name, const char *pattern);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
-int                   custom_error_handler(const char *epath, int err);
+static int            custom_error_handler(const char *epath, int err);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
@@ -127,7 +127,7 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     exit(exit_code);
 }
 
-int custom_error_handler(const char *epath, int err)
+static int custom_error_handler(const char *epath, int err)
 {
     fprintf(stderr, "Custom Error: Failed to process path '%s' with error code %d\n", epath, err);
 

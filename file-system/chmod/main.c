@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-void print_permissions(const char *filename);
+static void print_permissions(const char *filename);
 
 // TODO pass the filename in on the command line
 
@@ -61,7 +61,7 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-void print_permissions(const char *filename)
+static void print_permissions(const char *filename)
 {
     struct stat file_stat;
 

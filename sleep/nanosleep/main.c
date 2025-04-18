@@ -24,9 +24,9 @@
 
 static void           parse_arguments(int argc, char *argv[], char **seconds, char **nanoseconds);
 static void           handle_arguments(const char *binary_name, const char *seconds_str, const char *nanoseconds_str, time_t *seconds, long *nanoseconds);
-time_t                get_time_t_min(void) __attribute__((const));
-time_t                get_time_t_max(void) __attribute__((const));
-time_t                parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
+static time_t         get_time_t_min(void) __attribute__((const));
+static time_t         get_time_t_max(void) __attribute__((const));
+static time_t         parse_time_t(const char *binary_name, time_t min, time_t max, const char *str);
 static long           parse_long(const char *binary_name, const char *str);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
@@ -143,7 +143,7 @@ static void handle_arguments(const char *binary_name, const char *seconds_str, c
     }
 }
 
-time_t get_time_t_min(void)
+static time_t get_time_t_min(void)
 {
     time_t value;
 
@@ -177,7 +177,7 @@ time_t get_time_t_min(void)
     return value;
 }
 
-time_t get_time_t_max(void)
+static time_t get_time_t_max(void)
 {
     time_t value;
 
@@ -210,7 +210,7 @@ time_t get_time_t_max(void)
     return value;
 }
 
-time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str)
+static time_t parse_time_t(const char *binary_name, time_t min, time_t max, const char *str)
 {
     char    *endptr;
     intmax_t parsed_value;

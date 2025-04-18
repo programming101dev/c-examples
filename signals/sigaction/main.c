@@ -25,7 +25,7 @@ struct signal_info
     const char *signal_name;
 };
 
-void signal_handler(int signal_number);
+static void signal_handler(int signal_number);
 
 int main(void)
 {
@@ -161,7 +161,7 @@ int main(void)
     return EXIT_SUCCESS;
 }
 
-void signal_handler(int signal_number)
+static void signal_handler(int signal_number)
 {
     printf("Received signal: %d\n", signal_number);
 }

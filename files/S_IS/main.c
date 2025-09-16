@@ -170,7 +170,7 @@ static void print_extended_type(const struct stat *fileStat)
 {
     (void)fileStat;    // Suppress unused parameter warning
 
-#if defined(__cppcheck__)
+#ifdef __cppcheck__
     // Skip extended type checks when running Cppcheck
     printf("Extended type checks are skipped during Cppcheck analysis.\n");
 #else

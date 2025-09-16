@@ -183,7 +183,7 @@ static void send_word(int sockfd, const char *word, uint8_t length)
 
     // Add random delay between 500ms and 1500ms
     delay.tv_sec  = 0;
-    delay.tv_nsec = MIN_DELAY_MILLISECONDS * MILLISECONDS_IN_NANOSECONDS + (rand() % MAX_ADDITIONAL_NANOSECONDS);
+    delay.tv_nsec = (MIN_DELAY_MILLISECONDS * MILLISECONDS_IN_NANOSECONDS) + (rand() % MAX_ADDITIONAL_NANOSECONDS);
     nanosleep(&delay, NULL);
 }
 

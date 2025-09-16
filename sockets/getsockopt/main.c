@@ -47,7 +47,7 @@ static void           print_socket_opt_timeval(int sockfd, int option_level, int
 static void           print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
 static void           socket_close(int sockfd);
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
     #define D_MS_FORMAT "%d"
 #elif defined(__linux__)
     #define D_MS_FORMAT "%ld"

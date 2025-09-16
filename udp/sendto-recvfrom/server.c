@@ -61,12 +61,23 @@ int main(int argc, char *argv[])
     client_addr_len = sizeof(client_addr);
     bytes_received  = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&client_addr, &client_addr_len);
 
-    if(bytes_received == -1)
+    if(bytes_received < 0)
     {
         perror("recvfrom");
+        socket_close(sockfd);
+        exit(EXIT_FAILURE);
     }
 
-    buffer[(size_t)bytes_received] = '\0';
+    /* Clamp the index into the buffer’s valid range */
+    size_t cap = sizeof(buffer);
+    size_t n   = (size_t)bytes_received;
+
+    if(n >= cap)
+    {
+        n = cap - 1;
+    }
+
+    buffer[n] = '\0';
     handle_packet(sockfd, &client_addr, buffer, (size_t)bytes_received);
     socket_close(sockfd);
 

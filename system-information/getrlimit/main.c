@@ -23,7 +23,7 @@ static void show_limit(int resource, const char *name);
 
 int main(void)
 {
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
 #endif
@@ -34,7 +34,7 @@ int main(void)
     SHOW_LIMIT(RLIMIT_NOFILE);
     SHOW_LIMIT(RLIMIT_STACK);
     SHOW_LIMIT(RLIMIT_AS);
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic pop
 #endif
     return EXIT_SUCCESS;

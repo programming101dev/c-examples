@@ -33,12 +33,12 @@ int main(void)
     if((sigemptyset(&signal_set) != 0))
 #pragma GCC diagnostic pop
     {
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic push
     #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to create an empty signal set");
-#if defined(__clang__)
+#ifdef __clang__
     #pragma GCC diagnostic pop
 #endif
         return EXIT_FAILURE;
@@ -70,12 +70,12 @@ int main(void)
     if((sigaddset(&signal_set, signal_to_add) != 0))
 #pragma GCC diagnostic pop
     {
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic push
     #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to add signal to the set");
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic pop
 #endif
         return EXIT_FAILURE;
@@ -105,12 +105,12 @@ int main(void)
     if((sigdelset(&signal_set, signal_to_remove) != 0))
 #pragma GCC diagnostic pop
     {
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic push
     #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to remove signal from the set");
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic pop
 #endif
         return EXIT_FAILURE;
@@ -138,12 +138,12 @@ int main(void)
     if((sigfillset(&signal_set) != 0))
 #pragma GCC diagnostic pop
     {
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic push
     #pragma GCC diagnostic ignored "-Wunreachable-code"
 #endif
         perror("Failed to fill the signal set");
-#if defined(__clang__)
+#ifdef __clang__
     #pragma clang diagnostic pop
 #endif
         return EXIT_FAILURE;

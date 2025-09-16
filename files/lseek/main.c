@@ -31,7 +31,7 @@ static off_t          parse_off_t(const char *binary_name, off_t min, off_t max,
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void           display_file(int fd, const char *message, off_t offset);
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
     #define D_OFF_FORMAT "%lld"
 #else
     #define D_OFF_FORMAT "%ld"

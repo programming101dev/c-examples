@@ -207,9 +207,16 @@ static void *child_process(void *arg)
     while(fgets(line, sizeof(line), file) != NULL)
     {
         const char *token;
+        char       *nl;
 
-        line[strcspn(line, "\n")] = '\0';    // Remove the newline character if present
-        token                     = strtok_r(line, " \t", &saveptr);
+        nl = strchr(line, '\n');
+
+        if(nl != NULL)
+        {
+            *nl = '\0';
+        }
+
+        token = strtok_r(line, " \t", &saveptr);
 
         while(token != NULL)
         {

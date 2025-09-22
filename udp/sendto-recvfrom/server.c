@@ -50,6 +50,8 @@ int main(int argc, char *argv[])
     struct sockaddr_storage client_addr;
     socklen_t               client_addr_len;
     struct sockaddr_storage addr;
+    size_t                  cap;
+    size_t                  n;
 
     address  = NULL;
     port_str = NULL;
@@ -69,8 +71,8 @@ int main(int argc, char *argv[])
     }
 
     /* Clamp the index into the buffer’s valid range */
-    size_t cap = sizeof(buffer);
-    size_t n   = (size_t)bytes_received;
+    cap = sizeof(buffer);
+    n   = (size_t)bytes_received;
 
     if(n >= cap)
     {

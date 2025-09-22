@@ -31,6 +31,7 @@ int main(void)
     int         saved_stdout;
 
     original_fd = mkstemp(templ);
+
     if(original_fd == -1)
     {
         perror("Error creating temporary file");
@@ -54,7 +55,9 @@ int main(void)
         return EXIT_FAILURE;
     }
 
-    if(dup2(original_fd, STDOUT_FILENO) == -1)
+    dup2(original_fd, STDOUT_FILENO);
+
+    if(fd == -1)
     {
         perror("Error redirecting stdout");
         close(original_fd);

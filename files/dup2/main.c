@@ -1,17 +1,6 @@
 /*
  * This code is licensed under the Attribution-NonCommercial-NoDerivatives 4.0 International license.
- *
  * Author: D'Arcy Smith (ds@programming101.dev)
- *
- * You are free to:
- *   - Share: Copy and redistribute the material in any medium or format.
- *   - Under the following terms:
- *       - Attribution: You must give appropriate credit, provide a link to the license, and indicate if changes were made.
- *       - NonCommercial: You may not use the material for commercial purposes.
- *       - NoDerivatives: If you remix, transform, or build upon the material, you may not distribute the modified material.
- *
- * For more details, please refer to the full license text at:
- * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
 #include <errno.h>
@@ -26,8 +15,8 @@ int main(void)
 {
     /* Declarations only. */
     char        templ[PATH_MAX];
-    int         temp_fd;
-    int         saved_stdout_fd;
+    int         temp_fd;         /* fd returned by mkstemp */
+    int         saved_stdout_fd; /* duplicate of original stdout */
     int         have_temp_fd;
     int         have_saved_stdout_fd;
     int         stdout_redirected;
@@ -40,7 +29,9 @@ int main(void)
     int         failed;
     struct stat sb;
 
-    /* Initialize flags and status. Leave FDs uninitialized to avoid dead-store warnings. */
+    /* Immediate initializations to satisfy Clang's -Wconditional-uninitialized. */
+    temp_fd              = -1;
+    saved_stdout_fd      = -1;
     have_temp_fd         = 0;
     have_saved_stdout_fd = 0;
     stdout_redirected    = 0;
@@ -71,7 +62,7 @@ int main(void)
     }
     have_temp_fd = 1;
 
-    /* Check size before writing using fstat on the open descriptor. */
+    /* Size before write. */
     rc = fstat(temp_fd, &sb);
     if(rc == -1)
     {
@@ -79,7 +70,6 @@ int main(void)
         failed = 1;
         goto cleanup;
     }
-
     rc = fprintf(stderr, "Size before write: %lld bytes\n", (long long)sb.st_size);
     if(rc < 0)
     {
@@ -88,7 +78,7 @@ int main(void)
         goto cleanup;
     }
 
-    /* Duplicate current stdout so we can restore it later. */
+    /* Save current stdout. */
     saved_stdout_fd = dup(STDOUT_FILENO); /* NOLINT(android-cloexec-dup) */
     if(saved_stdout_fd == -1)
     {
@@ -116,7 +106,6 @@ int main(void)
         failed = 1;
         goto cleanup;
     }
-
     r_flush = fflush(stdout);
     if(r_flush != 0)
     {
@@ -124,8 +113,6 @@ int main(void)
         failed = 1;
         goto cleanup;
     }
-
-    /* We leave stdout redirected until cleanup. We can still report to stderr. */
 
     /* Size after write. */
     rc = fstat(temp_fd, &sb);
@@ -135,7 +122,6 @@ int main(void)
         failed = 1;
         goto cleanup;
     }
-
     rc = fprintf(stderr, "Size after write: %lld bytes\n", (long long)sb.st_size);
     if(rc < 0)
     {
@@ -145,7 +131,7 @@ int main(void)
     }
 
 cleanup:
-    /* If stdout is still redirected and we have the saved fd, try to restore it. */
+    /* Restore stdout if redirected and we have the saved fd. */
     if(stdout_redirected && have_saved_stdout_fd)
     {
         r_dup2 = dup2(saved_stdout_fd, STDOUT_FILENO);
@@ -156,29 +142,29 @@ cleanup:
         }
     }
 
-    /* Close saved stdout fd if it is open. */
+    /* Close saved stdout fd if open. */
     if(have_saved_stdout_fd)
     {
         r_close = close(saved_stdout_fd);
         if(r_close == -1)
         {
-            perror("final close(saved_stdout_fd) failed");
+            perror("close(saved_stdout_fd) failed");
             failed = 1;
         }
     }
 
-    /* Close temp file if it is open. */
+    /* Close temp file if open. */
     if(have_temp_fd)
     {
         r_close = close(temp_fd);
         if(r_close == -1)
         {
-            perror("final close(temp_fd) failed");
+            perror("close(temp_fd) failed");
             failed = 1;
         }
     }
 
-    /* Unlink the pathname if mkstemp created one. */
+    /* Unlink the pathname if created. */
     if(templ[0] != '\0')
     {
         r_unlink = unlink(templ);
@@ -189,9 +175,5 @@ cleanup:
         }
     }
 
-    if(failed)
-    {
-        return EXIT_FAILURE;
-    }
-    return EXIT_SUCCESS;
+    return failed ? EXIT_FAILURE : EXIT_SUCCESS;
 }

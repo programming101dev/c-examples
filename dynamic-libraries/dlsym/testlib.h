@@ -16,8 +16,6 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 void display(const char *msg);
 
-
-#endif //C_EXAMPLES_TESTLIB_H
+#endif    // C_EXAMPLES_TESTLIB_H

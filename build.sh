@@ -1,84 +1,123 @@
 #!/usr/bin/env bash
+# run-make-tree.sh — run make in each directory that has a Makefile
+# Portable: macOS (BSD make), FreeBSD, Linux
 
-# Function to run make clean all in directories with Makefile
-run_make() {
-    local current_dir="$1"
+set -euo pipefail
 
-    # Check if the directory name ends with ".dSYM" and skip it
-    if [[ "$(basename "$current_dir")" == *".dSYM" ]]; then
-        return
-    fi
+start_dir="."
+target="all"
+clean_first=false
+jobs=""
+keep_going=false
+quiet=false
 
-    echo -e "\nProcessing directory: $current_dir"
+usage() {
+  cat <<'USAGE'
+Usage: run-make-tree.sh [-d <dir>] [-t <target>] [-c] [-j <N>] [-k] [-q] [-h]
+  -d <dir>   Start directory (default: .)
+  -t <tgt>   make target (default: all)
+  -c         clean first (run "make clean" before target)
+  -j <N>     parallel jobs, passed to make as -jN
+  -k         keep going (do not stop on first failure; report summary at end)
+  -q         quiet (less chatter)
+  -h         help
 
-    # Check if a Makefile exists in the current directory
-    if [ -f "$current_dir/Makefile" ]; then
-        echo "Running 'make all' in $current_dir..."
-        (cd "$current_dir" && make all)
-        result=$?
-        if [ $result -ne 0 ]; then
-            echo "Error: Make failed in $current_dir."
-            exit 1
-        fi
-    fi
+Notes:
+- Skips *.dSYM directories.
+- Detects Makefile/makefile/GNUmakefile.
+USAGE
+  exit 1
 }
 
-# Function to traverse directories from the specified starting point
-run_make_from_start_dir() {
-    local start_dir="$1"
-    local found_start=0
-
-    # Find and sort directories alphabetically (use appropriate sorting method depending on OS)
-    if [[ "$(uname)" == "Darwin" || "$(uname)" == "FreeBSD" ]]; then
-        # For macOS and FreeBSD, sort using locale-aware sort
-        all_dirs=($(find . -type d | LC_ALL=C sort))
-    else
-        # For Linux, plain sort should work
-        all_dirs=($(find . -type d | sort))
-    fi
-
-    # Traverse through all directories
-    for dir in "${all_dirs[@]}"; do
-        # Skip directories before the start directory
-        if [[ $found_start -eq 0 ]]; then
-            if [[ "$dir" == "$start_dir" || "$dir" == "./$start_dir" ]]; then
-                found_start=1
-            else
-                continue
-            fi
-        fi
-
-        # Run make on the current directory
-        run_make "$dir"
-    done
-}
-
-# Parse command-line options
-start_dir="." # Default to the current directory if -d is not provided
-
-while getopts "d:" opt; do
-    case $opt in
-        d)
-            start_dir="$OPTARG"
-            ;;
-        \?)
-            echo "Usage: $0 -d <directory>"
-            exit 1
-            ;;
-    esac
+while getopts ":d:t:j:ckqh" opt; do
+  case "$opt" in
+    d) start_dir="$OPTARG" ;;
+    t) target="$OPTARG" ;;
+    j) jobs="-j${OPTARG}" ;;
+    c) clean_first=true ;;
+    k) keep_going=true ;;
+    q) quiet=true ;;
+    h|*) usage ;;
+  esac
 done
 
-# Ensure .flags directory exists before running
-if [ ! -d "./.flags" ]; then
-  echo "You must run ./change-compiler.sh first"
-  exit 1
-fi
+[[ -d "$start_dir" ]] || { echo "Error: start directory '$start_dir' does not exist." >&2; exit 1; }
 
-# Validate that the starting directory exists
-if [ ! -d "$start_dir" ]; then
-  echo "Error: Directory $start_dir does not exist."
-  exit 1
-fi
+# Collect dirs, pruning common noise. BSD/GNU find compatible.
+all_dirs=()
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  all_dirs+=("$line")
+done < <(
+  find "$start_dir" \
+    -path "*/.git"            -prune -o \
+    -path "*/.github"         -prune -o \
+    -path "*/.gitlab"         -prune -o \
+    -path "*/node_modules"    -prune -o \
+    -path "*/build"           -prune -o \
+    -path "*/cmake-build-*"   -prune -o \
+    -path "*/out"             -prune -o \
+    -path "*/dist"            -prune -o \
+    -path "*/target"          -prune -o \
+    -path "*/bin"             -prune -o \
+    -path "*/obj"             -prune -o \
+    -path "*/.dSYM"           -prune -o \
+    -type d -print | LC_ALL=C sort
+)
 
-# Start the traversal process from the specified directory
-run_make_from_start_dir "$start_dir"
+has_makefile() {
+  local d="$1"
+  [[ -f "$d/Makefile" || -f "$d/makefile" || -f "$d/GNUmakefile" ]]
+}
+
+is_dsym_dir() {
+  local d="$1"
+  [[ "$(basename "$d")" == *.dSYM ]]
+}
+
+run_make_in_dir() {
+  local d="$1"
+  local rc=0
+
+  "$quiet" || printf "\n==> %s\n" "$d"
+
+  if "$clean_first"; then
+    "$quiet" || echo "  make clean"
+    if ! make -C "$d" clean >/dev/null 2>&1; then
+      make -C "$d" clean || return $?
+    fi
+  fi
+
+  "$quiet" || echo "  make ${target} ${jobs}"
+  # shellcheck disable=SC2086
+  make -C "$d" ${jobs} "${target}" && rc=0 || rc=$?
+
+  return "$rc"
+}
+
+fail_list=()
+for dir in "${all_dirs[@]}"; do
+  is_dsym_dir "$dir" && { "$quiet" || echo "Skipping dSYM dir: $dir"; continue; }
+  has_makefile "$dir" || continue
+
+  if ! run_make_in_dir "$dir"; then
+    if "$keep_going"; then
+      echo "!! make failed in: $dir"
+      fail_list+=("$dir")
+    else
+      echo "Error: make failed in: $dir"
+      exit 1
+    fi
+  fi
+done
+
+if ((${#fail_list[@]})); then
+  echo
+  echo "Build completed with failures in ${#fail_list[@]} dir(s):"
+  for f in "${fail_list[@]}"; do
+    echo "  - $f"
+  done
+  exit 1
+else
+  "$quiet" || printf "\nAll eligible directories built successfully.\n"
+fi

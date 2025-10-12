@@ -14,10 +14,8 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
-
 #include "testlib.h"
 #include <stdio.h>
-
 
 void display(const char *msg)
 {

@@ -14,6 +14,8 @@
  * https://creativecommons.org/licenses/by-nc-nd/4.0/
  */
 
+#include <errno.h>
+#include <stdint.h>
 #include <poll.h>
 #include <signal.h>
 #include <stdio.h>
@@ -30,6 +32,7 @@ static void           socket_bind(int sockfd, const char *path);
 static void           socket_close(int sockfd);
 static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets);
 static void           handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_clients, struct pollfd **fds);
+static int read_full(int fd, void *buf, size_t n);
 static void           handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *max_clients);
 static void           handle_client_disconnection(int **client_sockets, nfds_t *max_clients, struct pollfd **fds, nfds_t client_index);
 
@@ -246,41 +249,70 @@ static void handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_
     }
 }
 
+#include <errno.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <stdio.h>
+
+static int read_full(int fd, void *buf, size_t n)
+{
+    size_t off = 0;
+    while (off < n)
+    {
+        ssize_t r = read(fd, (char *)buf + off, n - off);
+        if (r == 0) return 0;
+        if (r < 0)
+        {
+            if (errno == EINTR) continue;
+            return -1;
+        }
+        off += (size_t)r;
+    }
+    return 1;
+}
+
 static void handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *max_clients)
 {
-    for(nfds_t i = 0; i < *max_clients; i++)
+    // Max payload length allowed by BOTH the protocol byte and our buffer (leaving room for NUL).
+    const size_t max_payload =
+        ((MAX_WORD_LEN - 1) < 255u) ? (size_t)(MAX_WORD_LEN - 1) : 255u;
+
+    for (nfds_t i = 0; i < *max_clients; i++)
     {
-        if(client_sockets[i] != -1 && (fds[i + 1].revents & POLLIN))
+        if (client_sockets[i] != -1 && (fds[i + 1].revents & POLLIN))
         {
-            char    word_length;
-            ssize_t valread;
+            char word[MAX_WORD_LEN];
+            uint8_t word_length_u8;
+            int rc;
+            size_t word_length;
 
-            valread = read(client_sockets[i], &word_length, sizeof(word_length));
-
-            if(valread <= 0)
+            rc = read_full(client_sockets[i], &word_length_u8, sizeof(word_length_u8));
+            if (rc <= 0)
             {
-                // Connection closed or error
                 printf("Client %d disconnected\n", client_sockets[i]);
                 handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                continue;
             }
-            else
+
+            word_length = (size_t)word_length_u8;
+
+            if (word_length > max_payload)
             {
-                char word[MAX_WORD_LEN];
-
-                valread = read(client_sockets[i], word, (size_t)word_length);
-
-                if(valread <= 0)
-                {
-                    // Connection closed or error
-                    printf("Client %d disconnected\n", client_sockets[i]);
-                    handle_client_disconnection(&client_sockets, max_clients, &fds, i);
-                }
-                else
-                {
-                    word[valread] = '\0';
-                    printf("Received word from client %d: %s\n", client_sockets[i], word);
-                }
+                printf("Client %d sent oversize word length (%zu)\n", client_sockets[i], word_length);
+                handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                continue;
             }
+
+            rc = read_full(client_sockets[i], word, word_length);
+            if (rc <= 0)
+            {
+                printf("Client %d disconnected\n", client_sockets[i]);
+                handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                continue;
+            }
+
+            word[word_length] = '\0';
+            printf("Received word from client %d: %s\n", client_sockets[i], word);
         }
     }
 }

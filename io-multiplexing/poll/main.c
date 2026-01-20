@@ -15,9 +15,9 @@
  */
 
 #include <errno.h>
-#include <stdint.h>
 #include <poll.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,31 +25,36 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-static void           setup_signal_handler(void);
-static void           sigint_handler(int signum);
-static int            socket_create(void);
-static void           socket_bind(int sockfd, const char *path);
-static void           socket_close(int sockfd);
-static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets);
-static void           handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_clients, struct pollfd **fds);
-static int read_full(int fd, void *buf, size_t n);
-static void           handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *max_clients);
-static void           handle_client_disconnection(int **client_sockets, nfds_t *max_clients, struct pollfd **fds, nfds_t client_index);
-
 #define SOCKET_PATH "/tmp/example_socket"
 #define MAX_WORD_LEN 256
+
+static void setup_signal_handler(void);
+static void sigint_handler(int signum);
+static int  socket_create(void);
+static void socket_bind(int sockfd, const char *path);
+static void socket_close(int sockfd);
+
+static size_t min_size(size_t a, size_t b);
+
+static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets, nfds_t *client_capacity);
+static void           handle_new_connection(int sockfd, int **client_sockets, nfds_t *client_count, nfds_t *client_capacity, struct pollfd **fds);
+static int            read_full(int fd, void *buf, size_t n);
+static void           handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *client_count);
+static void           handle_client_disconnection(int *client_sockets, nfds_t *client_count, struct pollfd *fds, nfds_t client_index);
 
 static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(void)
 {
     int            sockfd;
-    int           *client_sockets = NULL;
-    nfds_t         max_clients    = 0;
-    struct pollfd *fds;
+    int           *client_sockets  = NULL;
+    nfds_t         client_count    = 0;
+    nfds_t         client_capacity = 0;
+    struct pollfd *fds             = NULL;
 
     setup_signal_handler();
     unlink(SOCKET_PATH);
+
     sockfd = socket_create();
     socket_bind(sockfd, SOCKET_PATH);
 
@@ -60,13 +65,12 @@ int main(void)
     }
 
     printf("Server listening for incoming connections...\n");
-    fds = initialize_pollfds(sockfd, &client_sockets);
+
+    fds = initialize_pollfds(sockfd, &client_sockets, &client_capacity);
 
     while(!exit_flag)
     {
-        int activity;
-
-        activity = poll(fds, max_clients + 1, -1);
+        int activity = poll(fds, client_count + 1, -1);
 
         if(activity < 0)
         {
@@ -75,32 +79,43 @@ int main(void)
         }
 
         // Handle new client connections
-        handle_new_connection(sockfd, &client_sockets, &max_clients, &fds);
+        handle_new_connection(sockfd, &client_sockets, &client_count, &client_capacity, &fds);
 
-        if(client_sockets != NULL)
+        // Handle incoming data from existing clients
+        if(client_count > 0)
         {
-            // Handle incoming data from existing clients
-            handle_client_data(fds, client_sockets, &max_clients);
+            handle_client_data(fds, client_sockets, &client_count);
         }
+
+        // Defensive hygiene: poll() sets these bits; clear them for the next iteration.
+        fds[0].revents = 0;
     }
 
     free(fds);
 
-    // Cleanup and close all client sockets
-    for(size_t i = 0; i < max_clients; i++)
+    // Cleanup and close all active client sockets
+    if(client_sockets != NULL)
     {
-        if(client_sockets[i] > 0)
+        for(nfds_t i = 0; i < client_count; i++)
         {
-            socket_close(client_sockets[i]);
+            if(client_sockets[i] > 0)
+            {
+                socket_close(client_sockets[i]);
+            }
         }
+        free(client_sockets);
     }
 
-    free(client_sockets);
     socket_close(sockfd);
     unlink(SOCKET_PATH);
     printf("Server exited successfully.\n");
 
     return EXIT_SUCCESS;
+}
+
+static size_t min_size(size_t a, size_t b)
+{
+    return (a < b) ? a : b;
 }
 
 static void setup_signal_handler(void)
@@ -115,7 +130,7 @@ static void setup_signal_handler(void)
 #ifdef __clang__
     #pragma clang diagnostic pop
 #endif
-    sigaction(SIGINT, &sa, NULL);
+    (void)sigaction(SIGINT, &sa, NULL);
 }
 
 #pragma GCC diagnostic push
@@ -179,33 +194,54 @@ static void socket_close(int sockfd)
     printf("Socket closed.\n");
 }
 
-static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets)
+static struct pollfd *initialize_pollfds(int sockfd, int **client_sockets, nfds_t *client_capacity)
 {
     struct pollfd *fds;
 
-    *client_sockets = NULL;
+    // Ensure non-zero initial capacity to avoid realloc(..., 0) paths.
+    *client_capacity = 4;
+    *client_sockets  = (int *)malloc((*client_capacity) * sizeof(int));
 
-    fds = (struct pollfd *)malloc((1) * sizeof(struct pollfd));
-
-    if(fds == NULL)
+    if(*client_sockets == NULL)
     {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
 
-    fds[0].fd     = sockfd;
-    fds[0].events = POLLIN;
+    for(nfds_t i = 0; i < *client_capacity; i++)
+    {
+        (*client_sockets)[i] = -1;
+    }
+
+    fds = (struct pollfd *)malloc((*client_capacity + 1) * sizeof(struct pollfd));
+
+    if(fds == NULL)
+    {
+        perror("malloc");
+        free(*client_sockets);
+        exit(EXIT_FAILURE);
+    }
+
+    fds[0].fd      = sockfd;
+    fds[0].events  = POLLIN;
+    fds[0].revents = 0;
+
+    for(nfds_t i = 1; i <= *client_capacity; i++)
+    {
+        fds[i].fd      = -1;
+        fds[i].events  = 0;
+        fds[i].revents = 0;
+    }
 
     return fds;
 }
 
-static void handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_clients, struct pollfd **fds)
+static void handle_new_connection(int sockfd, int **client_sockets, nfds_t *client_count, nfds_t *client_capacity, struct pollfd **fds)
 {
     if((*fds)[0].revents & POLLIN)
     {
         socklen_t          addrlen;
         int                new_socket;
-        int               *temp;
         struct sockaddr_un addr;
 
         addrlen    = sizeof(addr);
@@ -217,120 +253,158 @@ static void handle_new_connection(int sockfd, int **client_sockets, nfds_t *max_
             exit(EXIT_FAILURE);
         }
 
-        (*max_clients)++;
-        temp = (int *)realloc(*client_sockets, sizeof(int) * (*max_clients));
-
-        if(temp == NULL)
+        // Grow arrays if needed (guard against 0-capacity for analyzer/portability)
+        if(*client_count == *client_capacity)
         {
-            perror("realloc");
-            free(*client_sockets);
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            struct pollfd *new_fds;
-            *client_sockets                       = temp;
-            (*client_sockets)[(*max_clients) - 1] = new_socket;
+            nfds_t         new_cap;
+            int           *tmp_cs;
+            struct pollfd *tmp_fds;
 
-            new_fds = (struct pollfd *)realloc(*fds, (*max_clients + 1) * sizeof(struct pollfd));
-            if(new_fds == NULL)
+            if(*client_capacity == 0)
             {
-                perror("realloc");
-                free(*client_sockets);
-                exit(EXIT_FAILURE);
+                new_cap = 4;
             }
             else
             {
-                *fds                        = new_fds;
-                (*fds)[*max_clients].fd     = new_socket;
-                (*fds)[*max_clients].events = POLLIN;
+                new_cap = (*client_capacity) * 2;
             }
+
+            tmp_cs = (int *)realloc(*client_sockets, (size_t)new_cap * sizeof(int));
+            if(tmp_cs == NULL)
+            {
+                perror("realloc");
+                exit(EXIT_FAILURE);
+            }
+            *client_sockets = tmp_cs;
+
+            tmp_fds = (struct pollfd *)realloc(*fds, ((size_t)new_cap + 1U) * sizeof(struct pollfd));
+            if(tmp_fds == NULL)
+            {
+                perror("realloc");
+                exit(EXIT_FAILURE);
+            }
+            *fds = tmp_fds;
+
+            // Initialize the new slots
+            for(nfds_t i = *client_capacity; i < new_cap; i++)
+            {
+                (*client_sockets)[i] = -1;
+
+                (*fds)[i + 1].fd      = -1;
+                (*fds)[i + 1].events  = 0;
+                (*fds)[i + 1].revents = 0;
+            }
+
+            *client_capacity = new_cap;
         }
+
+        // Append the new client at index client_count
+        (*client_sockets)[*client_count]    = new_socket;
+        (*fds)[(*client_count) + 1].fd      = new_socket;
+        (*fds)[(*client_count) + 1].events  = POLLIN;
+        (*fds)[(*client_count) + 1].revents = 0;
+
+        (*client_count)++;
     }
 }
-
-#include <errno.h>
-#include <stdint.h>
-#include <unistd.h>
-#include <stdio.h>
 
 static int read_full(int fd, void *buf, size_t n)
 {
     size_t off = 0;
-    while (off < n)
+
+    while(off < n)
     {
         ssize_t r = read(fd, (char *)buf + off, n - off);
-        if (r == 0) return 0;
-        if (r < 0)
+
+        if(r == 0)
         {
-            if (errno == EINTR) continue;
+            return 0;
+        }
+
+        if(r < 0)
+        {
+            if(errno == EINTR)
+            {
+                continue;
+            }
             return -1;
         }
+
         off += (size_t)r;
     }
+
     return 1;
 }
 
-static void handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *max_clients)
+static void handle_client_data(struct pollfd *fds, int *client_sockets, nfds_t *client_count)
 {
-    // Max payload length allowed by BOTH the protocol byte and our buffer (leaving room for NUL).
-    const size_t max_payload =
-        ((MAX_WORD_LEN - 1) < 255u) ? (size_t)(MAX_WORD_LEN - 1) : 255u;
+    // Protocol length field is 1 byte; also leave room for NUL terminator.
+    const size_t max_payload = min_size((size_t)(MAX_WORD_LEN - 1U), 255U);
 
-    for (nfds_t i = 0; i < *max_clients; i++)
+    for(nfds_t i = 0; i < *client_count; i++)
     {
-        if (client_sockets[i] != -1 && (fds[i + 1].revents & POLLIN))
+        if(client_sockets[i] != -1 && (fds[i + 1].revents & POLLIN))
         {
-            char word[MAX_WORD_LEN];
+            char    word[MAX_WORD_LEN];
             uint8_t word_length_u8;
-            int rc;
-            size_t word_length;
+            int     rc;
+            size_t  word_length;
 
             rc = read_full(client_sockets[i], &word_length_u8, sizeof(word_length_u8));
-            if (rc <= 0)
+            if(rc <= 0)
             {
                 printf("Client %d disconnected\n", client_sockets[i]);
-                handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                handle_client_disconnection(client_sockets, client_count, fds, i);
                 continue;
             }
 
             word_length = (size_t)word_length_u8;
 
-            if (word_length > max_payload)
+            if(word_length > max_payload)
             {
                 printf("Client %d sent oversize word length (%zu)\n", client_sockets[i], word_length);
-                handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                handle_client_disconnection(client_sockets, client_count, fds, i);
                 continue;
             }
 
             rc = read_full(client_sockets[i], word, word_length);
-            if (rc <= 0)
+            if(rc <= 0)
             {
                 printf("Client %d disconnected\n", client_sockets[i]);
-                handle_client_disconnection(&client_sockets, max_clients, &fds, i);
+                handle_client_disconnection(client_sockets, client_count, fds, i);
                 continue;
             }
 
             word[word_length] = '\0';
             printf("Received word from client %d: %s\n", client_sockets[i], word);
+
+            // Clear after handling to avoid re-processing stale bits
+            fds[i + 1].revents = 0;
         }
     }
 }
 
-static void handle_client_disconnection(int **client_sockets, nfds_t *max_clients, struct pollfd **fds, nfds_t client_index)
+static void handle_client_disconnection(int *client_sockets, nfds_t *client_count, struct pollfd *fds, nfds_t client_index)
 {
-    int disconnected_socket = (*client_sockets)[client_index];
-    close(disconnected_socket);
+    int    disconnected_socket = client_sockets[client_index];
+    nfds_t last;
 
-    for(nfds_t i = client_index; i < *max_clients - 1; i++)
+    (void)close(disconnected_socket);
+
+    // O(1) removal: move last active client into the removed slot
+    last = (*client_count) - 1;
+
+    if(client_index != last)
     {
-        (*client_sockets)[i] = (*client_sockets)[i + 1];
+        client_sockets[client_index] = client_sockets[last];
+        fds[client_index + 1]        = fds[last + 1];
     }
 
-    (*max_clients)--;
+    // Clear the last slot
+    client_sockets[last]  = -1;
+    fds[last + 1].fd      = -1;
+    fds[last + 1].events  = 0;
+    fds[last + 1].revents = 0;
 
-    for(nfds_t i = client_index + 1; i <= *max_clients; i++)
-    {
-        (*fds)[i] = (*fds)[i + 1];
-    }
+    (*client_count)--;
 }

@@ -86,7 +86,7 @@ int main(void)
         FD_ZERO(&readfds);
 
         // sockfd is known-valid here (0 <= sockfd < FD_SETSIZE)
-        FD_SET(sockfd, &readfds);
+        FD_SET((unsigned int)sockfd, &readfds);
 
         for(size_t i = 0; i < client_count; i++)
         {
@@ -106,7 +106,7 @@ int main(void)
                 continue;
             }
 
-            FD_SET(sd, &readfds);
+            FD_SET((unsigned int)sd, &readfds);
             if(sd > max_fd)
             {
                 max_fd = sd;
@@ -128,7 +128,7 @@ int main(void)
         }
 
         // New incoming connection
-        if(FD_ISSET(sockfd, &readfds))
+        if(FD_ISSET((unsigned int)sockfd, &readfds))
         {
             struct sockaddr_un addr;
             socklen_t          addrlen = sizeof(addr);
@@ -171,7 +171,7 @@ int main(void)
                 continue;
             }
 
-            if(FD_ISSET(sd, &readfds))
+            if(FD_ISSET((unsigned int)sd, &readfds))
             {
                 uint8_t word_length_u8;
                 char    word[MAX_WORD_LEN];

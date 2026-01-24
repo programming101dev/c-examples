@@ -41,6 +41,11 @@ static int    read_full(int fd, void *buf, size_t n);
 static void grow_clients(int **client_sockets, size_t *client_capacity);
 static void remove_client(int *client_sockets, size_t *client_count, size_t idx);
 
+/* Warning-clean wrappers around FD_* macros for -Wsign-conversion -Werror. */
+static int  fd_in_select_range(int fd);
+static void fd_set_safe(int fd, fd_set *set);
+static int  fd_isset_safe(int fd, const fd_set *set);
+
 static volatile sig_atomic_t exit_flag = 0;    // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 int main(void)
@@ -85,8 +90,7 @@ int main(void)
 
         FD_ZERO(&readfds);
 
-        // sockfd is known-valid here (0 <= sockfd < FD_SETSIZE)
-        FD_SET((unsigned int)sockfd, &readfds);
+        fd_set_safe(sockfd, &readfds);
 
         for(size_t i = 0; i < client_count; i++)
         {
@@ -106,7 +110,7 @@ int main(void)
                 continue;
             }
 
-            FD_SET((unsigned int)sd, &readfds);
+            fd_set_safe(sd, &readfds);
             if(sd > max_fd)
             {
                 max_fd = sd;
@@ -128,7 +132,7 @@ int main(void)
         }
 
         // New incoming connection
-        if(FD_ISSET((unsigned int)sockfd, &readfds))
+        if(fd_isset_safe(sockfd, &readfds))
         {
             struct sockaddr_un addr;
             socklen_t          addrlen = sizeof(addr);
@@ -166,12 +170,12 @@ int main(void)
         {
             int sd = client_sockets[i];
 
-            if(sd < 0 || sd >= FD_SETSIZE)
+            if(!fd_in_select_range(sd))
             {
                 continue;
             }
 
-            if(FD_ISSET((unsigned int)sd, &readfds))
+            if(fd_isset_safe(sd, &readfds))
             {
                 uint8_t word_length_u8;
                 char    word[MAX_WORD_LEN];
@@ -374,4 +378,39 @@ static void socket_close(int sockfd)
         perror("Error closing socket");
         exit(EXIT_FAILURE);
     }
+}
+
+static int fd_in_select_range(int fd)
+{
+    return (fd >= 0) && (fd < FD_SETSIZE);
+}
+
+static void fd_set_safe(int fd, fd_set *set)
+{
+    if(!fd_in_select_range(fd))
+    {
+        return;
+    }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    FD_SET(fd, set);
+#pragma GCC diagnostic pop
+}
+
+static int fd_isset_safe(int fd, const fd_set *set)
+{
+    int rc;
+
+    if(!fd_in_select_range(fd))
+    {
+        return 0;
+    }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+    rc = FD_ISSET(fd, set);
+#pragma GCC diagnostic pop
+
+    return rc;
 }

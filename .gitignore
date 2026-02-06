@@ -482,3 +482,5 @@ sanitizers.txt
 coverage.info
 **/coverage_report/
 **/*.xcodeproj/
+
+.last-build-dir

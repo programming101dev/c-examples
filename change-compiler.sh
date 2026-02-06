@@ -234,7 +234,8 @@ emit_footer() {
 
     printf 'check:\n'
     t '$(Q)echo "[cppcheck]"'
-    t '$(Q)set -- $(SOURCES); if [ "$$#" -gt 0 ]; then $(CPPCHECK) -D__cppcheck__ --error-exitcode=1 --force --quiet --inline-suppr --check-level=exhaustive --library=posix --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --suppress=checkersReport -I/usr/local/include "$$@"; else echo "[cppcheck] no sources"; fi'
+    t '$(Q)echo "[cppcheck]"; set -- $(SOURCES); if [ "$$#" -gt 0 ]; then chk_level=$$($(CPPCHECK) --help 2>/dev/null | grep -q -- "--check-level" && echo "--check-level=exhaustive" || echo ""); $(CPPCHECK) -D__cppcheck__ --error-exitcode=1 --force --quiet --inline-suppr $$chk_level --library=posix --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=unmatchedSuppression --suppress=checkersReport -I/usr/local/include "$$@"; else echo "[cppcheck] no sources"; fi'
+
     printf '\n\n'
 
     printf 'clean:\n'

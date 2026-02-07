@@ -68,13 +68,17 @@ int main(void)
 
     if(socket_bind(sockfd, SOCKET_PATH) == -1)
     {
-        perror("Listen error");
+        perror("bind error");
+        socket_close(sockfd);
+        unlink(SOCKET_PATH);
         exit(EXIT_FAILURE);
     }
 
     if(listen(sockfd, SOMAXCONN) == -1)
     {
         perror("Listen error");
+        socket_close(sockfd);
+        unlink(SOCKET_PATH);
         exit(EXIT_FAILURE);
     }
 

@@ -32,7 +32,7 @@
 static void setup_signal_handler(void);
 static void sigint_handler(int signum);
 static int  socket_create(void);
-static void socket_bind(int sockfd, const char *path);
+static int  socket_bind(int sockfd, const char *path);
 static void socket_close(int sockfd);
 
 static size_t min_size(size_t a, size_t b);
@@ -59,7 +59,18 @@ int main(void)
     unlink(SOCKET_PATH);
 
     sockfd = socket_create();
-    socket_bind(sockfd, SOCKET_PATH);
+
+    if(sockfd == -1)
+    {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
+
+    if(socket_bind(sockfd, SOCKET_PATH) == -1)
+    {
+        perror("Listen error");
+        exit(EXIT_FAILURE);
+    }
 
     if(listen(sockfd, SOMAXCONN) == -1)
     {
@@ -347,28 +358,29 @@ static int socket_create(void)
     if(sockfd == -1)
     {
         perror("Socket creation failed");
-        exit(EXIT_FAILURE);
     }
 
     return sockfd;
 }
 
-static void socket_bind(int sockfd, const char *path)
+static int socket_bind(int sockfd, const char *path)
 {
     struct sockaddr_un addr;
+    int                ret_val;
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
 
-    if(bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    ret_val = bind(sockfd, (struct sockaddr *)&addr, sizeof(addr));
+
+    if(ret_val != -1)
     {
-        perror("bind");
-        exit(EXIT_FAILURE);
+        printf("Bound to domain socket: %s\n", path);
     }
 
-    printf("Bound to domain socket: %s\n", path);
+    return ret_val;
 }
 
 static void socket_close(int sockfd)

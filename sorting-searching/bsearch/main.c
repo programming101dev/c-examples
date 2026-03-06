@@ -26,11 +26,13 @@ int main(void)
     // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
     int arr[] = {5, 2, 8, 1, 3};
     // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
     size_t     size;
     const int *result;
     int        target;
 
     size = sizeof(arr) / sizeof(arr[0]);
+
     printf("Unsorted array: ");
 
     for(size_t i = 0; i < size; i++)
@@ -40,8 +42,9 @@ int main(void)
 
     printf("\n");
 
-    // Using qsort to sort the array
+    /* Sort the array */
     qsort(arr, size, sizeof(int), intcmp);
+
     printf("Sorted array: ");
 
     for(size_t i = 0; i < size; i++)
@@ -50,10 +53,11 @@ int main(void)
     }
 
     printf("\n");
+
     target = 3;
 
-    // Using bsearch to search for the target element
-    result = (int *)bsearch(&target, arr, size, sizeof(int), intcmp);
+    /* Search for the target element */
+    result = (bsearch)(&target, arr, size, sizeof(int), intcmp);
 
     if(result != NULL)
     {
@@ -69,5 +73,18 @@ int main(void)
 
 static int intcmp(const void *a, const void *b)
 {
-    return (*(const int *)a - *(const int *)b);
+    const int lhs = *(const int *)a;
+    const int rhs = *(const int *)b;
+
+    if(lhs < rhs)
+    {
+        return -1;
+    }
+
+    if(lhs > rhs)
+    {
+        return 1;
+    }
+
+    return 0;
 }

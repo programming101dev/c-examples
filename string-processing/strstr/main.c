@@ -21,8 +21,8 @@
 
 static void           parse_arguments(int argc, char *argv[], char **needle, char **haystack);
 static void           handle_arguments(const char *binary_name, const char *needle, const char *haystack);
-_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 static void           search_for(const char *needle, const char *haystack);
+_Noreturn static void usage(const char *program_name, int exit_code, const char *message);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
@@ -33,27 +33,12 @@ int main(int argc, char *argv[])
 
     needle   = NULL;
     haystack = NULL;
+
     parse_arguments(argc, argv, &needle, &haystack);
     handle_arguments(argv[0], needle, haystack);
     search_for(needle, haystack);
 
     return EXIT_SUCCESS;
-}
-
-static void search_for(const char *needle, const char *haystack)
-{
-    const char *found_substring;
-
-    found_substring = strstr(haystack, needle);
-
-    if(found_substring != NULL)
-    {
-        printf("Found substring '%s' at position %td\n", needle, found_substring - haystack);
-    }
-    else
-    {
-        printf("Substring '%s' not found.\n", needle);
-    }
 }
 
 static void parse_arguments(int argc, char *argv[], char **needle, char **haystack)
@@ -110,15 +95,31 @@ static void handle_arguments(const char *binary_name, const char *needle, const 
         usage(binary_name, EXIT_FAILURE, "The haystack is required.");
     }
 
-    if(strlen(needle) == 0)
+    if((strlen)(needle) == 0U)
     {
         usage(binary_name, EXIT_FAILURE, "The needle must have at least one character.");
     }
 }
 
+static void search_for(const char *needle, const char *haystack)
+{
+    const char *found_substring;
+
+    found_substring = (strstr)(haystack, needle);
+
+    if(found_substring != NULL)
+    {
+        printf("Found substring '%s' at position %td\n", needle, found_substring - haystack);
+    }
+    else
+    {
+        printf("Substring '%s' not found.\n", needle);
+    }
+}
+
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)
 {
-    if(message)
+    if(message != NULL)
     {
         fprintf(stderr, "%s\n", message);
     }

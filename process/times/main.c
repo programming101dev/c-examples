@@ -83,11 +83,10 @@ static long long performCalculation(size_t size, size_t iterations)
     }
 
     sum = 0;
-    srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
 
     for(size_t i = 0; i < size; i++)
     {
-        numbers[i] = rand() % MAX_NUMBER;
+        numbers[i] = (int)arc4random_uniform(MAX_NUMBER);
     }
 
     for(size_t i = 0; i < iterations; i++)

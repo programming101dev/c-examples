@@ -22,22 +22,28 @@
 static void           parse_arguments(int argc, char *argv[], bool *option_a_set, bool *option_b_set, char **option_c_value);
 static void           handle_arguments(const char *binary_name, const char *option_c_value);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);
+static const char    *bool_to_string(bool value);
 
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 
 int main(int argc, char *argv[])
 {
-    bool  option_a_set;
-    bool  option_b_set;
-    char *option_c_value;
+    bool        option_a_set;
+    bool        option_b_set;
+    char       *option_c_value;
+    const char *option_a_str;
+    const char *option_b_str;
 
     option_a_set   = false;
     option_b_set   = false;
     option_c_value = NULL;
     parse_arguments(argc, argv, &option_a_set, &option_b_set, &option_c_value);
     handle_arguments(argv[0], option_c_value);
-    printf("Is option 'a' set?: %d\n", option_a_set);
-    printf("Is option 'b' set?: %d\n", option_b_set);
+
+    option_a_str = bool_to_string(option_a_set);
+    option_b_str = bool_to_string(option_b_set);
+    printf("Is option 'a' set?: %s\n", option_a_str);
+    printf("Is option 'b' set?: %s\n", option_b_str);
     printf("Value of option 'c': %s\n", option_c_value);
 
     for(int i = optind; i < argc; i++)
@@ -121,4 +127,15 @@ _Noreturn static void usage(const char *program_name, int exit_code, const char 
     fputs("  -b          Option 'b'\n", stderr);
     fputs("  -c <value>  Option 'c' (required) with value\n", stderr);
     exit(exit_code);
+}
+
+static const char *bool_to_string(bool value)
+{
+    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
+    if(value)
+    {
+        return "true";
+    }
+
+    return "false";
 }

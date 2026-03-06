@@ -97,7 +97,7 @@ static void parse_arguments(int argc, char *argv[], bool *use_mutex)
         {
             case 'm':
             {
-                *use_mutex = 1;
+                *use_mutex = true;
                 break;
             }
             case 'h':

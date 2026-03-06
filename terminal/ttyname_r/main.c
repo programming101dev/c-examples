@@ -33,7 +33,7 @@ int main(void)
     }
 
     max_name_length = (size_t)length;
-    ttyname_buf     = (char *)malloc(max_name_length + 1);
+    ttyname_buf     = calloc(max_name_length + 1, sizeof(char));
 
     if(ttyname_buf == NULL)
     {

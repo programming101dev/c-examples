@@ -101,9 +101,8 @@ static void child_process(const char *name)
 {
     unsigned int sleep_time;
 
-    srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
     print_process_info(name);
-    sleep_time = (unsigned int)rand() % MAX_SECONDS;
+    sleep_time = (unsigned int)arc4random_uniform(MAX_SECONDS);
     sleep(sleep_time);
     printf("%s process finished after sleeping %u seconds.\n", name, sleep_time);
 }

@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &command);
     handle_arguments(argv[0], command);
     printf("Output of \"%s\":\n", command);
-    status = system(command);
+    status = system(command);    // NOLINT(bugprone-command-processor)
 
     if(status == -1)
     {

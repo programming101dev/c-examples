@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
     parse_arguments(argc, argv, &library_path, &function_name);
     handle_arguments(argv[0], library_path, function_name);
 
+    printf("opening %s\n", library_path);
     handle = dlopen(library_path, RTLD_LAZY);
 
     if(handle == NULL)
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
             the function pointer returned by dlsym to the func variable.
     */
 
+    printf("getting function %s\n", function_name);
     *(void **)(&func) = dlsym(handle, function_name);
 
     if(func == NULL)

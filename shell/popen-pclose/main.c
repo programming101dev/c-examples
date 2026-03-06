@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic pop
 #endif
-    fp = popen(redirected_command, "r");
+    fp = popen(redirected_command, "r");    // NOLINT(bugprone-command-processor)
     free(redirected_command);
 
     if(fp == NULL)

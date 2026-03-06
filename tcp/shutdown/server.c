@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     start_listening(sockfd, SOMAXCONN);
     setup_signal_handler();
 
-    while(!(exit_flag))
+    while(!exit_flag)
     {
         int                     client_sockfd;
         struct sockaddr_storage client_addr;

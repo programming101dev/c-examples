@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 static void parse_arguments(int argc, char *argv[], char **needle, char **haystack)
 {
     int opt;
+
     opterr = 0;
 
     while((opt = getopt(argc, argv, "h")) != -1)
@@ -120,7 +121,7 @@ static void search_for(char needle, const char *haystack)
 {
     const char *found_char;
 
-    found_char = strchr(haystack, needle);
+    found_char = (strchr)(haystack, needle);
 
     if(found_char != NULL)
     {

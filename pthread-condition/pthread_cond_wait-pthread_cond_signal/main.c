@@ -209,7 +209,7 @@ static void *child_process(void *arg)
         const char *token;
         char       *nl;
 
-        nl = strchr(line, '\n');
+        nl = (strchr)(line, '\n');
 
         if(nl != NULL)
         {

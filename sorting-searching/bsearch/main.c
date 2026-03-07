@@ -30,7 +30,6 @@ int main(void)
     size_t     size;
     const int *result;
     int        target;
-    size_t     index;
 
     size = sizeof(arr) / sizeof(arr[0]);
     printf("Unsorted array: ");
@@ -58,6 +57,8 @@ int main(void)
 
     if(result != NULL)
     {
+        size_t     index;
+        
         index = find_index(arr, size, result);
         printf("Element %d found at index %zu\n", target, index);
     }

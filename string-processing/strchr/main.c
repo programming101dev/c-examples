@@ -121,7 +121,7 @@ static void search_for(char needle, const char *haystack)
 {
     const char *found_char;
 
-    found_char = (strchr)(haystack, needle);
+    found_char = strchr(haystack, needle);
 
     if(found_char != NULL)
     {

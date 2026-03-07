@@ -25,7 +25,7 @@ static size_t find_index(const int *arr, size_t size, const int *element);
 int main(void)
 {
     /* NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers) */
-    int        arr[] = {5, 2, 8, 1, 3};
+    int arr[] = {5, 2, 8, 1, 3};
     /* NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers) */
     size_t     size;
     const int *result;
@@ -57,8 +57,8 @@ int main(void)
 
     if(result != NULL)
     {
-        size_t     index;
-        
+        size_t index;
+
         index = find_index(arr, size, result);
         printf("Element %d found at index %zu\n", target, index);
     }

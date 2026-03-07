@@ -95,7 +95,7 @@ static void handle_arguments(const char *binary_name, const char *needle, const 
         usage(binary_name, EXIT_FAILURE, "The haystack is required.");
     }
 
-    if((strlen)(needle) == 0U)
+    if(strlen(needle) == 0U)
     {
         usage(binary_name, EXIT_FAILURE, "The needle must have at least one character.");
     }
@@ -105,7 +105,7 @@ static void search_for(const char *needle, const char *haystack)
 {
     const char *found_substring;
 
-    found_substring = (strstr)(haystack, needle);
+    found_substring = strstr(haystack, needle);
 
     if(found_substring != NULL)
     {

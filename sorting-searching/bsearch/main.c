@@ -17,18 +17,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int intcmp(const void *a, const void *b);
+static int    intcmp(const void *a, const void *b);
+static size_t find_index(const int *arr, size_t size, const int *element);
 
-// TODO take the number to to find and the numbers to search on the command line
+/* TODO: take the number to find and the numbers to search on the command line. */
 
 int main(void)
 {
-    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
-    int arr[] = {5, 2, 8, 1, 3};
-    // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+    /* NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers) */
+    int        arr[] = {5, 2, 8, 1, 3};
+    /* NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers) */
     size_t     size;
     const int *result;
     int        target;
+    size_t     index;
 
     size = sizeof(arr) / sizeof(arr[0]);
     printf("Unsorted array: ");
@@ -40,8 +42,8 @@ int main(void)
 
     printf("\n");
 
-    // Using qsort to sort the array
     qsort(arr, size, sizeof(int), intcmp);
+
     printf("Sorted array: ");
 
     for(size_t i = 0; i < size; i++)
@@ -50,14 +52,14 @@ int main(void)
     }
 
     printf("\n");
-    target = 3;
 
-    // Using bsearch to search for the target element
-    result = (int *)bsearch(&target, arr, size, sizeof(int), intcmp);
+    target = 3;
+    result = bsearch(&target, arr, size, sizeof(int), intcmp);
 
     if(result != NULL)
     {
-        printf("Element %d found at index %td\n", target, result - arr);
+        index = find_index(arr, size, result);
+        printf("Element %d found at index %zu\n", target, index);
     }
     else
     {
@@ -69,5 +71,31 @@ int main(void)
 
 static int intcmp(const void *a, const void *b)
 {
-    return (*(const int *)a - *(const int *)b);
+    const int lhs = *(const int *)a;
+    const int rhs = *(const int *)b;
+
+    if(lhs < rhs)
+    {
+        return -1;
+    }
+
+    if(lhs > rhs)
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+static size_t find_index(const int *arr, size_t size, const int *element)
+{
+    for(size_t i = 0; i < size; i++)
+    {
+        if(&arr[i] == element)
+        {
+            return i;
+        }
+    }
+
+    return size;
 }

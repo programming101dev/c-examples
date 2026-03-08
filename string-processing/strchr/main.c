@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef strchr
+    #undef strchr
+#endif
+
 static void           parse_arguments(int argc, char *argv[], char **needle, char **haystack);
 static void           handle_arguments(const char *binary_name, const char *needle_str, const char *haystack, char *needle);
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message);

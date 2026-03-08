@@ -20,6 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef memchr
+    #undef memchr
+#endif
+
 struct shared_data
 {
     pthread_mutex_t mutex;
@@ -209,7 +213,7 @@ static void *child_process(void *arg)
         const char *token;
         char       *nl;
 
-        nl = strchr(line, '\n');
+        nl = memchr(line, '\n', strlen(line));
 
         if(nl != NULL)
         {

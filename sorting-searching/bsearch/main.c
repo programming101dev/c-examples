@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef bsearch
+    #undef bsearch
+#endif
+
 static int    intcmp(const void *a, const void *b);
 static size_t find_index(const int *arr, size_t size, const int *element);
 

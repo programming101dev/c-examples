@@ -19,6 +19,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef strstr
+    #undef strstr
+#endif
+
 static void           parse_arguments(int argc, char *argv[], char **needle, char **haystack);
 static void           handle_arguments(const char *binary_name, const char *needle, const char *haystack);
 static void           search_for(const char *needle, const char *haystack);

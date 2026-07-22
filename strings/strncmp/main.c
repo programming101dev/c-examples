@@ -154,7 +154,7 @@ size_t parse_size_t(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "size_t value out of range.");
     }
 
-    return (size_t)parsed_value;
+    return parsed_value;
 }
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)

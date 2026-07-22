@@ -213,7 +213,7 @@ static void *child_process(void *arg)
         const char *token;
         char       *nl;
 
-        nl = memchr(line, '\n', strlen(line));
+        nl = (char *)memchr(line, '\n', strlen(line));
 
         if(nl != NULL)
         {

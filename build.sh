@@ -29,6 +29,9 @@ USAGE
   exit 1
 }
 
+# --help / -h -> usage, exit 0 (P101 uniform CLI help)
+case " $* " in *" --help "*|*" -h "*) ( usage ) || true; exit 0 ;; esac
+
 while getopts ":d:t:j:ckqh" opt; do
   case "$opt" in
     d) start_dir="$OPTARG" ;;

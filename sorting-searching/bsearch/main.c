@@ -57,7 +57,7 @@ int main(void)
     printf("\n");
 
     target = 3;
-    result = bsearch(&target, arr, size, sizeof(int), intcmp);
+    result = (const int *)bsearch(&target, arr, size, sizeof(int), intcmp);
 
     if(result != NULL)
     {

@@ -147,7 +147,7 @@ static long parse_long(const char *binary_name, const char *str)
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for signed long.");
     }
 
-    return (long)parsed_value;
+    return parsed_value;
 }
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)

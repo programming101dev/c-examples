@@ -4,6 +4,16 @@
 
 set -euo pipefail
 
+# --help / -h -> description, exit 0 (P101 uniform CLI help)
+case " $* " in
+  *" --help "*|*" -h "*)
+    cat <<'P101_USAGE'
+check-compilers.sh — discover working C/C++ compilers on PATH
+Writes: supported_c_compilers.txt, supported_cxx_compilers.txt
+P101_USAGE
+    exit 0 ;;
+esac
+
 OS="$(uname -s)"
 
 # Candidate names (most specific first)

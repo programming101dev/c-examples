@@ -1,0 +1,4 @@
+# Profiling (gprof). Set to 1 to build this project with profiling.
+# Off by default. Per-build alternative: the --profile flag on
+# change-compiler.sh / build-all.sh / update / update-all / setup.
+0

@@ -1,0 +1,1 @@
+/Users/ds/work/programming101dev/scripts/compiler_paths.txt

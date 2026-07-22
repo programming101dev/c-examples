@@ -38,6 +38,9 @@ EOF
   exit 1
 }
 
+# --help / -h -> usage, exit 0 (P101 uniform CLI help)
+case " $* " in *" --help "*|*" -h "*) ( usage ) || true; exit 0 ;; esac
+
 # -------- parse args --------
 while getopts ":d:t:j:x:qnk" opt; do
   case "$opt" in

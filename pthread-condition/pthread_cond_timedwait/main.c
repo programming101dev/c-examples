@@ -252,7 +252,7 @@ static time_t parse_time_t(const char *binary_name, time_t min, time_t max, cons
         usage(binary_name, EXIT_FAILURE, "Unsigned integer out of range for time.");
     }
 
-    return (time_t)parsed_value;
+    return parsed_value;
 }
 
 static unsigned int parse_unsigned_int(const char *binary_name, const char *str)

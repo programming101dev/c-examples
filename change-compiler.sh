@@ -4,6 +4,26 @@
 
 set -euo pipefail
 
+# --- opt-in coverage / profiling (P101) ---------------------------------
+# Pull the long flags out before the normal option parser and export them.
+# The shared CMakeLists reads P101_COVERAGE / P101_PROFILE at configure time
+# and instruments the compile + link. Absent => nothing changes. If a parent
+# (e.g. update.sh / build-all.sh) already exported them, they are inherited.
+_p101_argv=()
+for _p101_a in "$@"; do
+  case "$_p101_a" in
+    --coverage) export P101_COVERAGE=1 ;;
+    --profile)  export P101_PROFILE=1 ;;
+    *)          _p101_argv+=("$_p101_a") ;;
+  esac
+done
+if ((${#_p101_argv[@]})); then set -- "${_p101_argv[@]}"; else set --; fi
+unset _p101_argv _p101_a
+# QoL: a bare first argument is taken as the C compiler, i.e.
+#   ./change-compiler.sh gcc-16   ==   ./change-compiler.sh -c gcc-16
+if [[ "${1-}" != "" && "${1-}" != -* ]]; then set -- -c "$@"; fi
+# ------------------------------------------------------------------------
+
 # ----------------- args & usage -----------------
 c_compiler=""
 clang_format_name="clang-format"
@@ -23,6 +43,9 @@ EOF
   exit 1
 }
 
+# --help / -h -> usage, exit 0 (P101 uniform CLI help)
+case " $* " in *" --help "*|*" -h "*) ( usage ) || true; exit 0 ;; esac
+
 while getopts ":c:f:t:k:s:h" opt; do
   case "$opt" in
     c) c_compiler="$OPTARG" ;;
@@ -35,11 +58,31 @@ while getopts ":c:f:t:k:s:h" opt; do
 done
 
 [[ -n "$c_compiler" ]] || { echo "Error: -c is required." >&2; usage; }
-[[ -d "./.flags"     ]] || { echo "Error: ./.flags is missing; expected precomputed flags." >&2; exit 1; }
+# Honor the build profile passed down from update.sh / update-all.sh via the
+# environment (inherited through build-repo.sh, exactly like the CMake repos):
+#   P101_NO_FLAGS=1             -> build with NO probed compiler flags at all
+#   P101_FLAGS_PROFILE=standard -> read the reasonable-safe .flags-standard cache
+# Unset -> the maximal .flags cache, as before.
+NO_FLAGS=0
+if [[ -n "${P101_NO_FLAGS:-}" && "${P101_NO_FLAGS:-}" != "0" ]]; then
+  NO_FLAGS=1
+fi
+
+if [[ "${P101_FLAGS_PROFILE:-}" == "standard" ]]; then
+  flags_root="./.flags-standard"
+else
+  flags_root="./.flags"
+fi
 
 compiler_key="${c_compiler##*/}"
-flags_dir="./.flags/${compiler_key}"
-[[ -d "$flags_dir" ]] || echo "Warning: $flags_dir does not exist, continuing with empty flags." >&2
+flags_dir="${flags_root}/${compiler_key}"
+
+if [[ $NO_FLAGS -eq 1 ]]; then
+  echo "P101_NO_FLAGS set: generating Makefiles with no probed compiler flags."
+else
+  [[ -d "$flags_root" ]] || { echo "Error: ${flags_root} is missing; expected precomputed flags." >&2; exit 1; }
+  [[ -d "$flags_dir" ]] || echo "Warning: $flags_dir does not exist, continuing with empty flags." >&2
+fi
 
 # ----------------- platform specifics -----------------
 SHARED_EXT=""; SHARED_LDFLAGS=""
@@ -56,12 +99,32 @@ sanitize_val() {
 }
 
 # ----------------- load flags -----------------
-SUPPORTED_ANALYZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/analyzer_flags.txt")")
-SUPPORTED_CODE_GENERATION_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/code_generation_flags.txt")")
-SUPPORTED_DEBUG_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/debug_flags.txt")")
-SUPPORTED_INSTRUMENTATION_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/instrumentation_flags.txt")")
-SUPPORTED_OPTIMIZATION_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/optimization_flags.txt")")
-SUPPORTED_WARNING_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/warning_flags.txt")")
+# --no-flags: leave every probed set empty so the Makefiles build with only
+# COMPILATION_FLAGS (std, feature defines, -Werror, sysroot). Matches the
+# CMake repos, which suppress all flags under P101_NO_FLAGS.
+if [[ $NO_FLAGS -eq 1 ]]; then
+  SUPPORTED_ANALYZER_FLAGS=""
+  SUPPORTED_CODE_GENERATION_FLAGS=""
+  SUPPORTED_DEBUG_FLAGS=""
+  SUPPORTED_INSTRUMENTATION_FLAGS=""
+  SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS=""
+  SUPPORTED_INSTRUMENTATION_LINK_FLAGS=""
+  SUPPORTED_OPTIMIZATION_FLAGS=""
+  SUPPORTED_WARNING_FLAGS=""
+else
+  SUPPORTED_ANALYZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/analyzer_flags.txt")")
+  SUPPORTED_CODE_GENERATION_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/code_generation_flags.txt")")
+  SUPPORTED_DEBUG_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/debug_flags.txt")")
+  SUPPORTED_INSTRUMENTATION_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/instrumentation_flags.txt")")
+  # instrumentation_compiler.txt = the compile-time hardening (stack-protector,
+  # cf-protection, stack-clash, branch-protection, harden-*); instrumentation_link
+  # = link hardening (-Wl,-z,relro/now/noexecstack, ...). The CMake repos load
+  # both; the examples must too, or they build without any of that hardening.
+  SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/instrumentation_compiler.txt")")
+  SUPPORTED_INSTRUMENTATION_LINK_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/instrumentation_link_flags.txt")")
+  SUPPORTED_OPTIMIZATION_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/optimization_flags.txt")")
+  SUPPORTED_WARNING_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/warning_flags.txt")")
+fi
 
 SUPPORTED_ADDRESS_SANITIZER_FLAGS=""
 SUPPORTED_CFI_SANITIZER_FLAGS=""
@@ -69,10 +132,13 @@ SUPPORTED_DATAFLOW_SANITIZER_FLAGS=""
 SUPPORTED_HWADDRESS_SANITIZER_FLAGS=""
 SUPPORTED_LEAK_SANITIZER_FLAGS=""
 SUPPORTED_MEMORY_SANITIZER_FLAGS=""
+SUPPORTED_NUMERICAL_SANITIZER_FLAGS=""
 SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS=""
+SUPPORTED_REALTIME_SANITIZER_FLAGS=""
 SUPPORTED_SAFE_STACK_SANITIZER_FLAGS=""
 SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS=""
 SUPPORTED_THREAD_SANITIZER_FLAGS=""
+SUPPORTED_TYPE_SANITIZER_FLAGS=""
 SUPPORTED_UNDEFINED_SANITIZER_FLAGS=""
 
 # ----------------- sanitizer selection -----------------
@@ -87,10 +153,13 @@ if ((${#SAN_ARR[@]} > 0)); then
       hwaddress)         SUPPORTED_HWADDRESS_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/hwaddress_sanitizer_flags.txt")");;
       leak)              SUPPORTED_LEAK_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/leak_sanitizer_flags.txt")");;
       memory)            SUPPORTED_MEMORY_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/memory_sanitizer_flags.txt")");;
+      numerical)         SUPPORTED_NUMERICAL_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/numerical_sanitizer_flags.txt")");;
       pointer_overflow)  SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/pointer_overflow_sanitizer_flags.txt")");;
+      realtime)          SUPPORTED_REALTIME_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/realtime_sanitizer_flags.txt")");;
       safe_stack)        SUPPORTED_SAFE_STACK_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/safe_stack_sanitizer_flags.txt")");;
       shadow_call_stack) SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/shadow_call_stack_sanitizer_flags.txt")");;
       thread)            SUPPORTED_THREAD_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/thread_sanitizer_flags.txt")");;
+      type)              SUPPORTED_TYPE_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/type_sanitizer_flags.txt")");;
       undefined)         SUPPORTED_UNDEFINED_SANITIZER_FLAGS=$(sanitize_val "$(slurp "${flags_dir}/undefined_sanitizer_flags.txt")");;
       "" ) ;;
       * ) echo "Warning: unknown sanitizer '$s' ignored." >&2 ;;
@@ -109,17 +178,33 @@ Q?=@
 
 EOF
 
+  # macOS: Homebrew LLVM clang-tidy (and clang) guess a CommandLineTools SDK
+  # path that may not exist (e.g. on a macOS beta) — breaking the lint and
+  # analyze stages even though Apple's /usr/bin/clang finds the SDK itself.
+  # Resolve the real SDK once via xcrun and bake -isysroot into
+  # COMPILATION_FLAGS so the compiler, clang-tidy, and the analyzer all agree.
+  # Empty on Linux/FreeBSD (no xcrun) — a no-op there.
+  local isysroot_flag="" _sdk_path=""
+  if command -v xcrun >/dev/null 2>&1; then
+    _sdk_path="$(xcrun --show-sdk-path 2>/dev/null || true)"
+    if [ -n "$_sdk_path" ]; then
+      isysroot_flag=" -isysroot $_sdk_path"
+    fi
+  fi
+
   cat >> Makefile <<EOF
 CC=$c_compiler
 CLANG_FORMAT=$clang_format_name
 CLANG_TIDY=$clang_tidy_name
 CPPCHECK=$cppcheck_name
 
-COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror
+COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror$isysroot_flag
 SUPPORTED_ANALYZER_FLAGS=$SUPPORTED_ANALYZER_FLAGS
 SUPPORTED_CODE_GENERATION_FLAGS=$SUPPORTED_CODE_GENERATION_FLAGS
 SUPPORTED_DEBUG_FLAGS=$SUPPORTED_DEBUG_FLAGS
 SUPPORTED_INSTRUMENTATION_FLAGS=$SUPPORTED_INSTRUMENTATION_FLAGS
+SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS=$SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS
+SUPPORTED_INSTRUMENTATION_LINK_FLAGS=$SUPPORTED_INSTRUMENTATION_LINK_FLAGS
 SUPPORTED_OPTIMIZATION_FLAGS=$SUPPORTED_OPTIMIZATION_FLAGS
 SUPPORTED_WARNING_FLAGS=$SUPPORTED_WARNING_FLAGS
 SUPPORTED_ADDRESS_SANITIZER_FLAGS=$SUPPORTED_ADDRESS_SANITIZER_FLAGS
@@ -128,10 +213,13 @@ SUPPORTED_DATAFLOW_SANITIZER_FLAGS=$SUPPORTED_DATAFLOW_SANITIZER_FLAGS
 SUPPORTED_HWADDRESS_SANITIZER_FLAGS=$SUPPORTED_HWADDRESS_SANITIZER_FLAGS
 SUPPORTED_LEAK_SANITIZER_FLAGS=$SUPPORTED_LEAK_SANITIZER_FLAGS
 SUPPORTED_MEMORY_SANITIZER_FLAGS=$SUPPORTED_MEMORY_SANITIZER_FLAGS
+SUPPORTED_NUMERICAL_SANITIZER_FLAGS=$SUPPORTED_NUMERICAL_SANITIZER_FLAGS
 SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS=$SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS
+SUPPORTED_REALTIME_SANITIZER_FLAGS=$SUPPORTED_REALTIME_SANITIZER_FLAGS
 SUPPORTED_SAFE_STACK_SANITIZER_FLAGS=$SUPPORTED_SAFE_STACK_SANITIZER_FLAGS
 SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS=$SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS
 SUPPORTED_THREAD_SANITIZER_FLAGS=$SUPPORTED_THREAD_SANITIZER_FLAGS
+SUPPORTED_TYPE_SANITIZER_FLAGS=$SUPPORTED_TYPE_SANITIZER_FLAGS
 SUPPORTED_UNDEFINED_SANITIZER_FLAGS=$SUPPORTED_UNDEFINED_SANITIZER_FLAGS
 CLANG_TIDY_CHECKS=-checks=*,-llvmlibc-restrict-system-libc-headers,-altera-struct-pack-align,-readability-identifier-length,-altera-unroll-loops,-cppcoreguidelines-init-variables,-cert-err33-c,-modernize-macro-to-enum,-bugprone-easily-swappable-parameters,-clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,-altera-id-dependent-backward-branch,-concurrency-mt-unsafe,-misc-unused-parameters,-hicpp-signed-bitwise,-google-readability-todo,-cert-msc30-c,-cert-msc50-cpp,-readability-function-cognitive-complexity,-clang-analyzer-security.insecureAPI.strcpy,-cert-env33-c,-android-cloexec-accept,-clang-analyzer-security.insecureAPI.rand,-misc-include-cleaner,-cppcoreguidelines-macro-to-enum
 
@@ -155,10 +243,12 @@ emit_lib_targets() {
     t '$(Q)$(CC) $(COMPILATION_FLAGS) $(CFLAGS) \'
     t '  $(SUPPORTED_ANALYZER_FLAGS) $(SUPPORTED_CODE_GENERATION_FLAGS) \'
     t '  $(SUPPORTED_DEBUG_FLAGS) $(SUPPORTED_INSTRUMENTATION_FLAGS) \'
+    t '  $(SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS) $(SUPPORTED_INSTRUMENTATION_LINK_FLAGS) \'
     t '  $(SUPPORTED_OPTIMIZATION_FLAGS) $(SUPPORTED_WARNING_FLAGS) \'
     t '  $(SUPPORTED_ADDRESS_SANITIZER_FLAGS) $(SUPPORTED_CFI_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) $(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_LEAK_SANITIZER_FLAGS) $(SUPPORTED_MEMORY_SANITIZER_FLAGS) \'
+    t '  $(SUPPORTED_NUMERICAL_SANITIZER_FLAGS) $(SUPPORTED_REALTIME_SANITIZER_FLAGS) $(SUPPORTED_TYPE_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) $(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) $(SUPPORTED_THREAD_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include '"$SHARED_LDFLAGS"' -o lib'"$base$SHARED_EXT"' '"$file"' $(LIBRARIES)'
@@ -169,10 +259,12 @@ emit_lib_targets() {
     t '$(Q)$(CC) $(COMPILATION_FLAGS) $(CFLAGS) \'
     t '  $(SUPPORTED_ANALYZER_FLAGS) $(SUPPORTED_CODE_GENERATION_FLAGS) \'
     t '  $(SUPPORTED_DEBUG_FLAGS) $(SUPPORTED_INSTRUMENTATION_FLAGS) \'
+    t '  $(SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS) $(SUPPORTED_INSTRUMENTATION_LINK_FLAGS) \'
     t '  $(SUPPORTED_OPTIMIZATION_FLAGS) $(SUPPORTED_WARNING_FLAGS) \'
     t '  $(SUPPORTED_ADDRESS_SANITIZER_FLAGS) $(SUPPORTED_CFI_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) $(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_LEAK_SANITIZER_FLAGS) $(SUPPORTED_MEMORY_SANITIZER_FLAGS) \'
+    t '  $(SUPPORTED_NUMERICAL_SANITIZER_FLAGS) $(SUPPORTED_REALTIME_SANITIZER_FLAGS) $(SUPPORTED_TYPE_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) $(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) $(SUPPORTED_THREAD_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include '"$SHARED_LDFLAGS"' -o lib'"$base"'-traceable'"$SHARED_EXT"' '"$file"' $(LIBRARIES)'
@@ -190,10 +282,12 @@ emit_exe_targets() {
     t '$(Q)$(CC) $(COMPILATION_FLAGS) $(CFLAGS) \'
     t '  $(SUPPORTED_ANALYZER_FLAGS) $(SUPPORTED_CODE_GENERATION_FLAGS) \'
     t '  $(SUPPORTED_DEBUG_FLAGS) $(SUPPORTED_INSTRUMENTATION_FLAGS) \'
+    t '  $(SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS) $(SUPPORTED_INSTRUMENTATION_LINK_FLAGS) \'
     t '  $(SUPPORTED_OPTIMIZATION_FLAGS) $(SUPPORTED_WARNING_FLAGS) \'
     t '  $(SUPPORTED_ADDRESS_SANITIZER_FLAGS) $(SUPPORTED_CFI_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) $(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_LEAK_SANITIZER_FLAGS) $(SUPPORTED_MEMORY_SANITIZER_FLAGS) \'
+    t '  $(SUPPORTED_NUMERICAL_SANITIZER_FLAGS) $(SUPPORTED_REALTIME_SANITIZER_FLAGS) $(SUPPORTED_TYPE_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) $(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) $(SUPPORTED_THREAD_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include -o '"$base"' '"$file"' $(LIBRARIES)'
@@ -204,10 +298,12 @@ emit_exe_targets() {
     t '$(Q)$(CC) $(COMPILATION_FLAGS) $(CFLAGS) \'
     t '  $(SUPPORTED_ANALYZER_FLAGS) $(SUPPORTED_CODE_GENERATION_FLAGS) \'
     t '  $(SUPPORTED_DEBUG_FLAGS) $(SUPPORTED_INSTRUMENTATION_FLAGS) \'
+    t '  $(SUPPORTED_INSTRUMENTATION_COMPILER_FLAGS) $(SUPPORTED_INSTRUMENTATION_LINK_FLAGS) \'
     t '  $(SUPPORTED_OPTIMIZATION_FLAGS) $(SUPPORTED_WARNING_FLAGS) \'
     t '  $(SUPPORTED_ADDRESS_SANITIZER_FLAGS) $(SUPPORTED_CFI_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_DATAFLOW_SANITIZER_FLAGS) $(SUPPORTED_HWADDRESS_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_LEAK_SANITIZER_FLAGS) $(SUPPORTED_MEMORY_SANITIZER_FLAGS) \'
+    t '  $(SUPPORTED_NUMERICAL_SANITIZER_FLAGS) $(SUPPORTED_REALTIME_SANITIZER_FLAGS) $(SUPPORTED_TYPE_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_POINTER_OVERFLOW_SANITIZER_FLAGS) $(SUPPORTED_SAFE_STACK_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_SHADOW_CALL_STACK_SANITIZER_FLAGS) $(SUPPORTED_THREAD_SANITIZER_FLAGS) \'
     t '  $(SUPPORTED_UNDEFINED_SANITIZER_FLAGS) -I/usr/local/include -o '"$base"'-traceable '"$file"' $(LIBRARIES)'

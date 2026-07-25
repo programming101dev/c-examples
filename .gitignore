@@ -484,3 +484,17 @@ coverage.info
 **/*.xcodeproj/
 
 .last-build-dir
+
+### Programming 101 transient (build/test/fuzz/debug output) ###
+test/build/
+test/build-*/
+fuzz/build-*/
+fuzz/findings/
+fuzz/artifacts/
+debug/
+debug-*/
+coverage/
+coverage-*/
+profile/
+profile-*/
+# NOTE: fuzz/corpus/ is the committed seed corpus — keep it.

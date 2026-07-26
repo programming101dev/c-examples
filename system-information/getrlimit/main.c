@@ -46,7 +46,8 @@ static void show_limit(int resource, const char *name)
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wc++-compat"
-#elif defined(__clang__)
+#endif
+#ifdef __clang__
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wsign-conversion"
     #pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
@@ -54,7 +55,8 @@ static void show_limit(int resource, const char *name)
     if(getrlimit(resource, &rlim) == 0)
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic pop
-#elif defined(__clang__)
+#endif
+#ifdef __clang__
     #pragma clang diagnostic pop
 #endif
     {

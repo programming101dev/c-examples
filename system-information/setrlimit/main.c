@@ -53,14 +53,16 @@ static void set_rlimit(int resource, const char *name, rlim_t soft_limit, rlim_t
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wc++-compat"
-#elif defined(__clang__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+#ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wsign-conversion"
 #endif
     if(setrlimit(resource, &rlim) == -1)
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic pop
-#elif defined(__clang__)
+#endif
+#ifdef __clang__
     #pragma clang diagnostic pop
 #endif
     {

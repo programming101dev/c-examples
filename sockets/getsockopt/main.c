@@ -47,12 +47,10 @@ static void           print_socket_opt_timeval(int sockfd, int option_level, int
 static void           print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
 static void           socket_close(int sockfd);
 
+#define D_MS_FORMAT "%ld"
 #ifdef __APPLE__
+    #undef D_MS_FORMAT
     #define D_MS_FORMAT "%d"
-#elif defined(__linux__)
-    #define D_MS_FORMAT "%ld"
-#elif defined(__FreeBSD__)
-    #define D_MS_FORMAT "%ld"
 #endif
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10

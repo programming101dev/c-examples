@@ -185,6 +185,7 @@ EOF
   # COMPILATION_FLAGS so the compiler, clang-tidy, and the analyzer all agree.
   # Empty on Linux/FreeBSD (no xcrun) — a no-op there.
   local isysroot_flag="" _sdk_path=""
+  local feature_test_flags="-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700"
   if command -v xcrun >/dev/null 2>&1; then
     _sdk_path="$(xcrun --show-sdk-path 2>/dev/null || true)"
     if [ -n "$_sdk_path" ]; then
@@ -192,13 +193,25 @@ EOF
     fi
   fi
 
+  case "$(uname -s)" in
+    Darwin)
+      feature_test_flags="$feature_test_flags -D_DARWIN_C_SOURCE"
+      ;;
+    Linux)
+      feature_test_flags="$feature_test_flags -D_DEFAULT_SOURCE"
+      ;;
+    FreeBSD|DragonFly|OpenBSD|NetBSD)
+      feature_test_flags="$feature_test_flags -D__BSD_VISIBLE"
+      ;;
+  esac
+
   cat >> Makefile <<EOF
 CC=$c_compiler
 CLANG_FORMAT=$clang_format_name
 CLANG_TIDY=$clang_tidy_name
 CPPCHECK=$cppcheck_name
 
-COMPILATION_FLAGS=-std=c18 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE -D_GNU_SOURCE -D__BSD_VISIBLE -Werror$isysroot_flag
+COMPILATION_FLAGS=-std=c18 $feature_test_flags -Werror$isysroot_flag
 SUPPORTED_ANALYZER_FLAGS=$SUPPORTED_ANALYZER_FLAGS
 SUPPORTED_CODE_GENERATION_FLAGS=$SUPPORTED_CODE_GENERATION_FLAGS
 SUPPORTED_DEBUG_FLAGS=$SUPPORTED_DEBUG_FLAGS

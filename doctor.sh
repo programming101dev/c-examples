@@ -10,7 +10,7 @@
 #
 # Platforms: macOS, Linux, FreeBSD.  Compilers: gcc and clang.
 set -uo pipefail        # NOT -e: we run every check, then summarise.
-cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 usage() {
   cat <<'USAGE'

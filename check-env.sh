@@ -64,10 +64,10 @@ resolve_exe() {
   local path=""
   if [[ "$val" = /* ]]; then
     path="$val"
-    [[ -x "$path" ]] || { echo "missing (not executable): $val"; return 1; }
+    [[ -x "$path" ]] || { echo "missing (not executable): $val" >&2; return 1; }
   else
     if ! path="$(command -v "$val" 2>/dev/null)"; then
-      echo "missing: $val"
+      echo "missing: $val" >&2
       return 1
     fi
   fi
@@ -95,10 +95,10 @@ compile_test() {
 # --- check tools ---
 missing=0
 
-CC_PATH="$(resolve_exe "$c_compiler")" || ((missing++))
-CF_PATH="$(resolve_exe "$clang_format_name")" || ((missing++))
-CT_PATH="$(resolve_exe "$clang_tidy_name")"  || ((missing++))
-CP_PATH="$(resolve_exe "$cppcheck_name")"    || ((missing++))
+CC_PATH="$(resolve_exe "$c_compiler")" || missing=$((missing + 1))
+resolve_exe "$clang_format_name" >/dev/null || missing=$((missing + 1))
+resolve_exe "$clang_tidy_name"  >/dev/null || missing=$((missing + 1))
+resolve_exe "$cppcheck_name"    >/dev/null || missing=$((missing + 1))
 
 # Extra hint on macOS when user points to Apple’s gcc stub
 if [[ "$(uname -s)" == "Darwin" && -n "${CC_PATH:-}" && "$CC_PATH" == "/usr/bin/gcc" ]]; then
@@ -109,7 +109,7 @@ fi
 if $do_compile_test && [[ -n "${CC_PATH:-}" ]]; then
   if ! compile_test "$CC_PATH"; then
     echo "broken: $c_compiler (cannot compile a trivial C program)"
-    ((missing++))
+    missing=$((missing + 1))
   fi
 fi
 

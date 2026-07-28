@@ -10,7 +10,7 @@
 #
 # Platforms: macOS, Linux, FreeBSD.  Compilers: gcc and clang.
 set -uo pipefail        # NOT -e: we run every check, then summarise.
-CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")" || exit 1
 
 usage() {
   cat <<'USAGE'
@@ -49,12 +49,12 @@ firstline() { "$@" 2>/dev/null | head -1; }
 # output. Portable (BSD/macOS + GNU): no sed 'T', no GNU-only flags.
 ver_num() { "$@" 2>/dev/null | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1; }
 
-# ---- locate shared config lists. In the workspace they live in scripts/; in a
-# standalone clone (copy-template.sh) they are symlinked at the repo root. Search
-# both, per file, so either layout works.
+# ---- locate config lists. In a fresh project instance these are expected at the repo
+# root, usually as symlinks to a shared cache. Do not search parent directories:
+# fresh template instances must not silently depend on the surrounding checkout layout.
 find_list() {
   local n="$1" c
-  for c in "." "scripts" "../scripts" "../../scripts" "./cmake/../scripts"; do
+  for c in "." "scripts"; do
     if [ -f "$c/$n" ]; then echo "$c/$n"; return 0; fi
   done
 }
@@ -157,14 +157,14 @@ if have clang-format; then printf '    %s clang-format  %s  -> ./build.sh --form
 else printf '    %s clang-format  missing  (optional; ./build.sh --format skips formatting)\n' "$WARN"; fi
 
 # ===================== instrumentation =====================
-# read a bucket: prints AVAIL/na by emptiness
-bucket_state() { if [ -s "$1" ]; then echo avail; else echo na; fi; }
-
 report_instr() {
   local cc="$1" d=".flags/$1"
   line
   printf 'instrumentation — %s\n' "$cc"
-  if ! have "$cc"; then printf '  %s %s not on PATH — cannot use here\n' "$NO" "$cc"; fi
+  if ! have "$cc"; then
+    printf '  %s %s not on PATH — cannot use here\n' "$NO" "$cc"
+    required_missing=1
+  fi
   if [ ! -d "$d" ]; then
     printf '  %s no probed flags in .flags/%s — run ./update.sh -c %s\n' "$WARN" "$cc" "$cc"
     return 0
@@ -191,7 +191,9 @@ report_instr() {
             else printf '              sampling: %s install Xcode / Command Line Tools\n' "$NO"; fi ;;
     Linux)  if have perf; then printf '              sampling: %s perf via ./report.sh profile\n' "$OK"
             else printf '              sampling: %s perf not installed (apt install linux-tools-...)\n' "$NO"; fi ;;
-    *)      printf '              sampling: use pmcstat / dtrace (FreeBSD)\n' ;;
+    FreeBSD) if have pmcstat; then printf '              sampling: %s pmcstat via ./report.sh profile\n' "$OK"
+             else printf '              sampling: %s pmcstat not installed/available\n' "$NO"; fi ;;
+    *)      printf '              sampling: %s unsupported platform\n' "$NO" ;;
   esac
 
   # sanitizers — partition every probed *_sanitizer_flags.txt into avail / n-a

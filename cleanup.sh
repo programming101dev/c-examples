@@ -60,13 +60,23 @@ should_skip() {
   # $1 = dir path
   local d="$1"
   case "$d" in
-    */.git|*/.git/*|*/.github|*/.github/*|*/.gitlab|*/.gitlab/*) return 0 ;;
+    */.git|*/.git/*) return 0 ;;
+    */.github|*/.github/*) return 0 ;;
+    */.gitlab|*/.gitlab/*) return 0 ;;
     *.dSYM|*/.dSYM/*) return 0 ;;
-    */build|*/build/*|*/cmake-build-*|*/cmake-build-*/*|*/out|*/out/*|*/dist|*/dist/*|*/target|*/target/*|*/bin|*/bin/*|*/obj|*/obj/*) return 0 ;;
+    */build|*/build/*) return 0 ;;
+    */cmake-build-*) return 0 ;;
+    */out|*/out/*) return 0 ;;
+    */dist|*/dist/*) return 0 ;;
+    */target|*/target/*) return 0 ;;
+    */bin|*/bin/*) return 0 ;;
+    */obj|*/obj/*) return 0 ;;
     */.vscode|*/.vscode/*|*/.idea|*/.idea/*|*/.venv|*/.venv/*|*/node_modules|*/node_modules/*) return 0 ;;
     */.flags|*/.flags/*|*/flags|*/flags/*) return 0 ;;
   esac
   for pat in "${EXCLUDES[@]}"; do
+    # User-supplied exclusions are glob patterns by design.
+    # shellcheck disable=SC2053
     [[ "$d" == $pat ]] && return 0
   done
   return 1

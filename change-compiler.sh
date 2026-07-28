@@ -2,7 +2,7 @@
 # change-compiler.sh — choose tools for the Makefile-based c-examples tree.
 
 set -euo pipefail
-CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 c_compiler=""
 clang_format_name="clang-format"

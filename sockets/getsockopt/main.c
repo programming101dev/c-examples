@@ -47,11 +47,6 @@ static void           print_socket_opt_timeval(int sockfd, int option_level, int
 static void           print_socket_opt_linger(int sockfd, int option_level, int option_name, const char *option_name_str);
 static void           socket_close(int sockfd);
 
-#define D_MS_FORMAT "%ld"
-#ifdef __APPLE__
-    #undef D_MS_FORMAT
-    #define D_MS_FORMAT "%d"
-#endif
 #define UNKNOWN_OPTION_MESSAGE_LEN 24
 #define BASE_TEN 10
 
@@ -345,7 +340,7 @@ static void print_socket_opt_timeval(int sockfd, int option_level, int option_na
 
     if(ret == 0)
     {
-        printf("%s: %ld seconds " D_MS_FORMAT " microseconds\n", option_name_str, optval.tv_sec, optval.tv_usec);    // cppcheck-suppress unknownMacro
+        printf("%s: %jd seconds %jd microseconds\n", option_name_str, (intmax_t)optval.tv_sec, (intmax_t)optval.tv_usec);
     }
     else
     {

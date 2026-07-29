@@ -4,6 +4,14 @@
 
 set -euo pipefail
 
+# Homebrew LLVM may carry a Cellar-generated default sysroot that becomes stale
+# after an Xcode/Command Line Tools update. The CMake repositories pass the
+# active SDK explicitly; do the same for these Makefile-based examples.
+if [[ "$(uname -s)" == "Darwin" && "${CFLAGS-}" != *"-isysroot"* ]]; then
+  sdkroot="$(xcrun --sdk macosx --show-sdk-path)"
+  export CFLAGS="${CFLAGS:+${CFLAGS} }-isysroot ${sdkroot}"
+fi
+
 start_dir="."
 target="all"
 clean_first=false

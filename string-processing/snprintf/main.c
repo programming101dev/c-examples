@@ -566,13 +566,19 @@ static void convertLongDouble(long double value, char *buffer, size_t bufferSize
 
 static void convertBool(bool value, char *buffer, size_t bufferSize)
 {
-    int result;
+    const char *text;
+    int         result;
 
+    text = "false";
+    if(value)
+    {
+        text = "true";
+    }
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wformat-truncation="
 #endif
-    result = snprintf(buffer, bufferSize, "bool: %s", value ? "true" : "false");
+    result = snprintf(buffer, bufferSize, "bool: %s", text);
 #if defined(__GNUC__) && !defined(__clang__)
     #pragma GCC diagnostic pop
 #endif

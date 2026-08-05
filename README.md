@@ -1,6 +1,13 @@
-# c-examples Repository Guide
+# c-examples Reference Snippets
 
-Welcome to the `c examples` repository. This guide will help you set up and run the provided scripts.
+This repository is a source-level reference archive for small native C/POSIX
+operations. It is not the p101 curriculum or an acceptance suite: the
+standalone playground tracks own the guided lessons, executable defects,
+expected findings, and progress receipts.
+
+The snippets intentionally use native interfaces so readers can compare them
+with the corresponding p101 wrappers. They are not evidence that a p101
+wrapper, failure path, or platform contract is correct.
 
 ## **Table of Contents**
 
@@ -54,8 +61,12 @@ cat supported_c_compilers.txt
 
 ## **Running the build.sh Script**
 
-To build the program run:
+The historical examples are built only when generated per-example Makefiles
+are present. A fresh clone contains the source archive, not those generated
+Makefiles; use the playgrounds for a self-contained build-and-fix workflow.
 
 ```bash
 ./build.sh
 ```
+
+All source files and the repository license are Apache-2.0 licensed.

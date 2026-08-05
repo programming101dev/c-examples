@@ -5,7 +5,8 @@
 # present (and whether the REQUIRED ones for a build are), and — per compiler —
 # what the probe actually found for coverage, profiling and each sanitizer.
 # It does NOT re-probe: it reads the buckets already written under .flags/ by
-# ./update.sh, so an empty coverage_flags.txt shows up as "coverage n/a", a
+# ./change-compiler.sh, so an empty coverage_flags.txt shows up as
+# "coverage n/a", a
 # dropped leak sanitizer shows up as "leak n/a", etc. Read-only and safe.
 #
 # Platforms: macOS, Linux, FreeBSD.  Compilers: gcc and clang.
@@ -117,7 +118,7 @@ printf 'platform: %s (%s)\n' "$osname" "$arch"
 if [ -L .flags ] || [ -d .flags ]; then
   printf 'flags:    %s\n' "$(cd .flags 2>/dev/null && pwd || echo '.flags')"
 else
-  printf 'flags:    %s .flags not found — run ./update.sh to probe this machine\n' "$WARN"
+  printf 'flags:    %s .flags not found — run ./change-compiler.sh to probe this machine\n' "$WARN"
 fi
 
 # ========================= toolchain =========================
@@ -166,7 +167,7 @@ report_instr() {
     required_missing=1
   fi
   if [ ! -d "$d" ]; then
-    printf '  %s no probed flags in .flags/%s — run ./update.sh -c %s\n' "$WARN" "$cc" "$cc"
+    printf '  %s no probed flags in .flags/%s — run ./change-compiler.sh -c %s\n' "$WARN" "$cc" "$cc"
     return 0
   fi
 
@@ -204,7 +205,7 @@ report_instr() {
     if [ -s "$f" ]; then avail="$avail $nm"; else na="$na $nm"; fi
   done
   shopt -u nullglob
-  printf '  sanitizers  avail:%s\n' "${avail:-  (none — run ./update.sh)}"
+  printf '  sanitizers  avail:%s\n' "${avail:-  (none — run ./change-compiler.sh)}"
   [ -n "$na" ] && printf '              n/a  :%s\n' "$na"
   [ -n "$_san_default" ] && printf '              default selection: %s\n' "$_san_default"
 }

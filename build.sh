@@ -107,9 +107,11 @@ run_make_in_dir() {
 }
 
 fail_list=()
+eligible_count=0
 for dir in "${all_dirs[@]}"; do
   is_dsym_dir "$dir" && { "$quiet" || echo "Skipping dSYM dir: $dir"; continue; }
   has_makefile "$dir" || continue
+  eligible_count=$((eligible_count + 1))
 
   if ! run_make_in_dir "$dir"; then
     if "$keep_going"; then
@@ -122,7 +124,12 @@ for dir in "${all_dirs[@]}"; do
   fi
 done
 
-if ((${#fail_list[@]})); then
+if ((eligible_count == 0)); then
+  "$quiet" || {
+    printf '\nNo generated Makefiles are present in this source-reference clone.\n'
+    printf 'Use the standalone playground tracks for the governed build-and-fix curriculum.\n'
+  }
+elif ((${#fail_list[@]})); then
   echo
   echo "Build completed with failures in ${#fail_list[@]} dir(s):"
   for f in "${fail_list[@]}"; do

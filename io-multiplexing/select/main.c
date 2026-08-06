@@ -398,7 +398,7 @@ static void socket_close(int sockfd)
 
 static int fd_in_select_range(int fd)
 {
-    return (fd >= 0) && (fd < FD_SETSIZE);
+    return (fd >= 0 && fd < FD_SETSIZE) ? 1 : 0;
 }
 
 static void fd_set_safe(int fd, fd_set *set)

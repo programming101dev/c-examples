@@ -181,6 +181,7 @@ compiler-discovery.log
 
 .flags
 .compiler-links/
+.facts-cache/
 .p101-script-backups/
 
 .last-build-dir
@@ -203,3 +204,4 @@ flag_report/
 toolchain-report/
 **/*.xcodeproj/
 # NOTE: fuzz/corpus/ is the committed seed corpus — keep it.
+__pycache__/

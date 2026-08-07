@@ -226,7 +226,7 @@ static off_t parse_off_t(const char *binary_name, off_t min, off_t max, const ch
         usage(binary_name, EXIT_FAILURE, "off_t value out of range.");
     }
 
-    return (off_t)parsed_value;
+    return parsed_value;
 }
 
 _Noreturn static void usage(const char *program_name, int exit_code, const char *message)

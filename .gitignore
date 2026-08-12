@@ -73,7 +73,7 @@ _deps/
 # Common CMake build dirs
 cmake-build-*/
 build/
-build-*/
+/build-*
 
 ### JetBrains / CLion ###
 .idea/
@@ -190,6 +190,7 @@ compiler-discovery.log
 ### Programming 101 transient (build/test/fuzz/debug output) ###
 test/build/
 test/build-*/
+**/test/build-*/
 fuzz/build-*/
 fuzz/findings/
 fuzz/artifacts/
